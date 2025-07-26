@@ -1,0 +1,59 @@
+# dependencies
+/node_modules
+
+# build outputs
+/build
+/dist
+/out
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# misc
+.DS_Store
+Thumbs.db
+npm-debug.log
+yarn-debug.log
+
+# editor specific
+.idea/
+.vscode/
+*.swp
+
+# Django-specific files
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/
+static/ # If STATIC_ROOT is configured to a directory that should not be tracked
+
+# Virtual Environment
+.env
+venv/
+env/
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Other files
+.coverage
+.tox/
+.eggs/
