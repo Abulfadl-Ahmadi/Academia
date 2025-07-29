@@ -4,11 +4,12 @@ from .models import UserProfile
 
 User = get_user_model()
 
-
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=6)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'first_name', 'last_name']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -20,20 +21,32 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
+
+        # Extract and hash the password
+        password = user_data.pop('password')
+        user = User(**user_data)
+        user.set_password(password)
+        user.save()
+
+        # Create the profile
         profile = UserProfile.objects.create(user=user, **validated_data)
         return profile
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
         user = instance.user
+
+        # Update user fields (excluding password)
         for attr, value in user_data.items():
-            setattr(user, attr, value)
+            if attr == 'password':
+                user.set_password(value)
+            else:
+                setattr(user, attr, value)
         user.save()
 
+        # Update profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
         return instance
-
