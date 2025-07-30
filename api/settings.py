@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'accounts',
+    'courses',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.RefreshTokenMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
