@@ -5,10 +5,10 @@ from .views import *
 
 router = DefaultRouter()
 router.register(r'profiles', UserProfileViewSet)
+urlpatterns = router.urls
 
-urlpatterns = [
-    path('api/', include(router.urls)),
-    path('api/login/', LoginView.as_view()),
-    path('api/token/refresh/', RefreshTokenView.as_view()),
-    path('api/logout/', LogoutView.as_view()),
+urlpatterns += [
+    path('login/', LoginView.as_view()),
+    path('token/refresh/', RefreshTokenView.as_view()),
+    path('logout/', LogoutView.as_view()),
 ]
