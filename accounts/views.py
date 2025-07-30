@@ -61,18 +61,17 @@ class LoginView(APIView):
                 key="access",
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=True,       # Set to True in production (HTTPS)
-                samesite="Lax"
+                secure=False,       # Set to True in production (HTTPS)
             )
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
                 httponly=True,
-                secure=True,
-                samesite="Lax"
+                secure=False,
             )
-
+            print(response.cookies)
             return response
+        print(f"Failed login attempt for username: {username}")
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
