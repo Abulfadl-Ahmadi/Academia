@@ -1,7 +1,7 @@
 # urls.py
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import *
+from .views import LoginView, UserProfileViewSet, RefreshTokenView, LogoutView
 
 router = DefaultRouter()
 router.register(r'profiles', UserProfileViewSet)
