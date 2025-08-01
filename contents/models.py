@@ -16,7 +16,8 @@ class File(models.Model):
 
     file = models.FileField(
         upload_to='documents/',
-        help_text="Uploaded file (PDF or MP4)"
+        help_text="Uploaded file (PDF or MP4)",
+        null=True, blank=True
     )
 
     file_type = models.CharField(
@@ -48,6 +49,8 @@ class File(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    arvan_url = models.URLField(max_length=500, null=True, blank=True)  # New field for ArvanCloud URL
+    
     def delete(self, *args, **kwargs):
         if self.file:
             default_storage.delete(self.file.name)
