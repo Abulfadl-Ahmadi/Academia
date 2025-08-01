@@ -1,0 +1,58 @@
+// src/lib/axios.ts
+import axios from "axios";
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+// Create the instance
+const axiosInstance = axios.create({
+  baseURL: baseURL + "/",
+  withCredentials: true, // Send cookies with requests
+});
+
+// Login state stored in memory (optional)
+let loginStatus = false;
+
+export function markLoggedIn() {
+  loginStatus = true;
+}
+
+export function markLoggedOut() {
+  loginStatus = false;
+}
+
+export function isLogin() {
+  return loginStatus;
+}
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      loginStatus &&
+      !originalRequest.url.includes("/token/refresh/")
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        // Attempt to refresh the access token via cookie
+        await axiosInstance.post("/token/refresh/", {}, {
+          withCredentials: true,
+        });
+
+        return axiosInstance(originalRequest); // Retry original request
+      } catch (err) {
+        markLoggedOut();
+        localStorage.removeItem("access_token"); // In case it's still used somewhere
+        return Promise.reject(err);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;
