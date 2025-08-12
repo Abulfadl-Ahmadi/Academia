@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import axiosInstance from '@/lib/axios';
+
+interface Session {
+  id: number;
+  session_number: number;
+  course: number;
+}
 
 interface Course {
   id: number;
   title: string;
-}
-
-interface Session {
-  id: number;
-  title: string;
+  vod_channel_id: string;
+  sessions: Session[];
 }
 
 interface UploadResponse {
@@ -20,7 +24,7 @@ const VideoUploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState<string>('');
   const [fileType, setFileType] = useState<string>('video/mp4');
-  const [channelId, setChannelId] = useState<string>('86515078-d523-4927-8233-2b6b3b022986'); // Replace with actual channel ID or fetch dynamically
+  const [channelId, setChannelId] = useState<string>('');
   const [courseId, setCourseId] = useState<string>('');
   const [sessionId, setSessionId] = useState<string>('');
   const [courses, setCourses] = useState<Course[]>([]);
@@ -29,39 +33,36 @@ const VideoUploadForm: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
-  // Fetch courses and sessions (mocked for simplicity; replace with actual API calls)
+  // Fetch courses on mount
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/courses/', {
-          credentials: 'include',
-        });
-        const data = await response.json();
+        const response = await axiosInstance.get('courses/');
+        const data = await response.data;
         setCourses(data);
       } catch (err) {
         setError('Failed to fetch courses.');
       }
     };
-
-    const fetchSessions = async () => {
-      if (courseId) {
-        try {
-          const response = await fetch(`http://localhost:8000/courses/${courseId}/sessions/`, {
-            credentials: 'include',
-          });
-          const data = await response.json();
-          setSessions(data);
-        } catch (err) {
-          setError('Failed to fetch sessions.');
-        }
-      } else {
-        setSessions([]);
-      }
-    };
-
     fetchCourses();
-    fetchSessions();
-  }, [courseId]);
+  }, []);
+
+  // Update sessions and channelId when courseId changes
+  useEffect(() => {
+    if (!courseId) {
+      setSessions([]);
+      setChannelId('');
+      return;
+    }
+    const selectedCourse = courses.find((c) => String(c.id) === String(courseId));
+    if (selectedCourse) {
+      setSessions(selectedCourse.sessions || []);
+      setChannelId(selectedCourse.vod_channel_id || '');
+    } else {
+      setSessions([]);
+      setChannelId('');
+    }
+  }, [courseId, courses]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -85,13 +86,12 @@ const VideoUploadForm: React.FC = () => {
     formData.append('title', title);
     formData.append('filename', file.name);
     formData.append('file_size', file.size.toString());
-    formData.append('file_type', fileType);
+    formData.append('file_type', 'video/mp4');
     formData.append('file', file);
     formData.append('course', courseId);
     if (sessionId) formData.append('session', sessionId);
-
     // Add channel_id only for video uploads
-    if (fileType === 'video/mp4') {
+    if (fileType === 'video/mp4' && channelId) {
       formData.append('channel_id', channelId);
     }
 
@@ -171,23 +171,11 @@ const VideoUploadForm: React.FC = () => {
             <option value="">Select a session (optional)</option>
             {sessions.map((session) => (
               <option key={session.id} value={session.id}>
-                {session.title}
+                {`جلسه ${session.session_number}`}
               </option>
             ))}
           </select>
         </div>
-        {fileType === 'video/mp4' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Channel ID (for videos)</label>
-            <input
-              type="text"
-              value={channelId}
-              onChange={(e) => setChannelId(e.target.value)}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter ArvanCloud channel ID"
-            />
-          </div>
-        )}
         <button
           onClick={handleSubmit}
           disabled={loading}

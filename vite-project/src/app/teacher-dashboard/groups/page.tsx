@@ -245,7 +245,7 @@ export default function StudentGroupListPage() {
       </form>
         </DialogContent>
     </Dialog>
-</div>
+      </div>
 
       <DataTable columns={columns} data={groups} />
     </div>

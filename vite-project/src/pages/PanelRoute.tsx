@@ -11,7 +11,11 @@ import ClassDetailsPage from "@/app/teacher-dashboard/groups/detail"
 import TeacherProfilePage from "@/app/teacher-dashboard/profile/pages"
 import FilesPage from "@/app/teacher-dashboard/files/page"
 import VideoPage from "@/app/teacher-dashboard/video/page"
+import SessionsPage from "@/app/teacher-dashboard/groups/session/page"
+import SessionsDetailPage from "@/app/teacher-dashboard/groups/session/page"
 import { useLogout } from "@/hooks/use-logout"
+import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo"
+import TeacherTestApp from "@/app/teacher-dashboard/tests/CreateTest"
 
 export default function PanelRoute() {
   const { user, loading } = useUser()
@@ -36,9 +40,13 @@ export default function PanelRoute() {
         <Route path="students" element={<StudentList />} />
         <Route path="courses" element={<StudentGroupListPage />} />
         <Route path="/courses/:id" element={<ClassDetailsPage />} />
+        <Route path="/courses/:id/sessions" element={<SessionsPage />} />
+        <Route path="/courses/:course_id/sessions/:session_id" element={<SessionsDetailPage />} />
         <Route path="/profile" element={<TeacherProfilePage />} />
         <Route path="/files" element={<FilesPage />} />
-        <Route path="/videos" element={<VideoPage />} />
+        <Route path="/videos" element={<UploadVideo />} />
+        <Route path="/tests/create" element={<TeacherTestApp />} />
+        {/* <Route path="/videos" element={<VideoPage />} /> */}
 
       </Route>
     </Routes>

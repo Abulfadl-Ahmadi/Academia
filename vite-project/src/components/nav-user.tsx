@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 import { useLogout } from "@/hooks/use-logout"
 
 import {

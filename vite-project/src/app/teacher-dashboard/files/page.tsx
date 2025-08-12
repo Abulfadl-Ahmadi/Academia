@@ -53,6 +53,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 // import { Label } from "@/components/ui/label"
+import FileCreateForm from "./FileCreateForm"
+
+
 
 export default function FilesPage() {
   const [files, setFiles] = useState<File[]>([])
@@ -162,189 +165,28 @@ useEffect(() => {
               گروهی جدید برای دانش آموزان ایجاد کنید.
             </DrawerDescription>
           </DrawerHeader>
-          <form
-            className="p-4 space-y-4"
-            onSubmit={form.handleSubmit(handleCreateCourse)}
-          >
-            <Input
-              placeholder="عنوان فایل"
-              {...form.register("title")}
-            />
-            {/* <Select
-              {...form.register("file_type")}
-              defaultValue="">
-            <SelectTrigger className="w-full">
-                <SelectValue placeholder="انتخاب نوع فایل" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                <SelectItem value="video/mp4">ویدیو</SelectItem>
-                <SelectItem value="application/pdf">PDF</SelectItem>
-                </SelectGroup>
-            </SelectContent>
-            </Select> */}
-            <Input
-              placeholder="آپلود فایل"
-              type="file"
-              onChange={e => {
-                form.setValue("file", e.target.files?.[0] ?? null)
-              }}
-            />
-            <Input
-              placeholder="شناسه جلسه کلاس (اختیاری)"
-              {...form.register("course_session_id")}
-            />
-            <div>
-              {/* <label className="block mb-1 text-sm font-medium">انتخاب استاد</label> */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {form.watch("course_id")
-                      ? courseOptions.find(opt => opt.value === form.watch("course_id"))?.label
-                      : "انتخاب گروه"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search course..." className="h-9" />
-                    <CommandList>
-                      <CommandEmpty>استاد یافت نشد.</CommandEmpty>
-                      <CommandGroup>
-                        {courseOptions.map((course) => (
-                          <CommandItem
-                            value={course.label}
-                            key={course.value}
-                            onSelect={() => {
-                            form.setValue("course_id", course.value);
-                            }}
-                          >
-                            {course.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <DrawerFooter>
-              <Button type="submit" disabled={loading}>
-                {loading ? "در حال ایجاد" : "ایجاد"}
-              </Button>
-              <DrawerClose asChild>
-                <Button variant="outline">لغو</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </form>
+ <div className="p-4">
+      <FileCreateForm
+        onSuccess={(newFile) => setFiles(prev => [...prev, newFile])}
+        onClose={() => setDrawerOpen(false)}
+        context="drawer"
+      />
+    </div>
         </DrawerContent>
       </Drawer>
       </div>
       <div className="hidden md:block">
     <Dialog>
         <DialogTrigger asChild>
-          <Button>ایجاد کلاس</Button>
+          <Button>ایجاد فایل</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <form
-            className="space-y-4"
-            onSubmit={form.handleSubmit(handleCreateCourse)}
-          >          <DialogHeader>
-            <DialogTitle>ایجاد فایل جدید</DialogTitle>
-            <DialogDescription>
-              فایل جدیدی برای کلاس ایجاد کنید.
-            </DialogDescription>
-          </DialogHeader>
-          {/* <div className="grid gap-4"> */}
-            <div className="grid gap-3">
-              {/* <Label htmlFor="name-1">نام کلاس</Label> */}
-              <Input
-              placeholder="عنوان فایل"
-              {...form.register("title")}
-            />
-            {/* <select
-              {...form.register("file_type")}
-              className="w-full border rounded px-2 py-2 mb-2"
-              defaultValue=""
-            >
-              <option value="" disabled>انتخاب نوع فایل</option>
-              <option value="video/mp4">ویدیو (MP4)</option>
-              <option value="application/pdf">PDF</option>
-            </select> */}
-            {/* <Select
-              {...form.register("file_type")}
-              defaultValue="">
-            <SelectTrigger className="w-full">
-                <SelectValue placeholder="انتخاب نوع فایل" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                <SelectItem value="video/mp4">ویدیو</SelectItem>
-                <SelectItem value="application/pdf">PDF</SelectItem>
-                </SelectGroup>
-            </SelectContent>
-            </Select> */}
-            <Input
-              placeholder="آپلود فایل"
-              type="file"
-              onChange={e => {
-                form.setValue("file", e.target.files?.[0] ?? null)
-              }}
-            />
-            <Input
-              placeholder="شناسه جلسه کلاس (اختیاری)"
-              {...form.register("course_session_id")}
-            />
-            <div>
-              {/* <label className="block mb-1 text-sm font-medium">انتخاب استاد</label> */}
-              <Popover>
-                <PopoverTrigger  asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {form.watch("course_id")
-                      ? courseOptions.find(opt => opt.value === form.watch("course_id"))?.label
-                      : "انتخاب گروه"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search group..." className="h-9" />
-                    <CommandList>
-                      <CommandEmpty>کلاس یافت نشد.</CommandEmpty>
-                      <CommandGroup>
-                        {courseOptions.map((course) => (
-                          <CommandItem
-                            value={course.label}
-                            key={course.value}
-                            onSelect={() => {
-                            form.setValue("course_id", course.value);
-                            }}
-                          >
-                            {course.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">لغو</Button>
-            </DialogClose>
-              <Button type="submit" disabled={loading}>
-                {loading ? "در حال ایجاد" : "ایجاد"}
-              </Button>
-          </DialogFooter>
-      </form>
+        <DialogTitle>فرم ایجاد فایل</DialogTitle>
+    <FileCreateForm
+      onSuccess={(newFile) => setFiles(prev => [...prev, newFile])}
+      onClose={() => {}}
+      context="dialog"
+    />
         </DialogContent>
     </Dialog>
 </div>

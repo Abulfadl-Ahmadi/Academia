@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@tailwindcss/vite": "^4.1.11",
+    "pdfjs-dist": "^3.4.120",
+    "react-pdf": "^10.0.1",
     "tailwindcss": "^4.1.11"
   }
 }

@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 
 import * as React from "react"
 import {
@@ -94,12 +94,12 @@ const data = {
     },
     {
       title: "فایل‌ها",
-      url: "#",
+      url: "panel/files",
       icon: Library,
       items: [
         {
           title: "جزوه‌ها",
-          url: "#",
+          url: "panel/files",
         },
         {
           title: "کتاب‌ها",
