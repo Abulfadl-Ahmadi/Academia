@@ -10,7 +10,9 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = [
-            'id', 'file', 'file_url', 'file_type',
+            'id',
+            'file',
+            'file_url', 'file_type', 'content_type',
             'title', 'course', 'course_info', 'session', 'created_at', 'arvan_url'
         ]
         read_only_fields = ['id', 'file_url', 'created_at', 'course_info']
@@ -25,14 +27,31 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_file_url(self, obj):
         request = self.context.get('request')
+        # return ""
         if request and obj.file:
             return request.build_absolute_uri(obj.file.url)
         elif obj.arvan_url:
             return obj.arvan_url
-        return obj.file.url
+        return ""
 
     def get_file_type(self, file):
-        return file.file_type if file.file_type else 'application/pdf'
+        if file:
+            return file.file_type if file.file_type else 'application/pdf'
+        else:
+            return 'video/mp4'
+        
+    def update(self, instance, validated_data):
+        # فقط اگر فایل جدید فرستاده شده بود، آپدیت کن
+        if 'file' in validated_data and validated_data['file'] is not None:
+            instance.file = validated_data.get('file')
+
+        # بقیه فیلدها رو آپدیت کن
+        for attr, value in validated_data.items():
+            if attr != 'file':
+                setattr(instance, attr, value)
+
+        instance.save()
+        return instance
     
 
 class FileUploadSerializer(serializers.Serializer):
@@ -51,3 +70,16 @@ class FileUploadSerializer(serializers.Serializer):
         )
 
 
+
+class VideoInitUploadSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    channel_id = serializers.CharField()
+    # filesize = serializers.CharField()
+    file_type = serializers.CharField(default="video/mp4")  # Assuming video uploads are always mp4
+
+class VideoFinalizeSerializer(serializers.Serializer):
+    file_id = serializers.CharField()
+    channel_id = serializers.CharField()
+    title = serializers.CharField()
+    course = serializers.IntegerField(required=False)
+    session = serializers.IntegerField(required=False)

@@ -9,6 +9,11 @@ class File(models.Model):
         VIDEO = 'video/mp4', _('Video')
         PDF = 'application/pdf', _('PDF')
 
+    class ContentType(models.TextChoices):
+        BOOK = 'book', _('Book')
+        TEST = 'test', _('Test')
+        NOTE = 'note', _('Note')
+
     file_id = models.CharField(
         max_length=1024,
         help_text="Remote or CDN file identifier (e.g., ArvanCloud UID)"
@@ -24,6 +29,13 @@ class File(models.Model):
         max_length=50,
         choices=FileType.choices,
         help_text="MIME type of the file"
+    )
+
+    content_type = models.CharField(
+        max_length=50,
+        choices=ContentType.choices,
+        default=ContentType.NOTE,
+        help_text="Content type of the file (e.g., 'Book', 'Test', 'Note')"
     )
 
     title = models.CharField(
