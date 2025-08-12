@@ -27,13 +27,15 @@ SECRET_KEY = 'django-insecure-eoyg85*%3f6fry(_noxil)))7109*&186z63ax@34e%3wy2rv3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://192.168.1.130:5173"
 ]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://192.168.1.130:5173"
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -45,7 +47,8 @@ CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 
 AUTH_USER_MODEL = 'accounts.User'
 
-
+TIME_ZONE = 'Asia/Tehran'
+USE_TZ=True
 # Application definition
 
 INSTALLED_APPS = [
@@ -63,6 +66,7 @@ INSTALLED_APPS = [
     'accounts',
     'courses',
     'contents',
+    'tests',
 ]
 
 MIDDLEWARE = [
@@ -106,6 +110,7 @@ AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_S3_FILE_OVERWRITE = False
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Always use disk
 
 STORAGES = {
     "default": {
