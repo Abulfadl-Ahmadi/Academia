@@ -18,7 +18,7 @@ class CourseScheduleSerializer(serializers.ModelSerializer):
 class CourseSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSession
-        fields = ["id", "session_number"]
+        fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
