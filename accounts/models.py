@@ -3,6 +3,10 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.core.validators import RegexValidator
 from .validators import validate_iranian_national_id
+import random
+import string
+from datetime import timedelta
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -39,12 +43,52 @@ class User(AbstractUser):
         (ADMIN, 'Admin'),
     )
     email = models.EmailField(blank=True, null=True, unique=False)  # make email optional
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=STUDENT)
+    is_email_verified = models.BooleanField(default=False)
 
     objects = UserManager()
 
     def __str__(self):
         return self.username
+
+
+class VerificationCode(models.Model):
+    email = models.EmailField()
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.email} - {self.code}"
+    
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+    
+    def is_valid(self):
+        return not self.is_used and not self.is_expired()
+    
+    @classmethod
+    def generate_code(cls):
+        """Generate a random 6-digit code"""
+        return ''.join(random.choices(string.digits, k=6))
+    
+    @classmethod
+    def create_for_email(cls, email):
+        """Create a new verification code for an email"""
+        # Delete any existing unused codes for this email
+        cls.objects.filter(email=email, is_used=False).delete()
+        
+        # Create new code
+        code = cls.generate_code()
+        expires_at = timezone.now() + timedelta(minutes=10)  # 10 minutes expiry
+        
+        return cls.objects.create(
+            email=email,
+            code=code,
+            expires_at=expires_at
+        )
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

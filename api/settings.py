@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
+from decouple import config, UndefinedValueError
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +26,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-eoyg85*%3f6fry(_noxil)))7109*&186z63ax@34e%3wy2rv3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# Email settings
+try:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('MAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = int(config('MAIL_PORT', default=587))
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
+    EMAIL_HOST_USER = config('MAIL_USER')
+    EMAIL_HOST_PASSWORD = config('MAIL_PASSWORD')
+    DEFAULT_FROM_EMAIL = config('MAIL_FROM_ADDRESS')
+except UndefinedValueError:
+    # Fallback for local dev: print emails to console
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'no-reply@localhost'
+
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
@@ -86,7 +101,7 @@ ROOT_URLCONF = 'api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'accounts' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,12 +114,12 @@ TEMPLATES = [
 ]
 
 # Parspack Object Storage settings
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')  # c242950
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)  # c242950
 AWS_S3_REGION_NAME = 'default'
-AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL')  # https://c242950.parspack.net
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.parspack.net'  # c242950.parspack.net
+AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default=None)  # https://c242950.parspack.net
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.parspack.net' if AWS_STORAGE_BUCKET_NAME else ''
 AWS_S3_VERIFY = False
 AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
@@ -145,9 +160,9 @@ STORAGES = {
     },
 }
 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Local directory for collectstatic
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/' if AWS_S3_CUSTOM_DOMAIN else 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/' if AWS_S3_CUSTOM_DOMAIN else '/media/'
 
 WSGI_APPLICATION = 'api.wsgi.application'
 

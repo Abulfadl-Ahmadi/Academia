@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import UserProfile
+from .models import UserProfile, VerificationCode
 
 User = get_user_model()
 
@@ -10,6 +10,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role']
+
+
+class SendVerificationCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField()
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
+
+
+class VerifyEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -24,6 +36,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         # Extract and hash the password
         password = user_data.pop('password')
+        
+        # Set default role as 'student' if not provided
+        if 'role' not in user_data or not user_data['role']:
+            user_data['role'] = User.STUDENT
+        
         user = User(**user_data)
         user.set_password(password)
         user.save()
@@ -50,3 +67,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class CompleteRegistrationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField()
+    password = serializers.CharField(min_length=6)
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
+    national_id = serializers.CharField(required=False, allow_blank=True)
+    phone_number = serializers.CharField(required=False, allow_blank=True)
+    birth_date = serializers.DateField(required=False)
+    grade = serializers.CharField(required=False, allow_blank=True)

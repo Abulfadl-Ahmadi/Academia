@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     // host: "172.25.82.128",
     port: 5173,
-    host: true,
+    // host: true,
     allowedHosts: ['*'],
   },
   plugins: [react(), tailwindcss()],

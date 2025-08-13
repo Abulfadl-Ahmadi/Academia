@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کد تایید ایمیل</title>
+    <style>
+        body {
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            direction: rtl;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .verification-code {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #666;
+        }
+        .warning {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">آکادمی</div>
+            <h2>تایید ایمیل</h2>
+        </div>
+        
+        <p>سلام {{ user_name }},</p>
+        
+        <p>برای تکمیل ثبت‌نام در آکادمی، لطفاً کد تایید زیر را وارد کنید:</p>
+        
+        <div class="verification-code">
+            <div class="code">{{ verification_code }}</div>
+        </div>
+        
+        <div class="warning">
+            <strong>توجه:</strong> این کد تا ۱۰ دقیقه معتبر است.
+        </div>
+        
+        <p>اگر شما درخواست ثبت‌نام نکرده‌اید، لطفاً این ایمیل را نادیده بگیرید.</p>
+        
+        <div class="footer">
+            <p>این ایمیل به صورت خودکار ارسال شده است. لطفاً به آن پاسخ ندهید.</p>
+            <p>&copy; 2024 آکادمی. تمامی حقوق محفوظ است.</p>
+        </div>
+    </div>
+</body>
+</html>
