@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>درخواست خرید جدید</title>
+    <style>
+        body {
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .order-details {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .order-info {
+            margin-bottom: 20px;
+        }
+        .order-info h3 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .items-list {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2563eb;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e2e8f0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #666;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">آکادمی</div>
+            <h2>درخواست خرید جدید</h2>
+        </div>
+        
+        <div class="order-details">
+            <div class="order-info">
+                <h3>اطلاعات سفارش</h3>
+                <p><strong>شماره سفارش:</strong> {{ order_id }}</p>
+                <p><strong>مشتری:</strong> {{ customer_name }}</p>
+                <p><strong>ایمیل:</strong> {{ customer_email }}</p>
+                <p><strong>تاریخ:</strong> {{ order_date }}</p>
+            </div>
+            
+            <div class="items-list">
+                <h4>محصولات سفارش شده:</h4>
+                {% for item in items %}
+                <div class="item">
+                    <span>{{ item.product_title }}</span>
+                    <span>{{ item.quantity }} عدد × {{ item.price }} تومان</span>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="total">
+                <strong>مجموع: {{ total_amount }} تومان</strong>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <p>لطفاً با مشتری تماس بگیرید تا ترتیب پرداخت را مشخص کنید.</p>
+            <a href="{{ admin_url }}" class="action-button">مشاهده در پنل مدیریت</a>
+        </div>
+        
+        <div class="footer">
+            <p>این ایمیل به صورت خودکار ارسال شده است.</p>
+            <p>&copy; 2024 آکادمی. تمامی حقوق محفوظ است.</p>
+        </div>
+    </div>
+</body>
+</html>
