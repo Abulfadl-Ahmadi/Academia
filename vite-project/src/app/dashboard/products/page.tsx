@@ -13,16 +13,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { useUser } from "@/context/UserContext"
-import { BookOpen, FileText, Play, User, Mail, GraduationCap } from "lucide-react"
-import { Outlet } from "react-router-dom"
+import MyProducts from "./MyProducts"
 
-
-export default function Page() {
-  const { user } = useUser();
-
+export default function ProductsPage() {
   return (
     <SidebarProvider>
       <AppSidebar/>
@@ -43,17 +36,15 @@ export default function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>داشبورد</BreadcrumbPage>
+                  <BreadcrumbPage>محصولات من</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <Outlet />
+          <MyProducts />
         </div>
-
       </SidebarInset>
     </SidebarProvider>
   )

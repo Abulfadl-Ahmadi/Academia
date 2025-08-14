@@ -11,6 +11,7 @@ import {
   Box,
   GalleryVerticalEnd,
   TvMinimalPlay,
+  ShoppingCart,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -112,6 +113,21 @@ const data = {
         {
           title: "خلاصه‌نویسی‌ها",
           url: "#",
+        },
+      ],
+    },
+    {
+      title: "فروشگاه",
+      url: "/shop",
+      icon: ShoppingCart,
+      items: [
+        {
+          title: "محصولات",
+          url: "/shop",
+        },
+        {
+          title: "سبد خرید",
+          url: "/shop",
         },
       ],
     },

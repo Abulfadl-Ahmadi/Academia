@@ -12,6 +12,7 @@ import {
   Users,
   GalleryVerticalEnd,
   TvMinimalPlay,
+  CreditCard,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -111,6 +112,25 @@ const data = {
         },
         {
           title: "خلاصه‌نویسی‌ها",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "مدیریت مالی",
+      url: "/panel/transactions",
+      icon: CreditCard,
+      items: [
+        {
+          title: "ایجاد تراکنش",
+          url: "/panel/transactions",
+        },
+        {
+          title: "لیست تراکنش‌ها",
+          url: "/panel/transactions",
+        },
+        {
+          title: "گزارش‌های مالی",
           url: "#",
         },
       ],

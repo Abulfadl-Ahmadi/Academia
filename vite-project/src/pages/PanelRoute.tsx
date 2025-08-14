@@ -16,6 +16,10 @@ import SessionsDetailPage from "@/app/teacher-dashboard/groups/session/page"
 import { useLogout } from "@/hooks/use-logout"
 import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo"
 import TeacherTestApp from "@/app/teacher-dashboard/tests/CreateTest"
+import ProfilePage from "@/app/dashboard/profile/page"
+import Home from "@/app/dashboard/home/page"
+import TransactionsPage from "@/app/teacher-dashboard/transactions/page"
+import MyProducts from "@/app/dashboard/MyProducts"
 
 export default function PanelRoute() {
   const { user, loading } = useUser()
@@ -32,7 +36,16 @@ export default function PanelRoute() {
   // }, []) // run once on mount
     return <div>لطفا لاگین کنید</div>
   }
-  if (user.role === "student") return <Page />
+  if (user.role === "student") return  (
+    <Routes>
+      <Route path="/" element={<Page />}>
+      <Route index element={<Home />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/products" element={<MyProducts />} />
+      <Route path="/transactions" element={<TransactionsPage />} />
+      </Route>
+    </Routes>
+  )
   if (user.role === "teacher")return (
     <Routes>
       <Route path="/" element={<TeacherPage />}>
@@ -46,6 +59,7 @@ export default function PanelRoute() {
         <Route path="/files" element={<FilesPage />} />
         <Route path="/videos" element={<UploadVideo />} />
         <Route path="/tests/create" element={<TeacherTestApp />} />
+        <Route path="/transactions" element={<TransactionsPage />} />
         {/* <Route path="/videos" element={<VideoPage />} /> */}
 
       </Route>

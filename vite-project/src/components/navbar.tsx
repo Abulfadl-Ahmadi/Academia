@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/navbar";
 import Navigation from "@/components/ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useUser } from "@/context/UserContext";
+import { NavbarUser } from "@/components/navbar-user";
 
 interface NavbarLink {
   text: string;
@@ -61,6 +63,8 @@ export default function Navbar({
   customNavigation,
   className,
 }: NavbarProps) {
+  const { user, loading, logout } = useUser();
+
   return (
     <header className={cn("sticky top-0 z-50 -mb-4 px-4 pb-4", className)}>
       <div className="fade-bottom bg-background/15 absolute left-0 h-24 w-full backdrop-blur-lg"></div>
@@ -77,28 +81,46 @@ export default function Navbar({
             {showNavigation && (customNavigation || <Navigation />)}
           </NavbarLeft>
           <NavbarRight>
-            {actions.map((action, index) =>
-              action.isButton ? (
-                <Button
-                  key={index}
-                  // variant={action.variant || "default"}
-                  asChild
-                >
-                  <a href={action.href}>
-                    {action.icon}
-                    {action.text}
-                    {action.iconRight}
-                  </a>
-                </Button>
-              ) : (
-                <a
-                  key={index}
-                  href={action.href}
-                  className="hidden text-sm md:block"
-                >
-                  {action.text}
-                </a>
-              ),
+            {!loading && (
+              <>
+                {user ? (
+                  // Show user profile when logged in
+                  <NavbarUser
+                    user={{
+                      username: user.username,
+                      email: user.email,
+                      avatar: "", // User object doesn't have avatar, will use initials fallback
+                    }}
+                  />
+                ) : (
+                  // Show login/signup buttons when not logged in
+                  <>
+                    {actions.map((action, index) =>
+                      action.isButton ? (
+                        <Button
+                          key={index}
+                          // variant={action.variant || "default"}
+                          asChild
+                        >
+                          <a href={action.href}>
+                            {action.icon}
+                            {action.text}
+                            {action.iconRight}
+                          </a>
+                        </Button>
+                      ) : (
+                        <a
+                          key={index}
+                          href={action.href}
+                          className="hidden text-sm md:block"
+                        >
+                          {action.text}
+                        </a>
+                      ),
+                    )}
+                  </>
+                )}
+              </>
             )}
             <Sheet>
               <SheetTrigger asChild>
@@ -128,6 +150,39 @@ export default function Navbar({
                       {link.text}
                     </a>
                   ))}
+                  {/* Add mobile login/signup or user profile */}
+                  {!loading && (
+                    <>
+                      {user ? (
+                        <div className="flex flex-col gap-3 pt-4 border-t">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                              {user.username.substring(0, 2).toUpperCase()}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{user.username}</span>
+                              <span className="text-xs text-muted-foreground">{user.email}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <a href="/panel" className="text-sm text-blue-600 hover:underline py-2">پنل کاربری</a>
+                            <a href="/panel/profile" className="text-sm text-gray-600 hover:text-gray-800 py-2">حساب کاربری</a>
+                            <button 
+                              onClick={logout}
+                              className="text-sm text-red-600 hover:text-red-800 py-2 text-right"
+                            >
+                              خروج
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-3 pt-4 border-t">
+                          <a href="/login" className="text-sm text-blue-600 hover:underline py-2">ورود</a>
+                          <a href="/register" className="text-sm text-blue-600 hover:underline py-2">ثبت نام</a>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
