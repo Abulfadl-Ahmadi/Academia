@@ -150,9 +150,12 @@ def get_video(file_id):
     print(f"{VOD_BASE_URL}/videos/{file_id}")
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 404:
+        return None
     else:
         logger.error(f"Failed to retrieve video: {response.status_code} - {response.text}")
         raise Exception(f"Failed to retrieve video: {response.text}")
+        
 
 def create_video(channel_id, file_id, title, convert_mode="auto"):
     """
@@ -181,3 +184,7 @@ def create_video(channel_id, file_id, title, convert_mode="auto"):
         logger.error(f"Failed to create video: {response.status_code} - {response.text}")
         raise Exception(f"Failed to create video: {response.text}")
     
+
+def get_video_player_url(file_id):
+    video = get_video(file_id)
+    return video.get("data", {}).get("player_url", "") if video else ""
