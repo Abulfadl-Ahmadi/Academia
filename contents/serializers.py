@@ -2,9 +2,12 @@ from rest_framework import serializers
 from .models import File
 from utils.vod import create_upload_url
 from courses.serializers import CourseSerializer
+from utils.vod import get_video_player_url
+
 
 class FileSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField()
+    player_url = serializers.SerializerMethodField()
     course = serializers.PrimaryKeyRelatedField(queryset=File._meta.get_field('course').related_model.objects.all())
     course_info = serializers.SerializerMethodField(read_only=True)
     class Meta:
@@ -12,7 +15,7 @@ class FileSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'file',
-            'file_url', 'file_type', 'content_type',
+            'file_url', 'file_type', 'content_type', 'file_id', 'player_url',
             'title', 'course', 'course_info', 'session', 'created_at', 'arvan_url'
         ]
         read_only_fields = ['id', 'file_url', 'created_at', 'course_info']
@@ -32,6 +35,11 @@ class FileSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.file.url)
         elif obj.arvan_url:
             return obj.arvan_url
+        return ""
+    
+    def get_player_url(self, obj):
+        if obj.file_type == 'video/mp4' and obj.file_id:
+            return get_video_player_url(obj.file_id)
         return ""
 
     def get_file_type(self, file):
