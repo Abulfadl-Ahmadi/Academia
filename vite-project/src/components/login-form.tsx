@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUser } from "@/context/UserContext"
 import { useState } from "react"
-import axiosInstance from "@/lib/axios"
+// import axiosInstance from "@/lib/axios"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { markLoggedIn } from "@/lib/axios";
@@ -29,7 +29,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
   setError("")
   try {
-    const response = await axios.post(
+    await axios.post(
       baseURL+"/login/", // Use JWT cookie endpoint for login
       { username, password },
       { withCredentials: true },
@@ -39,6 +39,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     login() // Use context login method
     console.log("login() called in login-form")
     navigate("/panel")
+    markLoggedIn()
   } catch (err: any) {
     if (err.response?.status === 401) {
       setError("Invalid username or password")

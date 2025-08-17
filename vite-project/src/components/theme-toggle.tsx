@@ -9,7 +9,7 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 
 export function ThemeToggle() {
-  const { theme, toggleTheme, accentColor, setAccentColor } = useTheme();
+  const { toggleTheme, accentColor, setAccentColor } = useTheme();
 
   const accentColors = [
     { name: 'آبی', value: 'blue' as const, color: 'bg-blue-500' },

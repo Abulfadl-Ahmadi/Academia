@@ -1,17 +1,10 @@
-import { Navigate } from "react-router-dom"
 import { useUser } from "@/context/UserContext"
-import { Routes, Route, Outlet } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import StudentList from "./StudentList"
-import GroupList from "./GroupList"
-import { useEffect } from "react"
-import StudentGroupListPage from "@/app/teacher-dashboard/groups/page"
-import ClassDetailsPage from "@/app/teacher-dashboard/groups/detail"
 import TeacherProfilePage from "@/app/teacher-dashboard/profile/pages"
 import FilesPage from "@/app/teacher-dashboard/files/page"
-import VideoPage from "@/app/teacher-dashboard/video/page"
 import SessionsPage from "@/app/teacher-dashboard/groups/session/page"
 import SessionsDetailPage from "@/app/teacher-dashboard/groups/session/page"
-import { useLogout } from "@/hooks/use-logout"
 import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo1"
 import TeacherTestApp from "@/app/teacher-dashboard/tests/CreateTest"
 import TeacherTestsList from "@/app/teacher-dashboard/tests"
@@ -34,23 +27,6 @@ import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
 import { StudentLayout } from "@/components/layouts/StudentLayout"
 import { TeacherLayout } from "@/components/layouts/TeacherLayout"
 
-// Layout components
-import { AppSidebar } from "@/components/app-sidebar"
-import { TeacherSidebar } from "@/components/teacher-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
 export default function PanelRoute() {
@@ -88,10 +64,8 @@ export default function PanelRoute() {
       <Route path="/" element={<TeacherLayout />}>
         <Route index element={<div>پنل معلم</div>} />
         <Route path="students" element={<StudentList />} />
-        {/* <Route path="courses" element={<StudentGroupListPage />} */}
         <Route path="courses" element={<CoursesList />} />
         <Route path="courses/create" element={<CreateCoursePage />} />
-        {/* <Route path="/courses/:id" element={<ClassDetailsPage />} */}
         <Route path="/courses/:courseId" element={<CourseDetailPage />} />
         <Route path="/courses/:id/sessions" element={<SessionsPage />} />
         <Route path="/courses/:course_id/sessions/:session_id" element={<SessionsDetailPage />} />

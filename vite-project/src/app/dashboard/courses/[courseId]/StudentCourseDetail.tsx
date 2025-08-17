@@ -6,15 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { 
-  BookOpen, 
   Users, 
   Calendar,
   Play,
   FileText,
   Clock,
   Download,
-  Eye,
-  ExternalLink,
   X
 } from "lucide-react";
 
@@ -35,6 +32,7 @@ interface File {
   title: string;
   arvan_url?: string;
   created_at: string;
+  player_url: string;
 }
 
 interface Session {
@@ -112,9 +110,9 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString("fa-IR");
+  // };
 
   if (loading) {
     return (

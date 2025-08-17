@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"
 import { useNavigate } from "react-router-dom";
+// @ts-ignore
 import moment from 'moment-jalaali'
 
 function convertToJalali(isoDate: string): string {
@@ -30,7 +31,7 @@ const TestPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [test, setTest] = useState<Test | null>(null);
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+  const [, setSession] = useState(null);
   const navigate = useNavigate();
 
 

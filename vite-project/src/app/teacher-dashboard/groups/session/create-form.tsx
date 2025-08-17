@@ -28,13 +28,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 
-interface CreateSessionFormProps<number> {
+interface CreateSessionFormProps {
   courseId: number
 }
 
-export default function CreateSessionForm<number>({
+export default function CreateSessionForm({
   courseId
-}: CreateSessionFormProps<number>) {
+}: CreateSessionFormProps) {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [, setSessions] = useState<Session[]>([])

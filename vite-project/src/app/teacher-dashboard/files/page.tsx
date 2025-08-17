@@ -3,14 +3,7 @@ import { columns, type File } from "@/app/teacher-dashboard/files/column"
 import { DataTable } from "@/components/ui/data-table"
 import axiosInstance from "@/lib/axios";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+
 
 import {
   Drawer,
@@ -18,39 +11,18 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-  DrawerClose,
-  DrawerFooter,
   DrawerTrigger,
 } from "@/components/ui/drawer"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-
+// import { useForm } from "react-hook-form"
+// import { z } from "zod"
+// import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog"
 // import { Label } from "@/components/ui/label"
 import FileCreateForm from "./FileCreateForm"
@@ -63,26 +35,26 @@ export default function FilesPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   // const token = localStorage.getItem("access_token")
   const baseURL = import.meta.env.VITE_API_BASE_URL;
-  const [courses, setCourses] = useState<{ id: number; title: string }[]>([]);
+  const [, setCourses] = useState<{ id: number; title: string }[]>([]);
 
   // Combobox form setup
-  const FormSchema = z.object({
-    file: z.any().nullable(),
-    // file_type: z.string().nullable(),
-    title: z.string().min(1, "title required"),
-    course_id: z.string().nullable(),
-    course_session_id: z.string().nullable(),
-  });
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      file: null,
-      // file_type: null,
-      title: "",
-      course_id: null,
-      course_session_id: null,
-    },
-  });
+  // const FormSchema = z.object({
+  //   file: z.any().nullable(),
+  //   // file_type: z.string().nullable(),
+  //   title: z.string().min(1, "title required"),
+  //   course_id: z.string().nullable(),
+  //   course_session_id: z.string().nullable(),
+  // });
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   resolver: zodResolver(FormSchema),
+  //   defaultValues: {
+  //     file: null,
+  //     // file_type: null,
+  //     title: "",
+  //     course_id: null,
+  //     course_session_id: null,
+  //   },
+  // });
 
 useEffect(() => {
   axiosInstance
@@ -118,37 +90,37 @@ useEffect(() => {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleCreateCourse = async (data: z.infer<typeof FormSchema>) => {
-    setLoading(true)
-    try {
-      const formData = new FormData();
-      if (data.file) formData.append("file", data.file);
-      // if (data.file_type) formData.append("file_type", data.file_type);
-      if (data.title) formData.append("title", data.title);
-      if (data.course_id) formData.append("course", data.course_id);
-      if (data.course_session_id) formData.append("course_session_id", data.course_session_id);
-      formData.append("file_type", "application/pdf");
+  // const handleCreateCourse = async (data: z.infer<typeof FormSchema>) => {
+  //   setLoading(true)
+  //   try {
+  //     const formData = new FormData();
+  //     if (data.file) formData.append("file", data.file);
+  //     // if (data.file_type) formData.append("file_type", data.file_type);
+  //     if (data.title) formData.append("title", data.title);
+  //     if (data.course_id) formData.append("course", data.course_id);
+  //     if (data.course_session_id) formData.append("course_session_id", data.course_session_id);
+  //     formData.append("file_type", "application/pdf");
 
-      const res = await axiosInstance.post("/files/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setFiles(prev => [...prev, res.data]);
-      form.reset();
-      console.log(res.data)
-      setDrawerOpen(false);
-    } catch (error) {
-      console.error("Error creating file:", error.response.data);
-    } finally {
-      setLoading(false);
-    }
-  }
+  //     const res = await axiosInstance.post("/files/", formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     setFiles(prev => [...prev, res.data]);
+  //     form.reset();
+  //     console.log(res.data)
+  //     setDrawerOpen(false);
+  //   } catch (error) {
+  //     console.error("Error creating file:", error.response.data);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   if (loading) return <div className="p-4">در آپلود فایل...</div>
 
   // Prepare cuorse options for combobox
-  const courseOptions = courses.map(c => ({ label: c.title, value: c.id.toString() }));
+  // const courseOptions = courses.map(c => ({ label: c.title, value: c.id.toString() }));
 
   return (
     <div className="p-4 space-y-4">

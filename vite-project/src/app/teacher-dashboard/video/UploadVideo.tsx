@@ -1,5 +1,5 @@
 // Filename: UploadVideo.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as tus from 'tus-js-client';
 import { Progress } from "@/components/ui/progress";
 import { Input } from '@/components/ui/input';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '@/lib/axios';
 import {
@@ -12,7 +12,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -24,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Search, ArrowLeft, Download } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
+// @ts-ignore
 import moment from 'moment-jalaali';
 
 interface Answer {
@@ -158,9 +158,7 @@ const TestReport = () => {
     );
   }
 
-  console.log(report.sessions)
-
-  if (!report.sessions) {
+  if (!report?.sessions) {
     return <div>کسی در آزمون شرکت نکرده‌است.</div>;
   }
 

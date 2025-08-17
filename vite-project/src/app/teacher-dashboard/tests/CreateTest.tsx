@@ -118,9 +118,9 @@ export default function TeacherTestApp() {
 
     try {
       setLoading(true);
-      const response = await axiosInstance.post(baseURL + "/tests/", payload);
+      await axiosInstance.post(baseURL + "/tests/", payload);
       toast.success("آزمون با موفقیت ثبت شد");
-      
+
       // Redirect to tests list page after successful creation
       navigate("/panel/tests");
     } catch (err) {
