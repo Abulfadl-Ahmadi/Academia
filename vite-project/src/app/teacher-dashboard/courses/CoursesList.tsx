@@ -55,9 +55,9 @@ export default function CoursesList() {
     course.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString("fa-IR");
+  // };
 
   const handleViewCourse = (courseId: number) => {
     window.location.href = `/panel/courses/${courseId}`;

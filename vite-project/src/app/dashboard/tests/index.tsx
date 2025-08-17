@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+// @ts-ignore
 import moment from 'moment-jalaali';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileText, Clock, Calendar, BookOpen } from "lucide-react";
+import { Loader2, Clock, Calendar, BookOpen } from "lucide-react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -38,7 +39,7 @@ type Test = {
 
 const StudentTestsList: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
-  const [session, setSession] = useState(null);
+  const [, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();

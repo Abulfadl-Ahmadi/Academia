@@ -6,24 +6,14 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { BookKey } from "lucide-react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 // import { PDFViewer } from "./PDFViewer"
 import {
   Viewer,
-  type ZoomEvent,
-  SpecialZoomLevel,
 } from "@react-pdf-viewer/core";
 import {
   defaultLayoutPlugin,
@@ -75,18 +65,18 @@ const TestDetailPage: React.FC = () => {
 
   const [answers, setAnswers] = useState({});
 
-  const handleValueChange = (questionNumber, newValue) => {
-    setAnswers((prev) => {
-      const currentValue = prev[questionNumber];
-      if (currentValue === newValue) {
-        const updated = { ...prev };
-        delete updated[questionNumber];
-        return updated;
-      } else {
-        return { ...prev, [questionNumber]: newValue };
-      }
-    });
-  };
+  // const handleValueChange = (questionNumber: number, newValue: string) => {
+  //   setAnswers((prev) => {
+  //     const currentValue = prev[questionNumber as keyof typeof prev];
+  //     if (currentValue === newValue) {
+  //       const updated = { ...prev };
+  //       delete (updated as { [key: number]: string })[questionNumber];
+  //       return updated;
+  //     } else {
+  //       return { ...prev, [questionNumber]: newValue };
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
     if (session?.session_id) {
@@ -95,7 +85,7 @@ const TestDetailPage: React.FC = () => {
         .then((res) => {
           const parsedAnswers = {};
           for (const key in res.data) {
-            parsedAnswers[Number(key)] = String(res.data[key]);
+            (parsedAnswers as { [key: number]: string })[Number(key)] = String(res.data[key]);
           }
           setAnswers(parsedAnswers);
         })
@@ -118,29 +108,29 @@ const TestDetailPage: React.FC = () => {
     console.log("All answers sent!");
   };
 
-  const handleAnswer = async (questionNumber, selectedValue) => {
+  const handleAnswer = async (questionNumber: number, selectedValue: string) => {
     // Toggle behavior
     setAnswers((prev) => {
-      const current = prev[questionNumber];
+      const current = prev[questionNumber as keyof typeof prev];
       const newAnswers = { ...prev };
 
       if (current === selectedValue) {
-        delete newAnswers[questionNumber];
+delete (newAnswers as { [key: number]: string })[questionNumber];
         // ارسال حذف پاسخ به سرور
         saveAnswerToBackend(questionNumber, null);
       } else {
-        newAnswers[questionNumber] = selectedValue;
+(newAnswers as { [key: number]: string })[questionNumber] = selectedValue;
         // ارسال پاسخ به سرور
-        saveAnswerToBackend(questionNumber, selectedValue);
+        saveAnswerToBackend(questionNumber, Number(selectedValue));
       }
 
       return newAnswers;
     });
   };
 
-  const saveAnswerToBackend = async (questionNumber, answerValue) => {
+  const saveAnswerToBackend = async (questionNumber: number, answerValue: number | null) => {
     try {
-      const res = await axiosInstance.post("/submit-answer/", {
+      await axiosInstance.post("/submit-answer/", {
         session_id: session.session_id,
         answers: [{ question_number: questionNumber, answer: answerValue }],
       });
@@ -162,13 +152,9 @@ const TestDetailPage: React.FC = () => {
     }
   };
 
-  const handleZoom = (e: ZoomEvent) => {
-    console.log(`Zoom to ${e.scale}`);
-  };
-
-  const renderToolbar = (Toolbar: (props: ToolbarProps) => ReactElement) => (
+  const renderToolbar = (Toolbar: (props: ToolbarProps) => React.ReactElement) => (
     <Toolbar>
-      {(slots: ToolbarSlot) => {
+      {(slots: any) => {
         const { GoToNextPage, GoToPreviousPage, Zoom, ZoomIn, ZoomOut } = slots;
         return (
           <div className="">
@@ -195,7 +181,7 @@ const TestDetailPage: React.FC = () => {
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     renderToolbar,
-    sidebarTabs: (defaultTabs) => [],
+    sidebarTabs: () => [],
   });
 
   const zoomPluginInstance = zoomPlugin();
@@ -268,7 +254,7 @@ const TestDetailPage: React.FC = () => {
               >
                 <div className="w-10 pr-4">{questionNumber}</div>
                 <RadioGroup.Root
-                  value={answers[questionNumber] || null} // اینجا مقدار رو می‌گیریم
+                  value={(answers as { [key: number]: string })[questionNumber] || null} // اینجا مقدار رو می‌گیریم
                   className="max-w-sm w-full grid grid-cols-4 gap-3"
                 >
                   {options.map((option) => (
@@ -324,7 +310,8 @@ const TestDetailPage: React.FC = () => {
         <div className="mt-17">
           <Viewer
             fileUrl={session.pdf_file_url}
-            plugins={[zoomPluginInstance]}
+            // plugins={[zoomPluginInstance]}
+            plugins={[defaultLayoutPluginInstance]}
           />
         </div>
       </SidebarInset>

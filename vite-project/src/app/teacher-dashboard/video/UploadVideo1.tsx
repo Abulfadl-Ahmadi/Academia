@@ -18,11 +18,11 @@ interface Course {
   sessions: Session[];
 }
 
-interface UploadResponse {
-  file_id: string;
-  file_url: string;
-  video_data?: any;
-}
+// interface UploadResponse {
+//   file_id: string;
+//   file_url: string;
+//   video_data?: any;
+// }
 
 const UploadVideo: React.FC = () => {
 
@@ -45,7 +45,7 @@ const UploadVideo: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [sessions, setSessions] = useState<Session[]>([]);
     // const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
+    const [, setError] = useState<string>('');
     // const [success, setSuccess] = useState<string>('');
 
   useEffect(() => {
@@ -183,7 +183,7 @@ const UploadVideo: React.FC = () => {
         credentials: 'include', // Include cookies for JWT authentication
       });
 
-      const data: UploadResponse = await response.json();
+      await response.json();
 
 
           if (!videoRes.ok) {

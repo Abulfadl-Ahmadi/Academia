@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -19,7 +17,6 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import {
   BookOpen,
-  Clock,
   Calendar,
   Plus,
   X,
@@ -193,9 +190,9 @@ export default function CreateCoursePage() {
     }
   };
 
-  const getDayLabel = (dayValue: number) => {
-    return DAYS.find(day => day.value === dayValue)?.label || "نامشخص";
-  };
+  // const getDayLabel = (dayValue: number) => {
+  //   return DAYS.find(day => day.value === dayValue)?.label || "نامشخص";
+  // };
 
   return (
     <div className="space-y-6">

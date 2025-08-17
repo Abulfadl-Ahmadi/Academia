@@ -1,6 +1,6 @@
 // src/pages/logout.tsx
 import { useEffect } from "react"
-import { useUser } from "@/context/UserContext"
+// import { useUser } from "@/context/UserContext"
 import { useLogout } from "@/hooks/use-logout"
 
 export default function LogoutPage() {

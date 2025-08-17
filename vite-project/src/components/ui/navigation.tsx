@@ -3,7 +3,7 @@
 // import Link from "next/link";
 import { Link } from "react-router-dom";
 import * as React from "react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -128,7 +128,7 @@ export default function Navigation({
         {menuItems.map((item, index) => (
           <NavigationMenuItem key={index}>
             {item.isLink ? (
-              <Link href={item.href || ""} legacyBehavior passHref>
+              <Link to={item.href || ""}>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                   {item.title}
                 </NavigationMenuLink>

@@ -71,66 +71,6 @@ export default function MyProducts() {
     }
   };
 
-  const getProductTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      file: "فایل",
-      course: "دوره",
-      test: "آزمون",
-    };
-    return labels[type] || type;
-  };
-
-  const getProductTypeIcon = (type: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      file: <FileText className="w-5 h-5" />,
-      course: <BookOpen className="w-5 h-5" />,
-      test: <Play className="w-5 h-5" />,
-    };
-    return icons[type] || <FileText className="w-5 h-5" />;
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      pending: "در انتظار",
-      confirmed: "تأیید شده",
-      paid: "پرداخت شده",
-      cancelled: "لغو شده",
-      refunded: "بازپرداخت شده",
-    };
-    return labels[status] || status;
-  };
-
-  const getStatusVariant = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      pending: "outline",
-      confirmed: "secondary",
-      paid: "default",
-      cancelled: "destructive",
-      refunded: "secondary",
-    };
-    return variants[status] || "default";
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
-
-  const handleDownload = (fileUrl: string, fileName: string) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleStartTest = (testId: number) => {
-    window.location.href = `/test/${testId}/`;
-  };
-
-  const handleViewCourse = (courseId: number) => {
-    window.location.href = `/panel/courses/${courseId}/`;
-  };
 
   const filterByType = (type: string) => {
     return productAccess.filter(access => access.product.product_type === type);

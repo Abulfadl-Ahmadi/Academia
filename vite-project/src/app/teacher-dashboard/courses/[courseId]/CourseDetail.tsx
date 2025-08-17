@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { 
-  BookOpen, 
   Users, 
   Calendar,
   Plus,
@@ -14,7 +13,6 @@ import {
   FileText,
   Edit,
   Clock,
-  Download,
   Eye,
   Trash2
 } from "lucide-react";
@@ -123,26 +121,26 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
 
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
+  // const formatDuration = (seconds: number) => {
+  //   const hours = Math.floor(seconds / 3600);
+  //   const minutes = Math.floor((seconds % 3600) / 60);
+  //   const secs = seconds % 60;
     
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-  };
+  //   if (hours > 0) {
+  //     return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  //   }
+  //   return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  // };
 
-  const getTestTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      weekly: "آزمون هفتگی",
-      midterm: "میان‌ترم",
-      final: "پایان‌ترم",
-      assignment: "تکلیف",
-    };
-    return labels[type] || type;
-  };
+  // const getTestTypeLabel = (type: string) => {
+  //   const labels: Record<string, string> = {
+  //     weekly: "آزمون هفتگی",
+  //     midterm: "میان‌ترم",
+  //     final: "پایان‌ترم",
+  //     assignment: "تکلیف",
+  //   };
+  //   return labels[type] || type;
+  // };
 
   if (loading) {
     return (

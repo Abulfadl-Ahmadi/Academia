@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import axiosInstance from "@/lib/axios"
+import { useState } from "react"
+// import axiosInstance from "@/lib/axios"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import TeacherProfileEdit from "./TeacherProfileEdit"
@@ -49,7 +49,7 @@ export default function TeacherProfilePage() {
                 <DialogTitle>ویرایش پروفایل</DialogTitle>
               </DialogHeader>
               <TeacherProfileEdit
-                teacherId={user.username as string}
+                teacherId={parseInt(user.username)}
                 initialData={teacher}
                 onUpdated={data => { setTeacher(data); setOpen(false); }}
               />

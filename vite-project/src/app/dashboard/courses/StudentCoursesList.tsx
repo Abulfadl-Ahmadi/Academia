@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner";
@@ -62,10 +61,10 @@ export default function StudentCoursesList() {
     window.location.href = `/panel/courses/${courseId}`;
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "هنوز مشاهده نشده";
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
+  // const formatDate = (dateString: string | null) => {
+  //   if (!dateString) return "هنوز مشاهده نشده";
+  //   return new Date(dateString).toLocaleDateString("fa-IR");
+  // };
 
   if (loading) {
     return (

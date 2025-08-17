@@ -5,29 +5,23 @@ import {
   AudioWaveform,
   House,
   CalendarDays,
-  Library,
   Command,
   Box,
   GalleryVerticalEnd,
   TvMinimalPlay,
   ShoppingCart,
-  BookOpen,
   FileText,
-  User,
-  Play,
   BookOpenCheck,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarGroupLabel,
   SidebarMenuButton,
 } from "@/components/ui/sidebar"
 import { useUser } from "@/context/UserContext"
@@ -182,7 +176,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       user={{
         username: user.username,
         email: user.email,
-        avatar: user.avatar || "/avatars/default.jpg",
+        // avatar: user.avatar || "/avatars/default.jpg",
+        avatar: "/avatars/default.jpg",
       }}
     />
   )}

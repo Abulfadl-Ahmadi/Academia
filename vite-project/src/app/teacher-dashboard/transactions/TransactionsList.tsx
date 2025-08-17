@@ -158,15 +158,15 @@ export default function TransactionsList() {
     return labels[method] || method;
   };
 
-  const getTransactionTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      purchase: "خرید",
-      refund: "بازپرداخت",
-      credit: "اعتبار",
-      debit: "بدهی",
-    };
-    return labels[type] || type;
-  };
+  // const getTransactionTypeLabel = (type: string) => {
+  //   const labels: Record<string, string> = {
+  //     purchase: "خرید",
+  //     refund: "بازپرداخت",
+  //     credit: "اعتبار",
+  //     debit: "بدهی",
+  //   };
+  //   return labels[type] || type;
+  // };
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {

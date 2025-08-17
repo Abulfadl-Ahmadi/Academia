@@ -37,7 +37,7 @@ type FileFormProps = {
   context?: "dialog" | "drawer"
 }
 
-export default function FileCreateForm({ onSuccess, onClose, context = "dialog" }: FileFormProps) {
+export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
   const baseURL = import.meta.env.VITE_API_BASE_URL
   const [loading, setLoading] = useState(false)
   const [courses, setCourses] = useState<{ id: number; title: string }[]>([])
@@ -54,7 +54,7 @@ export default function FileCreateForm({ onSuccess, onClose, context = "dialog" 
       file: null,
       title: "",
       course_id: null,
-      content_type: null,
+      content_type: "book" as const,
       course_session_id: null,
     },
   })
@@ -142,7 +142,7 @@ export default function FileCreateForm({ onSuccess, onClose, context = "dialog" 
                 value={item.label}
                 key={item.value}
                 onSelect={() => {
-                  form.setValue("content_type", item.value)
+                  form.setValue("content_type", item.value as "book" | "test" | "note")
                 }}
               >
                 {item.label}

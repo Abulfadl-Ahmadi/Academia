@@ -1,4 +1,4 @@
-import MyProducts from "./MyProducts"
+import MyProducts from "@/app/dashboard/MyProducts"
 
 export default function ProductsPage() {
   return (

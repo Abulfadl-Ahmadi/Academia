@@ -23,7 +23,6 @@ import {
   BookOpen,
   Save,
   ArrowLeft,
-  Upload
 } from "lucide-react";
 
 interface CreateProductForm {

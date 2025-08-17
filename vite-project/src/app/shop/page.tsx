@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { ShoppingCart, Search, Filter, Star, Clock, FileText, BookOpen, FileCheck } from "lucide-react"
+import { ShoppingCart, Search, Filter, Clock, FileText, BookOpen, FileCheck } from "lucide-react"
 import { toast } from "sonner"
 import { useCart } from "@/context/CartContext"
 import axiosInstance from "@/lib/axios"
@@ -127,7 +127,7 @@ export default function ShopPage() {
       const response = await axiosInstance.post('/shop/discounts/validate_code/', {
         code: discountCode
       })
-      
+
       if (response.data.is_valid) {
         setAppliedDiscount(response.data.discount)
         toast.success(`${response.data.discount.percentage}% تخفیف اعمال شد`)
@@ -172,16 +172,16 @@ export default function ShopPage() {
         discount_code: appliedDiscount?.code || undefined
       }))
 
-      const response = await axiosInstance.post('/shop/purchase/', { items })
-      
+      await axiosInstance.post('/shop/purchase/', { items })
+
       toast.success("درخواست خرید شما با موفقیت ثبت شد. با شما تماس خواهیم گرفت.")
-      
+
       // Clear cart
       // Cart will be cleared by the context after successful purchase
       setAppliedDiscount(null)
       setDiscountCode('')
       setCartOpen(false)
-      
+
     } catch (error) {
       toast.error("خطا در ثبت سفارش")
     }
@@ -235,7 +235,7 @@ export default function ShopPage() {
           <h1 className="text-3xl font-bold text-gray-900">فروشگاه</h1>
           <p className="text-gray-600 mt-2">محصولات آموزشی با کیفیت</p>
         </div>
-        
+
         <Button
           onClick={() => setCartOpen(!cartOpen)}
           className="relative"
@@ -266,7 +266,7 @@ export default function ShopPage() {
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger>
                   <SelectValue placeholder="نوع محصول" />
@@ -278,7 +278,7 @@ export default function ShopPage() {
                   <SelectItem value="test">آزمون</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger>
                   <SelectValue placeholder="مرتب‌سازی" />
@@ -290,7 +290,7 @@ export default function ShopPage() {
                   <SelectItem value="price-high">گران‌ترین</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <div className="text-sm text-gray-500 flex items-center">
                 <Filter className="w-4 h-4 mr-1" />
                 {filteredProducts.length} محصول
@@ -305,8 +305,8 @@ export default function ShopPage() {
                 {/* Product Image */}
                 <div className="relative aspect-video overflow-hidden rounded-t-lg">
                   {product.image ? (
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
@@ -326,7 +326,7 @@ export default function ShopPage() {
                     </div>
                   )}
                 </div>
-                
+
                 <CardHeader className="pb-0">
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="flex items-center gap-1">
@@ -356,9 +356,9 @@ export default function ShopPage() {
                       {new Date(product.created_at).toLocaleDateString('fa-IR')}
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAddToCart(product);
@@ -369,7 +369,7 @@ export default function ShopPage() {
                       <ShoppingCart className="w-4 h-4" />
                       افزودن به سبد خرید
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
                       size="sm"
                       onClick={(e) => {
@@ -418,8 +418,8 @@ export default function ShopPage() {
                           {/* Product Image */}
                           <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
                             {item.product.image ? (
-                              <img 
-                                src={item.product.image} 
+                              <img
+                                src={item.product.image}
                                 alt={item.product.title}
                                 className="w-full h-full object-cover"
                               />
@@ -429,7 +429,7 @@ export default function ShopPage() {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
                             <p className="text-sm text-gray-500">{formatPrice(item.product.current_price)} تومان</p>
@@ -502,7 +502,7 @@ export default function ShopPage() {
                       </div>
                     </div>
 
-                    <Button 
+                    <Button
                       onClick={handleCheckout}
                       className="w-full mt-4"
                     >

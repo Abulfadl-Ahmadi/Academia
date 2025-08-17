@@ -35,7 +35,7 @@ export default function SessionsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <CreateSessionForm courseId={id} />
+      <CreateSessionForm courseId={Number(id)} />
       <DataTable columns={columns} data={data} />
     </div>
   );

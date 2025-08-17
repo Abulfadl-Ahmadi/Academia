@@ -128,20 +128,20 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
     }
   };
 
-  const getNextSessionNumber = async () => {
-    try {
-      const response = await axiosInstance.get(`/courses/${courseId}/sessions/`);
-      const sessions = response.data;
-      if (sessions.length === 0) {
-        return 1;
-      }
-      const maxNumber = Math.max(...sessions.map((s: any) => s.session_number));
-      return maxNumber + 1;
-    } catch (error) {
-      console.error("Error getting next session number:", error);
-      return 1;
-    }
-  };
+  // const getNextSessionNumber = async () => {
+  //   try {
+  //     const response = await axiosInstance.get(`/courses/${courseId}/sessions/`);
+  //     const sessions = response.data;
+  //     if (sessions.length === 0) {
+  //       return 1;
+  //     }
+  //     const maxNumber = Math.max(...sessions.map((s: any) => s.session_number));
+  //     return maxNumber + 1;
+  //   } catch (error) {
+  //     console.error("Error getting next session number:", error);
+  //     return 1;
+  //   }
+  // };
 
   const uploadVideoToArvanCloud = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {

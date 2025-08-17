@@ -114,7 +114,7 @@ const VideoUploadForm: React.FC = () => {
         setSessionId('');
         setChannelId('your-channel-id');
       } else {
-        setError(data.message || 'Failed to upload file.');
+        setError('Failed to upload file.');
       }
     } catch (err) {
       setError('An error occurred during upload.');

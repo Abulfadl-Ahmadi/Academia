@@ -1,7 +1,5 @@
 import './App.css'
 import { Routes, Route } from "react-router-dom"
-import { useEffect, useState } from "react"
-
 import LoginPage from './app/login/page'
 import LogoutPage from "@/pages/logout"
 import RegisterPage from './app/register/page'
@@ -13,11 +11,8 @@ import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
 import TestDetailPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
-import packageJson from '../package.json';
 
-const pdfjsVersion = packageJson.dependencies['pdfjs-dist'];
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import TestPage from './app/teacher-dashboard/tests/TestPage'
 import ShopPage from './app/shop/page'
 import ProductDetailPage from './app/shop/[id]/page'
