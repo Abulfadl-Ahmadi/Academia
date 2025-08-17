@@ -5,6 +5,9 @@ import { Progress } from "@/components/ui/progress"
 import { Input } from '@/components/ui/input';
 import axiosInstance from '@/lib/axios';
 
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+
 interface Session {
   id: number;
   session_number: number;
@@ -26,27 +29,27 @@ interface Course {
 
 const UploadVideo: React.FC = () => {
 
-    // const channelId = "86515078-d523-4927-8233-2b6b3b022986";
-    const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
-    const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
+  // const channelId = "86515078-d523-4927-8233-2b6b3b022986";
+  const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
+  const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
 
-    const [file, setFile] = useState<File | null>(null);
-    const [progress, setProgress] = useState<number>(0);
-    const [uploading, setUploading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploading, setUploading] = useState(false);
 
 
-    // const [file, setFile] = useState<File | null>(null);
-    const [title, setTitle] = useState<string>('');
-    // const [fileType, setFileType] = useState<string>('video/mp4');
-    const [fileType] = useState<string>('video/mp4');
-    const [channelId, setChannelId] = useState<string>('');
-    const [courseId, setCourseId] = useState<string>('');
-    const [sessionId, setSessionId] = useState<string>('');
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [sessions, setSessions] = useState<Session[]>([]);
-    // const [loading, setLoading] = useState<boolean>(false);
-    const [, setError] = useState<string>('');
-    // const [success, setSuccess] = useState<string>('');
+  // const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState<string>('');
+  // const [fileType, setFileType] = useState<string>('video/mp4');
+  const [fileType] = useState<string>('video/mp4');
+  const [channelId, setChannelId] = useState<string>('');
+  const [courseId, setCourseId] = useState<string>('');
+  const [sessionId, setSessionId] = useState<string>('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  // const [loading, setLoading] = useState<boolean>(false);
+  const [, setError] = useState<string>('');
+  // const [success, setSuccess] = useState<string>('');
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -61,22 +64,22 @@ const UploadVideo: React.FC = () => {
     fetchCourses();
   }, []);
 
-    // Update sessions and channelId when courseId changes
-    useEffect(() => {
-      if (!courseId) {
-        setSessions([]);
-        setChannelId('');
-        return;
-      }
-      const selectedCourse = courses.find((c) => String(c.id) === String(courseId));
-      if (selectedCourse) {
-        setSessions(selectedCourse.sessions || []);
-        setChannelId(selectedCourse.vod_channel_id || '');
-      } else {
-        setSessions([]);
-        setChannelId('');
-      }
-    }, [courseId, courses]);
+  // Update sessions and channelId when courseId changes
+  useEffect(() => {
+    if (!courseId) {
+      setSessions([]);
+      setChannelId('');
+      return;
+    }
+    const selectedCourse = courses.find((c) => String(c.id) === String(courseId));
+    if (selectedCourse) {
+      setSessions(selectedCourse.sessions || []);
+      setChannelId(selectedCourse.vod_channel_id || '');
+    } else {
+      setSessions([]);
+      setChannelId('');
+    }
+  }, [courseId, courses]);
 
   const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] ?? null);
@@ -86,7 +89,7 @@ const UploadVideo: React.FC = () => {
     if (!file) return;
     setUploading(true);
 
-   const formData = new FormData();
+    const formData = new FormData();
     formData.append('title', title);
     formData.append('filename', file.name);
     formData.append('file_size', file.size.toString());
@@ -173,17 +176,17 @@ const UploadVideo: React.FC = () => {
             }
           );
 
-          
-          
+
+
           const json = await videoRes.json();
           formData.append('file_id', json.data.id);
-      const response = await fetch('http://localhost:8000/api/videos/finalize/', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include', // Include cookies for JWT authentication
-      });
+          const response = await fetch(baseURL + '/videos/finalize/', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include', // Include cookies for JWT authentication
+          });
 
-      await response.json();
+          await response.json();
 
 
           if (!videoRes.ok) {
@@ -209,45 +212,45 @@ const UploadVideo: React.FC = () => {
 
   return (
     <div className="space-y-4 w-[60%]">
-        <input
+      <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Enter file title"
-        />
+      />
       <Input type="file" accept="video/*" onChange={onFileSelected} />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Course</label>
-          <select
-            value={courseId}
-            onChange={(e) => setCourseId(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select a course</option>
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.title}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Session (Optional)</label>
-          <select
-            value={sessionId}
-            onChange={(e) => setSessionId(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select a session (optional)</option>
-            {sessions.map((session) => (
-              <option key={session.id} value={session.id}>
-                {`جلسه ${session.session_number}`}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Course</label>
+        <select
+          value={courseId}
+          onChange={(e) => setCourseId(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select a course</option>
+          {courses.map((course) => (
+            <option key={course.id} value={course.id}>
+              {course.title}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Session (Optional)</label>
+        <select
+          value={sessionId}
+          onChange={(e) => setSessionId(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select a session (optional)</option>
+          {sessions.map((session) => (
+            <option key={session.id} value={session.id}>
+              {`جلسه ${session.session_number}`}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <button
         onClick={onUploadClick}
@@ -257,7 +260,7 @@ const UploadVideo: React.FC = () => {
         {uploading ? `Uploading ${progress}%…` : 'Upload Video'}
       </button>
       {progress ? <Progress value={progress} className=" w-[60%]" /> : null}
-      
+
     </div>
   );
 };

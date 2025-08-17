@@ -64,7 +64,7 @@ export function RegisterForm({
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/send-verification/",
+        baseURL + "/send-verification/",
         {
           email: formData.user.email,
           username: formData.user.username,
@@ -102,7 +102,7 @@ export function RegisterForm({
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/verify-email/",
+        baseURL + "/verify-email/",
         {
           email: email,
           code: verificationCode,
@@ -137,7 +137,7 @@ export function RegisterForm({
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/complete-registration/",
+        baseURL + "/complete-registration/",
         {
           email: email,
           username: formData.user.username,
@@ -303,7 +303,7 @@ export function RegisterForm({
           <div className="text-center text-sm">
             حساب دارید؟ {" "}
             <a href="/login" className="underline underline-offset-4">
-               ورود
+              ورود
             </a>
           </div>
         </div>
@@ -330,7 +330,7 @@ export function RegisterForm({
             <Label>کد تایید *</Label>
             <div className="flex test-left flex-row-reverse w-full justify-center" >
               <InputOTP
-              className="flex test-left flex-row-reverse"
+                className="flex test-left flex-row-reverse"
                 maxLength={6}
                 value={verificationCode}
                 onChange={(val) => setVerificationCode(val)}
@@ -354,9 +354,9 @@ export function RegisterForm({
             {loading ? "در حال تایید..." : "تایید کد"}
           </Button>
 
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             className="w-full"
             onClick={() => setStep('form')}
           >
@@ -381,17 +381,17 @@ export function RegisterForm({
       )}
 
       <div className="grid gap-4">
-        <Button 
-          onClick={handleCompleteRegistration} 
-          className="w-full" 
+        <Button
+          onClick={handleCompleteRegistration}
+          className="w-full"
           disabled={loading}
         >
           {loading ? "در حال تکمیل ثبت‌نام..." : "تکمیل ثبت‌نام"}
         </Button>
 
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           className="w-full"
           onClick={() => setStep('verification')}
         >
@@ -420,9 +420,9 @@ export function RegisterForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        با کلید روی «ساخت حساب» شما با 
+        با کلید روی «ساخت حساب» شما با
         <a href="#"> شرایط خدمات </a>
-        و 
+        و
         <a href="#"> سیاست حفظ حریم خصوصی </a>
         ما موافقت می‌کنید.
       </div>
