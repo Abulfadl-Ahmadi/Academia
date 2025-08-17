@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from .models import Order, OrderItem, Transaction, UserAccess
+from courses.models import Course
 from .serializers import (
     OrderSerializer, OrderCreateSerializer, TransactionSerializer,
     TransactionCreateSerializer, UserAccessSerializer, OrderStatusUpdateSerializer
@@ -98,6 +99,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                     'is_active': True
                 }
             )
+
+            course = item.product.course
+            if course:
+                course.students.add(order.user)
+                course.save()
             
             if not created:
                 # Update existing access
@@ -133,6 +139,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
             order = transaction_obj.order
             order.status = Order.OrderStatus.PAID
             order.save()
+            print(order.id, ":", order.status)
             
             # Grant product access
             self.grant_product_access(order)
@@ -158,6 +165,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
                     'is_active': True
                 }
             )
+
+            course = item.product.course
+            if course:
+                course.students.add(order.user)
+                course.save()
             
             if not created:
                 # Update existing access
