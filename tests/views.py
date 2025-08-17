@@ -14,7 +14,22 @@ import json
 class ListCreateTestView(generics.ListCreateAPIView):
     serializer_class = TestCreateSerializer
     permission_classes = [IsAuthenticated]  # Only teachers in practice
-    queryset = Test.objects.all()
+    # queryset = Test.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == "student":
+            # only tests from courses the student is enrolled in
+            return Test.objects.filter(course__students=user)
+
+        elif user.role == "teacher":
+            # teacher should only see tests they created
+            return Test.objects.filter(teacher=user)
+
+        # fallback (e.g. admin)
+        return Test.objects.all()
+
 
 
 class TestDetailView(generics.RetrieveAPIView):
@@ -232,18 +247,89 @@ class CreateReport(views.APIView):
         except Test.DoesNotExist:
             raise ValidationError("Test not found.")
 
-
-        sessions = StudentTestSession.objects.filter(test=test, user=request.user)
-        if len(sessions) == 0:
-            return Response({"message": f"{request.user} did not participate in {test.name}"})
+        # Check if user is the test creator (teacher) or a student who took the test
+        # is_teacher = test.teacher == request.user
+        
+        if not request.user.role == "student":
+            # Teacher view - get all sessions for this test
+            sessions = StudentTestSession.objects.filter(test=test)
+            if not sessions.exists():
+                return Response({"test": test.name, "sessions": None, "message": "No students have taken this test yet."}, status=status.HTTP_200_OK)
+        else:
+            # Student view - only get their own sessions
+            sessions = StudentTestSession.objects.filter(test=test, user=request.user)
+            if not sessions.exists():
+                return Response({"message": f"You have not participated in {test.name}"}, status=status.HTTP_404_NOT_FOUND)
+        
         report_data = []
-
 
         for session in sessions:
             answers = StudentAnswer.objects.filter(session=session)
-            report_data.append({
-                "user": session.user.username,
-                "answers": {answer.question_number: answer.answer for answer in answers}
-            })
+            correct_answers = 0
+            total_questions = len(test.primary_keys.all())
+            
+            # Calculate score
+            answer_details = []
+            for answer in answers:
+                # Get correct answer for this question
+                try:
+                    correct_key = test.primary_keys.get(question_number=answer.question_number)
+                    is_correct = answer.answer == correct_key.answer
+                    if is_correct:
+                        correct_answers += 1
+                    
+                    answer_details.append({
+                        "question_number": answer.question_number,
+                        "student_answer": answer.answer,
+                        "correct_answer": correct_key.answer,
+                        "is_correct": is_correct
+                    })
+                except:
+                    # Handle case where question might not have a key
+                    answer_details.append({
+                        "question_number": answer.question_number,
+                        "student_answer": answer.answer,
+                        "correct_answer": None,
+                        "is_correct": False
+                    })
+            
+            # Calculate score percentage
+            score_percentage = (correct_answers / total_questions * 100) if total_questions > 0 else 0
+            
+            session_data = {
+                "user": {
+                    "id": session.user.id,
+                    "username": session.user.username,
+                    "email": session.user.email,
+                    "first_name": session.user.first_name,
+                    "last_name": session.user.last_name
+                },
+                "session_id": session.id,
+                "start_time": session.entry_time,
+                "end_time": session.exit_time,
+                "status": session.status,
+                "score": {
+                    "correct": correct_answers,
+                    "total": total_questions,
+                    "percentage": score_percentage
+                },
+                "answers": answer_details
+            }
+            
+            report_data.append(session_data)
 
-        return Response({"test": test.name, "report": report_data})
+        response_data = {
+            "test": {
+                "id": test.id,
+                "name": test.name,
+                "description": test.description,
+                "course": test.course.title if test.course else None,
+                "start_time": test.start_time,
+                "end_time": test.end_time,
+                "duration": test.duration,
+                "created_by": test.teacher.username
+            },
+            "sessions": report_data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
