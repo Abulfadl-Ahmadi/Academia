@@ -1,5 +1,3 @@
-from time import timezone
-from turtle import back
 from django.db import models
 from accounts.models import User
 from django.utils.translation import gettext_lazy as _
