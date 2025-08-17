@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from contents.models import File
 from .models import Test, PrimaryKey, StudentTestSession, StudentAnswer
+from courses.models import Course
 
 
 class PrimaryKeySerializer(serializers.ModelSerializer):
@@ -9,14 +10,24 @@ class PrimaryKeySerializer(serializers.ModelSerializer):
         model = PrimaryKey
         fields = ['question_number', 'answer']
 
+class CourseNestedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ["id", "title"]
 
 class TestCreateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
     pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    course = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        write_only=True
+    )
+
+    course_detail = CourseNestedSerializer(source="course", read_only=True)
 
     class Meta:
         model = Test
-        fields = ["id", 'name', 'description', 'course', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
+        fields = ["id", 'name', 'course_detail', 'description', 'course', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
         read_only_fields = ['teacher']
 
     def create(self, validated_data):
