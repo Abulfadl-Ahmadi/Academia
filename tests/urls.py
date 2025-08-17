@@ -22,5 +22,5 @@ urlpatterns = [
     path('exit-test/', ExitTestView.as_view(), name='exit-test'),
     path('finish-test/', FinishTestView.as_view(), name='finish-test'),
 
-    path('report/<int:test_id>/', CreateReport.as_view(), name='create-report'),
+    path('tests/report/<int:test_id>/', CreateReport.as_view(), name='create-report'),
 ]
