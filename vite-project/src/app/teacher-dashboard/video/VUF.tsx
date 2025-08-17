@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '@/lib/axios';
 
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+
 interface Session {
   id: number;
   session_number: number;
@@ -95,7 +98,7 @@ const VideoUploadForm: React.FC = () => {
       formData.append('channel_id', channelId);
     }
 
-    const endpoint = fileType === 'video/mp4' ? 'http://localhost:8000/api/videos/upload/' : 'http://localhost:8000/api/files/';
+    const endpoint = fileType === 'video/mp4' ? baseURL + '/videos/upload/' : baseURL + '/files/';
 
     try {
       const response = await fetch(endpoint, {
@@ -179,9 +182,8 @@ const VideoUploadForm: React.FC = () => {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
           {loading ? 'Uploading...' : 'Upload File'}
         </button>
