@@ -1,9 +1,14 @@
+from time import timezone
+from turtle import back
 from django.db import models
 from accounts.models import User
+from django.utils.translation import gettext_lazy as _
+
 
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
     students = models.ManyToManyField(
         User,
         related_name="enrolled_courses",
@@ -19,6 +24,9 @@ class Course(models.Model):
         limit_choices_to={"role": "teacher"},
     )
     vod_channel_id = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -44,7 +52,16 @@ class CourseSchedule(models.Model):
 
 class CourseSession(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="sessions")
+    title = models.CharField(max_length=255)
     session_number = models.PositiveIntegerField()
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['session_number']
+        # unique_together = ['course'] # TODE: add session_number
 
     def __str__(self):
-        return f"{self.course.title} - Session {self.session_number}"
+        return f"{self.course.title} - Session {self.session_number}: {self.title}"
