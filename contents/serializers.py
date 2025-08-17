@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import File
 from utils.vod import create_upload_url
-from courses.serializers import CourseSerializer
 from utils.vod import get_video_player_url
 
 
