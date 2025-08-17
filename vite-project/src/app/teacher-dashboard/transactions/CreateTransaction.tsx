@@ -161,7 +161,7 @@ export default function CreateTransaction({ onTransactionCreated }: CreateTransa
                   {ordersLoading ? (
                     <SelectItem value="-" disabled>در حال بارگذاری...</SelectItem>
                   ) : orders.length === 0 ? (
-                    <SelectItem value="" disabled>سفارش در انتظاری یافت نشد</SelectItem>
+                    <SelectItem value="-" disabled>سفارش در انتظاری یافت نشد</SelectItem>
                   ) : (
                     orders.map((order) => (
                       <SelectItem key={order.id} value={order.id.toString()}>

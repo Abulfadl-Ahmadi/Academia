@@ -6,12 +6,16 @@ import {
   House,
   CalendarDays,
   Library,
-  BookOpenCheck,
   Command,
   Box,
   GalleryVerticalEnd,
   TvMinimalPlay,
   ShoppingCart,
+  BookOpen,
+  FileText,
+  User,
+  Play,
+  BookOpenCheck,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -55,65 +59,56 @@ const data = {
   ],
   navMain: [
     {
-      title: "کلاس‌ها",
-      url: "#",
+      title: "کلاس‌های من",
+      url: "/panel/courses",
       icon: TvMinimalPlay,
-      isActive: true,
       items: [
         {
-          title: "سالیانه",
-          url: "#",
+          title: "لیست همه دوره‌ها",
+          url: "/panel/courses",
         },
         {
-          title: "نکته و تست",
+          title: "سالیانه",
           url: "#",
         },
         {
           title: "امتحان نهایی",
           url: "#",
         },
+        {
+          title: "نکته و تست",
+          url: "#",
+        },
       ],
     },
     {
-      title: "آزمون‌ها",
-      url: "#",
+      title: "آزمون‌های من",
+      url: "/panel/tests",
       icon: BookOpenCheck,
       items: [
         {
-          title: "سالیانه",
-          url: "#",
+          title: "لیست آزمون‌ها",
+          url: "/panel/tests",
         },
         {
-          title: "کلاسی",
-          url: "#",
-        },
-        {
-          title: "آزمون‌ساز شخصی",
-          url: "#",
+          title: "نتایج آزمون‌ها",
+          url: "/panel/tests",
         },
       ],
     },
     {
-      title: "فایل‌ها",
-      url: "panel/files",
-      icon: Library,
+      title: "فایل‌های من",
+      url: "/panel/products",
+      icon: FileText,
       items: [
         {
           title: "جزوه‌ها",
-          url: "panel/files",
+          url: "/panel/products",
         },
         {
           title: "کتاب‌ها",
-          url: "#",
-        },
-        {
-          title: "چیت‌شیت‌ها",
-          url: "#",
-        },
-        {
-          title: "خلاصه‌نویسی‌ها",
-          url: "#",
-        },
+          url: "/panel/products",
+        }
       ],
     },
     {
@@ -142,7 +137,7 @@ const data = {
     home: [
     {
       name: "خانه",
-      url: "#",
+      url: "/panel",
       icon: House,
     },
   ],
@@ -177,6 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
+
  {loading ? (
     <div className="px-4 py-2 text-muted-foreground text-sm">در حال بارگذاری...</div>
   ) : !user ? (

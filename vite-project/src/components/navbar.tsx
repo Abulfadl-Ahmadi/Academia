@@ -14,6 +14,7 @@ import Navigation from "@/components/ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@/context/UserContext";
 import { NavbarUser } from "@/components/navbar-user";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface NavbarLink {
   text: string;
@@ -85,16 +86,20 @@ export default function Navbar({
               <>
                 {user ? (
                   // Show user profile when logged in
-                  <NavbarUser
-                    user={{
-                      username: user.username,
-                      email: user.email,
-                      avatar: "", // User object doesn't have avatar, will use initials fallback
-                    }}
-                  />
+                  <>
+                    <ThemeToggle />
+                    <NavbarUser
+                      user={{
+                        username: user.username,
+                        email: user.email,
+                        avatar: "", // User object doesn't have avatar, will use initials fallback
+                      }}
+                    />
+                  </>
                 ) : (
                   // Show login/signup buttons when not logged in
                   <>
+                    <ThemeToggle />
                     {actions.map((action, index) =>
                       action.isButton ? (
                         <Button
@@ -141,6 +146,12 @@ export default function Navbar({
                   >
                     <span>{name}</span>
                   </a>
+                  
+                  {/* Theme Toggle for Mobile */}
+                  <div className="flex items-center justify-center py-2">
+                    <ThemeToggle />
+                  </div>
+                  
                   {mobileLinks.map((link, index) => (
                     <a
                       key={index}
@@ -156,7 +167,7 @@ export default function Navbar({
                       {user ? (
                         <div className="flex flex-col gap-3 pt-4 border-t">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-medium text-sm">
                               {user.username.substring(0, 2).toUpperCase()}
                             </div>
                             <div className="flex flex-col">
@@ -165,11 +176,11 @@ export default function Navbar({
                             </div>
                           </div>
                           <div className="flex flex-col gap-2">
-                            <a href="/panel" className="text-sm text-blue-600 hover:underline py-2">پنل کاربری</a>
-                            <a href="/panel/profile" className="text-sm text-gray-600 hover:text-gray-800 py-2">حساب کاربری</a>
+                            <a href="/panel" className="text-sm text-primary hover:underline py-2">پنل کاربری</a>
+                            <a href="/panel/profile" className="text-sm text-muted-foreground hover:text-foreground py-2">حساب کاربری</a>
                             <button 
                               onClick={logout}
-                              className="text-sm text-red-600 hover:text-red-800 py-2 text-right"
+                              className="text-sm text-destructive hover:text-destructive/80 py-2 text-right"
                             >
                               خروج
                             </button>
@@ -177,8 +188,8 @@ export default function Navbar({
                         </div>
                       ) : (
                         <div className="flex flex-col gap-3 pt-4 border-t">
-                          <a href="/login" className="text-sm text-blue-600 hover:underline py-2">ورود</a>
-                          <a href="/register" className="text-sm text-blue-600 hover:underline py-2">ثبت نام</a>
+                          <a href="/login" className="text-sm text-primary hover:underline py-2">ورود</a>
+                          <a href="/register" className="text-sm text-primary hover:underline py-2">ثبت نام</a>
                         </div>
                       )}
                     </>

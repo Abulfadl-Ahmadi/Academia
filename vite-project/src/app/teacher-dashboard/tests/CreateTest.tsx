@@ -15,6 +15,12 @@ import {
 } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 export default function TeacherTestApp() {
   const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -83,9 +89,11 @@ export default function TeacherTestApp() {
     });
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async () => {
     if (!name || !course || !pdfFile || !startTime || !endTime || !duration) {
-      alert("لطفا همه فیلدهای ضروری را پر کنید");
+      toast.error("لطفا همه فیلدهای ضروری را پر کنید");
       return;
     }
 
@@ -110,162 +118,215 @@ export default function TeacherTestApp() {
 
     try {
       setLoading(true);
-      await axiosInstance.post(baseURL + "/tests/", payload);
-      alert("✅ آزمون با موفقیت ثبت شد");
-      setName("");
-      setDescription("");
-      setCourse("");
-      setPdfFile("");
-      setStartTime(null);
-      setEndTime(null);
-      setDuration(null);
-      setAnswers({});
+      const response = await axiosInstance.post(baseURL + "/tests/", payload);
+      toast.success("آزمون با موفقیت ثبت شد");
+      
+      // Redirect to tests list page after successful creation
+      navigate("/panel/tests");
     } catch (err) {
       console.error(err);
-      alert("❌ خطا در ثبت آزمون");
+      toast.error("خطا در ثبت آزمون");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">ساخت آزمون جدید</h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">ساخت آزمون جدید</h2>
+        <Button variant="outline" onClick={() => navigate("/panel/tests")}>
+          بازگشت به لیست آزمون‌ها
+        </Button>
+      </div>
 
-      <Label>عنوان آزمون</Label>
-      <Input
-        placeholder="عنوان آزمون"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>اطلاعات پایه آزمون</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="test-name">عنوان آزمون *</Label>
+            <Input
+              id="test-name"
+              placeholder="عنوان آزمون"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
-      <Label className="mt-4">توضیحات آزمون</Label>
-      <Textarea
-        placeholder="توضیحات..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+          <div className="space-y-2">
+            <Label htmlFor="test-description">توضیحات آزمون</Label>
+            <Textarea
+              id="test-description"
+              placeholder="توضیحات..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
 
-      <Label className="mt-4">انتخاب دوره</Label>
-      <select
-        className="border p-2 rounded w-full"
-        value={course}
-        onChange={(e) => setCourse(e.target.value)}
-      >
-        <option value="">-- انتخاب کنید --</option>
-        {courses.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.title}
-          </option>
-        ))}
-      </select>
+          <div className="space-y-2">
+            <Label htmlFor="test-course">انتخاب دوره *</Label>
+            <Select value={course} onValueChange={setCourse}>
+              <SelectTrigger>
+                <SelectValue placeholder="-- انتخاب کنید --" />
+              </SelectTrigger>
+              <SelectContent>
+                {courses.map((c) => (
+                  <SelectItem key={c.id} value={c.id.toString()}>
+                    {c.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <Label className="mt-4">ID فایل PDF</Label>
-      <select
-        className="border p-2 rounded w-full"
-        value={pdfFile}
-        onChange={(e) => setPdfFile(e.target.value)}
-      >
-        <option value="">-- انتخاب فایل --</option>
-        {files.map((f) => (
-          <option key={f.id} value={f.id}>
-            {f.name}
-          </option>
-        ))}
-      </select>
+          <div className="space-y-2">
+            <Label htmlFor="test-pdf">فایل PDF آزمون *</Label>
+            <Select value={pdfFile} onValueChange={setPdfFile}>
+              <SelectTrigger>
+                <SelectValue placeholder="-- انتخاب فایل --" />
+              </SelectTrigger>
+              <SelectContent>
+                {files.map((f) => (
+                  <SelectItem key={f.id} value={f.id.toString()}>
+                    {f.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
-      <Label className="mt-4">زمان شروع</Label>
-      <DatePicker
-        format="YYYY-MM-DD HH:mm"
-        render={<Input placeholder="زمان شروع" />}
-        calendar={persian}
-        locale={persian_fa}
-        plugins={[<TimePicker position="bottom" />]}
-        value={startTime}
-        onChange={setStartTime}
-      />
-
-      <Label className="mt-4">زمان پایان</Label>
-      <DatePicker
-        format="YYYY-MM-DD HH:mm"
-        render={<Input placeholder="زمان پایان" />}
-        calendar={persian}
-        locale={persian_fa}
-        plugins={[<TimePicker position="bottom" />]}
-        value={endTime}
-        onChange={setEndTime}
-      />
-
-      <Label className="mt-4">مدت آزمون</Label>
-      <DatePicker
-        disableDayPicker
-        format="HH:mm"
-        render={<Input placeholder="مدت آزمون" />}
-        plugins={[<TimePicker hideSeconds />]}
-        value={duration}
-        onChange={setDuration}
-      />
-
-      <Label className="mt-4">تکرار آزمون</Label>
-      <select
-        className="border p-2 rounded w-full"
-        value={frequency}
-        onChange={(e) => setFrequency(e.target.value)}
-      >
-        <option value="once">یکبار</option>
-        <option value="weekly">هفتگی</option>
-      </select>
-
-      <Accordion type="single" collapsible className="mt-4">
-        <AccordionItem value="item-1">
-          <AccordionTrigger>کلید سوالات</AccordionTrigger>
-          <AccordionContent>
-            <div
-              className="grid grid-cols-4 gap-4 flex-wrap-reverse"
-              style={{ direction: "ltr" }}
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="p-2" style={{ direction: "rtl" }}>
-                  {Array.from({ length: 10 }).map((_, j) => {
-                    const questionNumber = 10 * i + j + 1;
-                    return (
-                      <div
-                        key={questionNumber}
-                        className="flex flex-row-reverse items-center gap-2"
-                      >
-                        <div className="w-7 pr-2">{questionNumber}</div>
-                        <RadioGroup.Root
-                          value={answers[questionNumber] || null}
-                          className="w-full grid grid-cols-4 gap-2"
-                        >
-                          {options.map((option) => (
-                            <RadioGroup.Item
-                              key={option.value}
-                              value={option.value}
-                              onMouseDown={() =>
-                                handleAnswer(questionNumber, option.value)
-                              }
-                              className="ring-[2px] my-1 ring-border rounded-md px-3 data-[state=checked]:bg-black data-[state=checked]:text-white"
-                            >
-                              <span className="text-sm tracking-tight">
-                                {option.label}
-                              </span>
-                            </RadioGroup.Item>
-                          ))}
-                        </RadioGroup.Root>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+      <Card>
+        <CardHeader>
+          <CardTitle>زمان‌بندی آزمون</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="test-start-time">زمان شروع *</Label>
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                render={<Input id="test-start-time" placeholder="زمان شروع" />}
+                calendar={persian}
+                locale={persian_fa}
+                plugins={[<TimePicker position="bottom" />]}
+                value={startTime}
+                onChange={setStartTime}
+              />
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
 
-      <Button className="mt-6" onClick={handleSubmit} disabled={loading}>
-        {loading ? "در حال ثبت..." : "ثبت آزمون"}
-      </Button>
+            <div className="space-y-2">
+              <Label htmlFor="test-end-time">زمان پایان *</Label>
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                render={<Input id="test-end-time" placeholder="زمان پایان" />}
+                calendar={persian}
+                locale={persian_fa}
+                plugins={[<TimePicker position="bottom" />]}
+                value={endTime}
+                onChange={setEndTime}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="test-duration">مدت آزمون *</Label>
+              <DatePicker
+                disableDayPicker
+                format="HH:mm"
+                render={<Input id="test-duration" placeholder="مدت آزمون" />}
+                plugins={[<TimePicker hideSeconds />]}
+                value={duration}
+                onChange={setDuration}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="test-frequency">تکرار آزمون</Label>
+              <Select value={frequency} onValueChange={setFrequency}>
+                <SelectTrigger id="test-frequency">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="once">یکبار</SelectItem>
+                  <SelectItem value="weekly">هفتگی</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>کلید سوالات</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>مشاهده و ویرایش کلید سوالات</AccordionTrigger>
+              <AccordionContent>
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 flex-wrap-reverse"
+                  style={{ direction: "ltr" }}
+                >
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="p-2" style={{ direction: "rtl" }}>
+                      {Array.from({ length: 10 }).map((_, j) => {
+                        const questionNumber = 10 * i + j + 1;
+                        return (
+                          <div
+                            key={questionNumber}
+                            className="flex flex-row-reverse items-center gap-2"
+                          >
+                            <div className="w-7 pr-2">{questionNumber}</div>
+                            <RadioGroup.Root
+                              value={answers[questionNumber] || null}
+                              className="w-full grid grid-cols-4 gap-2"
+                            >
+                              {options.map((option) => (
+                                <RadioGroup.Item
+                                  key={option.value}
+                                  value={option.value}
+                                  onMouseDown={() =>
+                                    handleAnswer(questionNumber, option.value)
+                                  }
+                                  className="ring-[2px] my-1 ring-border rounded-md px-3 data-[state=checked]:bg-black data-[state=checked]:text-white"
+                                >
+                                  <span className="text-sm tracking-tight">
+                                    {option.label}
+                                  </span>
+                                </RadioGroup.Item>
+                              ))}
+                            </RadioGroup.Root>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSubmit} disabled={loading} className="w-full md:w-auto">
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              در حال ثبت...
+            </>
+          ) : (
+            "ثبت آزمون"
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -8,9 +8,9 @@ import RegisterPage from './app/register/page'
 import Navbar from './components/navbar'
 import { UserProvider } from "@/context/UserContext"
 import { CartProvider } from "@/context/CartContext"
+import { ThemeProvider } from "@/context/ThemeContext"
 import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
-import VideoPlayer from './components/video-player/vider-plater'
 import TestDetailPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
 import packageJson from '../package.json';
@@ -25,14 +25,16 @@ import { Toaster } from "@/components/ui/sonner"
 
 function PreApp() {
   return (
-    <UserProvider>
-      <CartProvider>
-        {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
-        <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
-        <App />
-        </Worker>
-      </CartProvider>
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <CartProvider>
+          {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
+          <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
+          <App />
+          </Worker>
+        </CartProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 
@@ -46,8 +48,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path='/test/:id/' element={<TestPage />}  />
-        <Route path='/test/:id/detail' element={<TestDetailPage />}  />
+        <Route path='/tests/:id/' element={<TestPage />}  />
+        <Route path='/tests/:id/detail' element={<TestDetailPage />}  />
         <Route path="/panel/*" element={<PanelRoute />} />
         <Route path="/logout" element={<LogoutPage />} />
 

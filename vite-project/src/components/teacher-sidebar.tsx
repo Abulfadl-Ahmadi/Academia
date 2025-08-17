@@ -13,6 +13,10 @@ import {
   GalleryVerticalEnd,
   TvMinimalPlay,
   CreditCard,
+  BookOpen,
+  Play,
+  FileText,
+  ShoppingCart,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -75,32 +79,70 @@ const data = {
       ],
     },
     {
-      title: "آزمون‌ها",
-      url: "#",
-      icon: BookOpenCheck,
+      title: "مدیریت دوره‌ها",
+      url: "/panel/courses",
+      icon: BookOpen,
       items: [
         {
-          title: "سالیانه",
-          url: "#",
+          title: "لیست دوره‌ها",
+          url: "/panel/courses",
         },
         {
-          title: "کلاسی",
-          url: "#",
+          title: "ایجاد دوره جدید",
+          url: "/panel/courses/create",
         },
         {
-          title: "آزمون‌ساز شخصی",
+          title: "مدیریت جلسات",
           url: "#",
         },
       ],
     },
     {
+      title: "مدیریت فروشگاه",
+      url: "/panel/products",
+      icon: ShoppingCart,
+      items: [
+        {
+          title: "لیست محصولات",
+          url: "/panel/products",
+        },
+        {
+          title: "ایجاد محصول جدید",
+          url: "/panel/products/create",
+        },
+        {
+          title: "مدیریت تخفیف‌ها",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "آزمون‌ها",
+      url: "/panel/tests",
+      icon: BookOpenCheck,
+      items: [
+        {
+          title: "لیست آزمون‌ها",
+          url: "/panel/tests",
+        },
+        {
+          title: "ایجاد آزمون",
+          url: "/panel/tests/create",
+        },
+        {
+          title: "گزارش‌های آزمون",
+          url: "/panel/tests",
+        },
+      ],
+    },
+    {
       title: "فایل‌ها",
-      url: "#",
+      url: "/panel/files",
       icon: Library,
       items: [
         {
           title: "جزوه‌ها",
-          url: "panel/files",
+          url: "/panel/files",
         },
         {
           title: "کتاب‌ها",
@@ -196,7 +238,7 @@ export function TeacherSidebar({ ...props }: React.ComponentProps<typeof Sidebar
       user={{
         username: user.username,
         email: user.email,
-        avatar: user.avatar || "/avatars/default.jpg",
+        avatar: "/avatars/default.jpg",
       }}
     />
   )}

@@ -157,7 +157,7 @@ const UploadVideo: React.FC = () => {
             title: title,
             file_id: fileId,
             convert_mode: 'auto',
-            watermark_id: '1d16d576-61fb-482f-a3a6-2b44fbc788b3',
+            // watermark_id: '1d16d576-61fb-482f-a3a6-2b44fbc788b3',
             watermark_area: 'ANIMATE_LEFT_TO_RIGHT'
           };
           const videoRes = await fetch(

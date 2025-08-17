@@ -60,7 +60,7 @@ const TestDetailPage: React.FC = () => {
       });
       const data = await response.data;
       alert(data.detail);
-      navigate(`/test/${id}/detail/`);
+      navigate(`/panel/tests/`);
     } catch (error) {
       alert("Error logging out session.");
     }
@@ -203,7 +203,7 @@ const TestDetailPage: React.FC = () => {
 
   const handleTimeUp = () => {
     alert("زمان آزمون به پایان رسید!");
-    navigate(`/test/${session.test_id}/detail/`);
+    navigate(`/tests/${session.test_id}/detail/`);
   };
 
   return (
