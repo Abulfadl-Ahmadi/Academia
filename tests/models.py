@@ -18,7 +18,7 @@ class Test(models.Model):
     frequency = models.CharField(max_length=100)  # e.g. 'once', 'weekly', etc.
 
 class PrimaryKey(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='keys')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='primary_keys')
     question_number = models.IntegerField()
     answer = models.IntegerField()
 
