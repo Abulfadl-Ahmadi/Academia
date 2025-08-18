@@ -137,9 +137,14 @@ class CompleteRegistrationView(APIView):
             email = serializer.validated_data['email']
             
             # Check if email was verified
-            try:
-                verification_code = VerificationCode.objects.get(email=email, is_used=True)
-            except VerificationCode.DoesNotExist:
+            verification_code = (
+                VerificationCode.objects
+                .filter(email=email, is_used=True)
+                .order_by('-created_at')
+                .first()
+            )
+
+            if not verification_code:
                 return Response(
                     {"error": "لطفاً ابتدا ایمیل خود را تایید کنید"}, 
                     status=status.HTTP_400_BAD_REQUEST
