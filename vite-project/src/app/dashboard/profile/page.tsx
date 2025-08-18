@@ -106,19 +106,19 @@ export default function ProfilePage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "تعیین نشده";
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
+  // const formatDate = (dateString: string) => {
+  //   if (!dateString) return "تعیین نشده";
+  //   return new Date(dateString).toLocaleDateString("fa-IR");
+  // };
 
-  const getGradeLabel = (grade: string) => {
-    const grades: Record<string, string> = {
-      "10": "دهم",
-      "11": "یازدهم",
-      "12": "دوازدهم",
-    };
-    return grades[grade] || grade;
-  };
+  // const getGradeLabel = (grade: string) => {
+  //   const grades: Record<string, string> = {
+  //     "10": "دهم",
+  //     "11": "یازدهم",
+  //     "12": "دوازدهم",
+  //   };
+  //   return grades[grade] || grade;
+  // };
 
   if (profileLoading) {
     return (
