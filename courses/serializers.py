@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseSession, CourseSchedule
+from .models import Course, CourseSession, CourseSchedule, ClassCategory
 from accounts.models import User
 from contents.serializers import FileSerializer as ContentsFileSerializer
 from tests.models import Test
@@ -8,7 +8,7 @@ from tests.models import Test
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
 
 
 """We reuse the FileSerializer from contents app to ensure a single source of truth."""
@@ -27,6 +27,7 @@ class CourseSerializer(serializers.ModelSerializer):
     students_count = serializers.IntegerField(read_only=True)
     sessions_count = serializers.IntegerField(read_only=True)
     tests_count = serializers.IntegerField(read_only=True)
+    students = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Course
@@ -51,6 +52,12 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
             'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active'
         ]
         read_only_fields = ['created_at', 'updated_at']
+
+
+class ClassCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClassCategory
+        fields = "__all__"
 
 
 class StudentCourseSerializer(serializers.ModelSerializer):
