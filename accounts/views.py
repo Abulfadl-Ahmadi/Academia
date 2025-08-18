@@ -82,7 +82,13 @@ class VerifyEmailView(APIView):
             code = serializer.validated_data['code']
             
             try:
-                verification_code = VerificationCode.objects.get(email=email, code=code)
+                verification_code = (
+                    VerificationCode.objects
+                    .filter(email=email, code=code)
+                    .order_by('-created_at')
+                    .first()
+                )
+
                 
                 if not verification_code.is_valid():
                     if verification_code.is_expired():
