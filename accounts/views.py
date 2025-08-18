@@ -44,6 +44,7 @@ class SendVerificationCodeView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
+            VerificationCode.objects.filter(email=email).delete()
             # Create verification code
             verification_code = VerificationCode.create_for_email(email)
             
