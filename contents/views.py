@@ -1,10 +1,11 @@
 import uuid
-from rest_framework import generics, permissions, views
+from rest_framework import generics, permissions, views, viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework import status
 from .models import File
 from .serializers import FileSerializer, FileUploadSerializer, VideoInitUploadSerializer, VideoFinalizeSerializer
-from utils.vod import upload_video_file, create_video, create_upload_url, get_video
+from utils.vod import upload_video_file, create_video, create_upload_url, get_video, get_video_player_url
 from utils.vod2 import create_upload_url as create_presigned_upload_url
 import logging
 from time import sleep
@@ -14,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-class FileListCreateView(generics.ListCreateAPIView):
+class FileListCreateView(viewsets.ModelViewSet):
     queryset = File.objects.all().order_by('-created_at').select_related('course')
     serializer_class = FileSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -29,6 +30,14 @@ class FileListCreateView(generics.ListCreateAPIView):
         if content_type:
             queryset = queryset.filter(content_type=content_type)
         return queryset
+    
+    @action(detail=True, methods=['get'])
+    def player_url(self, request, pk=None):
+        file = self.get_object()
+        if file.file_type == "video/mp4":
+            return Response(
+                {"player_url": get_video_player_url(file.file_id)}
+            )
 
 class FileRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = File.objects.all()
