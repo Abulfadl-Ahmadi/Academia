@@ -97,8 +97,8 @@ export default function MyProducts() {
         <CardContent className="pt-6">
           <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">هنوز محصولی خریداری نکرده‌اید</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز محصولی خریداری نکرده‌اید</h3>
+            <p className="text-muted-foreground mb-6">
               برای دسترسی به دوره‌ها، فایل‌ها و آزمون‌ها، ابتدا آنها را از فروشگاه خریداری کنید.
             </p>
             <Button onClick={() => window.location.href = "/shop"}>
@@ -264,15 +264,15 @@ function ProductCard({ access }: ProductCardProps) {
         </div>
 
         <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.title}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{product.description}</p>
 
         <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Calendar className="w-3 h-3" />
             <span>دسترسی: {formatDate(granted_at)}</span>
           </div>
           {expires_at && (
-            <div className="flex items-center gap-2 text-xs text-gray-500">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="w-3 h-3" />
               <span>انقضا: {formatDate(expires_at)}</span>
             </div>

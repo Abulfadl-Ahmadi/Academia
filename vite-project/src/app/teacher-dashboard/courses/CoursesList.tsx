@@ -85,7 +85,7 @@ export default function CoursesList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">دوره‌های من</h1>
-          <p className="text-gray-600 mt-2">مدیریت دوره‌های آموزشی</p>
+          <p className="text-muted-foreground mt-2">مدیریت دوره‌های آموزشی</p>
         </div>
         <Button onClick={handleCreateCourse} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -95,7 +95,7 @@ export default function CoursesList() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
         <Input
           placeholder="جستجو در دوره‌ها..."
           value={searchTerm}
@@ -109,11 +109,11 @@ export default function CoursesList() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-12">
-              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">
                 {searchTerm ? "دوره‌ای یافت نشد" : "هنوز دوره‌ای ایجاد نکرده‌اید"}
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {searchTerm 
                   ? "لطفاً عبارت جستجوی دیگری امتحان کنید"
                   : "برای شروع، اولین دوره آموزشی خود را ایجاد کنید"
@@ -149,25 +149,25 @@ export default function CoursesList() {
               <div className="text-2xl font-bold text-blue-600">
                 {courses.length}
               </div>
-              <div className="text-sm text-gray-600">کل دوره‌ها</div>
+              <div className="text-sm text-muted-foreground">کل دوره‌ها</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {courses.reduce((sum, course) => sum + course.sessions_count, 0)}
               </div>
-              <div className="text-sm text-gray-600">کل جلسات</div>
+              <div className="text-sm text-muted-foreground">کل جلسات</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
                 {courses.reduce((sum, course) => sum + course.tests_count, 0)}
               </div>
-              <div className="text-sm text-gray-600">کل آزمون‌ها</div>
+              <div className="text-sm text-muted-foreground">کل آزمون‌ها</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">
                 {courses.reduce((sum, course) => sum + course.students_count, 0)}
               </div>
-              <div className="text-sm text-gray-600">کل دانش‌آموزان</div>
+              <div className="text-sm text-muted-foreground">کل دانش‌آموزان</div>
             </div>
           </div>
         </CardContent>
@@ -193,7 +193,7 @@ function CourseCard({ course, onView, onEdit }: CourseCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-lg line-clamp-2">{course.title}</CardTitle>
-            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
               {course.description || "توضیحی برای این دوره ثبت نشده است"}
             </p>
           </div>
@@ -209,22 +209,22 @@ function CourseCard({ course, onView, onEdit }: CourseCardProps) {
           <div className="flex flex-col items-center">
             <Play className="w-5 h-5 text-blue-600 mb-1" />
             <span className="text-sm font-medium">{course.sessions_count}</span>
-            <span className="text-xs text-gray-500">جلسه</span>
+            <span className="text-xs text-muted-foreground">جلسه</span>
           </div>
           <div className="flex flex-col items-center">
             <FileText className="w-5 h-5 text-green-600 mb-1" />
             <span className="text-sm font-medium">{course.tests_count}</span>
-            <span className="text-xs text-gray-500">آزمون</span>
+            <span className="text-xs text-muted-foreground">آزمون</span>
           </div>
           <div className="flex flex-col items-center">
             <Users className="w-5 h-5 text-purple-600 mb-1" />
             <span className="text-sm font-medium">{course.students_count}</span>
-            <span className="text-xs text-gray-500">دانش‌آموز</span>
+            <span className="text-xs text-muted-foreground">دانش‌آموز</span>
           </div>
         </div>
 
         {/* Date */}
-        <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
           <Calendar className="w-3 h-3" />
           <span>ایجاد شده در {formatDate(course.created_at)}</span>
         </div>

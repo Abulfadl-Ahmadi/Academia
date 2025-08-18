@@ -35,6 +35,8 @@ export function NavUser({
 }: {
   user: {
     username: string
+    first_name: string
+    last_name: string
     email: string
     avatar: string
   }
@@ -56,7 +58,7 @@ const logout = useLogout()
                 <AvatarFallback className="rounded-lg">{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.username}</span>
+                <span className="truncate font-medium">{user.first_name} {user.last_name}</span>
                 {/* <span className="truncate text-xs">{user.email}</span> */}
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -75,36 +77,29 @@ const logout = useLogout()
                   <AvatarFallback className="rounded-lg">{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="text-right truncate font-medium">{user.username}</span>
+                  <span className="text-right truncate font-medium">{user.first_name} {user.last_name}</span>
                   {/* <span className="text-right truncate text-xs">{user.email}</span> */}
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup> */}
-              {/* <DropdownMenuItem> */}
-                {/* <Sparkles /> */}
-                {/* Upgrade to Pro */}
-              {/* </DropdownMenuItem> */}
-            {/* </DropdownMenuGroup> */}
-            {/* <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => window.location.href = "/panel/profile"}>
-                <BadgeCheck />
+                <BadgeCheck className="ml-2 h-4 w-4" />
                 حساب کاربری
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard />
+                <CreditCard className="ml-2 h-4 w-4" />
                 پرداخت‌ها
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
+                <Bell className="ml-2 h-4 w-4" />
                 پیام‌ها
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout} >
-              <LogOut color="#bb0000"/>
+              <LogOut className="ml-2 h-4 w-4" color="#cc0000"/>
               خروج
             </DropdownMenuItem>
           </DropdownMenuContent>

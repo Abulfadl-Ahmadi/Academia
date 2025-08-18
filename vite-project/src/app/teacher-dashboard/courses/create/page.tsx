@@ -209,7 +209,7 @@ export default function CreateCoursePage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">ایجاد دوره جدید</h1>
-            <p className="text-gray-600">اطلاعات دوره جدید و محصول فروشگاه را وارد کنید</p>
+            <p className="text-muted-foreground">اطلاعات دوره جدید و محصول فروشگاه را وارد کنید</p>
           </div>
         </div>
       </div>
@@ -267,14 +267,14 @@ export default function CreateCoursePage() {
               <Calendar className="w-5 h-5" />
               برنامه زمانی دوره
             </CardTitle>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               زمان‌های برگزاری جلسات دوره را مشخص کنید
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             {courseForm.schedules.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <div className="text-center py-8 text-muted-foreground">
+                <Calendar className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                 <p>هنوز برنامه زمانی تعریف نشده است</p>
                 <p className="text-sm">برای اضافه کردن برنامه زمانی کلیک کنید</p>
               </div>
@@ -344,7 +344,7 @@ export default function CreateCoursePage() {
               <ShoppingCart className="w-5 h-5" />
               ایجاد محصول در فروشگاه
             </CardTitle>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               آیا می‌خواهید این دوره را به عنوان محصول در فروشگاه قرار دهید؟
             </p>
           </CardHeader>
@@ -427,7 +427,7 @@ export default function CreateCoursePage() {
                       انتخاب تصویر
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     فرمت‌های پشتیبانی شده: JPG, PNG, GIF (حداکثر 5MB)
                   </p>
                 </div>

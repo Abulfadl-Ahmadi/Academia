@@ -1,24 +1,20 @@
 // "use client"
 
-import * as React from "react"
+import * as React from "react";
 import {
-  AudioWaveform,
   House,
   CalendarDays,
   Library,
   BookOpenCheck,
-  Command,
   Box,
   Users,
-  GalleryVerticalEnd,
   TvMinimalPlay,
   CreditCard,
-  BookOpen,
   ShoppingCart,
-} from "lucide-react"
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
+} from "lucide-react";
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -26,178 +22,145 @@ import {
   SidebarHeader,
   SidebarRail,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
-import { useUser } from "@/context/UserContext"
+} from "@/components/ui/sidebar";
+import { useUser } from "@/context/UserContext";
+import axiosInstance from "@/lib/axios";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "ابوالفضل",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "کلاس‌ها",
-      url: "/panel/courses",
-      icon: TvMinimalPlay,
-      isActive: true,
-      items: [
-        {
-          title: "سالیانه",
-          url: "/panel/courses",
-        },
-        {
-          title: "نکته و تست",
-          url: "#",
-        },
-        {
-          title: "امتحان نهایی",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "مدیریت دوره‌ها",
-      url: "/panel/courses",
-      icon: BookOpen,
-      items: [
-        {
-          title: "لیست دوره‌ها",
-          url: "/panel/courses",
-        },
-        {
-          title: "ایجاد دوره جدید",
-          url: "/panel/courses/create",
-        },
-        {
-          title: "مدیریت جلسات",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "مدیریت فروشگاه",
-      url: "/panel/products",
-      icon: ShoppingCart,
-      items: [
-        {
-          title: "لیست محصولات",
-          url: "/panel/products",
-        },
-        {
-          title: "ایجاد محصول جدید",
-          url: "/panel/products/create",
-        },
-        {
-          title: "مدیریت تخفیف‌ها",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "آزمون‌ها",
-      url: "/panel/tests",
-      icon: BookOpenCheck,
-      items: [
-        {
-          title: "لیست آزمون‌ها",
-          url: "/panel/tests",
-        },
-        {
-          title: "ایجاد آزمون",
-          url: "/panel/tests/create",
-        },
-        {
-          title: "گزارش‌های آزمون",
-          url: "/panel/tests",
-        },
-      ],
-    },
-    {
-      title: "فایل‌ها",
-      url: "/panel/files",
-      icon: Library,
-      items: [
-        {
-          title: "جزوه‌ها",
-          url: "/panel/files",
-        },
-        {
-          title: "کتاب‌ها",
-          url: "#",
-        },
-        {
-          title: "چیت‌شیت‌ها",
-          url: "#",
-        },
-        {
-          title: "خلاصه‌نویسی‌ها",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "مدیریت مالی",
-      url: "/panel/transactions",
-      icon: CreditCard,
-      items: [
-        {
-          title: "ایجاد تراکنش",
-          url: "/panel/transactions",
-        },
-        {
-          title: "لیست تراکنش‌ها",
-          url: "/panel/transactions",
-        },
-        {
-          title: "گزارش‌های مالی",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "تقویم برنامه‌ها",
-      url: "#",
-      icon: CalendarDays,
-    },
-  ],
+export function TeacherSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const { user, loading } = useUser();
+  const [categories, setCategories] = React.useState<{ id: number; name: string }[]>(
+    []
+  );
+
+  React.useEffect(() => {
+    axiosInstance.get("/course-catagory/") // آدرس API بک‌اند
+      .then((res) => res.data)
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("خطا در گرفتن دسته‌بندی‌ها:", err));
+  }, []);
+
+  const data = {
+    navMain: [
+      {
+        title: "کلاس‌ها",
+        url: "/panel/courses",
+        icon: TvMinimalPlay,
+        isActive: true,
+        items: [
+          {
+            title: "همه کلاس‌ها",
+            url: "/panel/courses",
+          },
+          ...categories.map((cat) => ({
+            title: cat.name,
+            url: `/panel/courses?category=${cat.id}`, // می‌تونی فیلتر بزنی
+          })),
+        ],
+      },
+      {
+        title: "مدیریت فروشگاه",
+        url: "/panel/products",
+        icon: ShoppingCart,
+        items: [
+          {
+            title: "لیست محصولات",
+            url: "/panel/products",
+          },
+          {
+            title: "ایجاد محصول جدید",
+            url: "/panel/products/create",
+          },
+          {
+            title: "مدیریت تخفیف‌ها",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "آزمون‌ها",
+        url: "/panel/tests",
+        icon: BookOpenCheck,
+        items: [
+          {
+            title: "لیست آزمون‌ها",
+            url: "/panel/tests",
+          },
+          {
+            title: "ایجاد آزمون",
+            url: "/panel/tests/create",
+          },
+          {
+            title: "گزارش‌های آزمون",
+            url: "/panel/tests",
+          },
+        ],
+      },
+      {
+        title: "فایل‌ها",
+        url: "/panel/files",
+        icon: Library,
+        items: [
+          {
+            title: "جزوه‌ها",
+            url: "/panel/files",
+          },
+          {
+            title: "کتاب‌ها",
+            url: "#",
+          },
+          {
+            title: "چیت‌شیت‌ها",
+            url: "#",
+          },
+          {
+            title: "خلاصه‌نویسی‌ها",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "مدیریت مالی",
+        url: "/panel/transactions",
+        icon: CreditCard,
+        items: [
+          {
+            title: "ایجاد تراکنش",
+            url: "/panel/transactions",
+          },
+          {
+            title: "لیست تراکنش‌ها",
+            url: "/panel/transactions",
+          },
+          {
+            title: "گزارش‌های مالی",
+            url: "#",
+          },
+        ],
+      },
+    ],
+    projects: [
+      {
+        name: "تقویم برنامه‌ها",
+        url: "#",
+        icon: CalendarDays,
+      },
+    ],
     home: [
-    {
-      name: "خانه",
-      url: "#",
-      icon: House,
-    },
-    {
-      name: "دانش‌آموزان",
-      url: "/panel/students",
-      icon: Users,
-    },
-  ],
-}
+      {
+        name: "خانه",
+        url: "#",
+        icon: House,
+      },
+      {
+        name: "دانش‌آموزان",
+        url: "/panel/students",
+        icon: Users,
+      },
+    ],
+  };
 
-export function TeacherSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { user, loading } = useUser()
-  
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -206,18 +169,20 @@ export function TeacherSidebar({ ...props }: React.ComponentProps<typeof Sidebar
           <Box />
           <SidebarGroupLabel className="text-lg font-medium text-black">Platform</SidebarGroupLabel>
         </div> */}
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Box className="font-medium" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium text-lg text-right">پنل مدیریت</span>
-              </div>
-              {/* <ChevronsUpDown className="ml-auto" /> */}
-            </SidebarMenuButton>
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+            <Box className="font-medium" />
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium text-lg text-right">
+              پنل مدیریت
+            </span>
+          </div>
+          {/* <ChevronsUpDown className="ml-auto" /> */}
+        </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
         <NavProjects projects={data.home} />
@@ -225,21 +190,25 @@ export function TeacherSidebar({ ...props }: React.ComponentProps<typeof Sidebar
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
- {loading ? (
-    <div className="px-4 py-2 text-muted-foreground text-sm">در حال بارگذاری...</div>
-  ) : !user ? (
-    <div className="px-4 py-2 text-muted-foreground text-sm">وارد نشده‌اید</div>
-  ) : (
-    <NavUser
-      user={{
-        username: user.username,
-        email: user.email,
-        avatar: "/avatars/default.jpg",
-      }}
-    />
-  )}
+        {loading ? (
+          <div className="px-4 py-2 text-muted-foreground text-sm">
+            در حال بارگذاری...
+          </div>
+        ) : !user ? (
+          <div className="px-4 py-2 text-muted-foreground text-sm">
+            وارد نشده‌اید
+          </div>
+        ) : (
+          <NavUser
+            user={{
+              username: user.username,
+              email: user.email,
+              avatar: "/avatars/default.jpg",
+            }}
+          />
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -92,6 +92,8 @@ export default function Navbar({
                       user={{
                         username: user.username,
                         email: user.email,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
                         avatar: "", // User object doesn't have avatar, will use initials fallback
                       }}
                     />
@@ -171,7 +173,7 @@ export default function Navbar({
                               {user.username.substring(0, 2).toUpperCase()}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-sm font-medium">{user.username}</span>
+                              <span className="text-sm font-medium">{user.first_name} {user.last_name}</span>
                               <span className="text-xs text-muted-foreground">{user.email}</span>
                             </div>
                           </div>

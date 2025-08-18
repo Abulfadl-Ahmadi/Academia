@@ -195,7 +195,7 @@ export default function CreateTransaction({ onTransactionCreated }: CreateTransa
                       <span className="font-medium">محصولات:</span>
                       <div className="mt-1 space-y-1">
                         {selectedOrder.items.map((item, index) => (
-                          <div key={index} className="text-xs text-gray-600">
+                          <div key={index} className="text-xs text-muted-foreground">
                             {item.product.title} ({item.product.product_type}) - {item.quantity} عدد
                           </div>
                         ))}

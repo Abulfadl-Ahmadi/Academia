@@ -320,7 +320,7 @@ export default function TransactionsList() {
               <tbody>
                 {filteredTransactions.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="border border-gray-200 px-4 py-8 text-center text-gray-500">
+                    <td colSpan={8} className="border border-gray-200 px-4 py-8 text-center text-muted-foreground">
                       تراکنشی یافت نشد
                     </td>
                   </tr>
@@ -336,7 +336,7 @@ export default function TransactionsList() {
                       <td className="border border-gray-200 px-4 py-2 text-right">
                         <div>
                           <div className="font-medium">{transaction.order.user.username}</div>
-                          <div className="text-sm text-gray-500">{transaction.order.user.email}</div>
+                          <div className="text-sm text-muted-foreground">{transaction.order.user.email}</div>
                         </div>
                       </td>
                       <td className="border border-gray-200 px-4 py-2 text-right font-medium">
@@ -370,7 +370,7 @@ export default function TransactionsList() {
                 <div className="text-2xl font-bold text-blue-600">
                   {filteredTransactions.length}
                 </div>
-                <div className="text-sm text-gray-600">کل تراکنش‌ها</div>
+                <div className="text-sm text-muted-foreground">کل تراکنش‌ها</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">
@@ -380,7 +380,7 @@ export default function TransactionsList() {
                       .reduce((sum, t) => sum + t.amount, 0)
                   )}
                 </div>
-                <div className="text-sm text-gray-600">مجموع خریدها</div>
+                <div className="text-sm text-muted-foreground">مجموع خریدها</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-orange-600">
@@ -390,7 +390,7 @@ export default function TransactionsList() {
                       .reduce((sum, t) => sum + t.amount, 0)
                   )}
                 </div>
-                <div className="text-sm text-gray-600">مجموع بازپرداخت‌ها</div>
+                <div className="text-sm text-muted-foreground">مجموع بازپرداخت‌ها</div>
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 به پنل دانش‌آموزی آکادمیا خوش آمدید. از اینجا می‌توانید به تمام محصولات خریداری شده دسترسی داشته باشید.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -25,21 +25,21 @@ export default function Home() {
                   <BookOpen className="w-8 h-8 text-blue-600" />
                   <div>
                     <div className="font-medium">دوره‌ها</div>
-                    <div className="text-sm text-gray-600">دسترسی به دوره‌های آموزشی</div>
+                    <div className="text-sm text-muted-foreground">دسترسی به دوره‌های آموزشی</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                   <FileText className="w-8 h-8 text-green-600" />
                   <div>
                     <div className="font-medium">فایل‌ها</div>
-                    <div className="text-sm text-gray-600">دانلود جزوات و منابع</div>
+                    <div className="text-sm text-muted-foreground">دانلود جزوات و منابع</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
                   <Play className="w-8 h-8 text-purple-600" />
                   <div>
                     <div className="font-medium">آزمون‌ها</div>
-                    <div className="text-sm text-gray-600">شرکت در آزمون‌های مختلف</div>
+                    <div className="text-sm text-muted-foreground">شرکت در آزمون‌های مختلف</div>
                   </div>
                 </div>
               </div>

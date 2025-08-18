@@ -232,8 +232,8 @@ export default function ShopPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">فروشگاه</h1>
-          <p className="text-gray-600 mt-2">محصولات آموزشی با کیفیت</p>
+          <h1 className="text-3xl font-bold">فروشگاه</h1>
+          <p className="text-muted-foreground mt-2">محصولات آموزشی با کیفیت</p>
         </div>
 
         <Button
@@ -255,7 +255,7 @@ export default function ShopPage() {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className=" rounded-lg shadow-sm border p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -291,7 +291,7 @@ export default function ShopPage() {
                 </SelectContent>
               </Select>
 
-              <div className="text-sm text-gray-500 flex items-center">
+              <div className="text-sm text-muted-foreground flex items-center">
                 <Filter className="w-4 h-4 mr-1" />
                 {filteredProducts.length} محصول
               </div>
@@ -314,7 +314,7 @@ export default function ShopPage() {
                     <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                       <div className="text-center">
                         {getProductIcon(product.product_type)}
-                        <p className="text-sm text-gray-500 mt-2">{getProductTypeLabel(product.product_type)}</p>
+                        <p className="text-sm text-muted-foreground mt-2">{getProductTypeLabel(product.product_type)}</p>
                       </div>
                     </div>
                   )}
@@ -343,7 +343,7 @@ export default function ShopPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       {product.has_active_discount && (
-                        <span className="text-sm text-gray-500 line-through">
+                        <span className="text-sm text-muted-foreground line-through">
                           {formatPrice(product.price)} تومان
                         </span>
                       )}
@@ -351,7 +351,7 @@ export default function ShopPage() {
                         {formatPrice(product.current_price)} تومان
                       </span>
                     </div>
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <Clock className="w-4 h-4 mr-1" />
                       {new Date(product.created_at).toLocaleDateString('fa-IR')}
                     </div>
@@ -388,8 +388,8 @@ export default function ShopPage() {
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
               <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">محصولی یافت نشد</h3>
-              <p className="text-gray-500">لطفاً فیلترهای خود را تغییر دهید</p>
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">محصولی یافت نشد</h3>
+              <p className="text-muted-foreground">لطفاً فیلترهای خود را تغییر دهید</p>
             </div>
           )}
         </div>
@@ -408,13 +408,13 @@ export default function ShopPage() {
                 {cart.length === 0 ? (
                   <div className="text-center py-8">
                     <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">سبد خرید خالی است</p>
+                    <p className="text-muted-foreground">سبد خرید خالی است</p>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {cart.map((item) => (
-                        <div key={item.product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div key={item.product.id} className="flex items-center gap-3 p-3 rounded-lg">
                           {/* Product Image */}
                           <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
                             {item.product.image ? (
@@ -432,7 +432,7 @@ export default function ShopPage() {
 
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
-                            <p className="text-sm text-gray-500">{formatPrice(item.product.current_price)} تومان</p>
+                            <p className="text-sm text-muted-foreground">{formatPrice(item.product.current_price)} تومان</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <Button
@@ -491,7 +491,7 @@ export default function ShopPage() {
                           <span>-{formatPrice(calculateDiscount())} تومان</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-gray-500">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>مالیات (9.9%):</span>
                         <span>{formatPrice(calculateTax())} تومان</span>
                       </div>

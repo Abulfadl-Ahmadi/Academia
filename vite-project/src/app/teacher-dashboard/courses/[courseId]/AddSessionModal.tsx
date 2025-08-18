@@ -428,7 +428,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
                         انتخاب فایل ویدیو
                       </Button>
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       فرمت‌های پشتیبانی شده: MP4, AVI, MOV
                       <br />
                       حداکثر حجم: ۵۰۰ مگابایت
@@ -442,7 +442,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-medium">فایل ویدیو انتخاب شده</span>
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       <p>نام: {videoFile.name}</p>
                       <p>حجم: {formatFileSize(videoFile.size)}</p>
                     </div>
@@ -485,7 +485,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
                         انتخاب فایل PDF
                       </Button>
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       فرمت: PDF
                       <br />
                       حداکثر حجم: ۵۰ مگابایت
@@ -499,7 +499,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-medium">فایل PDF انتخاب شده</span>
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       <p>نام: {lectureNotesFile.name}</p>
                       <p>حجم: {formatFileSize(lectureNotesFile.size)}</p>
                     </div>
@@ -529,12 +529,12 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
           {/* Upload Progress */}
           {isUploading && (
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <AlertCircle className="w-4 h-4" />
                 در حال آپلود فایل‌ها...
               </div>
               <Progress value={uploadProgress} className="w-full" />
-              <p className="text-xs text-gray-500 text-center">{uploadProgress}%</p>
+              <p className="text-xs text-muted-foreground text-center">{uploadProgress}%</p>
             </div>
           )}
 

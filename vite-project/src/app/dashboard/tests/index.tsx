@@ -144,7 +144,7 @@ const handleStartTest = async (testId: number) => {
         </div>
       ) : filteredTests.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">هیچ آزمونی یافت نشد.</p>
+          <p className="text-muted-foreground">هیچ آزمونی یافت نشد.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -372,10 +372,26 @@ interface SessionDetailModalProps {
 function SessionDetailModal({ session, onClose }: SessionDetailModalProps) {
   const videoFile = session.files.find(f => f.file_type.startsWith('video/'));
   const pdfFile = session.files.find(f => f.file_type === 'application/pdf');
+  const [playerUrl, setPlayerUrl] = useState('');
+  useEffect(
+    () => {
+      const fetchPlayerUrl = async () => {
+        if (videoFile?.id) {
+          const res = await axiosInstance.get(`/files/${videoFile.id}/player_url`);
+          setPlayerUrl(res.data.player_url);
+        }
+      };
+      fetchPlayerUrl();
+    },
+    [videoFile]
+  );
+
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div
+     className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
+     >
+      <div className="rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">جلسه {session.session_number}: {session.title}</h2>
@@ -401,7 +417,7 @@ function SessionDetailModal({ session, onClose }: SessionDetailModalProps) {
               </video> */}
               {/* {videoFile.player_url} */}
               <iframe 
-                src={videoFile.player_url}
+                src={playerUrl}
                 className="w-full rounded-lg"
                 title="Video Player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

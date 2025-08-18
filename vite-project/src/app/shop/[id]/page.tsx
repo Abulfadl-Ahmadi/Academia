@@ -117,7 +117,7 @@ export default function ProductDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">محصول یافت نشد</h2>
+          <h2 className="text-2xl font-bold text-muted-foreground mb-4">محصول یافت نشد</h2>
           <Button onClick={() => navigate('/shop')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             بازگشت به فروشگاه
@@ -155,7 +155,7 @@ export default function ProductDetailPage() {
                 <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                   <div className="text-center">
                     {getProductIcon(product.product_type)}
-                    <p className="text-lg text-gray-500 mt-4">{getProductTypeLabel(product.product_type)}</p>
+                    <p className="text-lg text-muted-foreground mt-4">{getProductTypeLabel(product.product_type)}</p>
                   </div>
                 </div>
               )}
@@ -184,7 +184,7 @@ export default function ProductDetailPage() {
             <CardContent>
               {/* Product Details */}
               <div className="space-y-6">
-                <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     <span>تاریخ انتشار: {formatDate(product.created_at)}</span>
@@ -227,8 +227,8 @@ export default function ProductDetailPage() {
                 {/* Additional Information */}
                 <div>
                   <h3 className="text-lg font-semibold mb-3">اطلاعات تکمیلی</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className=" p-4 rounded-lg">
+                    <p className="text-muted-foreground leading-relaxed">
                       این محصول با بالاترین کیفیت و مطابق با آخرین استانداردهای آموزشی تهیه شده است. 
                       پس از خرید، دسترسی کامل به محتوا خواهید داشت و می‌توانید در هر زمان و مکان از آن استفاده کنید.
                     </p>
@@ -252,7 +252,7 @@ export default function ProductDetailPage() {
                   <span className="text-lg">قیمت:</span>
                   <div className="text-right">
                     {product.has_active_discount && (
-                      <div className="text-sm text-gray-500 line-through">
+                      <div className="text-sm text-muted-foreground line-through">
                         {formatPrice(product.price)} تومان
                       </div>
                     )}
@@ -300,7 +300,7 @@ export default function ProductDetailPage() {
                   <span>مجموع:</span>
                   <span className="font-bold">{formatPrice(product.current_price * quantity)} تومان</span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-500">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>مالیات (9.9%):</span>
                   <span>{formatPrice(Math.round(product.current_price * quantity * 0.099))} تومان</span>
                 </div>
@@ -333,7 +333,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Guarantee */}
-              <div className="text-center text-sm text-gray-500 bg-green-50 p-3 rounded-lg">
+              <div className="text-center text-sm text-muted-foreground bg-green-50 p-3 rounded-lg">
                 <div className="font-medium text-green-700 mb-1">✅ تضمین کیفیت</div>
                 <div>در صورت عدم رضایت، تا ۷ روز امکان بازگشت</div>
               </div>

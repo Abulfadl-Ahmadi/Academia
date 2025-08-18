@@ -157,7 +157,7 @@ export default function CreateProductPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">ایجاد محصول جدید</h1>
-            <p className="text-gray-600">اطلاعات محصول جدید را برای فروشگاه وارد کنید</p>
+            <p className="text-muted-foreground">اطلاعات محصول جدید را برای فروشگاه وارد کنید</p>
           </div>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function CreateProductPage() {
                   انتخاب تصویر
                 </Button>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 فرمت‌های پشتیبانی شده: JPG, PNG, GIF (حداکثر 5MB)
               </p>
             </div>
@@ -290,7 +290,7 @@ export default function CreateProductPage() {
                 <BookOpen className="w-5 h-5" />
                 انتخاب دوره
               </CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 دوره‌ای که می‌خواهید به عنوان محصول فروخته شود را انتخاب کنید
               </p>
             </CardHeader>
@@ -323,7 +323,7 @@ export default function CreateProductPage() {
                 <FileText className="w-5 h-5" />
                 انتخاب آزمون
               </CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 آزمونی که می‌خواهید به عنوان محصول فروخته شود را انتخاب کنید
               </p>
             </CardHeader>
@@ -356,7 +356,7 @@ export default function CreateProductPage() {
                 <FileText className="w-5 h-5" />
                 انتخاب فایل
               </CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 فایلی که می‌خواهید به عنوان محصول فروخته شود را انتخاب کنید
               </p>
             </CardHeader>

@@ -131,7 +131,7 @@ const VideoUploadForm: React.FC = () => {
       <h1 className="text-2xl font-bold mb-4 text-center">Upload File</h1>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">File Title</label>
+          <label className="block text-sm font-medium text-muted-foreground">File Title</label>
           <input
             type="text"
             value={title}
@@ -141,7 +141,7 @@ const VideoUploadForm: React.FC = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">File</label>
+          <label className="block text-sm font-medium text-muted-foreground">File</label>
           <input
             type="file"
             accept="video/mp4,application/pdf"
@@ -150,7 +150,7 @@ const VideoUploadForm: React.FC = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Course</label>
+          <label className="block text-sm font-medium text-muted-foreground">Course</label>
           <select
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
@@ -165,7 +165,7 @@ const VideoUploadForm: React.FC = () => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Session (Optional)</label>
+          <label className="block text-sm font-medium text-muted-foreground">Session (Optional)</label>
           <select
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}

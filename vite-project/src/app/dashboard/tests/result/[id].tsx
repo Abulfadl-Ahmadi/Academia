@@ -217,7 +217,7 @@ const TestResult = () => {
                     <CardContent className="p-4 pt-0">
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <p className="text-gray-500">پاسخ شما:</p>
+                          <p className="text-muted-foreground">پاسخ شما:</p>
                           <Badge
                             variant="outline"
                             className={`${answer.is_correct ? 'bg-green-100' : 'bg-red-100'}`}
@@ -226,7 +226,7 @@ const TestResult = () => {
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-gray-500">پاسخ صحیح:</p>
+                          <p className="text-muted-foreground">پاسخ صحیح:</p>
                           <Badge variant="outline" className="bg-green-100">
                             گزینه {answer.correct_answer}
                           </Badge>

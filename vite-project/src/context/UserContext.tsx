@@ -13,6 +13,8 @@ import {
 
 type User = {
   username: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: "student" | "teacher";
   id: number;
@@ -46,6 +48,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const{
         user: {
           username,
+          first_name,
+          last_name,
           email,
           role,
           id,
@@ -53,6 +57,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       } = userData;
       setUser({
         username,
+        first_name,
+        last_name,
         email,
         role,
         id,

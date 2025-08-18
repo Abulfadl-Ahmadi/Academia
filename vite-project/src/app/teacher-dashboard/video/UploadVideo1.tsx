@@ -222,7 +222,7 @@ const UploadVideo: React.FC = () => {
       <Input type="file" accept="video/*" onChange={onFileSelected} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Course</label>
+        <label className="block text-sm font-medium text-muted-foreground">Course</label>
         <select
           value={courseId}
           onChange={(e) => setCourseId(e.target.value)}
@@ -237,7 +237,7 @@ const UploadVideo: React.FC = () => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Session (Optional)</label>
+        <label className="block text-sm font-medium text-muted-foreground">Session (Optional)</label>
         <select
           value={sessionId}
           onChange={(e) => setSessionId(e.target.value)}

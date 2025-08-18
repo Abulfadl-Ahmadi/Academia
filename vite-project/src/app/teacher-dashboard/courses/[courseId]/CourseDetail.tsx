@@ -50,6 +50,11 @@ interface Test {
   is_active: boolean;
 }
 
+interface Student {
+  id: number;
+  username: string;
+}
+
 interface CourseDetailProps {
   courseId: number;
 }
@@ -58,6 +63,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [course, setCourse] = useState<Course | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [tests, setTests] = useState<Test[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddSession, setShowAddSession] = useState(false);
 
@@ -77,6 +83,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       setCourse(courseResponse.data);
       setSessions(sessionsResponse.data);
       setTests(testsResponse.data);
+      setStudents(courseResponse.data.students);
     } catch (error) {
       console.error("Error fetching course data:", error);
       toast.error("خطا در دریافت اطلاعات دوره");
@@ -153,7 +160,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   if (!course) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">دوره یافت نشد</h3>
+        <h3 className="text-lg font-medium text-muted-foreground mb-2">دوره یافت نشد</h3>
       </div>
     );
   }
@@ -166,7 +173,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <CardTitle className="text-2xl">{course.title}</CardTitle>
-              <p className="text-gray-600 mt-2">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>
+              <p className="text-muted-foreground mt-2">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={course.is_active ? "default" : "secondary"}>
@@ -237,8 +244,8 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               {sessions.length === 0 ? (
                 <div className="text-center py-12">
                   <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">هنوز جلسه‌ای ایجاد نشده است</h3>
-                  <p className="text-gray-500 mb-6">برای شروع، اولین جلسه دوره را ایجاد کنید</p>
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز جلسه‌ای ایجاد نشده است</h3>
+                  <p className="text-muted-foreground mb-6">برای شروع، اولین جلسه دوره را ایجاد کنید</p>
                   <Button onClick={() => setShowAddSession(true)}>
                     <Plus className="w-4 h-4 ml-2" />
                     افزودن جلسه جدید
@@ -276,8 +283,8 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               {tests.length === 0 ? (
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">هنوز آزمونی ایجاد نشده است</h3>
-                  <p className="text-gray-500 mb-6">برای شروع، اولین آزمون دوره را ایجاد کنید</p>
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز آزمونی ایجاد نشده است</h3>
+                  <p className="text-muted-foreground mb-6">برای شروع، اولین آزمون دوره را ایجاد کنید</p>
                   <Button variant="outline">
                     <Plus className="w-4 h-4 ml-2" />
                     افزودن آزمون جدید
@@ -301,11 +308,20 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               <CardTitle>دانش‌آموزان ثبت‌نام شده</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
+              {students.length === 0 ? (
+                <div className="text-center py-12">
                 <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
-                <p className="text-gray-500">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
+                <p className="text-muted-foreground">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
               </div>
+              ) : (
+                <div className="space-y-4">
+                  {students.map((student) => (
+                  <div>{student.username}</div>
+                ))}
+                </div>
+              )}
+
             </CardContent>
           </Card>
         </TabsContent>
@@ -358,11 +374,11 @@ function SessionCard({ session, onDelete, onTogglePublish }: SessionCardProps) {
               </Badge>
             </div>
             <h3 className="text-lg font-medium mb-2">{session.title}</h3>
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
               {session.description || "توضیحی برای این جلسه ثبت نشده است"}
             </p>
             
-            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 <span>{formatDate(session.created_at)}</span>
@@ -441,11 +457,11 @@ function TestCard({ test }: TestCardProps) {
               </Badge>
             </div>
             <h3 className="text-lg font-medium mb-2">{test.title}</h3>
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
               {test.description || "توضیحی برای این آزمون ثبت نشده است"}
             </p>
             
-            <div className="grid grid-cols-3 gap-4 text-sm text-gray-500 mb-4">
+            <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 <span>{test.duration_minutes} دقیقه</span>
