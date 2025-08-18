@@ -122,3 +122,11 @@
 html {
   font-family: 'Vazirmatn', sans-serif;
 }
+
+html.font-iransansx {
+  font-family: 'IRANSansX', 'Vazirmatn', sans-serif;
+}
+
+html.font-ravi {
+  font-family: 'Ravi', 'Vazirmatn', sans-serif;
+}

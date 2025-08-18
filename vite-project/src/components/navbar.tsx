@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@/context/UserContext";
 import { NavbarUser } from "@/components/navbar-user";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { FontToggle } from "@/components/font-toggle";
 
 interface NavbarLink {
   text: string;
@@ -87,7 +88,10 @@ export default function Navbar({
                 {user ? (
                   // Show user profile when logged in
                   <>
-                    <ThemeToggle />
+                    <div className="flex items-center gap-2">
+                      <ThemeToggle />
+                      <FontToggle />
+                    </div>
                     <NavbarUser
                       user={{
                         username: user.username,

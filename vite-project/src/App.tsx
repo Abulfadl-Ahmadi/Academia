@@ -7,6 +7,7 @@ import Navbar from './components/navbar'
 import { UserProvider } from "@/context/UserContext"
 import { CartProvider } from "@/context/CartContext"
 import { ThemeProvider } from "@/context/ThemeContext"
+import { FontProvider } from "@/context/FontContext"
 import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
 import TestDetailPage from './app/teacher-dashboard/tests/page'
@@ -21,14 +22,16 @@ import { Toaster } from "@/components/ui/sonner"
 function PreApp() {
   return (
     <ThemeProvider>
-      <UserProvider>
-        <CartProvider>
-          {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
-          <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
-          <App />
-          </Worker>
-        </CartProvider>
-      </UserProvider>
+      <FontProvider>
+        <UserProvider>
+          <CartProvider>
+            {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
+            <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
+            <App />
+            </Worker>
+          </CartProvider>
+        </UserProvider>
+      </FontProvider>
     </ThemeProvider>
   );
 }
