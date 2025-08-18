@@ -3,13 +3,15 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q, Prefetch
-from .models import Course, CourseSession, CourseSchedule
+from .models import Course, CourseSession, CourseSchedule, ClassCategory
 from .serializers import (
     CourseSerializer, CourseSessionSerializer, CourseScheduleSerializer,
-    TeacherCourseSerializer, StudentCourseSerializer, StudentSessionSerializer
+    TeacherCourseSerializer, StudentCourseSerializer, StudentSessionSerializer,
+    ClassCategorySerializer, UserSerializer
 )
 from accounts.models import User
 from tests.models import Test
+from tests.serializers import TestCreateSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -85,6 +87,18 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = StudentSessionSerializer(sessions, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def tests(self, request, pk=None):
+        course = self.get_object()
+        tests = Test.objects.filter(course=course)
+        serializer = TestCreateSerializer(tests, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+
+
+class ClassCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ClassCategory.objects.all()
+    serializer_class = ClassCategorySerializer
 
 class TeacherCourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherCourseSerializer
@@ -237,19 +251,26 @@ class CourseDetailView(viewsets.ReadOnlyModelViewSet):
         
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'])
-    def student_sessions(self, request, pk=None):
-        """Get sessions for a student in a specific course"""
-        if request.user.role != 'student':
-            return Response(
-                {"error": "Only students can access this endpoint"}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
+    # @action(detail=True, methods=['get'])
+    # def student_sessions(self, request, pk=None):
+    #     """Get sessions for a student in a specific course"""
+    #     if request.user.role != 'student':
+    #         return Response(
+    #             {"error": "Only students can access this endpoint"}, 
+    #             status=status.HTTP_403_FORBIDDEN
+    #         )
         
+    #     course = self.get_object()
+    #     sessions = CourseSession.objects.filter(
+    #         course=course,
+    #         is_published=True
+    #     ).prefetch_related('files')
+    #     serializer = StudentSessionSerializer(sessions, many=True, context={'request': request})
+    #     return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def tests(self, request, pk=None):
         course = self.get_object()
-        sessions = CourseSession.objects.filter(
-            course=course,
-            is_published=True
-        ).prefetch_related('files')
-        serializer = StudentSessionSerializer(sessions, many=True, context={'request': request})
+        tests = Test.objects.filter(course=course)
+        serializer = TestSerializer(tests, many=True, context={'request': request})
         return Response(serializer.data)
