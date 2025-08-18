@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
+import { DatePicker } from "@/components/ui/date-picker"
 
 import { useState } from "react"
 import axios from "axios"
@@ -33,6 +34,7 @@ export function RegisterForm({
     birth_date: "",
     grade: "",
   })
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
   const [verificationCode, setVerificationCode] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -274,11 +276,15 @@ export function RegisterForm({
 
           <div className="grid gap-3">
             <Label htmlFor="birth_date">تاریخ تولد</Label>
-            <Input
-              id="birth_date"
-              type="date"
-              value={formData.birth_date}
-              onChange={(e) => handleInputChange('birth_date', e.target.value)}
+            <DatePicker
+              date={birthDate}
+              setDate={(date) => {
+                setBirthDate(date);
+                if (date) {
+                  handleInputChange('birth_date', date.toISOString().split('T')[0]);
+                }
+              }}
+              placeholder="انتخاب تاریخ تولد"
             />
           </div>
 

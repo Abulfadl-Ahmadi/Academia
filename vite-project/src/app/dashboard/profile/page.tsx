@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
 import { User, Mail, Phone, Calendar, GraduationCap, CreditCard, Save, Edit } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface UserProfile {
   national_id: string;
@@ -34,6 +35,7 @@ export default function ProfilePage() {
     birth_date: "",
     grade: "",
   });
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (user) {
@@ -53,6 +55,11 @@ export default function ProfilePage() {
           birth_date: profileData.birth_date || "",
           grade: profileData.grade || "",
         });
+        
+        // Initialize birth date if available
+        if (profileData.birth_date) {
+          setBirthDate(new Date(profileData.birth_date));
+        }
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -278,11 +285,15 @@ export default function ProfilePage() {
                       <Calendar className="w-4 h-4" />
                       تاریخ تولد
                     </Label>
-                    <Input
-                      id="birth_date"
-                      type="date"
-                      value={profile.birth_date}
-                      onChange={(e) => handleInputChange("birth_date", e.target.value)}
+                    <DatePicker
+                      date={birthDate}
+                      setDate={(date) => {
+                        setBirthDate(date);
+                        if (date) {
+                          handleInputChange("birth_date", date.toISOString().split('T')[0]);
+                        }
+                      }}
+                      placeholder="انتخاب تاریخ تولد"
                       disabled={!isEditing}
                       className={!isEditing ? "bg-gray-50" : ""}
                     />

@@ -1,10 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateTimePicker } from "@/components/ui/date-picker";
 
 
 export default function TeacherTestApp() {
@@ -30,9 +27,12 @@ export default function TeacherTestApp() {
   const [description, setDescription] = useState("");
   const [course, setCourse] = useState("");
   const [pdfFile, setPdfFile] = useState("");
-  const [startTime, setStartTime] = useState<any>(null);
-  const [endTime, setEndTime] = useState<any>(null);
-  const [duration, setDuration] = useState<any>(null);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [startTimeStr, setStartTimeStr] = useState("");
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [endTimeStr, setEndTimeStr] = useState("");
+  const [durationHour, setDurationHour] = useState("");
+  const [durationMinute, setDurationMinute] = useState("");
   const [frequency, setFrequency] = useState("once");
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
@@ -92,7 +92,7 @@ export default function TeacherTestApp() {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (!name || !course || !pdfFile || !startTime || !endTime || !duration) {
+    if (!name || !course || !pdfFile || !startDate || !endDate || !durationHour || !durationMinute) {
       toast.error("لطفا همه فیلدهای ضروری را پر کنید");
       return;
     }
@@ -101,17 +101,28 @@ export default function TeacherTestApp() {
       question_number: Number(q),
       answer: Number(a),
     }));
+    
+    // Combine date and time for start and end times
+    const startDateTime = new Date(startDate);
+    if (startTimeStr) {
+      const [hours, minutes] = startTimeStr.split(":").map(Number);
+      startDateTime.setHours(hours, minutes);
+    }
+    
+    const endDateTime = new Date(endDate);
+    if (endTimeStr) {
+      const [hours, minutes] = endTimeStr.split(":").map(Number);
+      endDateTime.setHours(hours, minutes);
+    }
 
     const payload = {
       name,
       description,
       course: Number(course),
       pdf_file: Number(pdfFile),
-      start_time: startTime.toDate().toISOString(),
-      end_time: endTime.toDate().toISOString(),
-      duration: `${String(duration.hour).padStart(2, "0")}:${String(
-        duration.minute
-      ).padStart(2, "0")}:00`,
+      start_time: startDateTime.toISOString(),
+      end_time: endDateTime.toISOString(),
+      duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(2, "0")}:00`,
       frequency,
       keys: keysArray,
     };
@@ -207,27 +218,23 @@ export default function TeacherTestApp() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="test-start-time">زمان شروع *</Label>
-              <DatePicker
-                format="YYYY-MM-DD HH:mm"
-                render={<Input id="test-start-time" placeholder="زمان شروع" />}
-                calendar={persian}
-                locale={persian_fa}
-                plugins={[<TimePicker position="bottom" />]}
-                value={startTime}
-                onChange={setStartTime}
+              <DateTimePicker
+                date={startDate}
+                setDate={setStartDate}
+                time={startTimeStr}
+                setTime={setStartTimeStr}
+                placeholder="انتخاب زمان شروع"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="test-end-time">زمان پایان *</Label>
-              <DatePicker
-                format="YYYY-MM-DD HH:mm"
-                render={<Input id="test-end-time" placeholder="زمان پایان" />}
-                calendar={persian}
-                locale={persian_fa}
-                plugins={[<TimePicker position="bottom" />]}
-                value={endTime}
-                onChange={setEndTime}
+              <DateTimePicker
+                date={endDate}
+                setDate={setEndDate}
+                time={endTimeStr}
+                setTime={setEndTimeStr}
+                placeholder="انتخاب زمان پایان"
               />
             </div>
           </div>
@@ -235,14 +242,30 @@ export default function TeacherTestApp() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="test-duration">مدت آزمون *</Label>
-              <DatePicker
-                disableDayPicker
-                format="HH:mm"
-                render={<Input id="test-duration" placeholder="مدت آزمون" />}
-                plugins={[<TimePicker hideSeconds />]}
-                value={duration}
-                onChange={setDuration}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Input
+                    id="test-duration-hour"
+                    type="number"
+                    min="0"
+                    max="23"
+                    placeholder="ساعت"
+                    value={durationHour}
+                    onChange={(e) => setDurationHour(e.target.value)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    id="test-duration-minute"
+                    type="number"
+                    min="0"
+                    max="59"
+                    placeholder="دقیقه"
+                    value={durationMinute}
+                    onChange={(e) => setDurationMinute(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
