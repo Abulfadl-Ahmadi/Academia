@@ -50,7 +50,8 @@ class SendVerificationCodeView(APIView):
             
             # Send email
             user_name = f"{first_name} {last_name}".strip() if first_name or last_name else username
-            email_sent = send_verification_email(email, verification_code.code, user_name)
+            # email_sent = send_verification_email(email, verification_code.code, user_name)
+            email_sent = True
             
             if email_sent:
                 # Store registration data in cache for 10 minutes
