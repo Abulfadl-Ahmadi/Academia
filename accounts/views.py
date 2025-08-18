@@ -52,7 +52,7 @@ class SendVerificationCodeView(APIView):
             user_name = f"{first_name} {last_name}".strip() if first_name or last_name else username
             # email_sent = send_verification_email(email, verification_code.code, user_name)
             email_sent = True
-            
+
             if email_sent:
                 # Store registration data in cache for 10 minutes
                 cache_key = f"registration_data_{email}"
@@ -84,7 +84,7 @@ class VerifyEmailView(APIView):
             code = serializer.validated_data['code']
             
             try:
-                verification_code = VerificationCode.objects.get(email=email, code=code, is_expired=False).first()
+                verification_code = VerificationCode.objects.get(email=email, code=code).first()
                 
                 if not verification_code.is_valid():
                     if verification_code.is_expired():
