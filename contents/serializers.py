@@ -9,6 +9,7 @@ class FileSerializer(serializers.ModelSerializer):
     # player_url = serializers.SerializerMethodField()
     course = serializers.PrimaryKeyRelatedField(queryset=File._meta.get_field('course').related_model.objects.all())
     course_info = serializers.SerializerMethodField(read_only=True)
+    file_id = serializers.CharField(read_only=True)
     class Meta:
         model = File
         fields = [

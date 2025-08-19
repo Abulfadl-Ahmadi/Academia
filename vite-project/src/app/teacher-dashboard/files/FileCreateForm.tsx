@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axiosInstance from "@/lib/axios"
-
+import { toast } from "sonner"
 import {
   Popover,
   PopoverContent,
@@ -98,6 +98,7 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
     } catch (error: any) {
       console.error("Error creating file:", error?.response?.data)
     } finally {
+      toast.success("فایل با موفقیت ایجاد شد.")
       setLoading(false)
     }
   }
