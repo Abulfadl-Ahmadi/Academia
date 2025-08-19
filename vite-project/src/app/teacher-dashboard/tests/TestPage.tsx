@@ -7,6 +7,7 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { BookKey } from "lucide-react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
@@ -141,14 +142,14 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
         })
       );
 
-      // if (!res.ok) {
-      //   console.error(`❌ ارسال پاسخ سوال ${questionNumber} با خطا مواجه شد`);
-      // }
     } catch (error) {
       console.error(
         `❌ ارسال پاسخ سوال ${questionNumber} با خطا مواجه شد`,
         error
       );
+      toast.error(`پاسخ سوال ${questionNumber} ثبت نشد!`);
+    } finally {
+      toast.success(`پاسخ سوال ${questionNumber} با موفقیت ثبت شد.`);
     }
   };
 
@@ -310,8 +311,8 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
         <div className="mt-17">
           <Viewer
             fileUrl={session.pdf_file_url}
-            // plugins={[zoomPluginInstance]}
-            plugins={[defaultLayoutPluginInstance]}
+            plugins={[zoomPluginInstance]}
+            // plugins={[defaultLayoutPluginInstance]}
           />
         </div>
       </SidebarInset>
