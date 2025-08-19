@@ -25,6 +25,7 @@ type Test = {
   duration: string;
   start_time: string;
   end_time: string;
+  status: string;
 };
 
 const TestPage: React.FC = () => {

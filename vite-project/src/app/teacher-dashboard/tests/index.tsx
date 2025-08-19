@@ -21,6 +21,7 @@ type Test = {
   duration: string;
   start_time: string;
   end_time: string;
+  status: string;
   course_detail: {
     id: number;
     title: string;
