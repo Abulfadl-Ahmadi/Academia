@@ -1,3 +1,4 @@
+// StudentCourseDetail.tsx
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,16 +80,31 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
   };
 
   const handleSessionClick = (session: Session) => {
-    setSelectedSession(session);
-    // Mark session as watched
-    if (!session.is_watched) {
-      markSessionAsWatched(session.id);
+    // Check if session has video
+    const hasVideo = session.files.some(f => f.file_type.startsWith('video/'));
+    
+    if (hasVideo) {
+      // Open in the new YouTube-like video player page
+      window.open(`/panel/video/${session.id}`, '_blank');
+      
+      // Mark session as watched
+      if (!session.is_watched) {
+        markSessionAsWatched(session.id);
+      }
+    } else {
+      // Fall back to modal for sessions without video
+      setSelectedSession(session);
+      
+      // Mark session as watched
+      if (!session.is_watched) {
+        markSessionAsWatched(session.id);
+      }
     }
   };
 
   const markSessionAsWatched = async (sessionId: number) => {
     try {
-      await axiosInstance.post(`/courses/sessions/${sessionId}/mark-watched/`);
+      // await axiosInstance.post(`/courses/sessions/${sessionId}/mark-watched/`);
       // Update local state
       setSessions(prev => prev.map(s => 
         s.id === sessionId ? { ...s, is_watched: true } : s
@@ -274,6 +290,11 @@ function StudentSessionCard({ session, onClick, onDownloadNotes }: StudentSessio
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <Badge variant="outline">جلسه {session.session_number}</Badge>
+              {hasVideo && (
+                <Badge variant="default" className="bg-blue-100 text-blue-800">
+                  ویدیو
+                </Badge>
+              )}
               {session.is_watched && (
                 <Badge variant="default" className="bg-green-100 text-green-800">
                   مشاهده شده
@@ -319,7 +340,7 @@ function StudentSessionCard({ session, onClick, onDownloadNotes }: StudentSessio
               }}
             >
               <Play className="w-4 h-4 ml-2" />
-              مشاهده
+              {hasVideo ? "مشاهده در پخش‌کننده" : "مشاهده"}
             </Button>
             {hasPDF && (
               <Button 

@@ -22,6 +22,7 @@ import StudentCoursesPage from "@/app/dashboard/courses/page"
 import CoursesList from "@/app/teacher-dashboard/courses/CoursesList"
 import CreateCoursePage from "@/app/teacher-dashboard/courses/create/page"
 import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
+import VideoPage from "@/app/dashboard/video/page"
 
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout"
@@ -53,6 +54,7 @@ export default function PanelRoute() {
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/courses" element={<StudentCoursesPage />} />
         <Route path="/courses/:courseId" element={<StudentCourseDetailPage />} />
+        <Route path="/video/:sessionId?" element={<VideoPage />} />
         <Route path="/tests" element={<StudentTestsList />} />
         {/* <Route path='/tests/:id/detail' element={<TestDetailPage />}  /> */}
         <Route path="/tests/result/:id" element={<StudentTestResult />} />

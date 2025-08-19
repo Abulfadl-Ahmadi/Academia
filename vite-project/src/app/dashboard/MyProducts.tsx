@@ -236,6 +236,10 @@ function ProductCard({ access }: ProductCardProps) {
   const handleViewCourse = (courseId: number) => {
     window.location.href = `/panel/courses/${courseId}/`;
   };
+  
+  const handleViewSession = (sessionId: number) => {
+    window.open(`/dashboard/video/${sessionId}`, '_blank');
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -306,14 +310,25 @@ function ProductCard({ access }: ProductCardProps) {
           )}
 
           {product.product_type === "course" && product.course && (
-            <Button 
-              onClick={() => handleViewCourse(product.course!.id)}
-              className="w-full"
-              size="sm"
-            >
-              <ExternalLink className="w-4 h-4 ml-2" />
-              مشاهده دوره
-            </Button>
+            <div className="space-y-2">
+              <Button 
+                onClick={() => handleViewCourse(product.course!.id)}
+                className="w-full"
+                size="sm"
+              >
+                <ExternalLink className="w-4 h-4 ml-2" />
+                مشاهده دوره
+              </Button>
+              <Button 
+                onClick={() => handleViewSession(product.course!.id)}
+                className="w-full"
+                variant="outline"
+                size="sm"
+              >
+                <Play className="w-4 h-4 ml-2" />
+                مشاهده جلسات
+              </Button>
+            </div>
           )}
 
           {product.product_type === "test" && product.test && (
