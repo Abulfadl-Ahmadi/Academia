@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 // @ts-ignore
 import moment from 'moment-jalaali';
