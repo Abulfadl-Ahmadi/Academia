@@ -154,7 +154,6 @@ class SubmitAnswerView(generics.CreateAPIView):
         now = timezone.now()
         if now > session.entry_time + session.test.duration:
             return Response({"error": "Time is up."}, status=403)
-        print(session.status)
         if session.status == "completed":
             return Response({"error": "You've submitted your answer sheet and you can no longer modify it."}, status=403)
 
