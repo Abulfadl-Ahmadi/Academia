@@ -154,7 +154,10 @@ class SubmitAnswerView(generics.CreateAPIView):
         now = timezone.now()
         if now > session.entry_time + session.test.duration:
             return Response({"error": "Time is up."}, status=403)
-        
+        print(session.status)
+        if session.status == "completed":
+            return Response({"error": "You've submitted your answer sheet and you can no longer modify it."}, status=403)
+
         if isinstance(answers, str):
             try:
                 answers = json.loads(answers)
@@ -201,6 +204,7 @@ class FinishTestView(views.APIView):
         session.exit_time = timezone.now()
         session.status = 'completed'
         session.save()
+        print(session.status)
         return Response({"message": "Test finished."})
 
 class ExitTestView(views.APIView):
@@ -237,7 +241,6 @@ class ExitTestView(views.APIView):
             ip = request.META.get('REMOTE_ADDR')
         return ip
 
-
 class CreateReport(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -266,36 +269,45 @@ class CreateReport(views.APIView):
         for session in sessions:
             answers = StudentAnswer.objects.filter(session=session)
             correct_answers = 0
+            wrong_answers = 0
             total_questions = len(test.primary_keys.all())
             
             # Calculate score
             answer_details = []
-            for answer in answers:
-                # Get correct answer for this question
+            answer_map = {a.question_number: a for a in answers}
+            for q_num in range(1, total_questions + 1):
+                answer = answer_map.get(q_num)
                 try:
-                    correct_key = test.primary_keys.get(question_number=answer.question_number)
-                    is_correct = answer.answer == correct_key.answer
-                    if is_correct:
-                        correct_answers += 1
-                    
+                    correct_key = test.primary_keys.get(question_number=q_num)
+                    if answer:
+                        is_correct = answer.answer == correct_key.answer
+                        if is_correct:
+                            correct_answers += 1
+                        else:
+                            wrong_answers += 1
+                        student_ans = answer.answer
+                    else:
+                        # دانش‌آموز پاسخی نداده
+                        is_correct = False
+                        student_ans = None
+
                     answer_details.append({
-                        "question_number": answer.question_number,
-                        "student_answer": answer.answer,
+                        "question_number": q_num,
+                        "student_answer": student_ans,
                         "correct_answer": correct_key.answer,
                         "is_correct": is_correct
                     })
                 except:
-                    # Handle case where question might not have a key
                     answer_details.append({
-                        "question_number": answer.question_number,
-                        "student_answer": answer.answer,
+                        "question_number": q_num,
+                        "student_answer": student_ans if answer else None,
                         "correct_answer": None,
                         "is_correct": False
                     })
-            
+
             # Calculate score percentage
-            score_percentage = (correct_answers / total_questions * 100) if total_questions > 0 else 0
-            
+            score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
+            score_percentage = score_percentage/3
             session_data = {
                 "user": {
                     "id": session.user.id,
@@ -310,6 +322,7 @@ class CreateReport(views.APIView):
                 "status": session.status,
                 "score": {
                     "correct": correct_answers,
+                    "wrong": wrong_answers,
                     "total": total_questions,
                     "percentage": score_percentage
                 },
