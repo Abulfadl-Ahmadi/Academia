@@ -18,6 +18,7 @@ class CourseNestedSerializer(serializers.ModelSerializer):
 class TestCreateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
     pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    status = serializers.SerializerMethodField()
     course = serializers.PrimaryKeyRelatedField(
         queryset=Course.objects.all(),
         write_only=True
@@ -27,7 +28,7 @@ class TestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Test
-        fields = ["id", 'name', 'course_detail', 'description', 'course', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
+        fields = ["id", 'name', 'status', 'course_detail', 'description', 'course', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
         read_only_fields = ['teacher']
 
     def create(self, validated_data):
@@ -40,6 +41,16 @@ class TestCreateSerializer(serializers.ModelSerializer):
         for key in keys_data:
             PrimaryKey.objects.create(test=test, **key)
         return test
+
+    def get_status(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+        sessions = StudentTestSession.objects.filter(user=user, test=validated_data.id).order_by("-id")
+        if len(sessions) == 0:
+            return ""
+        else:
+            return sessions.first().status
+
 
 class TestUpdateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
