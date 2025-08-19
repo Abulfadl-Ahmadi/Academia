@@ -80,4 +80,4 @@ class StudentTestSessionLog(models.Model):
 class StudentAnswer(models.Model):
     session = models.ForeignKey(StudentTestSession, on_delete=models.CASCADE, related_name='answers')
     question_number = models.IntegerField()
-    answer = models.IntegerField()
+    answer = models.IntegerField(null=True, blank=True)
