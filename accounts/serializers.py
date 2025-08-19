@@ -14,9 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 class SendVerificationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    username = serializers.CharField()
-    first_name = serializers.CharField(required=False, allow_blank=True)
-    last_name = serializers.CharField(required=False, allow_blank=True)
+    # username = serializers.CharField()
+    # first_name = serializers.CharField(required=False, allow_blank=True)
+    # last_name = serializers.CharField(required=False, allow_blank=True)
 
 
 class VerifyEmailSerializer(serializers.Serializer):

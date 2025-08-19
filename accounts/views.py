@@ -1,3 +1,4 @@
+# accounts/views.py
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
@@ -27,36 +28,36 @@ class SendVerificationCodeView(APIView):
         serializer = SendVerificationCodeSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            username = serializer.validated_data['username']
-            first_name = serializer.validated_data.get('first_name', '')
-            last_name = serializer.validated_data.get('last_name', '')
+            # username = serializer.validated_data['username']
+            # first_name = serializer.validated_data.get('first_name', '')
+            # last_name = serializer.validated_data.get('last_name', '')
             
-            # Check if user already exists
-            if User.objects.filter(username=username).exists():
-                return Response(
-                    {"error": "نام کاربری قبلاً استفاده شده است"}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            # # Check if user already exists
+            # if User.objects.filter(username=username).exists():
+            #     return Response(
+            #         {"error": "نام کاربری قبلاً استفاده شده است"}, 
+            #         status=status.HTTP_400_BAD_REQUEST
+            #     )
             
-            if User.objects.filter(email=email).exists():
-                return Response(
-                    {"error": "ایمیل قبلاً ثبت شده است"}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            # if User.objects.filter(email=email).exists():
+            #     return Response(
+            #         {"error": "ایمیل قبلاً ثبت شده است"}, 
+            #         status=status.HTTP_400_BAD_REQUEST
+            #     )
             
             VerificationCode.objects.filter(email=email).delete()
             # Create verification code
             verification_code = VerificationCode.create_for_email(email)
             
             # Send email
-            user_name = f"{first_name} {last_name}".strip() if first_name or last_name else username
+            # user_name = f"{first_name} {last_name}".strip() if first_name or last_name else username
             # email_sent = send_verification_email(email, verification_code.code, user_name)
             email_sent = True
 
             if email_sent:
                 # Store registration data in cache for 10 minutes
-                cache_key = f"registration_data_{email}"
-                cache.set(cache_key, serializer.validated_data, 600)  # 10 minutes
+                # cache_key = f"registration_data_{email}"
+                # cache.set(cache_key, serializer.validated_data, 600)  # 10 minutes
                 
                 return Response({
                     "message": "کد تایید به ایمیل شما ارسال شد",
@@ -103,19 +104,19 @@ class VerifyEmailView(APIView):
                 verification_code.save()
                 
                 # Get registration data from cache
-                cache_key = f"registration_data_{email}"
-                registration_data = cache.get(cache_key)
+                # cache_key = f"registration_data_{email}"
+                # registration_data = cache.get(cache_key)
                 
-                if not registration_data:
-                    return Response(
-                        {"error": "داده‌های ثبت‌نام یافت نشد. لطفاً دوباره تلاش کنید"}, 
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+                # if not registration_data:
+                #     return Response(
+                #         {"error": "داده‌های ثبت‌نام یافت نشد. لطفاً دوباره تلاش کنید"}, 
+                #         status=status.HTTP_400_BAD_REQUEST
+                #     )
                 
                 return Response({
                     "message": "ایمیل با موفقیت تایید شد",
                     "email": email,
-                    "registration_data": registration_data
+                    # "registration_data": registration_data
                 }, status=status.HTTP_200_OK)
                 
             except VerificationCode.DoesNotExist:
@@ -139,18 +140,18 @@ class CompleteRegistrationView(APIView):
             email = serializer.validated_data['email']
             
             # Check if email was verified
-            verification_code = (
-                VerificationCode.objects
-                .filter(email=email, is_used=True)
-                .order_by('-created_at')
-                .first()
-            )
+            # verification_code = (
+            #     VerificationCode.objects
+            #     .filter(email=email, is_used=True)
+            #     .order_by('-created_at')
+            #     .first()
+            # )
 
-            if not verification_code:
-                return Response(
-                    {"error": "لطفاً ابتدا ایمیل خود را تایید کنید"}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            # if not verification_code:
+            #     return Response(
+            #         {"error": "لطفاً ابتدا ایمیل خود را تایید کنید"}, 
+            #         status=status.HTTP_400_BAD_REQUEST
+            #     )
             
             # Create user
             user_data = {
@@ -181,11 +182,15 @@ class CompleteRegistrationView(APIView):
             refresh = RefreshToken.for_user(user)
             
             # Clear cache
-            cache_key = f"registration_data_{email}"
-            cache.delete(cache_key)
+            # cache_key = f"registration_data_{email}"
+            # cache.delete(cache_key)
+
+            VerificationCode.objects.filter(email=user.email).delete()
+            code = VerificationCode.create_for_email(user.email)
+            # send_email(user.email, code.code)
             
             response = Response({
-                "message": "ثبت‌نام با موفقیت انجام شد",
+                "message": "ثبت‌نام با موفقیت انجام شد، لطفا ایمیل خود را تایید کنید.",
                 "user": {
                     "username": user.username,
                     "email": user.email,

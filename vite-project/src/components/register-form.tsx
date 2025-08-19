@@ -1,3 +1,4 @@
+// register-form.tsx
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -59,8 +60,8 @@ export function RegisterForm({
     }
   }
 
-  const handleSendVerification = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSendVerification = async (email: string) => {
+    
     setError("")
     setLoading(true)
 
@@ -68,12 +69,12 @@ export function RegisterForm({
       const response = await axios.post(
         baseURL + "/send-verification/",
         {
-          email: formData.user.email,
-          username: formData.user.username,
-          first_name: formData.user.first_name,
-          last_name: formData.user.last_name,
-        },
-        { withCredentials: true }
+          email: email,
+          // username: formData.user.username,
+          // first_name: formData.user.first_name,
+          // last_name: formData.user.last_name,
+        }
+        // { withCredentials: true }
       )
 
       console.log("Verification code sent:", response.data)
@@ -108,8 +109,8 @@ export function RegisterForm({
         {
           email: email,
           code: verificationCode,
-        },
-        { withCredentials: true }
+        }
+        // { withCredentials: true }
       )
 
       console.log("Email verified:", response.data)
@@ -141,7 +142,7 @@ export function RegisterForm({
       const response = await axios.post(
         baseURL + "/complete-registration/",
         {
-          email: email,
+          email: formData.user.email,
           username: formData.user.username,
           password: formData.user.password,
           first_name: formData.user.first_name,
@@ -150,12 +151,13 @@ export function RegisterForm({
           phone_number: formData.phone_number,
           birth_date: formData.birth_date,
           grade: formData.grade,
-        },
-        { withCredentials: true }
+        }
+        // { withCredentials: true }
       )
-
-      console.log("Registration completed:", response.data)
-      navigate("/login")
+      setStep('verification')
+      setEmail(response.data.user.email)
+      // console.log("Registration completed:", response.data)
+      // navigate("/login")
     } catch (err: any) {
       console.error("Complete registration error:", err)
       if (err.response?.data) {
@@ -175,7 +177,8 @@ export function RegisterForm({
   }
 
   const renderFormStep = () => (
-    <form onSubmit={handleSendVerification}>
+    // <form onSubmit={handleSendVerification}>
+    <form onSubmit={handleCompleteRegistration}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center text-center">
           <h1 className="text-2xl font-bold">عضو شوید!</h1>
@@ -303,7 +306,7 @@ export function RegisterForm({
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "در حال ارسال کد تایید..." : "ارسال کد تایید"}
+            {loading ? "در حال ثبت نام..." : "ثبت نام"}
           </Button>
 
           <div className="text-center text-sm">
@@ -355,6 +358,7 @@ export function RegisterForm({
               </InputOTP>
             </div>
           </div>
+          <Button type="button" variant="secondary" onClick={() => handleSendVerification(email)}>ارسال مجدد کد</Button>
 
           <Button type="submit" className="w-full" disabled={loading || verificationCode.length !== 6}>
             {loading ? "در حال تایید..." : "تایید کد"}
@@ -388,7 +392,7 @@ export function RegisterForm({
 
       <div className="grid gap-4">
         <Button
-          onClick={handleCompleteRegistration}
+          onClick={() => navigate('/login')}
           className="w-full"
           disabled={loading}
         >
