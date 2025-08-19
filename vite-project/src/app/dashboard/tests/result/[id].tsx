@@ -147,7 +147,7 @@ const TestResult = () => {
   const { test } = report;
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto">
       <Button
         variant="outline"
         className="mb-4"
@@ -164,14 +164,14 @@ const TestResult = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-gray-100 p-4 rounded-lg">
+            <div className="p-4 rounded-lg">
               <h3 className="font-bold mb-2">اطلاعات آزمون</h3>
               <p>درس: {test.course || 'نامشخص'}</p>
               <p>مدت زمان: {test.duration} دقیقه</p>
               <p>شروع: {formatDate(test.start_time)}</p>
               <p>پایان: {formatDate(test.end_time)}</p>
             </div>
-            <div className="bg-gray-100 p-4 rounded-lg">
+            <div className="p-4 rounded-lg">
               <h3 className="font-bold mb-2">نتیجه شما</h3>
               <div className="mb-4">
                 <Progress value={session.score.percentage} className="h-2" />
@@ -193,50 +193,68 @@ const TestResult = () => {
               </p>
             </div>
           </div>
+        </CardContent>
+        </Card>
+        <Card>
+        <CardContent>
+            <h3 className="font-bold text-lg">پاسخ‌های شما</h3>
+          <div className="mt-8" dir='ltr'>
+            <div className='grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+              {Array.from(
+                { length: Math.ceil(session.answers.length / 10) },
+                (_, groupIndex) => {
+                  const group = session.answers
+                    .sort((a, b) => a.question_number - b.question_number)
+                    .slice(groupIndex * 10, (groupIndex + 1) * 10);
 
-          <div className="mt-8">
-            <h3 className="font-bold text-lg mb-4">پاسخ‌های شما</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {session.answers
-                .sort((a, b) => a.question_number - b.question_number)
-                .map((answer) => (
-                  <Card
-                    key={answer.question_number}
-                    className={`border ${answer.is_correct ? 'border-green-500' : 'border-red-500'}`}
-                  >
-                    <CardHeader className="p-4 pb-2">
-                      <CardTitle className="text-md flex justify-between items-center">
-                        <span>سوال {answer.question_number}</span>
-                        {answer.is_correct ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-red-500" />
-                        )}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">پاسخ شما:</p>
-                          <Badge
-                            variant="outline"
-                            className={`${answer.is_correct ? 'bg-green-100' : 'bg-red-100'}`}
-                          >
-                            گزینه {answer.student_answer}
-                          </Badge>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">پاسخ صحیح:</p>
-                          <Badge variant="outline" className="bg-green-100">
-                            گزینه {answer.correct_answer}
-                          </Badge>
+                  return (
+                    <div
+                      key={groupIndex}
+                      className="mb-3"
+                    >
+                      <div className="text-center text-xs ">
+                        <div className='space-y-1'>
+                          {group.map((answer) => (
+                            <div key={answer.question_number} className="flex flex-row space-x-1">
+                              <div className="self-center font-bold w-10" dir='rtl'>{answer.question_number}</div>
+                              {[1, 2, 3, 4].map((opt) => {
+                                let color = "bg-gray-500/5 border-2 border-gray-500/50"; // پیش‌فرض خاکستری
+                                if (answer.student_answer === opt && answer.is_correct) {
+                                  color = "bg-green-500/30 border-2 border-green-500/50"; // جواب درست
+                                } else if (
+                                  answer.student_answer === opt &&
+                                  !answer.is_correct
+                                ) {
+                                  color = "bg-red-500/20 border-2 border-red-500/50"; // جواب غلط
+                                } else if (
+                                  answer.student_answer !== opt &&
+                                  answer.correct_answer === opt &&
+                                  !answer.is_correct
+                                ) {
+                                  color = "bg-gray-500/40 border-2 border-gray-500/50"; // گزینه صحیح ولی انتخاب نشده
+                                }
+
+                                return (
+                                  <div
+                                    key={opt}
+                                    className={`pt-[2px] px-4 ${color} rounded-md`}
+                                  >
+                                    {opt}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
+
+
         </CardContent>
       </Card>
     </div>
