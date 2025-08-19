@@ -16,10 +16,10 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Viewer,
 } from "@react-pdf-viewer/core";
-import {
-  defaultLayoutPlugin,
-  type ToolbarProps,
-} from "@react-pdf-viewer/default-layout";
+// import {
+//   defaultLayoutPlugin,
+//   type ToolbarProps,
+// } from "@react-pdf-viewer/default-layout";
 import { zoomPlugin } from "@react-pdf-viewer/zoom";
 // import '@react-pdf-viewer/zoom/lib/styles/index.css'
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -42,7 +42,6 @@ const TestDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   const session = location.state?.session;
-  console.log(session);
 
   const logoutSession = async () => {
     try {
@@ -55,6 +54,18 @@ const TestDetailPage: React.FC = () => {
     } catch (error) {
       alert("Error logging out session.");
     }
+  };
+
+  const finishTest = async () => {
+    try {
+      await axiosInstance.post("/finish-test/", {
+      session_id: session.session_id
+    });
+    toast.success("پاسخ‌برگ شما به مراقب آزمون تحویل داده شد.");
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+
   };
 
   const options = [
@@ -89,9 +100,13 @@ const TestDetailPage: React.FC = () => {
             (parsedAnswers as { [key: number]: string })[Number(key)] = String(res.data[key]);
           }
           setAnswers(parsedAnswers);
+
         })
         .catch((err) => {
           console.error("Failed to fetch answers:", err);
+          if (err.response.status === 403) {
+            navigate("/panel");
+          }
         });
     }
   }, [session?.session_id]);
@@ -141,6 +156,7 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
           answer: Number(answerValue),
         })
       );
+      toast.success(`پاسخ سوال ${questionNumber} با موفقیت ثبت شد.`);
 
     } catch (error) {
       console.error(
@@ -148,42 +164,40 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
         error
       );
       toast.error(`پاسخ سوال ${questionNumber} ثبت نشد!`);
-    } finally {
-      toast.success(`پاسخ سوال ${questionNumber} با موفقیت ثبت شد.`);
     }
   };
 
-  const renderToolbar = (Toolbar: (props: ToolbarProps) => React.ReactElement) => (
-    <Toolbar>
-      {(slots: any) => {
-        const { GoToNextPage, GoToPreviousPage, Zoom, ZoomIn, ZoomOut } = slots;
-        return (
-          <div className="">
-            <div className="mr-auto">
-              <ZoomOut />
-            </div>
-            <div style={{ padding: "0px 2px", marginLeft: "auto" }}>
-              <Zoom />
-            </div>
-            <div>
-              <ZoomIn />
-            </div>
-            <div>
-              <GoToPreviousPage />
-            </div>
-            <div>
-              <GoToNextPage />
-            </div>
-          </div>
-        );
-      }}
-    </Toolbar>
-  );
+  // const renderToolbar = (Toolbar: (props: ToolbarProps) => React.ReactElement) => (
+  //   <Toolbar>
+  //     {(slots: any) => {
+  //       const { GoToNextPage, GoToPreviousPage, Zoom, ZoomIn, ZoomOut } = slots;
+  //       return (
+  //         <div className="">
+  //           <div className="mr-auto">
+  //             <ZoomOut />
+  //           </div>
+  //           <div style={{ padding: "0px 2px", marginLeft: "auto" }}>
+  //             <Zoom />
+  //           </div>
+  //           <div>
+  //             <ZoomIn />
+  //           </div>
+  //           <div>
+  //             <GoToPreviousPage />
+  //           </div>
+  //           <div>
+  //             <GoToNextPage />
+  //           </div>
+  //         </div>
+  //       );
+  //     }}
+  //   </Toolbar>
+  // );
 
-  const defaultLayoutPluginInstance = defaultLayoutPlugin({
-    renderToolbar,
-    sidebarTabs: () => [],
-  });
+  // const defaultLayoutPluginInstance = defaultLayoutPlugin({
+  //   renderToolbar,
+  //   sidebarTabs: () => [],
+  // });
 
   const zoomPluginInstance = zoomPlugin();
   const { ZoomInButton, ZoomOutButton } = zoomPluginInstance;
@@ -246,7 +260,7 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
         </SidebarContent> */}
 
         <SidebarContent className="p-3 overflow-y-auto space-y-3">
-          {Array.from({ length: 20 }).map((_, index) => {
+          {Array.from({ length: 60 }).map((_, index) => {
             const questionNumber = index + 1;
             return (
               <div
@@ -303,6 +317,7 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
               onTimeUp={handleTimeUp}
             />
             <Button onClick={logoutSession}>خروج موقت از آزمون</Button>
+            <Button onClick={finishTest}>پایان آزمون</Button>
             {/* <p>session {session}</p> */}
           </div>
         </header>
