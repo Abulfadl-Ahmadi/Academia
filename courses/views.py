@@ -54,6 +54,13 @@ class CourseViewSet(viewsets.ModelViewSet):
             serializer.save(teacher=self.request.user, vod_channel_id=vod_channel_id)
         else:
             serializer.save(vod_channel_id=vod_channel_id)
+            
+    def destroy(self, request, *args, **kwargs):
+        if self.get_object().vod_channel_id:
+            # If the course has a vod_channel_id, delete the channel
+            from utils.vod import delete_channel
+            delete_channel(self.get_object().vod_channel_id)
+        return super().destroy(request, *args, **kwargs)
 
     @action(detail=True, methods=['get'])
     def sessions(self, request, pk=None):

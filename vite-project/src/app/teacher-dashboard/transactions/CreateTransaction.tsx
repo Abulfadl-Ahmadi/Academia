@@ -175,7 +175,7 @@ export default function CreateTransaction({ onTransactionCreated }: CreateTransa
 
             {/* Selected Order Details */}
             {selectedOrder && (
-              <Card className="bg-gray-50">
+              <Card>
                 <CardContent className="pt-4">
                   <h4 className="font-medium mb-3">جزئیات سفارش انتخاب شده:</h4>
                   <div className="space-y-2 text-sm">
