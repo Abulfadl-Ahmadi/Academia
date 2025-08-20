@@ -12,6 +12,7 @@ from .serializers import (
 from accounts.models import User
 from tests.models import Test
 from tests.serializers import TestCreateSerializer
+from utils.vod import create_channel
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -47,10 +48,12 @@ class CourseViewSet(viewsets.ModelViewSet):
         return CourseSerializer
 
     def perform_create(self, serializer):
+        vod_channel_id = create_channel(serializer.validated_data)['data']['id']
+
         if self.request.user.role == 'teacher':
-            serializer.save(teacher=self.request.user)
+            serializer.save(teacher=self.request.user, vod_channel_id=vod_channel_id)
         else:
-            serializer.save()
+            serializer.save(vod_channel_id=vod_channel_id)
 
     @action(detail=True, methods=['get'])
     def sessions(self, request, pk=None):
