@@ -44,7 +44,7 @@ const VideoUploadForm: React.FC = () => {
         const data = await response.data;
         setCourses(data);
       } catch (err) {
-        setError('Failed to fetch courses.');
+        setError('Failed to fetch courses.' + err);
       }
     };
     fetchCourses();
@@ -120,7 +120,7 @@ const VideoUploadForm: React.FC = () => {
         setError('Failed to upload file.');
       }
     } catch (err) {
-      setError('An error occurred during upload.');
+      setError('An error occurred during upload.' + err);
     } finally {
       setLoading(false);
     }

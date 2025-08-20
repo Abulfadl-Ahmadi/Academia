@@ -5,7 +5,7 @@ import axiosInstance from '@/lib/axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Download, ThumbsUp, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
+import { FileText, Download, Clock, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface File {
@@ -62,13 +62,13 @@ export default function VideoPlayerPage() {
       }
       
       // Mark session as watched
-      if (!response.data.is_watched) {
-        await axiosInstance.post(`/courses/sessions/${id}/mark-watched/`);
-      }
+      // if (!response.data.is_watched) {
+      //   await axiosInstance.post(`/courses/sessions/${id}/mark-watched/`);
+      // }
       
       // Fetch related sessions from the same course
-      if (response.data.course?.id) {
-        const relatedResponse = await axiosInstance.get(`/courses/${response.data.course.id}/student-sessions/`);
+      if (response.data.course) {
+        const relatedResponse = await axiosInstance.get(`/courses/${response.data.course}/student-sessions/`);
         setRelatedSessions(relatedResponse.data.filter((s: Session) => s.id !== id));
       }
     } catch (error) {
@@ -160,7 +160,7 @@ export default function VideoPlayerPage() {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm">
                   <ThumbsUp className="w-4 h-4 ml-2" />
                   پسندیدم
@@ -173,7 +173,7 @@ export default function VideoPlayerPage() {
                   <Bookmark className="w-4 h-4 ml-2" />
                   ذخیره
                 </Button>
-              </div>
+              </div> */}
             </div>
 
             {/* Description */}
@@ -207,7 +207,7 @@ export default function VideoPlayerPage() {
 
         {/* Sidebar - Lecture Notes as Recommendations */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold mb-4">جزوات و جلسات مرتبط</h2>
+          <h2 className="text-xl font-bold mb-4">فایل‌های جزوه و دست‌نویس مربوط به این جلسه</h2>
           
           {/* Lecture Notes Section */}
           {pdfFile && (
@@ -276,7 +276,7 @@ function RelatedSessionCard({ session, onSelect }: RelatedSessionCardProps) {
                 مشاهده شده
               </Badge>
             )}
-            <div className="text-gray-400">
+            <div className="text-muted-foreground ">
               جلسه {session.session_number}
             </div>
           </div>

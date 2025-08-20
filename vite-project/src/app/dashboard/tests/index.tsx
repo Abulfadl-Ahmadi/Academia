@@ -112,15 +112,15 @@ const handleStartTest = async (testId: number) => {
 
   const getTestStatusBadge = (test: Test) => {
     if (test.status === "completed") {
-      return <Badge className="bg-green-500">تکمیل شده</Badge>;
+      return <Badge className="bg-green-500/80">تکمیل شده</Badge>;
     } else if (test.status === "in_progress") {
-      return <Badge className="bg-yellow-500">در حال انجام</Badge>;
+      return <Badge className="bg-yellow-500/80">در حال انجام</Badge>;
     } else if (isTestActive(test)) {
-      return <Badge className="bg-blue-500">آماده شروع</Badge>;
+      return <Badge className="bg-blue-500/80">آماده شروع</Badge>;
     } else if (isTestUpcoming(test)) {
-      return <Badge className="bg-purple-500">آینده</Badge>;
+      return <Badge className="bg-purple-500/80">آینده</Badge>;
     } else if (isTestExpired(test)) {
-      return <Badge className="bg-gray-500">منقضی شده</Badge>;
+      return <Badge className="bg-gray-500/80">منقضی شده</Badge>;
     }
   };
 

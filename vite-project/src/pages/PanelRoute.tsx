@@ -27,6 +27,7 @@ import VideoPage from "@/app/dashboard/video/page"
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout"
 import { TeacherLayout } from "@/components/layouts/TeacherLayout"
+import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page"
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -69,6 +70,7 @@ export default function PanelRoute() {
         <Route path="courses" element={<CoursesList />} />
         <Route path="courses/create" element={<CreateCoursePage />} />
         <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+        <Route path="/courses/:courseId/edit" element={<EditCoursePage />} />
         <Route path="/courses/:id/sessions" element={<SessionsPage />} />
         <Route path="/courses/:course_id/sessions/:session_id" element={<SessionsDetailPage />} />
         <Route path="/profile" element={<TeacherProfilePage />} />

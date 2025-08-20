@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { 
   Users, 
@@ -17,6 +18,7 @@ import {
   Trash2
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
+import EditSessionModal from "./EditSessionModal";
 
 interface Course {
   id: number;
@@ -60,18 +62,16 @@ interface CourseDetailProps {
 }
 
 export default function CourseDetail({ courseId }: CourseDetailProps) {
+  const navigate = useNavigate();
   const [course, setCourse] = useState<Course | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [tests, setTests] = useState<Test[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddSession, setShowAddSession] = useState(false);
+  const [editSessionId, setEditSessionId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchCourseData();
-  }, [courseId]);
-
-  const fetchCourseData = async () => {
+  const fetchCourseData = useCallback(async () => {
     try {
       setLoading(true);
       const [courseResponse, sessionsResponse, testsResponse] = await Promise.all([
@@ -90,7 +90,13 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId]);
+
+  useEffect(() => {
+    fetchCourseData();
+  }, [fetchCourseData]);
+
+
 
   const handleSessionAdded = () => {
     setShowAddSession(false);
@@ -179,7 +185,11 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               <Badge variant={course.is_active ? "default" : "secondary"}>
                 {course.is_active ? "فعال" : "غیرفعال"}
               </Badge>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate(`/panel/courses/${courseId}/edit`)}
+              >
                 <Edit className="w-4 h-4 ml-2" />
                 ویرایش دوره
               </Button>
@@ -188,28 +198,28 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           
           {/* Course Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-blue-500/10 rounded-lg">
               <Play className="w-6 h-6 text-blue-600" />
               <div>
                 <div className="text-lg font-bold text-blue-600">{sessions.length}</div>
                 <div className="text-sm text-blue-600">جلسه</div>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
               <FileText className="w-6 h-6 text-green-600" />
               <div>
                 <div className="text-lg font-bold text-green-600">{tests.length}</div>
                 <div className="text-sm text-green-600">آزمون</div>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-lg">
               <Users className="w-6 h-6 text-purple-600" />
               <div>
                 <div className="text-lg font-bold text-purple-600">{course.students_count}</div>
                 <div className="text-sm text-purple-600">دانش‌آموز</div>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-orange-500/10 rounded-lg">
               <Calendar className="w-6 h-6 text-orange-600" />
               <div>
                 <div className="text-sm text-orange-600">ایجاد شده در</div>
@@ -243,7 +253,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
             <CardContent>
               {sessions.length === 0 ? (
                 <div className="text-center py-12">
-                  <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <Play className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز جلسه‌ای ایجاد نشده است</h3>
                   <p className="text-muted-foreground mb-6">برای شروع، اولین جلسه دوره را ایجاد کنید</p>
                   <Button onClick={() => setShowAddSession(true)}>
@@ -259,6 +269,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                       session={session}
                       onDelete={handleDeleteSession}
                       onTogglePublish={handleToggleSessionPublish}
+                      onEdit={setEditSessionId}
                     />
                   ))}
                 </div>
@@ -282,7 +293,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
             <CardContent>
               {tests.length === 0 ? (
                 <div className="text-center py-12">
-                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <FileText className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز آزمونی ایجاد نشده است</h3>
                   <p className="text-muted-foreground mb-6">برای شروع، اولین آزمون دوره را ایجاد کنید</p>
                   <Button variant="outline">
@@ -310,7 +321,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
             <CardContent>
               {students.length === 0 ? (
                 <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <Users className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
                 <p className="text-muted-foreground">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
               </div>
@@ -335,6 +346,19 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           onSessionAdded={handleSessionAdded}
         />
       )}
+
+      {/* Edit Session Modal */}
+      {editSessionId && (
+        <EditSessionModal
+          courseId={courseId}
+          sessionId={editSessionId}
+          onClose={() => setEditSessionId(null)}
+          onSessionUpdated={() => {
+            setEditSessionId(null);
+            fetchCourseData();
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -343,9 +367,10 @@ interface SessionCardProps {
   session: Session;
   onDelete: (sessionId: number) => void;
   onTogglePublish: (sessionId: number, currentStatus: boolean) => void;
+  onEdit: (sessionId: number) => void;
 }
 
-function SessionCard({ session, onDelete, onTogglePublish }: SessionCardProps) {
+function SessionCard({ session, onDelete, onTogglePublish, onEdit }: SessionCardProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
@@ -416,7 +441,11 @@ function SessionCard({ session, onDelete, onTogglePublish }: SessionCardProps) {
             >
               {session.is_published ? "غیرمنتشر کردن" : "انتشار"}
             </Button>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onEdit(session.id)}
+            >
               <Edit className="w-4 h-4 ml-2" />
               ویرایش
             </Button>

@@ -7,7 +7,6 @@ import {
   Library,
   BookOpenCheck,
   Box,
-  Users,
   TvMinimalPlay,
   CreditCard,
   ShoppingCart,
@@ -150,14 +149,9 @@ export function TeacherSidebar({
     home: [
       {
         name: "خانه",
-        url: "#",
+        url: "/panel",
         icon: House,
-      },
-      {
-        name: "دانش‌آموزان",
-        url: "/panel/students",
-        icon: Users,
-      },
+      }
     ],
   };
 

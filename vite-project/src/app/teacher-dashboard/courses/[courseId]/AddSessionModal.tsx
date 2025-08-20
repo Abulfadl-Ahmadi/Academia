@@ -417,7 +417,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                 {!videoFile ? (
                   <div className="space-y-2">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                    <Upload className="w-8 h-8 text-muted-foreground  mx-auto" />
                     <div>
                       <Button
                         type="button"
@@ -474,7 +474,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                 {!lectureNotesFile ? (
                   <div className="space-y-2">
-                    <FileText className="w-8 h-8 text-gray-400 mx-auto" />
+                    <FileText className="w-8 h-8 text-muted-foreground  mx-auto" />
                     <div>
                       <Button
                         type="button"

@@ -38,7 +38,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody dir="rtl">
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -54,10 +54,10 @@ export function DataTable<TData, TValue>({
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button variant="outline" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          Previous
+          قبلی
         </Button>
         <Button variant="outline" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          Next
+          بعدی
         </Button>
       </div>
     </div>

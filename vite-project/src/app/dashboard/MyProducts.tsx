@@ -96,7 +96,7 @@ export default function MyProducts() {
       <Card>
         <CardContent className="pt-6">
           <div className="text-center py-12">
-            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <BookOpen className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
             <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز محصولی خریداری نکرده‌اید</h3>
             <p className="text-muted-foreground mb-6">
               برای دسترسی به دوره‌ها، فایل‌ها و آزمون‌ها، ابتدا آنها را از فروشگاه خریداری کنید.
@@ -243,7 +243,7 @@ function ProductCard({ access }: ProductCardProps) {
 
   return (
     <Card className="overflow-hidden">
-      <div className="aspect-video bg-gray-100 flex items-center justify-center">
+      <div className="aspect-video bg-gray-500/50 flex items-center justify-center">
         {product.image ? (
           <img 
             src={product.image} 
@@ -251,7 +251,7 @@ function ProductCard({ access }: ProductCardProps) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-gray-400">
+          <div className="text-muted-foreground ">
             {getProductTypeIcon(product.product_type)}
           </div>
         )}

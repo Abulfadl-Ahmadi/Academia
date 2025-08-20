@@ -1,12 +1,13 @@
+// ThemeContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark' | 'system';
 type AccentColor = 'blue' | 'green' | 'purple' | 'red' | 'orange' | 'teal' | 'pink' | 'indigo';
 
 interface ThemeContextType {
   theme: Theme;
   accentColor: AccentColor;
-  toggleTheme: () => void;
+  toggleTheme: (theme: Theme) => void;
   setAccentColor: (color: AccentColor) => void;
 }
 
@@ -52,10 +53,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme') as Theme;
       if (saved) return saved;
+      return 'system';
+    }
+    return 'system';
+  });
+
+  // Function to get the effective theme based on system preference
+  const getEffectiveTheme = (themeSetting: Theme): 'light' | 'dark' => {
+    if (themeSetting === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return 'light';
-  });
+    return themeSetting;
+  };
 
   const [accentColor, setAccentColor] = useState<AccentColor>(() => {
     if (typeof window !== 'undefined') {
@@ -67,9 +76,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     
+    // Get the effective theme (actual light/dark value)
+    const effectiveTheme = getEffectiveTheme(theme);
+    
     // Apply theme
     root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+    root.classList.add(effectiveTheme);
     
     // Apply only primary accent color, let shadcn handle the rest
     const colors = ACCENT_COLORS[accentColor];
@@ -79,10 +91,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Save to localStorage
     localStorage.setItem('theme', theme);
     localStorage.setItem('accentColor', accentColor);
+
+    // Listen for system theme changes if using system theme
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        root.classList.remove('light', 'dark');
+        root.classList.add(e.matches ? 'dark' : 'light');
+      };
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
   }, [theme, accentColor]);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  const toggleTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
   };
 
   const handleAccentColorChange = (color: AccentColor) => {

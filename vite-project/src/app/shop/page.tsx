@@ -258,7 +258,7 @@ export default function ShopPage() {
           <div className=" rounded-lg shadow-sm border p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground " />
                 <Input
                   placeholder="جستجو در محصولات..."
                   value={searchTerm}
@@ -387,7 +387,7 @@ export default function ShopPage() {
 
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
-              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <FileText className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">محصولی یافت نشد</h3>
               <p className="text-muted-foreground">لطفاً فیلترهای خود را تغییر دهید</p>
             </div>
@@ -407,7 +407,7 @@ export default function ShopPage() {
               <CardContent>
                 {cart.length === 0 ? (
                   <div className="text-center py-8">
-                    <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <ShoppingCart className="w-12 h-12 text-muted-foreground  mx-auto mb-4" />
                     <p className="text-muted-foreground">سبد خرید خالی است</p>
                   </div>
                 ) : (
