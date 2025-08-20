@@ -8,7 +8,7 @@ def send_verification_email(email, verification_code, user_name):
     """
     Send verification email with the provided code
     """
-    subject = 'کد تایید ایمیل - آکادمی'
+    subject = 'کد تایید ایمیل - آرین تفضلی‌زاده'
     
     # Render HTML template
     html_message = render_to_string('accounts/email_verification.html', {
