@@ -103,7 +103,41 @@ class CourseViewSet(viewsets.ModelViewSet):
         tests = Test.objects.filter(course=course)
         serializer = TestCreateSerializer(tests, many=True, context={'request': request})
         return Response(serializer.data)
-    
+
+    @action(detail=True, methods=['get', 'post'])
+    def schedules(self, request, pk=None):
+        """Get or create schedules for a specific course"""
+        course = self.get_object()
+        
+        if request.method == 'GET':
+            schedules = CourseSchedule.objects.filter(course=course)
+            serializer = CourseScheduleSerializer(schedules, many=True)
+            return Response(serializer.data)
+        
+        elif request.method == 'POST':
+            # Only teachers can create schedules for their courses
+            if request.user.role not in ['admin', 'teacher']:
+                return Response(
+                    {"error": "Only teachers can create schedules"}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            if request.user.role == 'teacher' and course.teacher != request.user:
+                return Response(
+                    {"error": "You can only create schedules for your own courses"}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Add the course to the request data
+            data = request.data.copy()
+            data['course'] = course.id
+            
+            serializer = CourseScheduleSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ClassCategoryViewSet(viewsets.ModelViewSet):

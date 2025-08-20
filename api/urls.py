@@ -20,9 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Enhanced admin configuration
-admin.site.site_header = "Academia Management System"
-admin.site.site_title = "Academia Admin"
-admin.site.index_title = "Welcome to Academia Administration"
+admin.site.site_header = "سیستم مدیریت آرین تفضلی‌زاده"
+admin.site.site_title = "پنل مدیریت آرین تفضلی‌زاده"
+admin.site.index_title = "به پنل مدیریت آرین تفضلی‌زاده خوش آمدید"
 
 # Import admin configuration to ensure all models are registered
 try:

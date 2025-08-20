@@ -1,0 +1,21 @@
+/* Logo styles */
+.logo-svg {
+  filter: brightness(0) saturate(100%);
+}
+
+.dark .logo-svg {
+  filter: brightness(0) saturate(100%) invert(1);
+}
+
+/* Alternative approach using CSS variables */
+.logo-adaptive {
+  filter: var(--logo-filter, brightness(0) saturate(100%));
+}
+
+:root {
+  --logo-filter: brightness(0) saturate(100%);
+}
+
+.dark {
+  --logo-filter: brightness(0) saturate(100%) invert(1);
+}

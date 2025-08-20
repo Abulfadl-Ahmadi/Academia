@@ -12,6 +12,8 @@ import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
 import TestDetailPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
+import HomePage from '@/components/HomePage'
+import { Footer } from '@/components/Footer'
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import TestPage from './app/teacher-dashboard/tests/TestPage'
@@ -42,7 +44,7 @@ function App() {
     console.log(user);
     }
   return (
-    <>
+    <div>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -51,17 +53,15 @@ function App() {
         <Route path="/panel/*" element={<PanelRoute />} />
         <Route path="/logout" element={<LogoutPage />} />
 
-        <Route path="/shop" element={<><Navbar /><div className=''><ShopPage /></div></>} />
-        <Route path="/shop/:id" element={<><Navbar /><div className=''><ProductDetailPage /></div></>} />
+        <Route path="/shop" element={<><Navbar /><div className=''><ShopPage /></div><Footer /></>} />
+        <Route path="/shop/:id" element={<><Navbar /><div className=''><ProductDetailPage /></div><Footer /></>} />
         <Route
           path="/"
           element={
             <>
             <Navbar />
-            <div className="p-10 text-xl">
-              Welcome! Go to <a href="/login" className="text-blue-600 underline">Login</a>
-            </div>
-            {/* <VideoPlayer src="http://localhost:8000/media/output/output.m3u8" /> */}
+            <HomePage />
+            <Footer />
             </>
           }
         />
@@ -70,15 +70,18 @@ function App() {
           element={
             <>
             <Navbar />
-            <div className="p-10 text-xl">
-              صفحه مورد نظر یافت نشد
+            <div className="p-10 text-xl text-center min-h-screen flex flex-col justify-center">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">صفحه مورد نظر یافت نشد</h1>
+              <p className="text-gray-600 mb-6">متأسفانه صفحه‌ای که دنبال آن هستید وجود ندارد.</p>
+              <a href="/" className="text-blue-600 underline">بازگشت به صفحه اصلی</a>
             </div>
+            <Footer />
             </>
           }
         />
       </Routes>
       <Toaster />
-    </>
+    </div>
   )
 }
 

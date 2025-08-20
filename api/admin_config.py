@@ -5,9 +5,9 @@ from django.utils.html import format_html
 
 
 class AcademiaAdminSite(AdminSite):
-    site_header = "Academia Management System"
-    site_title = "Academia Admin"
-    index_title = "Welcome to Academia Administration"
+    site_header = "سیستم مدیریت آرین تفضلی‌زاده"
+    site_title = "پنل مدیریت آرین تفضلی‌زاده"
+    index_title = "به پنل مدیریت آرین تفضلی‌زاده خوش آمدید"
     
     def each_context(self, request):
         context = super().each_context(request)

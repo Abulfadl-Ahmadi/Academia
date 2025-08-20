@@ -16,6 +16,7 @@ import { useUser } from "@/context/UserContext";
 import { NavbarUser } from "@/components/navbar-user";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { FontToggle } from "@/components/font-toggle";
+import { Logo } from "@/components/logo";
 
 interface NavbarLink {
   text: string;
@@ -44,7 +45,8 @@ interface NavbarProps {
 
 export default function Navbar({
 //   logo = <LaunchUI />,
-  name = "آکادمیا",
+  logo = <Logo showText={false} />,
+  name = "آرین تفضلی‌زاده",
   homeUrl = "#",
   mobileLinks = [
     { text: "فروشگاه", href: "#" },
@@ -77,7 +79,7 @@ export default function Navbar({
               href={homeUrl}
               className="flex items-center gap-2 text-xl font-bold"
             >
-              {/* {logo} */}
+              {logo}
               {name}
             </a>
             {showNavigation && (customNavigation || <Navigation />)}
