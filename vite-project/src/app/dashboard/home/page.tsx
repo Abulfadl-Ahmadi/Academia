@@ -18,7 +18,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                به پنل دانش‌آموزی آکادمیا خوش آمدید. از اینجا می‌توانید به تمام محصولات خریداری شده دسترسی داشته باشید.
+                به پنل دانش‌آموزی آرین تفضلی‌زاده خوش آمدید. از اینجا می‌توانید به تمام محصولات خریداری شده دسترسی داشته باشید.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">

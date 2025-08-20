@@ -17,13 +17,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import {
-  BookOpen,
-  Plus,
-  X,
-  Save,
-  ArrowLeft,
-} from "lucide-react";
+import { BookOpen, Plus, X, Save, ArrowLeft } from "lucide-react";
 
 interface CourseSchedule {
   id?: number;
@@ -67,7 +61,9 @@ export default function EditCoursePage() {
         const course = courseResponse.data;
 
         // Fetch course schedules
-        const schedulesResponse = await axiosInstance.get(`/courses/${courseId}/schedules/`);
+        const schedulesResponse = await axiosInstance.get(
+          `/courses/${courseId}/schedules/`
+        );
         const schedules = schedulesResponse.data;
 
         setCourseData({
@@ -82,7 +78,9 @@ export default function EditCoursePage() {
         });
       } catch (error: any) {
         console.error("Error fetching course data:", error);
-        toast.error(error.response?.data?.message || "خطا در دریافت اطلاعات دوره");
+        toast.error(
+          error.response?.data?.message || "خطا در دریافت اطلاعات دوره"
+        );
       }
     };
 
@@ -92,32 +90,36 @@ export default function EditCoursePage() {
   }, [courseId]);
 
   const handleInputChange = (field: keyof CourseData, value: any) => {
-    setCourseData(prev => ({
+    setCourseData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const addSchedule = () => {
-    setCourseData(prev => ({
+    setCourseData((prev) => ({
       ...prev,
-      schedules: [...prev.schedules, { day: 0, time: "09:00" }]
+      schedules: [...prev.schedules, { day: 0, time: "09:00" }],
     }));
   };
 
   const removeSchedule = (index: number) => {
-    setCourseData(prev => ({
+    setCourseData((prev) => ({
       ...prev,
-      schedules: prev.schedules.filter((_, i) => i !== index)
+      schedules: prev.schedules.filter((_, i) => i !== index),
     }));
   };
 
-  const updateSchedule = (index: number, field: keyof Omit<CourseSchedule, 'id'>, value: any) => {
-    setCourseData(prev => ({
+  const updateSchedule = (
+    index: number,
+    field: keyof Omit<CourseSchedule, "id">,
+    value: any
+  ) => {
+    setCourseData((prev) => ({
       ...prev,
       schedules: prev.schedules.map((schedule, i) =>
         i === index ? { ...schedule, [field]: value } : schedule
-      )
+      ),
     }));
   };
 
@@ -141,14 +143,16 @@ export default function EditCoursePage() {
 
       // Update schedules
       // First, delete all existing schedules
-      const existingSchedules = await axiosInstance.get(`/courses/${courseId}/schedules/`);
+      const existingSchedules = await axiosInstance.get(
+        `/courses/${courseId}/schedules/`
+      );
       for (const schedule of existingSchedules.data) {
-        await axiosInstance.delete(`/courses/schedules/${schedule.id}/`);
+        await axiosInstance.delete(`/schedules/${schedule.id}/`);
       }
 
       // Then create new schedules
       for (const schedule of courseData.schedules) {
-        await axiosInstance.post("/courses/schedules/", {
+        await axiosInstance.post("/schedules/", {
           course: courseId,
           day: schedule.day,
           time: schedule.time,
@@ -157,10 +161,10 @@ export default function EditCoursePage() {
 
       toast.success("دوره با موفقیت بروزرسانی شد");
       navigate(`/panel/courses/${courseId}`);
-
     } catch (error: any) {
       console.error("Error updating course:", error);
-      const errorMessage = error.response?.data?.message || "خطا در بروزرسانی دوره";
+      const errorMessage =
+        error.response?.data?.message || "خطا در بروزرسانی دوره";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -197,7 +201,7 @@ export default function EditCoursePage() {
                   id="title"
                   placeholder="عنوان دوره را وارد کنید"
                   value={courseData.title}
-                  onChange={e => handleInputChange("title", e.target.value)}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
                 />
               </div>
 
@@ -207,7 +211,9 @@ export default function EditCoursePage() {
                   id="description"
                   placeholder="توضیحات دوره را وارد کنید"
                   value={courseData.description}
-                  onChange={e => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   rows={5}
                 />
               </div>
@@ -216,7 +222,9 @@ export default function EditCoursePage() {
                 <Switch
                   id="is_active"
                   checked={courseData.is_active}
-                  onCheckedChange={value => handleInputChange("is_active", value)}
+                  onCheckedChange={(value) =>
+                    handleInputChange("is_active", value)
+                  }
                 />
                 <Label htmlFor="is_active">دوره فعال است</Label>
               </div>
@@ -232,49 +240,63 @@ export default function EditCoursePage() {
                 </Button>
               </div>
 
-              <div className="space-y-4">
+              <table className="w-full">
                 {courseData.schedules.map((schedule, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <Label>روز</Label>
-                      <Select
-                        value={schedule.day.toString()}
-                        onValueChange={value => updateSchedule(index, "day", parseInt(value))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DAYS.map(day => (
-                            <SelectItem key={day.value} value={day.value.toString()}>
-                              {day.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <tbody key={index} className="items-center">
+                    <td className="py-1">
+                      <div className="flex flex-row gap-2">
+                        {/* <Label>روز:</Label> */}
+                        <Select
+                          value={schedule.day.toString()}
+                          onValueChange={(value) =>
+                            updateSchedule(index, "day", parseInt(value))
+                          }
+                        >
+                          <SelectTrigger className="w-full ml-2" dir="rtl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DAYS.map((day) => (
+                              <SelectItem
+                                key={day.value}
+                                value={day.value.toString()}
+                              >
+                                {day.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </td>
 
-                    <div className="flex-1">
-                      <Label>ساعت</Label>
+                    <td>
+                    <div className="flex flex-row gap-2">
+                      {/* <Label>ساعت:</Label> */}
                       <Input
                         type="time"
+                        
                         value={schedule.time}
-                        onChange={e => updateSchedule(index, "time", e.target.value)}
+                        className="w-full ml-2"
+                        onChange={(e) =>
+                          updateSchedule(index, "time", e.target.value)
+                        }
                       />
-                    </div>
-
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => removeSchedule(index)}
-                      className="mt-6"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                      </div>
+                    </td>
+                    <td>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => removeSchedule(index)}
+                        className=""
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tbody>
                 ))}
-              </div>
+              </table>
             </div>
 
             {/* Submit Button */}
