@@ -22,6 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     list_editable = ('status',)
     inlines = [OrderItemInline, TransactionInline]
+    list_per_page = 25
     
     fieldsets = (
         ('Order Information', {
@@ -41,12 +42,25 @@ class OrderAdmin(admin.ModelAdmin):
     items_count.short_description = 'Items'
 
 
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'product', 'quantity', 'price', 'discount_amount', 'final_amount')
+    list_filter = ('order__status', 'product__product_type')
+    search_fields = ('order__user__username', 'product__title')
+    readonly_fields = ('final_amount',)
+    
+    def final_amount(self, obj):
+        return obj.price - obj.discount_amount
+    final_amount.short_description = 'Final Amount'
+
+
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'amount', 'transaction_type', 'payment_method', 'created_at', 'created_by')
     list_filter = ('transaction_type', 'payment_method', 'created_at')
     search_fields = ('order__user__username', 'reference_number', 'description')
     readonly_fields = ('created_at',)
+    list_per_page = 25
     
     fieldsets = (
         ('Transaction Information', {
@@ -67,20 +81,26 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(UserAccess)
 class UserAccessAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'order', 'is_active', 'is_expired', 'granted_at')
+    list_display = ('user', 'product', 'order', 'is_active', 'is_expired_status', 'granted_at')
     list_filter = ('is_active', 'granted_at', 'product__product_type')
     search_fields = ('user__username', 'product__title', 'order__id')
-    readonly_fields = ('granted_at', 'is_expired')
+    readonly_fields = ('granted_at', 'is_expired_status')
+    list_per_page = 25
     
     fieldsets = (
         ('Access Information', {
             'fields': ('user', 'product', 'order')
         }),
         ('Status', {
-            'fields': ('is_active', 'expires_at', 'is_expired')
+            'fields': ('is_active', 'expires_at', 'is_expired_status')
         }),
         ('Metadata', {
             'fields': ('granted_at',),
             'classes': ('collapse',)
         }),
     )
+    
+    def is_expired_status(self, obj):
+        return obj.is_expired
+    is_expired_status.boolean = True
+    is_expired_status.short_description = 'Expired'
