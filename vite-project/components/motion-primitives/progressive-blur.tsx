@@ -1,16 +1,10 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { type HTMLMotionProps, motion } from 'motion/react';
-
-export const GRADIENT_ANGLES = {
-  top: 0,
-  right: 90,
-  bottom: 180,
-  left: 270,
-};
+import { GRADIENT_ANGLES, type Direction } from '../../src/components/motion-primitives/constants';
 
 export type ProgressiveBlurProps = {
-  direction?: keyof typeof GRADIENT_ANGLES;
+  direction?: Direction;
   blurLayers?: number;
   className?: string;
   blurIntensity?: number;
