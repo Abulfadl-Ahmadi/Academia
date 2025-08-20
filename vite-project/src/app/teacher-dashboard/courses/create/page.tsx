@@ -147,7 +147,7 @@ export default function CreateCoursePage() {
       // Create schedules if any
       if (courseForm.schedules.length > 0) {
         for (const schedule of courseForm.schedules) {
-          await axiosInstance.post("/courses/schedules/", {
+          await axiosInstance.post("/schedules/", {
             course: courseId,
             day: schedule.day,
             time: schedule.time,
@@ -445,7 +445,7 @@ export default function CreateCoursePage() {
                 <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
                   <div className="flex items-start gap-3">
                     <ShoppingCart className="w-5 h-5 text-primary mt-0.5" />
-                    <div className="text-sm text-primary-foreground">
+                    <div className="text-sm">
                       <p className="font-medium mb-1">اطلاعات محصول:</p>
                       <ul className="space-y-1 text-xs">
                         <li>• نوع محصول: دوره آموزشی</li>
