@@ -119,6 +119,11 @@
   }
 }
 
+.fade-bottom {
+  -webkit-mask-image: linear-gradient(#000 40%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, #0000);
+  mask-image: linear-gradient(#000 40%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, #0000);
+}
+
 html {
   font-family: 'Vazirmatn', sans-serif;
 }

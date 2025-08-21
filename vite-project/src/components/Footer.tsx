@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="2xl:px-[10%]">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-5 py-8">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
           {/* Brand & Description */}
           <div className="lg:col-span-1 space-y-6">

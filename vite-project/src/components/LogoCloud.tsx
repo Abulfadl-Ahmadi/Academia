@@ -10,12 +10,12 @@ export default function LogoCloud() {
                         <InfiniteSlider
                             speedOnHover={20}
                             speed={40}
-                            gap={120}
+                            gap={100}
                             reverse>
                             {/* First set of logos */}
                             <div className="flex gap-1">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/Gaj-logo.png"
                                     alt="Nvidia Logo"
                                     // height="20"
@@ -27,7 +27,7 @@ export default function LogoCloud() {
                             </div>
                             <div className="flex">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/mehromah.png"
                                     alt="Column Logo"
                                     // height="16"
@@ -36,7 +36,7 @@ export default function LogoCloud() {
                             </div>
                             <div className="flex gap-2">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/allametbtb-2.png"
                                     alt="Column Logo"
                                     // height="16"
@@ -48,7 +48,7 @@ export default function LogoCloud() {
                             </div>
                             <div className="flex gap-1">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/Gaj-logo.png"
                                     alt="Nvidia Logo"
                                     // height="20"
@@ -60,7 +60,7 @@ export default function LogoCloud() {
                             </div>
                             <div className="flex">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/mehromah.png"
                                     alt="Column Logo"
                                     // height="16"
@@ -69,7 +69,7 @@ export default function LogoCloud() {
                             </div>
                             <div className="flex gap-2">
                                 <img
-                                    className="mx-auto h-10 w-fit"
+                                    className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/allametbtb-2.png"
                                     alt="Column Logo"
                                     // height="16"
