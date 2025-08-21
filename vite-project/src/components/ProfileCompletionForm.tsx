@@ -6,6 +6,7 @@ import { Card, CardContent } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
 import { validateIranianNationalId, formatNationalId } from "@/lib/nationalIdValidator";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 interface ProfileData {
   national_id: string;
@@ -48,7 +49,7 @@ export default function ProfileCompletionForm({
       if (!token) return;
       
       // Get user info first to get the profile ID
-      const userResponse = await fetch('http://localhost:8000/api/accounts/profiles/', {
+      const userResponse = await fetch(baseURL+'/accounts/profiles/', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -149,7 +150,7 @@ export default function ProfileCompletionForm({
       }
 
       // Get the current user's profile ID first
-      const profilesResponse = await fetch('http://localhost:8000/api/accounts/profiles/', {
+      const profilesResponse = await fetch(baseURL+'/accounts/profiles/', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -171,7 +172,7 @@ export default function ProfileCompletionForm({
       const profileId = profiles[0].id;
 
       // Update the profile using PATCH
-      const response = await fetch(`http://localhost:8000/api/accounts/profiles/${profileId}/`, {
+      const response = await fetch(`${baseURL}/profiles/${profileId}/`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

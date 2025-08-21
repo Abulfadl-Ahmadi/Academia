@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent } from "./ui/card";
 import { cn } from "@/lib/utils";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 interface RegistrationData {
   email: string;
@@ -43,7 +44,7 @@ export default function SimpleRegistrationForm({
 
     try {
       // Use your existing register endpoint with the expected structure
-      const response = await fetch('http://localhost:8000/api/register/', {
+      const response = await fetch(baseURL+'/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
