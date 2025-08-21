@@ -29,22 +29,30 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
   setError("")
   try {
-    await axios.post(
-      baseURL+"/login/", // Use JWT cookie endpoint for login
+    const response = await axios.post(
+      baseURL+"/login/", // Updated endpoint
       { username, password },
       { withCredentials: true },
     )
 
-    // const { access } = response.data
+    const userData = response.data.user
     login() // Use context login method
-    console.log("login() called in login-form")
-    navigate("/panel")
+    console.log("login() called in login-form", userData)
     markLoggedIn()
-  } catch (err: any) {
-    if (err.response?.status === 401) {
-      setError("Invalid username or password")
+    
+    // Check if profile is completed
+    if (userData && !userData.profile_completed) {
+      // Redirect to profile completion
+      navigate("/complete-profile")
     } else {
-      setError("Something went wrong. Try again.")
+      navigate("/panel")
+    }
+  } catch (err: unknown) {
+    const error = err as { response?: { status?: number } }
+    if (error.response?.status === 401) {
+      setError("نام کاربری یا رمز عبور اشتباه است")
+    } else {
+      setError("خطایی رخ داد. دوباره تلاش کنید.")
     }
   }
 }

@@ -308,9 +308,24 @@ class LoginView(APIView):
 
         if user is not None:
             refresh = RefreshToken.for_user(user)
+            
+            # Check profile completion status
+            try:
+                profile = user.profile
+                profile_completed = bool(profile.national_id and profile.phone_number)
+            except UserProfile.DoesNotExist:
+                UserProfile.objects.create(user=user)
+                profile_completed = False
 
             response = Response({
-                "message": "Login successful",
+                "message": "ورود با موفقیت انجام شد",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                    "profile_completed": profile_completed
+                }
             }, status=status.HTTP_200_OK)
 
             # Set tokens in HttpOnly cookies
@@ -329,7 +344,7 @@ class LoginView(APIView):
             print(response.cookies)
             return response
         print(f"Failed login attempt for username: {username}")
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "نام کاربری یا رمز عبور اشتباه است"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class RefreshTokenView(APIView):
@@ -361,4 +376,21 @@ class LogoutView(APIView):
         response.delete_cookie("access")
         response.delete_cookie("refresh")
         return response
+
+
+class UserDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        """Get current user details"""
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
+    def patch(self, request):
+        """Update current user details"""
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

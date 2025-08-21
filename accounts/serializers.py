@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserProfile, VerificationCode
+from .validators import validate_iranian_national_id
 
 User = get_user_model()
 
@@ -29,7 +30,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user', 'national_id', 'phone_number', 'birth_date', 'grade']
+        fields = ['id', 'user', 'national_id', 'phone_number', 'birth_date', 'grade']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -77,5 +78,5 @@ class CompleteRegistrationSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=False, allow_blank=True)
     national_id = serializers.CharField(required=False, allow_blank=True)
     phone_number = serializers.CharField(required=False, allow_blank=True)
-    birth_date = serializers.DateField(required=False)
+    # birth_date = serializers.DateField(required=False)
     grade = serializers.CharField(required=False, allow_blank=True)

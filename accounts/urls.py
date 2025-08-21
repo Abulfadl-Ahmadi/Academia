@@ -9,7 +9,8 @@ from .views import (
     RegisterView,
     SendVerificationCodeView,
     VerifyEmailView,
-    CompleteRegistrationView
+    CompleteRegistrationView,
+    UserDetailView
 )
 
 router = DefaultRouter()
@@ -24,4 +25,5 @@ urlpatterns += [
     path('login/', LoginView.as_view()),
     path('token/refresh/', RefreshTokenView.as_view()),
     path('logout/', LogoutView.as_view()),
+    path('user/', UserDetailView.as_view()),
 ]
