@@ -64,7 +64,7 @@ const handleStart = async () => {
     console.log("Session started:", res.data);
 
     // بعد از ساخت سشن، ریدایرکت به صفحه آزمون
-    navigate(`/test/${id}/`, { state: { session: res.data } });
+    navigate(`/tests/${id}/`, { state: { session: res.data } });
   } catch (err) {
     console.error("Error starting session:", err);
   }}

@@ -21,21 +21,21 @@ export default function Home() {
                 به پنل دانش‌آموزی آرین تفضلی‌زاده خوش آمدید. از اینجا می‌توانید به تمام محصولات خریداری شده دسترسی داشته باشید.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-blue-500/10 rounded-lg">
                   <BookOpen className="w-8 h-8 text-blue-600" />
                   <div>
                     <div className="font-medium">دوره‌ها</div>
                     <div className="text-sm text-muted-foreground">دسترسی به دوره‌های آموزشی</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
                   <FileText className="w-8 h-8 text-green-600" />
                   <div>
                     <div className="font-medium">فایل‌ها</div>
                     <div className="text-sm text-muted-foreground">دانلود جزوات و منابع</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-lg">
                   <Play className="w-8 h-8 text-purple-600" />
                   <div>
                     <div className="font-medium">آزمون‌ها</div>

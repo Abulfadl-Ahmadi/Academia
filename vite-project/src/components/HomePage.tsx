@@ -1,6 +1,12 @@
 // import { Logo } from "@/components/logo";
 import { BRAND } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { ProgressiveBlur } from "../../components/motion-primitives/progressive-blur";
+import { TextEffect } from "../../components/motion-primitives/text-effect";
+import { TextShimmer } from "../../components/motion-primitives/text-shimmer";
+import { useScrollTrigger } from "@/hooks/useScrollTrigger";
+import { HeroGeometric } from "@/components/ui/shadcn-io/shape-landing-hero";
+
 import {
   Card,
   CardContent,
@@ -137,6 +143,7 @@ export default function HomePage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [textRef, isVisible] = useScrollTrigger();
 
   // Fetch courses from API
   useEffect(() => {
@@ -197,14 +204,39 @@ export default function HomePage() {
   };
 
   return (
-    <div className="2xl:px-[10%] min-h-screen">
+    <div className=" min-h-screen">
       {/* Hero Section */}
-      <section className=" overflow-hidden">
+      <div className="">
+        <HeroGeometric
+          title1="به آکادمی "
+          title2="آرین تفضلی‌زاده خوش آمدید"
+          description="آموزش حرفه‌ای ریاضیات برای رشته‌های ریاضی و تجربی."
+        />
+      </div>
+
+      <section className="2xl:px-[10%] overflow-hidden">
         <div className="absolute inset-0"></div>
-        <div className="relative container mx-auto px-4 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
+        <div className="relative container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 items-center ">
+            <div className="inline-block relative lg:hidden mr-10">
+              <svg
+                className="w-24 text-gray-500/20"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640"
+              >
+                <path fill="currentColor" d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z" />
+              </svg>
+              <div className="w-full absolute bottom-3 right-7">
+                <div className="">
+                  ریاضی فراتر از فرمول‌هاست؛
+                </div>
+                <div className="">
+                  راهی‌ست به سوی یک درک واقعی!
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="space-y-4">
                 <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
                   به آکادمی
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
@@ -215,19 +247,69 @@ export default function HomePage() {
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                   آموزش حرفه‌ای ریاضیات برای رشته‌های ریاضی و تجربی.
                 </p>
-              </div>
+              </div> */}
 
-              <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative my-4 aspect-square h-full overflow-hidden rounded-[4px]">
+              <img
+                src="https://c242950.parspack.net/c242950/media/portrait.png"
+                alt="Benjamin Spiers - Moonlight 2023"
+                className="absolute inset-0 h-[95%] mx-auto"
+              />
+
+              <ProgressiveBlur
+                className="pointer-events-none absolute bottom-0 left-0 h-[30%] w-full"
+                blurIntensity={8}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+              <div className="pointer-events-none absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-background via-transparent to-transparent" />
+              <div className="pointer-events-none absolute top-0 right-0 h-full w-1/4 bg-gradient-to-l from-background via-transparent to-transparent" />
+            </div>
+
+            {/* <div className="relative">
+              <div className="aspect-square rounded-3xl p-8">
+                <div className="h-full rounded-2xl flex items-center justify-center">
+                  <img
+                    src="https://c242950.parspack.net/c242950/media/portrait.png"
+                    alt="Portrait"
+                  />
+                </div>
+              </div>
+            </div> */}
+
+            <div className="space-y-8">
+              <div className="w-full  lg:inline-block relative hidden mr-10 items-center justify-center self-center mx-auto">
+              <svg
+                className="w-24 text-gray-500/20"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640"
+              >
+                <path fill="currentColor" d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z" />
+              </svg>
+              <div className="w-full absolute bottom-8 right-7">
+                <div className="w-full ">
+                  ریاضی فراتر از فرمول‌هاست؛
+                  راهی‌ست به سوی یک درک واقعی!
+                </div>
+                {/* <div className="w-full "> */}
+                {/* </div> */}
+              </div>
+            </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center ">
                 <Button size="lg">
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  شروع یادگیری
+                  <PlayCircle className="h-5 w-5" />
+                  <TextShimmer
+                    duration={1.2}
+                    className="text-lg font-medium [--base-color:rgba(255,255,255,0.7)] [--base-gradient-color:rgba(255,255,255,1)] dark:[--base-color:rgba(255,255,255,0.7)] dark:[--base-gradient-color:rgba(255,255,255,1)]"
+                  >
+                    شروع یاد گیری
+                  </TextShimmer>{" "}
                 </Button>
                 <Button variant="outline" size="lg">
                   مشاهده دوره‌ها
                 </Button>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
@@ -244,26 +326,12 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-
-            <div className="relative">
-              <div className="aspect-square rounded-3xl p-8">
-                <div className="h-full rounded-2xl flex items-center justify-center">
-                  <img
-                    src="https://c242950.parspack.net/c242950/media/portrait.png"
-                    alt="Portrait"
-                  />
-                </div>
-              </div>
-              {/* <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-2xl">🚀</span>
-              </div> */}
-            </div>
           </div>
         </div>
       </section>
 
       {/* Featured Courses */}
-      <section className="py-20">
+      <section className="2xl:px-[10%] py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -293,111 +361,116 @@ export default function HomePage() {
               </Button>
             </div>
           ) : (
-            <Carousel className="w-full" dir="ltr">
-              <CarouselContent className="-ml-1">
-                {courses.map((course) => (
+            <div className="w-full sm:px-15">
+              <Carousel className="" dir="ltr">
+                <CarouselContent className="-ml-1">
+                  {courses.map((course) => (
                     <CarouselItem
-                  key={course.id}
-                  className="pl-1 md:basis-1/2 lg:basis-1/3"
-                >
-                  <div className="p-1" dir="rtl">
-                  <Card
-                    key={course.id}
-                    className="group hover:shadow-xl transition-all duration-300 overflow-hidden"
-                  >
-                      <div className="relative">
-                        {course.image ? (
-                          <div className="aspect-video overflow-hidden">
-                            <img
-                              src={course.image}
-                              alt={course.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        ) : (
-                          <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
-                            <BookOpen className="h-12 w-12 text-blue-600 dark:text-blue-400" />
-                          </div>
-                        )}
-                        <Badge className="absolute top-3 right-3">
-                          {getBadge(course)}
-                        </Badge>
-                      </div>
-
-                      <CardHeader>
-                        <div className="flex items-center justify-between mb-2">
-                          <Badge variant="secondary">
-                            {course.level || "عمومی"}
-                          </Badge>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium">4.8</span>
-                          </div>
-                        </div>
-                        <CardTitle className="text-xl group-hover:text-blue-600 transition-colors line-clamp-2">
-                          {course.title}
-                        </CardTitle>
-                        <CardDescription className="text-sm leading-relaxed line-clamp-3">
-                          {course.description}
-                        </CardDescription>
-                      </CardHeader>
-
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                          <div className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {course.students_count
-                              ? course.students_count.toLocaleString("fa-IR")
-                              : "0"}{" "}
-                            دانشجو
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {course.sessions_count
-                              ? `${course.sessions_count} جلسه`
-                              : "در حال تکمیل"}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-2xl font-bold text-green-600">
-                              {formatPrice(course)} تومان
-                            </span>
-                            {(course.price > 0 ||
-                              (course.current_price &&
-                                course.current_price > 0)) && (
-                              <span className="text-sm text-gray-500 line-through mr-2">
-                                {formatPrice({
-                                  ...course,
-                                  price: Math.floor(
-                                    (course.current_price || course.price) * 1.4
-                                  ),
-                                })}
-                              </span>
+                      key={course.id}
+                      className="pl-1 md:basis-1/2 lg:basis-1/3"
+                    >
+                      <div className="p-1" dir="rtl">
+                        <Card
+                          key={course.id}
+                          className="group hover:shadow-xl transition-all duration-300 overflow-hidden"
+                        >
+                          <div className="relative">
+                            {course.image ? (
+                              <div className="aspect-video overflow-hidden">
+                                <img
+                                  src={course.image}
+                                  alt={course.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                            ) : (
+                              <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
+                                <BookOpen className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+                              </div>
                             )}
+                            <Badge className="absolute top-3 right-3">
+                              {getBadge(course)}
+                            </Badge>
                           </div>
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              window.open(`/courses/${course.id}`, "_blank")
-                            }
-                          >
-                            مشاهده دوره
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    </div>
-                  </CarouselItem>
+
+                          <CardHeader>
+                            <div className="flex items-center justify-between mb-2">
+                              <Badge variant="secondary">
+                                {course.level || "عمومی"}
+                              </Badge>
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm font-medium">4.8</span>
+                              </div>
+                            </div>
+                            <CardTitle className="text-xl group-hover:text-blue-600 transition-colors line-clamp-2">
+                              {course.title}
+                            </CardTitle>
+                            <CardDescription className="text-sm leading-relaxed line-clamp-3">
+                              {course.description}
+                            </CardDescription>
+                          </CardHeader>
+
+                          <CardContent>
+                            <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                              <div className="flex items-center gap-1">
+                                <Users className="h-4 w-4" />
+                                {course.students_count
+                                  ? course.students_count.toLocaleString(
+                                      "fa-IR"
+                                    )
+                                  : "0"}{" "}
+                                دانشجو
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {course.sessions_count
+                                  ? `${course.sessions_count} جلسه`
+                                  : "در حال تکمیل"}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="text-2xl font-bold text-green-600">
+                                  {formatPrice(course)} تومان
+                                </span>
+                                {(course.price > 0 ||
+                                  (course.current_price &&
+                                    course.current_price > 0)) && (
+                                  <span className="text-sm text-gray-500 line-through mr-2">
+                                    {formatPrice({
+                                      ...course,
+                                      price: Math.floor(
+                                        (course.current_price || course.price) *
+                                          1.4
+                                      ),
+                                    })}
+                                  </span>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() =>
+                                  window.open(`/courses/${course.id}`, "_blank")
+                                }
+                              >
+                                مشاهده دوره
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <div className="sm:block hidden">
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </div>
               </Carousel>
+            </div>
           )}
-
-        
 
           <div className="text-center mt-12">
             <Button
@@ -410,23 +483,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-            
-      <LogoCloud/>
+
+      <LogoCloud />
 
       {/* About Me Section */}
-      <section className="py-20">
+      <section className="2xl:px-[10%] py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div ref={textRef} className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold">
                 درباره {BRAND.name}
               </h2>
               <div className="space-y-4 text-lg text-muted-foreground  leading-relaxed">
-                <p>
+                <TextEffect preset="blur" trigger={isVisible}>
                   بیش از ۱۲ سال سابقه تدریس و آموزش در بالاترین سطوح آموزشی،
                   نویسنده ۴ کتاب تحصیلی از جمله مهرو ماه و گاج و... و آمار قبولی
                   بالا ۹۰ درصد
-                </p>
+                </TextEffect>
               </div>
 
               <div className="grid grid-cols-2 gap-6">

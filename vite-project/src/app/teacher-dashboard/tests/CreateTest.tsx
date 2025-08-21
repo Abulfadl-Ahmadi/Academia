@@ -15,9 +15,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DateTimePicker } from "@/components/ui/date-picker";
-
 
 export default function TeacherTestApp() {
   const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -52,7 +57,7 @@ export default function TeacherTestApp() {
       .catch((err) => {
         console.error("Error loading files:", err);
       });
-  }, []);
+  }, [baseURL]);
 
   const options = [
     { value: "1", label: "۱" },
@@ -74,7 +79,7 @@ export default function TeacherTestApp() {
       .catch((err) => {
         console.error("Error loading courses:", err);
       });
-  }, []);
+  }, [baseURL]);
 
   const handleAnswer = (questionNumber: number, selectedValue: string) => {
     setAnswers((prev) => {
@@ -92,7 +97,15 @@ export default function TeacherTestApp() {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (!name || !course || !pdfFile || !startDate || !endDate || !durationHour || !durationMinute) {
+    if (
+      !name ||
+      !course ||
+      !pdfFile ||
+      !startDate ||
+      !endDate ||
+      !durationHour ||
+      !durationMinute
+    ) {
       toast.error("لطفا همه فیلدهای ضروری را پر کنید");
       return;
     }
@@ -101,14 +114,14 @@ export default function TeacherTestApp() {
       question_number: Number(q),
       answer: Number(a),
     }));
-    
+
     // Combine date and time for start and end times
     const startDateTime = new Date(startDate);
     if (startTimeStr) {
       const [hours, minutes] = startTimeStr.split(":").map(Number);
       startDateTime.setHours(hours, minutes);
     }
-    
+
     const endDateTime = new Date(endDate);
     if (endTimeStr) {
       const [hours, minutes] = endTimeStr.split(":").map(Number);
@@ -122,7 +135,10 @@ export default function TeacherTestApp() {
       pdf_file: Number(pdfFile),
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
-      duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(2, "0")}:00`,
+      duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(
+        2,
+        "0"
+      )}:00`,
       frequency,
       keys: keysArray,
     };
@@ -318,7 +334,9 @@ export default function TeacherTestApp() {
                                   onMouseDown={() =>
                                     handleAnswer(questionNumber, option.value)
                                   }
-                                  className="ring-[2px] my-1 ring-border rounded-md px-3 data-[state=checked]:bg-black data-[state=checked]:text-white"
+                                  className="ring-2 ring-border my-1 rounded-md px-3 transition-colors
+             data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
+             hover:bg-accent hover:text-accent-foreground"
                                 >
                                   <span className="text-sm tracking-tight">
                                     {option.label}
@@ -339,7 +357,11 @@ export default function TeacherTestApp() {
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSubmit} disabled={loading} className="w-full md:w-auto">
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full md:w-auto"
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

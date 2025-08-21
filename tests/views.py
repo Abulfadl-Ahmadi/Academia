@@ -1,10 +1,18 @@
-from rest_framework import generics, status, views
+from rest_framework import generics, status, views, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from django.utils import timezone
 from django.db import transaction
-from .models import Test, StudentTestSession, StudentAnswer, PrimaryKey, StudentTestSessionLog
-from .serializers import TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer
+from django.db.models import Avg
+from .models import (
+    Test, StudentTestSession, StudentAnswer, PrimaryKey, 
+    StudentTestSessionLog, TestCollection, StudentProgress
+)
+from .serializers import (
+    TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
+    TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer
+)
 from rest_framework.exceptions import ValidationError
 import pytz
 import json
@@ -20,8 +28,12 @@ class ListCreateTestView(generics.ListCreateAPIView):
         user = self.request.user
 
         if user.role == "student":
-            # only tests from courses the student is enrolled in
-            return Test.objects.filter(course__students=user)
+            # دانش‌آموزان فقط آزمون‌های مجموعه‌های قابل دسترس را می‌بینند
+            accessible_collections = []
+            for collection in TestCollection.objects.filter(is_active=True):
+                if user in collection.get_accessible_students():
+                    accessible_collections.append(collection.id)
+            return Test.objects.filter(test_collection__id__in=accessible_collections)
 
         elif user.role == "teacher":
             # teacher should only see tests they created
@@ -345,3 +357,148 @@ class CreateReport(views.APIView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class TestCollectionViewSet(viewsets.ModelViewSet):
+    """ViewSet برای مدیریت مجموعه آزمون‌ها"""
+    queryset = TestCollection.objects.all()
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TestCollectionDetailSerializer
+        return TestCollectionSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.role == "student":
+            # دانش‌آموز فقط مجموعه‌هایی را می‌بیند که به آن‌ها دسترسی دارد
+            return TestCollection.objects.filter(
+                courses__students=user
+            ).distinct()
+        elif user.role == "teacher":
+            # معلم تمام مجموعه‌های فعال را می‌بیند
+            return TestCollection.objects.all()
+        
+        # ادمین همه را می‌بیند
+        return TestCollection.objects.all()
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+    
+    @action(detail=True, methods=['get'])
+    def statistics(self, request, pk=None):
+        """آمار تفصیلی مجموعه آزمون"""
+        user = request.user
+        test_collection = self.get_object()
+        
+        # Check permission - only teachers who created it or admins
+        if (user.role == 'teacher' and 
+            test_collection.created_by != user and 
+            not user.is_staff):
+            return Response(
+                {'error': 'شما اجازه دسترسی به آمار این مجموعه آزمون را ندارید'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get all tests in this collection
+        tests = test_collection.tests.all()
+        
+        # Calculate overall statistics
+        total_tests = tests.count()
+        total_students = test_collection.get_accessible_students().count()
+        
+        # Test participation statistics
+        test_stats = []
+        for test in tests:
+            sessions = test.studenttestsession_set.all()
+            participated = sessions.count()
+            completed = sessions.filter(status='completed').count()
+            avg_score = sessions.filter(status='completed').aggregate(
+                avg_score=Avg('final_score')
+            )['avg_score'] or 0
+            
+            test_stats.append({
+                'test_id': test.id,
+                'test_title': test.name,
+                'participated_students': participated,
+                'completed_students': completed,
+                'completion_rate': (completed / total_students * 100) if total_students > 0 else 0,
+                'average_score': round(avg_score, 2)
+            })
+        
+        # Student progress statistics
+        progress_stats = StudentProgress.objects.filter(test_collection=test_collection)
+        
+        # محاسبه میانگین پیشرفت به‌صورت دستی چون progress_percentage یک property است
+        total_progress = 0
+        progress_count = progress_stats.count()
+        if progress_count > 0:
+            for progress in progress_stats:
+                total_progress += progress.progress_percentage
+            avg_progress = total_progress / progress_count
+        else:
+            avg_progress = 0
+            
+        completed_students = progress_stats.filter(is_completed=True).count()
+        
+        return Response({
+            'collection_info': {
+                'id': test_collection.id,
+                'title': test_collection.name,
+                'total_tests': total_tests,
+                'total_students': total_students,
+                'created_date': test_collection.created_at
+            },
+            'overall_stats': {
+                'average_progress': round(avg_progress, 2),
+                'completed_students': completed_students,
+                'completion_rate': (completed_students / total_students * 100) if total_students > 0 else 0
+            },
+            'test_statistics': test_stats
+        })
+    
+    @action(detail=True, methods=['get'])
+    def student_progress(self, request, pk=None):
+        """پیشرفت دانش‌آموزان در مجموعه آزمون"""
+        test_collection = self.get_object()
+        
+        if request.user.role == "student":
+            # دانش‌آموز فقط پیشرفت خودش را می‌بیند
+            progress, created = StudentProgress.objects.get_or_create(
+                student=request.user,
+                test_collection=test_collection
+            )
+            if created:
+                progress.update_progress()
+            
+            serializer = StudentProgressSerializer(progress)
+            return Response(serializer.data)
+        
+        elif request.user.role == "teacher":
+            # معلم پیشرفت همه دانش‌آموزان را می‌بیند
+            students = test_collection.get_accessible_students()
+            progress_data = []
+            
+            for student in students:
+                progress, created = StudentProgress.objects.get_or_create(
+                    student=student,
+                    test_collection=test_collection
+                )
+                if created:
+                    progress.update_progress()
+                
+                progress_data.append({
+                    'student': {
+                        'id': student.id,
+                        'username': student.username,
+                        'first_name': student.first_name,
+                        'last_name': student.last_name
+                    },
+                    'progress': StudentProgressSerializer(progress).data
+                })
+            
+            return Response(progress_data)
+        
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)

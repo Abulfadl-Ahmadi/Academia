@@ -1,0 +1,26 @@
+interface ATLogoProps {
+  color?: string;
+}
+
+export function ATLogo({ color = "currentColor" }: ATLogoProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      height="25pt"
+      viewBox="2.541 703.182 135.132 135.078"
+      fillRule="evenodd"
+    >
+      <g>
+        <path
+          fill={color}
+          d="M 35.04 756.45L 49.44 756.45L 49.44 807.81L 35.04 794.13L 35.04 756.45z"
+        />
+        <path
+          fill={color}
+          d="M 35.04 736.29L 35.04 708.45L 106.8 708.45L 106.8 736.05L 121.2 736.05L 135.84 750.69L 107.04 750.69L 107.04 808.53L 92.64 794.13L 92.64 722.37L 49.44 722.37L 49.44 736.29L 87.12 736.29L 87.12 750.93L 78.24 750.93L 78.24 836.37L 63.84 821.97L 63.84 750.93L 20.88 750.93L 6.24 736.29L 35.04 736.29z"
+        />
+      </g>
+    </svg>
+  );
+}

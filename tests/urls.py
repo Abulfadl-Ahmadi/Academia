@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     ListCreateTestView,
     EnterTestView,
@@ -9,9 +10,14 @@ from .views import (
     TestDetailView,
     GetAnswersView,
     ExitTestView,
+    TestCollectionViewSet,
 )
 
+router = DefaultRouter()
+router.register(r'test-collections', TestCollectionViewSet, basename='test-collections')
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('tests/', ListCreateTestView.as_view(), name='create-test'),
     path('tests/<int:pk>/update', UpdateDeleteTestView.as_view(), name='update-delete-test'),
     path('tests/<int:pk>/', TestDetailView.as_view(), name='update-delete-test'),

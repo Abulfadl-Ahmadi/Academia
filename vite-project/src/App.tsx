@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom"
 import LoginPage from './app/login/page'
 import LogoutPage from "@/pages/logout"
 import RegisterPage from './app/register/page'
+import ProfileCompletePage from './app/complete-profile/page'
 import Navbar from './components/navbar'
 import { UserProvider } from "@/context/UserContext"
 import { CartProvider } from "@/context/CartContext"
@@ -14,6 +15,7 @@ import TestDetailPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
 import HomePage from '@/components/HomePage'
 import { Footer } from '@/components/Footer'
+import ProfileGuard from '@/components/ProfileGuard'
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import TestPage from './app/teacher-dashboard/tests/TestPage'
@@ -48,13 +50,30 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/complete-profile" element={<ProfileCompletePage />} />
         <Route path='/tests/:id/' element={<TestPage />}  />
         <Route path='/tests/:id/detail' element={<TestDetailPage />}  />
         <Route path="/panel/*" element={<PanelRoute />} />
         <Route path="/logout" element={<LogoutPage />} />
 
-        <Route path="/shop" element={<><Navbar /><div className=''><ShopPage /></div><Footer /></>} />
-        <Route path="/shop/:id" element={<><Navbar /><div className=''><ProductDetailPage /></div><Footer /></>} />
+        <Route path="/shop" element={
+          <ProfileGuard>
+            <Navbar />
+            <div className=''>
+              <ShopPage />
+            </div>
+            <Footer />
+          </ProfileGuard>
+        } />
+        <Route path="/shop/:id" element={
+          <ProfileGuard requireProfile={true}>
+            <Navbar />
+            <div className=''>
+              <ProductDetailPage />
+            </div>
+            <Footer />
+          </ProfileGuard>
+        } />
         <Route
           path="/"
           element={

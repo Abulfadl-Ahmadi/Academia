@@ -14,8 +14,8 @@ import Navigation from "@/components/ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@/context/UserContext";
 import { NavbarUser } from "@/components/navbar-user";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { FontToggle } from "@/components/font-toggle";
+// import { ThemeToggle } from "@/components/theme-toggle";
+// import { FontToggle } from "@/components/font-toggle";
 import { Logo } from "@/components/logo";
 
 interface NavbarLink {
@@ -71,7 +71,7 @@ export default function Navbar({
 
   return (
     <header className={cn("sticky top-0 z-50 -mb-4 px-4 pb-4", className)}>
-      <div className="fade-bottom bg-background/15 absolute left-0 h-24 w-full backdrop-blur-lg"></div>
+      <div className="fade-bottom bg-background/15 absolute left-0 h-26 w-full backdrop-blur-lg"></div>
       <div className="max-w-container relative mx-auto">
         <NavbarComponent>
           <NavbarLeft>
@@ -90,10 +90,10 @@ export default function Navbar({
                 {user ? (
                   // Show user profile when logged in
                   <>
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                       <ThemeToggle />
                       <FontToggle />
-                    </div>
+                    </div> */}
                     <NavbarUser
                       user={{
                         username: user.username,
@@ -107,7 +107,7 @@ export default function Navbar({
                 ) : (
                   // Show login/signup buttons when not logged in
                   <>
-                    <ThemeToggle />
+                    {/* <ThemeToggle /> */}
                     {actions.map((action, index) =>
                       action.isButton ? (
                         <Button
@@ -156,9 +156,9 @@ export default function Navbar({
                   </a>
                   
                   {/* Theme Toggle for Mobile */}
-                  <div className="flex items-center justify-center py-2">
+                  {/* <div className="flex items-center justify-center py-2">
                     <ThemeToggle />
-                  </div>
+                  </div> */}
                   
                   {mobileLinks.map((link, index) => (
                     <a

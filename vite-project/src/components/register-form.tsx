@@ -4,16 +4,22 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
-import { DatePicker } from "@/components/ui/date-picker"
+// import { DatePicker } from "@/components/ui/date-picker"
 
 import { useState } from "react"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { useNavigate } from "react-router-dom"
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
+const axiosInstance = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 type RegistrationStep = 'form' | 'verification' | 'complete'
 
@@ -32,10 +38,10 @@ export function RegisterForm({
     },
     national_id: "",
     phone_number: "",
-    birth_date: "",
+    // birth_date: null,
     grade: "",
   })
-  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
+  // const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
   const [verificationCode, setVerificationCode] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -60,43 +66,44 @@ export function RegisterForm({
     }
   }
 
-  const handleSendVerification = async (email: string) => {
+  // const handleSendVerification = async (email: string) => {
     
-    setError("")
-    setLoading(true)
+  //   setError("")
+  //   setLoading(true)
 
-    try {
-      const response = await axios.post(
-        baseURL + "/send-verification/",
-        {
-          email: email,
-          // username: formData.user.username,
-          // first_name: formData.user.first_name,
-          // last_name: formData.user.last_name,
-        }
-        // { withCredentials: true }
-      )
+  //   try {
+  //     const response = await axios.post(
+  //       baseURL + "/send-verification/",
+  //       {
+  //         email: email,
+  //         // username: formData.user.username,
+  //         // first_name: formData.user.first_name,
+  //         // last_name: formData.user.last_name,
+  //       }
+  //       // { withCredentials: true }
+  //     )
 
-      console.log("Verification code sent:", response.data)
-      setEmail(formData.user.email)
-      setStep('verification')
-    } catch (err: any) {
-      console.error("Send verification error:", err)
-      if (err.response?.data) {
-        const errorData = err.response.data
-        if (typeof errorData === 'object') {
-          const errorMessages = Object.values(errorData).flat()
-          setError(errorMessages.join(', '))
-        } else {
-          setError(errorData)
-        }
-      } else {
-        setError("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.")
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
+  //     console.log("Verification code sent:", response.data)
+  //     setEmail(formData.user.email)
+  //     setStep('verification')
+  //   } catch (err: unknown) {
+  //     console.error("Send verification error:", err)
+  //     if (err && typeof err === 'object' && 'response' in err) {
+  //       const axiosError = err as { response?: { data?: Record<string, unknown> } }
+  //       const errorData = axiosError.response?.data
+  //       if (errorData && typeof errorData === 'object') {
+  //         const errorMessages = Object.values(errorData).flat()
+  //         setError(errorMessages.join(', '))
+  //       } else {
+  //         setError(String(errorData))
+  //       }
+  //     } else {
+  //       setError("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.")
+  //     }
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -115,15 +122,16 @@ export function RegisterForm({
 
       console.log("Email verified:", response.data)
       setStep('complete')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Verify email error:", err)
-      if (err.response?.data) {
-        const errorData = err.response.data
-        if (typeof errorData === 'object') {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: Record<string, unknown> } }
+        const errorData = axiosError.response?.data
+        if (errorData && typeof errorData === 'object') {
           const errorMessages = Object.values(errorData).flat()
           setError(errorMessages.join(', '))
         } else {
-          setError(errorData)
+          setError(String(errorData))
         }
       } else {
         setError("خطا در تایید کد. لطفاً دوباره تلاش کنید.")
@@ -133,8 +141,7 @@ export function RegisterForm({
     }
   }
 
-  const handleCompleteRegistration = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleCompleteRegistration = async () => {
     setError("")
     setLoading(true)
 
@@ -145,28 +152,32 @@ export function RegisterForm({
           email: formData.user.email,
           username: formData.user.username,
           password: formData.user.password,
-          first_name: formData.user.first_name,
-          last_name: formData.user.last_name,
-          national_id: formData.national_id,
-          phone_number: formData.phone_number,
-          birth_date: formData.birth_date,
-          grade: formData.grade,
+          first_name: "", // Empty for simple registration
+          last_name: "", // Empty for simple registration
+          national_id: "", // Empty for simple registration
+          phone_number: "", // Empty for simple registration
+          // birth_date: "", // Empty string instead of null
+          grade: "", // Empty for simple registration
         }
         // { withCredentials: true }
       )
-      setStep('verification')
-      setEmail(response.data.user.email)
-      // console.log("Registration completed:", response.data)
-      // navigate("/login")
-    } catch (err: any) {
+      console.log("Registration completed:", response.data)
+      navigate("/login", { 
+        state: { 
+          message: 'ثبت نام با موفقیت انجام شد. اکنون وارد شوید.',
+          email: formData.user.email 
+        } 
+      });
+    } catch (err: unknown) {
       console.error("Complete registration error:", err)
-      if (err.response?.data) {
-        const errorData = err.response.data
-        if (typeof errorData === 'object') {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: Record<string, unknown> } }
+        const errorData = axiosError.response?.data
+        if (errorData && typeof errorData === 'object') {
           const errorMessages = Object.values(errorData).flat()
           setError(errorMessages.join(', '))
         } else {
-          setError(errorData)
+          setError(String(errorData))
         }
       } else {
         setError("خطا در تکمیل ثبت‌نام. لطفاً دوباره تلاش کنید.")
@@ -176,9 +187,75 @@ export function RegisterForm({
     }
   }
 
+  const handleSendVerification = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setLoading(true)
+
+    try {
+      // First send verification code to email
+      const response = await axios.post(
+        baseURL + "/send-verification/",
+        {
+          email: formData.user.email,
+        }
+        // { withCredentials: true }
+      )
+      console.log("Verification code sent:", response.data)
+      setEmail(formData.user.email)
+      setStep('verification')
+    } catch (err: unknown) {
+      console.error("Complete registration error:", err)
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: Record<string, unknown> } }
+        const errorData = axiosError.response?.data
+        if (errorData && typeof errorData === 'object') {
+          const errorMessages = Object.values(errorData).flat()
+          setError(errorMessages.join(', '))
+        } else {
+          setError(String(errorData) || "خطا در تکمیل ثبت‌نام")
+        }
+      } else {
+        setError("خطا در تکمیل ثبت‌نام. لطفاً دوباره تلاش کنید.")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    setError("")
+    setLoading(true)
+
+    try {
+      const response = await axiosInstance.post('/send-verification-code/', { 
+        email: email 
+      })
+      
+      if (response.status === 200) {
+        setStep('verification')
+        setError("")
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<unknown>
+        const errorData = axiosError.response?.data
+        if (errorData && typeof errorData === 'object') {
+          const errorMessages = Object.values(errorData).flat()
+          setError(errorMessages.join(', '))
+        } else {
+          setError(String(errorData) || "خطا در ارسال کد تایید")
+        }
+      } else {
+        setError("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const renderFormStep = () => (
-    // <form onSubmit={handleSendVerification}>
-    <form onSubmit={handleCompleteRegistration}>
+    <form onSubmit={handleSendVerification}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center text-center">
           <h1 className="text-2xl font-bold">عضو شوید!</h1>
@@ -229,6 +306,7 @@ export function RegisterForm({
             />
           </div>
 
+          {/* COMMENTED OUT - Additional fields for later profile completion
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="first_name">نام</Label>
@@ -247,12 +325,12 @@ export function RegisterForm({
                 type="text"
                 value={formData.user.last_name}
                 onChange={(e) => handleInputChange('user.last_name', e.target.value)}
-                placeholder="نام خانوادگی"
               />
             </div>
           </div>
+          */}
 
-          {/* Profile Information */}
+          {/* COMMENTED OUT - Profile Information for later completion
           <div className="grid gap-3">
             <Label htmlFor="national_id">کد ملی</Label>
             <Input
@@ -304,6 +382,7 @@ export function RegisterForm({
               </SelectContent>
             </Select>
           </div>
+          */}
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "در حال ثبت نام..." : "ثبت نام"}
@@ -358,7 +437,7 @@ export function RegisterForm({
               </InputOTP>
             </div>
           </div>
-          <Button type="button" variant="secondary" onClick={() => handleSendVerification(email)}>ارسال مجدد کد</Button>
+          <Button type="button" variant="secondary" onClick={handleResendVerification}>ارسال مجدد کد</Button>
 
           <Button type="submit" className="w-full" disabled={loading || verificationCode.length !== 6}>
             {loading ? "در حال تایید..." : "تایید کد"}
@@ -392,7 +471,7 @@ export function RegisterForm({
 
       <div className="grid gap-4">
         <Button
-          onClick={() => navigate('/login')}
+          onClick={handleCompleteRegistration}
           className="w-full"
           disabled={loading}
         >
