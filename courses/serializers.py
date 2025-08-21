@@ -80,7 +80,11 @@ class StudentCourseSerializer(serializers.ModelSerializer):
         return obj.sessions.filter(is_published=True).count()
 
     def get_tests_count(self, obj):
-        return obj.tests.all().count()
+        # شمارش تست‌ها از طریق test_collections
+        total_tests = 0
+        for test_collection in obj.test_collections.all():
+            total_tests += test_collection.tests.count()
+        return total_tests
 
 
 class CourseSessionSerializer(serializers.ModelSerializer):
@@ -117,4 +121,4 @@ class StudentSessionSerializer(serializers.ModelSerializer):
 class CourseTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ['id', 'name', 'description', 'course', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency']
+        fields = ['id', 'name', 'description', 'test_collection', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency']

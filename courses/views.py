@@ -26,19 +26,19 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Course.objects.all().annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
-                tests_count=Count('tests')
+                tests_count=Count('test_collections__tests')
             )
         elif user.role == 'teacher':
             return Course.objects.filter(teacher=user).annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
-                tests_count=Count('tests')
+                tests_count=Count('test_collections__tests')
             )
         else:  # student
             return Course.objects.filter(students=user).annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
-                tests_count=Count('tests')
+                tests_count=Count('test_collections__tests')
             )
 
     def get_serializer_class(self):
@@ -158,13 +158,13 @@ class TeacherCourseViewSet(viewsets.ReadOnlyModelViewSet):
             return Course.objects.all().annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
-                tests_count=Count('tests')
+                tests_count=Count('test_collections__tests')
             )
         else:
             return Course.objects.filter(teacher=user).annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
-                tests_count=Count('tests')
+                tests_count=Count('test_collections__tests')
             )
 
 
@@ -179,7 +179,7 @@ class StudentCourseViewSet(viewsets.ReadOnlyModelViewSet):
         return Course.objects.filter(students=self.request.user).annotate(
             students_count=Count('students'),
             sessions_count=Count('sessions'),
-            tests_count=Count('tests')
+            tests_count=Count('test_collections__tests')
         )
 
 
