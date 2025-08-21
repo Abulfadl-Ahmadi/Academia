@@ -5,7 +5,6 @@ import {
   House,
   CalendarDays,
   Library,
-  BookOpenCheck,
   Box,
   TvMinimalPlay,
   CreditCard,
@@ -78,21 +77,21 @@ export function TeacherSidebar({
         ],
       },
       {
-        title: "آزمون‌ها",
-        url: "/panel/tests",
-        icon: BookOpenCheck,
+        title: "مجموعه آزمون‌ها",
+        url: "/panel/test-collections",
+        icon: Box,
         items: [
           {
-            title: "لیست آزمون‌ها",
-            url: "/panel/tests",
+            title: "لیست مجموعه آزمون‌ها",
+            url: "/panel/test-collections",
           },
           {
-            title: "ایجاد آزمون",
-            url: "/panel/tests/create",
+            title: "ایجاد مجموعه آزمون",
+            url: "/panel/test-collections/new",
           },
           {
-            title: "گزارش‌های آزمون",
-            url: "/panel/tests",
+            title: "مدیریت آزمون‌ها",
+            url: "/panel/test-collections",
           },
         ],
       },

@@ -9,9 +9,11 @@ import {
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import { BookKey } from "lucide-react";
+import { BookKey, ZoomIn as ZoomInIcon, ZoomOut as ZoomOutIcon } from "lucide-react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { zoomPlugin, type RenderZoomInProps, type RenderZoomOutProps } from '@react-pdf-viewer/zoom';
+
 // import { PDFViewer } from "./PDFViewer"
 import {
   Viewer,
@@ -20,7 +22,7 @@ import {
 //   defaultLayoutPlugin,
 //   type ToolbarProps,
 // } from "@react-pdf-viewer/default-layout";
-import { zoomPlugin } from "@react-pdf-viewer/zoom";
+// import { zoomPlugin } from "@react-pdf-viewer/zoom";
 // import '@react-pdf-viewer/zoom/lib/styles/index.css'
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import CountdownTimer from "./CountdownTimer";
@@ -200,7 +202,8 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
   // });
 
   const zoomPluginInstance = zoomPlugin();
-  const { ZoomInButton, ZoomOutButton } = zoomPluginInstance;
+  const { ZoomIn, ZoomOut } = zoomPluginInstance;
+
 
   const handleTimeUp = () => {
     alert("زمان آزمون به پایان رسید!");
@@ -302,7 +305,7 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="w-full bg-white fixed z-2 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="w-full sticky top-0 z-30 bg-inherit  flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -310,8 +313,32 @@ delete (newAnswers as { [key: number]: string })[questionNumber];
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <div>دفترچه آزمون {id}</div>
-            <ZoomOutButton />
-            <ZoomInButton />
+            <ZoomOut>
+              {(props: RenderZoomOutProps) => (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={props.onClick}
+                  className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                  title="کوچک‌تر کردن"
+                >
+                  <ZoomOutIcon className="h-4 w-4" />
+                </Button>
+              )}
+            </ZoomOut>
+            <ZoomIn>
+              {(props: RenderZoomInProps) => (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={props.onClick}
+                  className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                  title="بزرگ‌تر کردن"
+                >
+                  <ZoomInIcon className="h-4 w-4" />
+                </Button>
+              )}
+            </ZoomIn>
             <CountdownTimer
               endTime={session.end_time}
               onTimeUp={handleTimeUp}

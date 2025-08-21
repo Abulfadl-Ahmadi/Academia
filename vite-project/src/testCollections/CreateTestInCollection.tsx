@@ -13,24 +13,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DateTimePicker } from "@/components/ui/date-picker";
 
-export default function TeacherTestApp() {
+export default function CreateTestInCollection() {
   const baseURL = import.meta.env.VITE_API_BASE_URL;
+  const { id: collectionId } = useParams(); // collection ID از URL
+  const navigate = useNavigate();
 
-  const [courses, setCourses] = useState<{ id: number; title: string }[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [course, setCourse] = useState("");
   const [pdfFile, setPdfFile] = useState("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [startTimeStr, setStartTimeStr] = useState("");
@@ -45,18 +39,20 @@ export default function TeacherTestApp() {
 
   // گرفتن لیست فایل‌ها با ContentType=Test
   useEffect(() => {
-    axiosInstance
-      .get(baseURL + "/files/?content_type=test")
-      .then((res) => {
-        const fileList = res.data.map((file: any) => ({
+    const fetchFiles = async () => {
+      try {
+        const res = await axiosInstance.get(`${baseURL}/files/?content_type=test`);
+        const fileList = res.data.map((file: { id: number; title?: string }) => ({
           id: file.id,
           name: file.title || `File ${file.id}`,
         }));
         setFiles(fileList);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error loading files:", err);
-      });
+      }
+    };
+    
+    fetchFiles();
   }, [baseURL]);
 
   const options = [
@@ -65,21 +61,6 @@ export default function TeacherTestApp() {
     { value: "3", label: "۳" },
     { value: "4", label: "۴" },
   ];
-
-  useEffect(() => {
-    axiosInstance
-      .get(baseURL + "/courses/")
-      .then((res) => {
-        const groupList = res.data.map((course: any) => ({
-          id: course.id,
-          title: course.title,
-        }));
-        setCourses(groupList);
-      })
-      .catch((err) => {
-        console.error("Error loading courses:", err);
-      });
-  }, [baseURL]);
 
   const handleAnswer = (questionNumber: number, selectedValue: string) => {
     setAnswers((prev) => {
@@ -94,18 +75,8 @@ export default function TeacherTestApp() {
     });
   };
 
-  const navigate = useNavigate();
-
   const handleSubmit = async () => {
-    if (
-      !name ||
-      !course ||
-      !pdfFile ||
-      !startDate ||
-      !endDate ||
-      !durationHour ||
-      !durationMinute
-    ) {
+    if (!name || !pdfFile || !startDate || !endDate || !durationHour || !durationMinute) {
       toast.error("لطفا همه فیلدهای ضروری را پر کنید");
       return;
     }
@@ -114,14 +85,14 @@ export default function TeacherTestApp() {
       question_number: Number(q),
       answer: Number(a),
     }));
-
+    
     // Combine date and time for start and end times
     const startDateTime = new Date(startDate);
     if (startTimeStr) {
       const [hours, minutes] = startTimeStr.split(":").map(Number);
       startDateTime.setHours(hours, minutes);
     }
-
+    
     const endDateTime = new Date(endDate);
     if (endTimeStr) {
       const [hours, minutes] = endTimeStr.split(":").map(Number);
@@ -131,14 +102,11 @@ export default function TeacherTestApp() {
     const payload = {
       name,
       description,
-      course: Number(course),
+      test_collection: Number(collectionId), // اضافه کردن مجموعه آزمون
       pdf_file: Number(pdfFile),
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
-      duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(
-        2,
-        "0"
-      )}:00`,
+      duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(2, "0")}:00`,
       frequency,
       keys: keysArray,
     };
@@ -148,8 +116,8 @@ export default function TeacherTestApp() {
       await axiosInstance.post(baseURL + "/tests/", payload);
       toast.success("آزمون با موفقیت ثبت شد");
 
-      // Redirect to tests list page after successful creation
-      navigate("/panel/tests");
+      // Redirect back to test collection detail page
+      navigate(`/panel/test-collections/${collectionId}`);
     } catch (err) {
       console.error(err);
       toast.error("خطا در ثبت آزمون");
@@ -162,8 +130,8 @@ export default function TeacherTestApp() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">ساخت آزمون جدید</h2>
-        <Button variant="outline" onClick={() => navigate("/panel/tests")}>
-          بازگشت به لیست آزمون‌ها
+        <Button variant="outline" onClick={() => navigate(`/panel/test-collections/${collectionId}`)}>
+          بازگشت به مجموعه آزمون
         </Button>
       </div>
 
@@ -190,22 +158,6 @@ export default function TeacherTestApp() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="test-course">انتخاب دوره *</Label>
-            <Select value={course} onValueChange={setCourse}>
-              <SelectTrigger>
-                <SelectValue placeholder="-- انتخاب کنید --" />
-              </SelectTrigger>
-              <SelectContent>
-                {courses.map((c) => (
-                  <SelectItem key={c.id} value={c.id.toString()}>
-                    {c.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">
@@ -309,12 +261,9 @@ export default function TeacherTestApp() {
             <AccordionItem value="item-1">
               <AccordionTrigger>مشاهده و ویرایش کلید سوالات</AccordionTrigger>
               <AccordionContent>
-                <div
-                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 flex-wrap-reverse"
-                  style={{ direction: "ltr" }}
-                >
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 flex-wrap-reverse" dir="ltr">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="p-2" style={{ direction: "rtl" }}>
+                    <div key={i} className="p-2" dir="rtl">
                       {Array.from({ length: 10 }).map((_, j) => {
                         const questionNumber = 10 * i + j + 1;
                         return (
@@ -334,9 +283,7 @@ export default function TeacherTestApp() {
                                   onMouseDown={() =>
                                     handleAnswer(questionNumber, option.value)
                                   }
-                                  className="ring-2 ring-border my-1 rounded-md px-3 transition-colors
-             data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
-             hover:bg-accent hover:text-accent-foreground"
+                                  className="ring-[2px] my-1 ring-border rounded-md px-3 data-[state=checked]:bg-black data-[state=checked]:text-white"
                                 >
                                   <span className="text-sm tracking-tight">
                                     {option.label}
@@ -357,11 +304,7 @@ export default function TeacherTestApp() {
       </Card>
 
       <div className="flex justify-end">
-        <Button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full md:w-auto"
-        >
+        <Button onClick={handleSubmit} disabled={loading} className="w-full md:w-auto">
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 
-interface UseScrollTriggerOptions extends IntersectionObserverInit {}
+type UseScrollTriggerOptions = IntersectionObserverInit;
 
 export const useScrollTrigger = (
   options: UseScrollTriggerOptions = {}
-): [React.RefObject<HTMLDivElement>, boolean, boolean] => {
+): [React.RefObject<HTMLDivElement | null>, boolean, boolean] => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [hasTriggered, setHasTriggered] = useState<boolean>(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

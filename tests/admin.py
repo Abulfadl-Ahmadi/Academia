@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
-    Test, PrimaryKey, StudentTestSession, 
-    StudentTestSessionLog, StudentAnswer
+    TestCollection, Test, PrimaryKey, StudentTestSession, 
+    StudentTestSessionLog, StudentAnswer, StudentProgress
 )
 
 
@@ -23,28 +23,36 @@ class StudentAnswerInline(admin.TabularInline):
 
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
-    list_display = ('name', 'teacher', 'course', 'start_time', 'end_time', 'duration', 'frequency', 'primary_keys_count')
-    list_filter = ('frequency', 'start_time', 'end_time', 'teacher', 'course')
-    search_fields = ('name', 'description', 'teacher__username', 'course__title')
-    readonly_fields = ('duration',)
+    list_display = ('name', 'get_test_collection_name', 'teacher', 'start_time', 'end_time', 'is_active', 'participants_count')
+    list_filter = ('is_active', 'test_collection', 'start_time', 'end_time', 'teacher')
+    search_fields = ('name', 'description', 'teacher__username', 'test_collection__name')
+    readonly_fields = ('created_at', 'updated_at')
     inlines = [PrimaryKeyInline]
     list_per_page = 25
     
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'description', 'teacher', 'course')
+        ('اطلاعات پایه', {
+            'fields': ('name', 'description', 'teacher', 'test_collection', 'is_active')
         }),
-        ('Test Configuration', {
+        ('تنظیمات آزمون', {
             'fields': ('pdf_file', 'frequency')
         }),
-        ('Timing', {
+        ('زمان‌بندی', {
             'fields': ('start_time', 'end_time', 'duration')
+        }),
+        ('آمار', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
         }),
     )
     
-    def primary_keys_count(self, obj):
-        return obj.primary_keys.count()
-    primary_keys_count.short_description = 'Answer Keys'
+    def get_test_collection_name(self, obj):
+        return obj.test_collection.name if obj.test_collection else "بدون مجموعه"
+    get_test_collection_name.short_description = "مجموعه آزمون"
+    
+    def participants_count(self, obj):
+        return obj.get_participants_count()
+    participants_count.short_description = 'شرکت‌کنندگان'
 
 
 @admin.register(PrimaryKey)
@@ -105,3 +113,55 @@ class StudentAnswerAdmin(admin.ModelAdmin):
     def test(self, obj):
         return obj.session.test.name
     test.short_description = 'Test'
+
+
+@admin.register(TestCollection)
+class TestCollectionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active', 'created_by', 'tests_count', 'students_count', 'created_at')
+    list_filter = ('is_active', 'created_by', 'created_at')
+    search_fields = ('name', 'description', 'created_by__username')
+    filter_horizontal = ('courses',)
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 25
+    
+    fieldsets = (
+        ('اطلاعات پایه', {
+            'fields': ('name', 'description', 'is_active', 'created_by')
+        }),
+        ('اتصالات', {
+            'fields': ('courses',)
+        }),
+        ('زمان‌بندی', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def tests_count(self, obj):
+        return obj.get_total_tests()
+    tests_count.short_description = 'تعداد آزمون'
+    
+    def students_count(self, obj):
+        return obj.get_accessible_students().count()
+    students_count.short_description = 'تعداد دانش‌آموز'
+
+
+@admin.register(StudentProgress)
+class StudentProgressAdmin(admin.ModelAdmin):
+    list_display = ('student', 'test_collection', 'progress_display', 'average_score', 'last_activity')
+    list_filter = ('test_collection', 'is_completed', 'last_activity')
+    search_fields = ('student__username', 'test_collection__name')
+    readonly_fields = ('started_at', 'last_activity', 'progress_percentage', 'average_score')
+    list_per_page = 50
+    
+    def progress_display(self, obj):
+        return f"{obj.completed_tests}/{obj.test_collection.tests.count()} ({obj.progress_percentage:.1f}%)"
+    progress_display.short_description = 'پیشرفت'
+    
+    actions = ['update_all_progress']
+    
+    def update_all_progress(self, request, queryset):
+        for progress in queryset:
+            progress.update_progress()
+        self.message_user(request, f"{queryset.count()} پیشرفت بروزرسانی شد.")
+    update_all_progress.short_description = "بروزرسانی پیشرفت انتخاب شده‌ها"

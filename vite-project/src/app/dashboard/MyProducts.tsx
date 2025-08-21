@@ -230,7 +230,7 @@ function ProductCard({ access }: ProductCardProps) {
   };
 
   const handleStartTest = (testId: number) => {
-    window.location.href = `/test/${testId}/`;
+    window.location.href = `/tests/${testId}/`;
   };
 
   const handleViewCourse = (courseId: number) => {

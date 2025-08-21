@@ -11,7 +11,6 @@ import {
   TvMinimalPlay,
   ShoppingCart,
   FileText,
-  BookOpenCheck,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -76,17 +75,17 @@ const data = {
       ],
     },
     {
-      title: "آزمون‌های من",
-      url: "/panel/tests",
-      icon: BookOpenCheck,
+      title: "مجموعه آزمون‌ها",
+      url: "/panel/test-collections",
+      icon: Box,
       items: [
         {
-          title: "لیست آزمون‌ها",
-          url: "/panel/tests",
+          title: "مجموعه‌های من",
+          url: "/panel/test-collections",
         },
         {
-          title: "نتایج آزمون‌ها",
-          url: "/panel/tests",
+          title: "آزمون‌های موجود",
+          url: "/panel/test-collections",
         },
       ],
     },

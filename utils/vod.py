@@ -1,7 +1,7 @@
 # utils/vod.py
 import requests
 from decouple import config
-from tusclient import client as tuspy
+# from tusclient import client as tuspy
 import base64
 import logging
 
@@ -104,31 +104,32 @@ def upload_video_file(upload_url, file_path, channel_id):
 
         # 1. Create a TusClient instance with the necessary headers.
         #    The 'tuspy' alias refers to the 'client' module. The class is 'TusClient'.
-        my_client = tuspy.TusClient(f"{VOD_BASE_URL}/channels/{channel_id}/files",
-            headers={
-                "Authorization": f"Apikey {VOD_API_KEY}",
-                "Accept-Language": "en",
-                "Accept": "application/json",
-            }
-        )
+        # my_client = tuspy.TusClient(f"{VOD_BASE_URL}/channels/{channel_id}/files",
+        #     headers={
+        #         "Authorization": f"Apikey {VOD_API_KEY}",
+        #         "Accept-Language": "en",
+        #         "Accept": "application/json",
+        #     }
+        # )
 
         # 2. Create the uploader from the client, providing the pre-generated upload URL.
         #    The uploader will use the headers from `my_client`.
-        uploader = my_client.uploader(
-            file_path,
-            url=upload_url,
-            chunk_size=1 * 1024 * 1024,  # 1MB chunks
-            metadata={
-                "filename": file_path.split("/")[-1],
-                "filetype": "video/mp4"
-            }
-        )
+        # uploader = my_client.uploader(
+        #     file_path,
+        #     url=upload_url,
+        #     chunk_size=1 * 1024 * 1024,  # 1MB chunks
+        #     metadata={
+        #         "filename": file_path.split("/")[-1],
+        #         "filetype": "video/mp4"
+        #     }
+        # )
 
-        logger.debug(f"Starting TUS upload to: {uploader.url}")
-        uploader.upload()
-        logger.debug(f"Video uploaded successfully to: {uploader.url}")
+        # logger.debug(f"Starting TUS upload to: {uploader.url}")
+        # uploader.upload()
+        # logger.debug(f"Video uploaded successfully to: {uploader.url}")
         
-        return uploader.url
+        # return uploader.url
+        raise NotImplementedError("tusclient module not installed")
 
     except Exception as e:
         logger.error(f"Failed to upload video: {str(e)}")

@@ -9,11 +9,17 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/comp
 // import { DatePicker } from "@/components/ui/date-picker"
 
 import { useState } from "react"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { useNavigate } from "react-router-dom"
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
+const axiosInstance = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 type RegistrationStep = 'form' | 'verification' | 'complete'
 
@@ -207,10 +213,41 @@ export function RegisterForm({
           const errorMessages = Object.values(errorData).flat()
           setError(errorMessages.join(', '))
         } else {
-          setError(errorData)
+          setError(String(errorData) || "خطا در تکمیل ثبت‌نام")
         }
       } else {
         setError("خطا در تکمیل ثبت‌نام. لطفاً دوباره تلاش کنید.")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    setError("")
+    setLoading(true)
+
+    try {
+      const response = await axiosInstance.post('/send-verification-code/', { 
+        email: email 
+      })
+      
+      if (response.status === 200) {
+        setStep('verification')
+        setError("")
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<unknown>
+        const errorData = axiosError.response?.data
+        if (errorData && typeof errorData === 'object') {
+          const errorMessages = Object.values(errorData).flat()
+          setError(errorMessages.join(', '))
+        } else {
+          setError(String(errorData) || "خطا در ارسال کد تایید")
+        }
+      } else {
+        setError("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.")
       }
     } finally {
       setLoading(false)
@@ -400,7 +437,7 @@ export function RegisterForm({
               </InputOTP>
             </div>
           </div>
-          <Button type="button" variant="secondary" onClick={() => handleSendVerification(email)}>ارسال مجدد کد</Button>
+          <Button type="button" variant="secondary" onClick={handleResendVerification}>ارسال مجدد کد</Button>
 
           <Button type="submit" className="w-full" disabled={loading || verificationCode.length !== 6}>
             {loading ? "در حال تایید..." : "تایید کد"}

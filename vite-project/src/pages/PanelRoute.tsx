@@ -6,11 +6,6 @@ import FilesPage from "@/app/teacher-dashboard/files/page"
 import SessionsPage from "@/app/teacher-dashboard/groups/session/page"
 import SessionsDetailPage from "@/app/teacher-dashboard/groups/session/page"
 import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo1"
-import TeacherTestApp from "@/app/teacher-dashboard/tests/CreateTest"
-import TeacherTestsList from "@/app/teacher-dashboard/tests"
-import StudentTestsList from "@/app/dashboard/tests"
-import TestReport from "@/app/teacher-dashboard/tests/report/[id]"
-import StudentTestResult from "@/app/dashboard/tests/result/[id]"
 // import TestPage from '@/app/teacher-dashboard/tests/TestPage'
 import ProfilePage from "@/app/dashboard/profile/page"
 import Home from "@/app/dashboard/home/page"
@@ -23,6 +18,14 @@ import CoursesList from "@/app/teacher-dashboard/courses/CoursesList"
 import CreateCoursePage from "@/app/teacher-dashboard/courses/create/page"
 import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
 import VideoPage from "@/app/dashboard/video/page"
+
+// Test Collection Components
+import TestCollectionList from "@/testCollections/TestCollectionList"
+import TestCollectionDetail from "@/testCollections/TestCollectionDetail"
+import TestCollectionStatistics from "@/testCollections/TestCollectionStatistics"
+import StudentProgressList from "@/testCollections/StudentProgressList"
+import TestCollectionForm from "@/testCollections/TestCollectionForm"
+import CreateTestInCollection from "@/testCollections/CreateTestInCollection"
 
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout"
@@ -56,9 +59,12 @@ export default function PanelRoute() {
         <Route path="/courses" element={<StudentCoursesPage />} />
         <Route path="/courses/:courseId" element={<StudentCourseDetailPage />} />
         <Route path="/video/:sessionId?" element={<VideoPage />} />
-        <Route path="/tests" element={<StudentTestsList />} />
+        {/* <Route path="/tests" element={<StudentTestsList />} /> */}
+        <Route path="/test-collections" element={<TestCollectionList />} />
+        <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
+        <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
         {/* <Route path='/tests/:id/detail' element={<TestDetailPage />}  /> */}
-        <Route path="/tests/result/:id" element={<StudentTestResult />} />
+        {/* <Route path="/tests/result/:id" element={<StudentTestResult />} /> */}
       </Route>
     </Routes>
   )
@@ -76,10 +82,16 @@ export default function PanelRoute() {
         <Route path="/profile" element={<TeacherProfilePage />} />
         <Route path="/files" element={<FilesPage />} />
         <Route path="/videos" element={<UploadVideo />} />
-        <Route path="/tests" element={<TeacherTestsList />} />
+        {/* <Route path="/tests" element={<TeacherTestsList />} />
         <Route path="/tests/create" element={<TeacherTestApp />} />
         <Route path="/tests/:id" element={<div>مشاهده آزمون</div>} />
-        <Route path="/tests/report/:id" element={<TestReport />} />
+        <Route path="/tests/report/:id" element={<TestReport />} /> */}
+        <Route path="/test-collections" element={<TestCollectionList />} />
+        <Route path="/test-collections/new" element={<TestCollectionForm />} />
+        <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
+        <Route path="/test-collections/:id/create-test" element={<CreateTestInCollection />} />
+        <Route path="/test-collections/:id/statistics" element={<TestCollectionStatistics />} />
+        <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/products/create" element={<CreateProductPage />} />
         {/* <Route path="/videos" element={<VideoPage />} */}

@@ -10,6 +10,8 @@ import { Loader2, Clock, Calendar, BookOpen } from "lucide-react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 async function getDeviceId() {
     const fp = await FingerprintJS.load();
@@ -75,10 +77,19 @@ const handleStartTest = async (testId: number) => {
     console.log("Session started:", res.data);
 
     // بعد از ساخت سشن، ریدایرکت به صفحه آزمون
-    navigate(`/tests/${testId}/`, { state: { session: res.data } });
+    navigate(`/tests/${testId}/detail`, { state: { session: res.data } });
   } catch (err) {
     console.error("Error starting session:", err);
-  }}
+    const error = err as AxiosError<{error?: string, detail?: string}>;
+    if (error.response?.data?.error) {
+      toast.error(error.response.data.error);
+    } else if (error.response?.data?.detail) {
+      toast.error(error.response.data.detail);
+    } else {
+      toast.error("خطا در شروع آزمون");
+    }
+  }
+};
 
   const handleViewResult = (testId: number) => {
     navigate(`/panel/tests/result/${testId}`);

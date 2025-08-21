@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/constants";
-import { LogoSvg } from "./LogoSvg";
+import { ATLogo } from "./ATLogo";
 
 interface LogoProps {
   className?: string;
@@ -8,13 +8,6 @@ interface LogoProps {
 }
 
 export function Logo({ className, size = "md", showText = true }: LogoProps) {
-  const sizeClasses = {
-    sm: "h-6 w-auto",
-    md: "h-8 w-auto", 
-    lg: "h-12 w-auto",
-    xl: "h-16 w-auto"
-  };
-
   const textSizeClasses = {
     sm: "text-lg",
     md: "text-xl",
@@ -25,8 +18,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <div className="text-gray-900 dark:text-white">
-        <LogoSvg 
-          className={sizeClasses[size]}
+        <ATLogo 
           color="currentColor"
         />
       </div>

@@ -2,7 +2,8 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from django.db.models import Count, Q, Prefetch
+from django.db.models import Count, Q, Prefetch, Avg
+from django.utils import timezone
 from .models import Course, CourseSession, CourseSchedule, ClassCategory
 from .serializers import (
     CourseSerializer, CourseSessionSerializer, CourseScheduleSerializer,
@@ -316,5 +317,6 @@ class CourseDetailView(viewsets.ReadOnlyModelViewSet):
     def tests(self, request, pk=None):
         course = self.get_object()
         tests = Test.objects.filter(course=course)
-        serializer = TestSerializer(tests, many=True, context={'request': request})
+        # Use TestCreateSerializer instead of TestSerializer
+        serializer = TestCreateSerializer(tests, many=True, context={'request': request})
         return Response(serializer.data)
