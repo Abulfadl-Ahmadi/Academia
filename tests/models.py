@@ -84,7 +84,9 @@ class Test(models.Model):
         TestCollection, 
         on_delete=models.CASCADE, 
         related_name='tests',
-        verbose_name="مجموعه آزمون"
+        verbose_name="مجموعه آزمون",
+        null=True,
+        blank=True
     )
     
     pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF")
