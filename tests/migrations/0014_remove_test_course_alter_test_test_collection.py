@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='test',
             name='test_collection',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tests', to='tests.testcollection', verbose_name='مجموعه آزمون'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tests', to='tests.testcollection', verbose_name='مجموعه آزمون'),
         ),
     ]
