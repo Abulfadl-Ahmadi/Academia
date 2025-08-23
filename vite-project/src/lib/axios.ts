@@ -9,6 +9,19 @@ const axiosInstance = axios.create({
   withCredentials: true, // Send cookies with requests
 });
 
+// Log the base URL once for debugging
+console.log('Axios base URL:', baseURL);
+
+// Fix API path issue by removing duplicate 'api' prefix if it already exists
+axiosInstance.interceptors.request.use(config => {
+  // If the URL already starts with /api/ and the baseURL includes /api/,
+  // we need to avoid duplicate 'api' segments
+  if (config.url?.startsWith('/api/') && baseURL?.includes('/api')) {
+    config.url = config.url.replace(/^\/api/, '');
+  }
+  return config;
+});
+
 // Login state stored in memory (optional)
 let loginStatus = false;
 

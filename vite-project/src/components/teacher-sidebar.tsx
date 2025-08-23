@@ -9,6 +9,8 @@ import {
   TvMinimalPlay,
   CreditCard,
   ShoppingCart,
+  LifeBuoy,
+  Bot,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -119,6 +121,27 @@ export function TeacherSidebar({
           {
             title: "لیست تراکنش‌ها",
             url: "/panel/transactions",
+          },
+        ],
+      },
+      {
+        title: "پشتیبانی و تیکت‌ها",
+        url: "/panel/support",
+        icon: LifeBuoy,
+        items: [
+          {
+            title: "لیست تیکت‌ها",
+            url: "/panel/support",
+            description: "مشاهده و رسیدگی به تیکت‌های دانش‌آموزان"
+          },
+          {
+            title: "ثبت تیکت جدید",
+            url: "/panel/support/new",
+          },
+          {
+            title: "پاسخ خودکار (هوش مصنوعی)",
+            url: "/panel/support/ask-ai",
+            description: "مشاوره با هوش مصنوعی"
           },
         ],
       },

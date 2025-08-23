@@ -95,7 +95,12 @@ export default function TicketsList() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axiosInstance.get('/support/tickets/');
+        console.log('Fetching tickets, user role:', user?.role);
+        console.log('Is teacher?', isTeacher);
+        
+        // Make sure we're using the correct API URL with the 'api' prefix
+        const response = await axiosInstance.get('/api/support/tickets/');
+        console.log('Tickets response data:', response.data);
         setTickets(response.data);
         setLoading(false);
       } catch (error) {
@@ -106,7 +111,7 @@ export default function TicketsList() {
     };
 
     fetchTickets();
-  }, []);
+  }, [user?.role, isTeacher]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
