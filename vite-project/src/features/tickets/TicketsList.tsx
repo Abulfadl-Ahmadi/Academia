@@ -98,8 +98,8 @@ export default function TicketsList() {
         console.log('Fetching tickets, user role:', user?.role);
         console.log('Is teacher?', isTeacher);
         
-        // Make sure we're using the correct API URL with the 'api' prefix
-        const response = await axiosInstance.get('/api/support/tickets/');
+        // The baseURL already includes '/api/', so we don't need to add it here
+        const response = await axiosInstance.get('/support/tickets/');
         console.log('Tickets response data:', response.data);
         setTickets(response.data);
         setLoading(false);
@@ -176,9 +176,9 @@ export default function TicketsList() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-2xl">تیکت‌های پشتیبانی</CardTitle>
+              <CardTitle className="text-2xl">{isTeacher ? 'مدیریت تیکت‌های دانش‌آموزان' : 'تیکت‌های پشتیبانی'}</CardTitle>
               <CardDescription>
-                {isTeacher ? 'مدیریت و پاسخگویی به تیکت‌های دانش‌آموزان' : 'درخواست‌ها و سؤالات خود را مطرح کنید'}
+                {isTeacher ? 'پاسخگویی و رسیدگی به تیکت‌های دانش‌آموزان' : 'درخواست‌ها و سؤالات خود را مطرح کنید'}
               </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -186,10 +186,12 @@ export default function TicketsList() {
                 <Bot size={16} />
                 پرسش از هوش مصنوعی
               </Button>
-              <Button onClick={() => navigate('/panel/support/new')} className="flex items-center gap-2">
-                <Plus size={16} />
-                تیکت جدید
-              </Button>
+              {!isTeacher && (
+                <Button onClick={() => navigate('/panel/support/new')} className="flex items-center gap-2">
+                  <Plus size={16} />
+                  تیکت جدید
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>

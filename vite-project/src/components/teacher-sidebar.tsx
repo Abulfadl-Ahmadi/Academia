@@ -17,7 +17,7 @@ import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
-  SidebarContent,
+  SidebarContent, 
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
@@ -133,10 +133,6 @@ export function TeacherSidebar({
             title: "لیست تیکت‌ها",
             url: "/panel/support",
             description: "مشاهده و رسیدگی به تیکت‌های دانش‌آموزان"
-          },
-          {
-            title: "ثبت تیکت جدید",
-            url: "/panel/support/new",
           },
           {
             title: "پاسخ خودکار (هوش مصنوعی)",
