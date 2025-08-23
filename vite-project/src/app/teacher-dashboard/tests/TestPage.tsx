@@ -53,7 +53,8 @@ const TestDetailPage: React.FC = () => {
       const data = await response.data;
       alert(data.detail);
       navigate(`/panel/tests/`);
-    } catch (error) {
+    } catch (err) {
+      console.error("Error logging out:", err);
       alert("Error logging out session.");
     }
   };
@@ -61,13 +62,14 @@ const TestDetailPage: React.FC = () => {
   const finishTest = async () => {
     try {
       await axiosInstance.post("/finish-test/", {
-      session_id: session.session_id
-    });
-    toast.success("پاسخ‌برگ شما به مراقب آزمون تحویل داده شد.");
-    } catch (error) {
-      toast.error(`${error}`);
+        session_id: session.session_id
+      });
+      toast.success("پاسخ‌برگ شما به مراقب آزمون تحویل داده شد.");
+      // After successful completion, redirect to the results page
+      navigate(`/panel/tests/result/${id}`);
+    } catch (err) {
+      toast.error(`خطا در اتمام آزمون: ${err}`);
     }
-
   };
 
   const options = [
@@ -111,7 +113,7 @@ const TestDetailPage: React.FC = () => {
           }
         });
     }
-  }, [session?.session_id]);
+  }, [session?.session_id, navigate]);
 
   const sendAnswersToBackend = async () => {
     const entries = Object.entries(answers);

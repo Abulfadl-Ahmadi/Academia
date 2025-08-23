@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-// @ts-ignore
+// @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -80,11 +80,22 @@ const handleStartTest = async (testId: number) => {
     navigate(`/tests/${testId}/detail`, { state: { session: res.data } });
   } catch (err) {
     console.error("Error starting session:", err);
-    const error = err as AxiosError<{error?: string, detail?: string}>;
+    const error = err as AxiosError<{error?: string, detail?: string, message?: string, redirect_to?: string}>;
+    
+    // Handle completed test case specifically
+    if (error.response?.data?.error === "completed" && error.response?.data?.redirect_to) {
+      toast.info(error.response.data.message || "شما قبلا این آزمون را به اتمام رسانده‌اید");
+      navigate(error.response.data.redirect_to); // Redirect to the test results page
+      return;
+    }
+    
+    // Handle other errors
     if (error.response?.data?.error) {
       toast.error(error.response.data.error);
     } else if (error.response?.data?.detail) {
       toast.error(error.response.data.detail);
+    } else if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
     } else {
       toast.error("خطا در شروع آزمون");
     }

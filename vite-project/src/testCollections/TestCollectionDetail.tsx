@@ -20,7 +20,8 @@ import {
   FileText,
   PlayCircle,
   Clock,
-  Plus
+  Plus,
+  CheckCircle
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 
@@ -48,6 +49,9 @@ interface TestCollection {
     time_limit: number;
     is_active: boolean;
     created_at: string;
+    pdf_file_url: string;
+    answers_file_url?: string;
+    status?: string; // "completed", "in_progress", etc.
   }>;
 }
 
@@ -71,15 +75,30 @@ export default function TestCollectionDetail() {
       navigate(`/tests/${testId}/detail`, { state: { session: res.data } });
     } catch (err) {
       console.error("Error starting session:", err);
-      const error = err as AxiosError<{error?: string, detail?: string}>;
+      const error = err as AxiosError<{error?: string, detail?: string, message?: string, redirect_to?: string}>;
+      
+      // Handle completed test case specifically
+      if (error.response?.data?.error === "completed" && error.response?.data?.redirect_to) {
+        toast.info(error.response.data.message || "شما قبلا این آزمون را به اتمام رسانده‌اید");
+        navigate(error.response.data.redirect_to); // Redirect to the test results page
+        return;
+      }
+      
+      // Handle other errors
       if (error.response?.data?.error) {
         toast.error(error.response.data.error);
       } else if (error.response?.data?.detail) {
         toast.error(error.response.data.detail);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
       } else {
         toast.error("خطا در شروع آزمون");
       }
     }
+  };
+  
+  const handleViewResult = (testId: number) => {
+    navigate(`/panel/tests/result/${testId}`);
   };
 
   const fetchCollection = useCallback(async () => {
@@ -319,6 +338,24 @@ export default function TestCollectionDetail() {
                     <div className="flex gap-2">
                       {user?.role === "teacher" ? (
                         <>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(test.pdf_file_url, '_blank')}
+                          >
+                            <FileText className="h-4 w-4 ml-1" />
+                            سوالات
+                          </Button>
+                          {test.answers_file_url && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => window.open(test.answers_file_url, '_blank')}
+                            >
+                              <CheckCircle className="h-4 w-4 ml-1" />
+                              پاسخنامه
+                            </Button>
+                          )}
                           <Button variant="outline" size="sm">
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -326,6 +363,15 @@ export default function TestCollectionDetail() {
                             <BarChart3 className="h-4 w-4" />
                           </Button>
                         </>
+                      ) : test.status === "completed" ? (
+                        <Button 
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleViewResult(test.id)}
+                        >
+                          <CheckCircle className="h-4 w-4 ml-1" />
+                          مشاهده نتیجه
+                        </Button>
                       ) : (
                         <Button 
                           size="sm"

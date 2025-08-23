@@ -22,6 +22,11 @@ class CourseNestedSerializer(serializers.ModelSerializer):
 class TestCreateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
     pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    answers_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST),
+        required=False,
+        allow_null=True
+    )
     status = serializers.SerializerMethodField()
     test_collection = serializers.PrimaryKeyRelatedField(
         queryset=TestCollection.objects.all(),
@@ -35,7 +40,7 @@ class TestCreateSerializer(serializers.ModelSerializer):
         model = Test
         fields = [
             "id", 'name', 'status', 'test_collection_detail', 'course_detail',
-            'description', 'test_collection', 'pdf_file', 
+            'description', 'test_collection', 'pdf_file', 'answers_file',
             'start_time', 'end_time', 'duration', 'frequency', 'keys'
         ]
         read_only_fields = ['teacher']
@@ -70,10 +75,10 @@ class TestCreateSerializer(serializers.ModelSerializer):
             PrimaryKey.objects.create(test=test, **key)
         return test
 
-    def get_status(self, validated_data):
+    def get_status(self, obj):
         request = self.context.get('request')
         user = request.user
-        sessions = StudentTestSession.objects.filter(user=user, test=validated_data.id).order_by("-id")
+        sessions = StudentTestSession.objects.filter(user=user, test=obj.id).order_by("-id")
         if len(sessions) == 0:
             return ""
         else:
@@ -106,17 +111,26 @@ class TestUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 class TestDetailSerializer(serializers.ModelSerializer):
-    # pdf_file = serializers.SerializerMethodField()
+    pdf_file_url = serializers.SerializerMethodField()
+    answers_file_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = Test
-        fields = ["id", 'name', 'description', 'test_collection', 'start_time', 'end_time', 'duration', 'frequency']
+        fields = ["id", 'name', 'description', 'test_collection', 'pdf_file', 'answers_file', 
+                 'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'frequency']
         read_only_fields = ['teacher']
 
-    # def get_pdf_file(self, obj):
-    #     request = self.context.get('request')
-    #     if obj.pdf_file:
-    #         return request.build_absolute_uri(obj.pdf_file.file.url) if request else obj.pdf_file.file.url
-    #     return None
+    def get_pdf_file_url(self, obj):
+        request = self.context.get('request')
+        if obj.pdf_file and obj.pdf_file.file:
+            return request.build_absolute_uri(obj.pdf_file.file.url) if request else obj.pdf_file.file.url
+        return None
+        
+    def get_answers_file_url(self, obj):
+        request = self.context.get('request')
+        if obj.answers_file and obj.answers_file.file:
+            return request.build_absolute_uri(obj.answers_file.file.url) if request else obj.answers_file.file.url
+        return None
 
 
 class TestCollectionSerializer(serializers.ModelSerializer):
@@ -178,17 +192,34 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
     def get_tests(self, obj):
         """لیست آزمون‌های این مجموعه"""
         tests = obj.tests.all().order_by('-created_at')
-        return [{
-            'id': test.id,
-            'name': test.name,
-            'description': test.description,
-            'questions_count': 0,  # You can add this field to Test model or calculate it
-            'time_limit': int(test.duration.total_seconds() / 60) if test.duration else 0,
-            'is_active': True,  # You can add this field to Test model if needed
-            'created_at': test.created_at.isoformat(),
-            'start_time': test.start_time.isoformat() if test.start_time else None,
-            'end_time': test.end_time.isoformat() if test.end_time else None,
-        } for test in tests]
+        request = self.context.get('request')
+        user = request.user if request else None
+        
+        result = []
+        for test in tests:
+            test_data = {
+                'id': test.id,
+                'name': test.name,
+                'description': test.description,
+                'questions_count': test.primary_keys.count(),  # Count questions based on primary keys
+                'time_limit': int(test.duration.total_seconds() / 60) if test.duration else 0,
+                'is_active': test.is_active,  
+                'created_at': test.created_at.isoformat(),
+                'start_time': test.start_time.isoformat() if test.start_time else None,
+                'end_time': test.end_time.isoformat() if test.end_time else None,
+                'pdf_file_url': test.pdf_file.file.url if test.pdf_file and test.pdf_file.file else None,
+                'answers_file_url': test.answers_file.file.url if test.answers_file and test.answers_file.file else None,
+            }
+            
+            # Add test status for the current user
+            if user and user.role == 'student':
+                sessions = test.studenttestsession_set.filter(user=user).order_by('-id')
+                if sessions.exists():
+                    test_data['status'] = sessions.first().status
+            
+            result.append(test_data)
+            
+        return result
 
 
 class TestCollectionSerializer(serializers.ModelSerializer):

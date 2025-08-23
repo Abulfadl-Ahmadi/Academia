@@ -96,6 +96,21 @@ class EnterTestView(views.APIView):
             test = Test.objects.get(id=test_id)
         except Test.DoesNotExist:
             return Response({"error": "Test not found"}, status=404)
+            
+        # Check if user has already completed this test
+        # Check if user has already completed this test
+        completed_session = StudentTestSession.objects.filter(
+            user=user, 
+            test=test,
+            status='completed'
+        ).exists()
+        
+        if completed_session:
+            return Response({
+                "error": "completed", 
+                "message": "شما قبلا این آزمون را به اتمام رسانده‌اید.",
+                "redirect_to": f"/panel/tests/result/{test_id}/"
+            }, status=403)
 
         now = timezone.now()
         if now < test.start_time or now > test.end_time:
@@ -342,15 +357,21 @@ class CreateReport(views.APIView):
             
             report_data.append(session_data)
 
+        # Get course information through test_collection
+        course_name = None
+        if hasattr(test, 'test_collection') and test.test_collection and test.test_collection.courses.exists():
+            course = test.test_collection.courses.first()
+            course_name = course.title
+            
         response_data = {
             "test": {
                 "id": test.id,
                 "name": test.name,
                 "description": test.description,
-                "course": test.course.title if test.course else None,
+                "course": course_name,
                 "start_time": test.start_time,
                 "end_time": test.end_time,
-                "duration": test.duration,
+                "duration": int(test.duration.total_seconds() / 60) if test.duration else 0,
                 "created_by": test.teacher.username
             },
             "sessions": report_data

@@ -1,0 +1,55 @@
+/* Global styles for RTL tables */
+
+.rtl-table {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-table th, 
+.rtl-table td {
+  text-align: right !important;
+  padding: 0.75rem 1rem !important; /* Add proper padding to cells */
+}
+
+.rtl-table-header {
+  font-weight: bold;
+}
+
+/* Force RTL for all elements inside table */
+.rtl-table * {
+  direction: rtl;
+  unicode-bidi: embed;
+}
+
+/* Ensure Persian text has proper spacing */
+span[class*="font-iransans"], 
+div[class*="font-iransans"] {
+  letter-spacing: 0;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fix for cell text alignment */
+.rtl-table td > div:not(.flex) {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Ensure actions column is displayed correctly */
+.rtl-table tr td:last-child {
+  text-align: left !important;
+}
+
+/* Add custom styling for the actions column */
+.actions-cell {
+  display: flex;
+  justify-content: flex-start;
+  direction: ltr;
+}
+
+/* Ensure the product type column displays correctly */
+.product-type-cell {
+  letter-spacing: 0;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}

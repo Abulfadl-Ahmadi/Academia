@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveBlur } from "../../components/motion-primitives/progressive-blur";
 import { TextEffect } from "../../components/motion-primitives/text-effect";
 import { TextShimmer } from "../../components/motion-primitives/text-shimmer";
+import { SlidingNumber } from "../../components/motion-primitives/sliding-number";
 import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { HeroGeometric } from "@/components/ui/shadcn-io/shape-landing-hero";
 
@@ -24,7 +25,7 @@ import {
   Award,
   Loader2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axiosInstance from "@/lib/axios";
 import LogoCloud from "./LogoCloud";
 import {
@@ -145,6 +146,33 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [textRef, isVisible] = useScrollTrigger();
 
+  // Target date: September 20, 2025 at 8:00 PM
+  const targetDate = useMemo(() => new Date('2025-09-20T20:00:00'), []);
+  const [days, setDays] = useState(0);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+
+  // Update countdown every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const difference = Math.max(0, targetDate.getTime() - now.getTime());
+      
+      // Calculate days, hours, minutes, seconds
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      
+      setDays(days);
+      setHours(hours);
+      setMinutes(minutes);
+      setSeconds(seconds);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
   // Fetch courses from API
   useEffect(() => {
     const fetchCourses = async () => {
@@ -204,7 +232,46 @@ export default function HomePage() {
   };
 
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen w-full my-10">
+      <div className="flex flex-col items-center justify-center gap-6 mb-16 py-12 px-6 max-w-3xl mx-auto relative overflow-hidden">
+        
+        <div className="flex flex-col items-center gap-6 relative z-10" dir="ltr">
+          <div className="flex items-center gap-4 sm:gap-6 font-mono">
+            <div className="flex flex-col items-center">
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">
+                <SlidingNumber value={days} padStart={true} />
+              </div>
+              <span className="font-sans text-xs sm:text-sm mt-2 text-gray-600 dark:text-gray-300">روز</span>
+            </div>
+            <span className="text-zinc-500 text-4xl sm:text-5xl lg:text-6xl mb-4">:</span>
+            <div className="flex flex-col items-center">
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">
+                <SlidingNumber value={hours} padStart={true} />
+              </div>
+              <span className="font-sans text-xs sm:text-sm mt-2 text-gray-600 dark:text-gray-300">ساعت</span>
+            </div>
+            <span className="text-zinc-500 text-4xl sm:text-5xl lg:text-6xl mb-4">:</span>
+            <div className="flex flex-col items-center">
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">
+                <SlidingNumber value={minutes} padStart={true} />
+              </div>
+              <span className="font-sans text-xs sm:text-sm mt-2 text-gray-600 dark:text-gray-300">دقیقه</span>
+            </div>
+            <span className="text-zinc-500 text-4xl sm:text-5xl lg:text-6xl mb-4">:</span>
+            <div className="flex flex-col items-center">
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">
+                <SlidingNumber value={seconds} padStart={true} />
+              </div>
+              <span className="font-sans text-xs sm:text-sm mt-2 text-gray-600 dark:text-gray-300">ثانیه</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-center max-w-2xl text-center mt-3" dir="rtl">
+            <p className="text-lg sm:text-2xl font-bold leading-relaxed">تا شروع سفری تازه در دنیای ریاضی چیزی باقی نمانده</p>
+            <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 mt-3 px-4">منتظر یک تجربه آموزشی متفاوت باشید</p>
+          </div>
+        </div>
+      </div>
       {/* Hero Section */}
       <div className="">
         <HeroGeometric
@@ -224,15 +291,14 @@ export default function HomePage() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
               >
-                <path fill="currentColor" d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z" />
+                <path
+                  fill="currentColor"
+                  d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z"
+                />
               </svg>
               <div className="w-full absolute bottom-3 right-7">
-                <div className="">
-                  ریاضی فراتر از فرمول‌هاست؛
-                </div>
-                <div className="">
-                  راهی‌ست به سوی یک درک واقعی!
-                </div>
+                <div className="">ریاضی فراتر از فرمول‌هاست؛</div>
+                <div className="">راهی‌ست به سوی یک درک واقعی!</div>
               </div>
             </div>
 
@@ -278,22 +344,24 @@ export default function HomePage() {
 
             <div className="space-y-8">
               <div className="w-full  lg:inline-block relative hidden mr-10 items-center justify-center self-center mx-auto">
-              <svg
-                className="w-24 text-gray-500/20"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 640"
-              >
-                <path fill="currentColor" d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z" />
-              </svg>
-              <div className="w-full absolute bottom-8 right-7">
-                <div className="w-full ">
-                  ریاضی فراتر از فرمول‌هاست؛
-                  راهی‌ست به سوی یک درک واقعی!
+                <svg
+                  className="w-24 text-gray-500/20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 640 640"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M544 360C544 426.3 490.3 480 424 480L416 480C398.3 480 384 465.7 384 448C384 430.3 398.3 416 416 416L424 416C454.9 416 480 390.9 480 360L480 352L416 352C380.7 352 352 323.3 352 288L352 224C352 188.7 380.7 160 416 160L480 160C515.3 160 544 188.7 544 224L544 360zM288 360C288 426.3 234.3 480 168 480L160 480C142.3 480 128 465.7 128 448C128 430.3 142.3 416 160 416L168 416C198.9 416 224 390.9 224 360L224 352L160 352C124.7 352 96 323.3 96 288L96 224C96 188.7 124.7 160 160 160L224 160C259.3 160 288 188.7 288 224L288 360z"
+                  />
+                </svg>
+                <div className="w-full absolute bottom-8 right-7">
+                  <div className="w-full ">
+                    ریاضی فراتر از فرمول‌هاست؛ راهی‌ست به سوی یک درک واقعی!
+                  </div>
+                  {/* <div className="w-full "> */}
+                  {/* </div> */}
                 </div>
-                {/* <div className="w-full "> */}
-                {/* </div> */}
               </div>
-            </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center ">
                 <Button size="lg">
@@ -331,7 +399,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Courses */}
-      <section className="2xl:px-[10%] py-20">
+      {/* <section className="2xl:px-[10%] py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -482,7 +550,7 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <LogoCloud />
 
@@ -496,9 +564,53 @@ export default function HomePage() {
               </h2>
               <div className="space-y-4 text-lg text-muted-foreground  leading-relaxed">
                 <TextEffect preset="blur" trigger={isVisible}>
-                  بیش از ۱۲ سال سابقه تدریس و آموزش در بالاترین سطوح آموزشی،
-                  نویسنده ۴ کتاب تحصیلی از جمله مهرو ماه و گاج و... و آمار قبولی
-                  بالا ۹۰ درصد
+مدرس ریاضیات
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+دانش آموخته جبرمحض  
+دانشگاه علم و صنعت ایران
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+دانش آموخته دکتری مدیریت کسب و کار از TBS
+                </TextEffect>
+
+
+                <TextEffect preset="blur" trigger={isVisible}>
+۱۴ سال سابقه تدریس 
+در مدارس بهارستان ، علامه طباطبایی،ندای کوثر،
+ممتاز حنان ،تلاش،بهار علم آموزان، شوق پرواز، اوج و …
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+ و آموزشگاه های  کنکور هدف ،ماهان، 
+راه اندیشه، انرژی و …
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+مدرس مدرسه آنلاین پرش
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+مؤلف کتاب لقمه هندسه۳ مهر و ماه
+مؤلف کتاب  فرموتست ریاضیات  تجربی (گاج)
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+عضو انجمن ریاضیات ایران
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+عضو دپارتمان ریاضیات تعاونی سنجش
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+عضو دپارتمان ریاضیات کانون فرهنگی آموزش 
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+نویسنده حوزه توسعه فردی در روزنامه ها و وبسایت های هنرمند ،خوب و …
                 </TextEffect>
               </div>
 

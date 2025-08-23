@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-// @ts-ignore
+// @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali';
 
 interface Answer {
@@ -71,13 +71,20 @@ const TestResult = () => {
 
   useEffect(() => {
     const fetchReport = async () => {
+      if (!id) return;
+      
       try {
         setLoading(true);
+        console.log('Fetching report for test ID:', id);
         const response = await axiosInstance.get(`/tests/report/${id}/`);
+        console.log('Report data received:', response.data);
         setReport(response.data);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'خطا در دریافت نتیجه آزمون');
+      } catch (err) {
+        console.error('Error fetching report:', err);
+        // Type assertion to access the response property safely
+        const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'خطا در دریافت نتیجه آزمون';
+        setError(errorMsg);
       } finally {
         setLoading(false);
       }
@@ -120,7 +127,7 @@ const TestResult = () => {
     );
   }
 
-  if (!report || report.sessions.length === 0) {
+  if (!report || !report.test || !report.sessions || report.sessions.length === 0) {
     return (
       <Card className="mx-auto max-w-4xl mt-8">
         <CardHeader>
@@ -167,7 +174,7 @@ const TestResult = () => {
             <div className="p-4 rounded-lg">
               <h3 className="font-bold mb-2">اطلاعات آزمون</h3>
               <p>درس: {test.course || 'نامشخص'}</p>
-              <p>مدت زمان: {test.duration} دقیقه</p>
+              <p>مدت زمان: {test.duration || 0} دقیقه</p>
               <p>شروع: {formatDate(test.start_time)}</p>
               <p>پایان: {formatDate(test.end_time)}</p>
             </div>

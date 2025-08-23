@@ -70,10 +70,6 @@ export function TeacherSidebar({
             title: "ایجاد محصول جدید",
             url: "/panel/products/create",
           },
-          {
-            title: "مدیریت تخفیف‌ها",
-            url: "#",
-          },
         ],
       },
       {
@@ -90,8 +86,9 @@ export function TeacherSidebar({
             url: "/panel/test-collections/new",
           },
           {
-            title: "مدیریت آزمون‌ها",
+            title: "آمار و گزارشات",
             url: "/panel/test-collections",
+            description: "مشاهده آمار آزمون‌های موجود در هر مجموعه"
           },
         ],
       },
@@ -105,16 +102,8 @@ export function TeacherSidebar({
             url: "/panel/files",
           },
           {
-            title: "کتاب‌ها",
-            url: "#",
-          },
-          {
-            title: "چیت‌شیت‌ها",
-            url: "#",
-          },
-          {
-            title: "خلاصه‌نویسی‌ها",
-            url: "#",
+            title: "آپلود فایل",
+            url: "/panel/files/upload",
           },
         ],
       },
@@ -124,16 +113,12 @@ export function TeacherSidebar({
         icon: CreditCard,
         items: [
           {
-            title: "ایجاد تراکنش",
-            url: "/panel/transactions",
+            title: "ثبت تراکنش جدید",
+            url: "/panel/transactions/new",
           },
           {
             title: "لیست تراکنش‌ها",
             url: "/panel/transactions",
-          },
-          {
-            title: "گزارش‌های مالی",
-            url: "#",
           },
         ],
       },
@@ -141,7 +126,7 @@ export function TeacherSidebar({
     projects: [
       {
         name: "تقویم برنامه‌ها",
-        url: "#",
+        url: "/panel/calendar",
         icon: CalendarDays,
       },
     ],

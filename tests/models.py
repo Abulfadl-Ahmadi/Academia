@@ -89,7 +89,8 @@ class Test(models.Model):
         blank=True
     )
     
-    pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF")
+    pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF", related_name='test_file')
+    answers_file = models.ForeignKey(File, on_delete=models.SET_NULL, verbose_name="فایل پاسخنامه", related_name='test_answers_file', null=True, blank=True)
     start_time = models.DateTimeField(verbose_name="زمان شروع")
     end_time = models.DateTimeField(verbose_name="زمان پایان")
     duration = models.DurationField(verbose_name="مدت زمان آزمون")

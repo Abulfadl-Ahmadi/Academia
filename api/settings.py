@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config, UndefinedValueError
@@ -87,6 +88,7 @@ INSTALLED_APPS = [
     'tests',
     'shop',
     'finance',
+    'tickets',
 ]
 
 MIDDLEWARE = [
@@ -239,4 +241,15 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# Google Gemini API Key
+# برای امنیت بیشتر بهتر است از متغیرهای محیطی استفاده شود
+try:
+    from dotenv import load_dotenv
+    # Load API keys from .env file
+    env_path = os.path.join(BASE_DIR, 'api_keys', '.env')
+    load_dotenv(dotenv_path=env_path)
+    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
+except ImportError:
+    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,10 @@ import {
   ArrowLeft,
   Users,
   Check,
-  X
+  X,
+  Edit
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 interface Course {
   id: number;
@@ -30,31 +31,141 @@ interface FormData {
 
 export default function TestCollectionForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+  
   const [loading, setLoading] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    description: "",
-    courses: []
+  
+  // Get courseId from URL query parameter
+  const queryParams = new URLSearchParams(location.search);
+  const courseIdParam = queryParams.get('courseId');
+  
+  console.log("URL parameters:", location.search);
+  console.log("Parsed courseIdParam:", courseIdParam);
+  console.log("Edit mode:", isEditMode, "Collection ID:", id);
+  
+  const [formData, setFormData] = useState<FormData>(() => {
+    // Initialize with courseId from URL if available
+    return {
+      name: "",
+      description: "",
+      courses: courseIdParam ? [parseInt(courseIdParam)] : []
+    };
   });
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  // Debug function to show alert with current state
+  const debugState = useCallback(() => {
+    console.log("Current form data:", formData);
+    console.log("Available courses:", courses);
+    console.log("CourseIdParam:", courseIdParam);
+    
+    // Check if the courseId is valid
+    if (courseIdParam) {
+      const courseId = parseInt(courseIdParam);
+      console.log("Course ID exists in form data:", formData.courses.includes(courseId));
+      
+      if (courses.length > 0) {
+        const courseExists = courses.some((course: Course) => course.id === courseId);
+        console.log("Course ID exists in available courses:", courseExists);
+      }
+    }
+  }, [formData, courses, courseIdParam]);
 
-  const fetchCourses = async () => {
+  // Update formData if courseIdParam changes
+  useEffect(() => {
+    console.log("courseIdParam changed:", courseIdParam);
+    if (courseIdParam) {
+      const courseId = parseInt(courseIdParam);
+      console.log("Setting courseId in formData:", courseId);
+      setFormData(prev => ({
+        ...prev,
+        courses: prev.courses.includes(courseId) ? prev.courses : [...prev.courses, courseId]
+      }));
+      
+      // Run debug after state update
+      setTimeout(debugState, 500);
+    }
+  }, [courseIdParam, debugState]);
+
+  // Fetch collection details if in edit mode
+  const fetchCollectionDetails = useCallback(async () => {
+    if (!isEditMode) return;
+    
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/test-collections/${id}/`);
+      console.log("Fetched collection:", response.data);
+      
+      // Extract course IDs from course_details if available
+      const courseIds = response.data.course_details 
+        ? response.data.course_details.map((course: {id: number}) => course.id)
+        : response.data.courses || [];
+      
+      setFormData({
+        name: response.data.name || "",
+        description: response.data.description || "",
+        courses: courseIds
+      });
+    } catch (error) {
+      console.error("Error fetching collection details:", error);
+      toast.error("خطا در دریافت اطلاعات مجموعه آزمون");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, isEditMode]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchCollectionDetails();
+    }
+  }, [fetchCollectionDetails, isEditMode]);
+
+  const fetchCourses = useCallback(async () => {
     try {
       setCoursesLoading(true);
+      console.log("Fetching courses...");
       const response = await axiosInstance.get("/teacher-courses/");
-      setCourses(response.data);
+      console.log("Fetched courses:", response.data);
+      
+      // Check if the response is an array or has a specific structure
+      if (Array.isArray(response.data)) {
+        setCourses(response.data);
+      } else if (response.data.results && Array.isArray(response.data.results)) {
+        setCourses(response.data.results);
+      } else {
+        console.error("Unexpected response format:", response.data);
+        toast.error("دریافت کلاس‌ها با خطا مواجه شد: قالب پاسخ نامعتبر است");
+        setCourses([]);
+      }
+      
+      // If we have a courseId parameter, verify that the course exists in the fetched data
+      if (courseIdParam) {
+        const courseId = parseInt(courseIdParam);
+        const coursesArray = Array.isArray(response.data) ? response.data : 
+                            (response.data.results && Array.isArray(response.data.results)) ? 
+                            response.data.results : [];
+        
+        const courseExists = coursesArray.some((course: Course) => course.id === courseId);
+        console.log(`Course with ID ${courseId} exists in fetched data: ${courseExists}`);
+        if (!courseExists) {
+          console.warn(`Course with ID ${courseId} not found in fetched courses`);
+        }
+      }
     } catch (error) {
       console.error("Error fetching courses:", error);
       toast.error("خطا در دریافت کلاس‌ها");
+      setCourses([]);
     } finally {
       setCoursesLoading(false);
     }
-  };
+  }, [courseIdParam]);
+  
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,15 +174,38 @@ export default function TestCollectionForm() {
       toast.error("عنوان مجموعه آزمون الزامی است");
       return;
     }
-
+    
+    // Log the submission data for debugging
+    console.log("Submitting form data:", formData);
+    
     try {
       setLoading(true);
-      await axiosInstance.post("/test-collections/", formData);
-      toast.success("مجموعه آزمون با موفقیت ایجاد شد");
+      
+      // Clone the form data for submission
+      const dataToSubmit = {
+        ...formData,
+        // Make sure courses is at least an empty array if undefined
+        courses: formData.courses || []
+      };
+
+      let response;
+      
+      if (isEditMode) {
+        // Update existing collection
+        response = await axiosInstance.put(`/test-collections/${id}/`, dataToSubmit);
+        console.log("Server response:", response.data);
+        toast.success("مجموعه آزمون با موفقیت بروزرسانی شد");
+      } else {
+        // Create new collection
+        response = await axiosInstance.post("/test-collections/", dataToSubmit);
+        console.log("Server response:", response.data);
+        toast.success("مجموعه آزمون با موفقیت ایجاد شد");
+      }
+      
       navigate("/panel/test-collections");
     } catch (error) {
-      console.error("Error creating test collection:", error);
-      toast.error("خطا در ایجاد مجموعه آزمون");
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} test collection:`, error);
+      toast.error(`خطا در ${isEditMode ? 'بروزرسانی' : 'ایجاد'} مجموعه آزمون`);
     } finally {
       setLoading(false);
     }
@@ -86,6 +220,39 @@ export default function TestCollectionForm() {
     }));
   };
 
+  // If there's an error loading the component, provide a fallback UI
+  if (!Array.isArray(courses) && !coursesLoading) {
+    console.error("courses is not an array:", courses);
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate("/panel/test-collections")}
+          >
+            <ArrowLeft className="h-4 w-4 ml-1" />
+            بازگشت
+          </Button>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-red-600">خطا در بارگذاری فرم</h1>
+          </div>
+        </div>
+        <Card className="p-6">
+          <div className="flex flex-col gap-4 items-center">
+            <p>مشکلی در بارگذاری فرم رخ داده است. لطفاً صفحه را مجدداً بارگذاری کنید.</p>
+            <div className="flex gap-3">
+              <Button onClick={() => window.location.reload()}>بارگذاری مجدد</Button>
+              <Button variant="outline" onClick={() => navigate("/panel/test-collections")}>
+                بازگشت به صفحه قبل
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -98,8 +265,17 @@ export default function TestCollectionForm() {
           بازگشت
         </Button>
         <div className="flex items-center gap-2">
-          <BookOpen className="h-6 w-6" />
-          <h1 className="text-3xl font-bold">ایجاد مجموعه آزمون جدید</h1>
+          {isEditMode ? (
+            <>
+              <Edit className="h-6 w-6" />
+              <h1 className="text-3xl font-bold">ویرایش مجموعه آزمون</h1>
+            </>
+          ) : (
+            <>
+              <BookOpen className="h-6 w-6" />
+              <h1 className="text-3xl font-bold">ایجاد مجموعه آزمون جدید</h1>
+            </>
+          )}
         </div>
       </div>
 
@@ -107,9 +283,19 @@ export default function TestCollectionForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
+              {isEditMode ? (
+                <Edit className="h-5 w-5" />
+              ) : (
+                <Plus className="h-5 w-5" />
+              )}
               اطلاعات مجموعه آزمون
             </CardTitle>
+            {courseIdParam && !isEditMode && (
+              <div className="bg-green-500/10 border border-green-500/50 rounded-md p-3 mt-4 text-sm">
+                شما در حال ایجاد مجموعه آزمون برای کلاسی با شناسه {courseIdParam} هستید.
+                این کلاس به صورت خودکار انتخاب شده است.
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,9 +327,9 @@ export default function TestCollectionForm() {
                   <div className="flex items-center justify-center py-4">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
-                ) : courses.length > 0 ? (
+                ) : Array.isArray(courses) && courses.length > 0 ? (
                   <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
-                    {courses.map((course) => (
+                    {courses.map((course: Course) => (
                       <div
                         key={course.id}
                         className={`flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
@@ -193,7 +379,12 @@ export default function TestCollectionForm() {
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current ml-2"></div>
-                      در حال ایجاد...
+                      {isEditMode ? 'در حال بروزرسانی...' : 'در حال ایجاد...'}
+                    </>
+                  ) : isEditMode ? (
+                    <>
+                      <Edit className="ml-2 h-4 w-4" />
+                      بروزرسانی مجموعه آزمون
                     </>
                   ) : (
                     <>
@@ -210,6 +401,17 @@ export default function TestCollectionForm() {
                 >
                   انصراف
                 </Button>
+                
+                {/* Hidden debug button that only shows in development */}
+                {import.meta.env.DEV && (
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={debugState}
+                  >
+                    بررسی وضعیت
+                  </Button>
+                )}
               </div>
             </form>
           </CardContent>

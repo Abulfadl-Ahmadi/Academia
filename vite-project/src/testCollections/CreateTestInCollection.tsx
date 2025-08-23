@@ -26,6 +26,11 @@ export default function CreateTestInCollection() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [pdfFile, setPdfFile] = useState("");
+  const [answersFile, setAnswersFile] = useState<string | null>(null);
+  const [selectedTestFile, setSelectedTestFile] = useState<File | null>(null);
+  const [selectedAnswersFile, setSelectedAnswersFile] = useState<File | null>(null);
+  const [uploadingTestFile, setUploadingTestFile] = useState(false);
+  const [uploadingAnswersFile, setUploadingAnswersFile] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [startTimeStr, setStartTimeStr] = useState("");
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
@@ -75,6 +80,144 @@ export default function CreateTestInCollection() {
     });
   };
 
+  // Function to handle file uploads
+  const handleFileUpload = async (file: File, _contentType: string, setUploading: React.Dispatch<React.SetStateAction<boolean>>): Promise<number | null> => {
+    if (!file) return null;
+    
+    // Get the course ID from the collection
+    let courseId = null;
+    try {
+      const response = await axiosInstance.get(`${baseURL}/test-collections/${collectionId}/`);
+      console.log('Test collection response:', response.data);
+      
+      // Debug extra information about the response
+      console.log('Collection courses data type:', typeof response.data.courses);
+      console.log('Course details data type:', typeof response.data.course_details);
+      
+      if (response.data.courses) {
+        console.log('Courses array:', JSON.stringify(response.data.courses));
+      }
+      
+      if (response.data.course_details) {
+        console.log('Course details array:', JSON.stringify(response.data.course_details));
+      }
+      
+      // Try to get course ID from course_details
+      if (response.data.course_details && response.data.course_details.length > 0) {
+        courseId = response.data.course_details[0].id;
+        console.log('Found course ID from course_details:', courseId);
+      } 
+      // Try to get from courses field if course_details is not available
+      else if (response.data.courses && response.data.courses.length > 0) {
+        // If courses is an array of IDs
+        if (typeof response.data.courses[0] === 'number') {
+          courseId = response.data.courses[0];
+        } 
+        // If courses is an array of objects
+        else if (response.data.courses[0] && response.data.courses[0].id) {
+          courseId = response.data.courses[0].id;
+        }
+        console.log('Found course ID from courses:', courseId);
+      }
+    } catch (error) {
+      console.error('Error fetching collection course:', error);
+      toast.error('خطا در دریافت اطلاعات دوره');
+      return null;
+    }
+
+    // If we still don't have a courseId, try to get it directly from the courses field
+    // This is a fallback in case neither course_details nor courses properly structured are available
+    if (!courseId && response?.data?.courses && Array.isArray(response?.data?.courses)) {
+      console.log('Trying to extract course ID directly from courses array');
+      // Try to get the first course ID from the array
+      const firstCourse = response?.data?.courses[0];
+      
+      // Try multiple formats that might be returned by the API
+      if (typeof firstCourse === 'number') {
+        courseId = firstCourse;
+        console.log('Found course ID as direct number:', courseId);
+      } else if (typeof firstCourse === 'string' && !isNaN(Number(firstCourse))) {
+        courseId = Number(firstCourse);
+        console.log('Found course ID as string number:', courseId);
+      } else if (firstCourse && typeof firstCourse === 'object') {
+        // If it's an object with an id field
+        if (firstCourse.id !== undefined) {
+          courseId = firstCourse.id;
+          console.log('Found course ID from object.id:', courseId);
+        }
+      }
+    }
+    
+    if (!courseId) {
+      console.error('No course ID found in test collection response');
+      toast.error('این مجموعه آزمون به هیچ دوره‌ای متصل نیست. لطفاً ابتدا یک دوره به مجموعه آزمون اضافه کنید.');
+      return null;
+    }
+    
+    // For debugging, let's hardcode a course ID if none is found
+    // REMOVE THIS FOR PRODUCTION
+    if (!courseId) {
+      console.warn('USING HARDCODED COURSE ID FOR TESTING - REMOVE THIS FOR PRODUCTION');
+      courseId = 1; // Use a known course ID from your system for testing
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', file.name);
+    formData.append('description', '');
+    formData.append('content_type', 'test');  // Always set content_type to 'test'
+    formData.append('file_type', 'application/pdf');  // Set file_type for PDF files
+    formData.append('course', courseId.toString());  // Add the course ID
+    
+    try {
+      setUploading(true);
+      const response = await axiosInstance.post(`${baseURL}/files/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      // Update files list
+      setFiles(prevFiles => [...prevFiles, { id: response.data.id, name: response.data.title || file.name }]);
+      
+      return response.data.id;
+    } catch (error) {
+      console.error(`Error uploading file:`, error);
+      toast.error(`خطا در آپلود فایل ${file.name}`);
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  const handleTestFileUpload = async () => {
+    if (!selectedTestFile) {
+      toast.error("لطفا ابتدا یک فایل انتخاب کنید");
+      return;
+    }
+    
+    const fileId = await handleFileUpload(selectedTestFile, 'test', setUploadingTestFile);
+    if (fileId) {
+      setPdfFile(fileId.toString());
+      setSelectedTestFile(null); // Clear selected file after successful upload
+      toast.success(`فایل آزمون با موفقیت آپلود شد`);
+    }
+  };
+  
+  const handleAnswersFileUpload = async () => {
+    if (!selectedAnswersFile) {
+      toast.error("لطفا ابتدا یک فایل انتخاب کنید");
+      return;
+    }
+    
+    const fileId = await handleFileUpload(selectedAnswersFile, 'test', setUploadingAnswersFile);
+    if (fileId) {
+      setAnswersFile(fileId.toString());
+      setSelectedAnswersFile(null); // Clear selected file after successful upload
+      toast.success(`فایل پاسخنامه با موفقیت آپلود شد`);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!name || !pdfFile || !startDate || !endDate || !durationHour || !durationMinute) {
       toast.error("لطفا همه فیلدهای ضروری را پر کنید");
@@ -104,6 +247,7 @@ export default function CreateTestInCollection() {
       description,
       test_collection: Number(collectionId), // اضافه کردن مجموعه آزمون
       pdf_file: Number(pdfFile),
+      answers_file: answersFile && answersFile !== "none" ? Number(answersFile) : null,
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
       duration: `${durationHour.padStart(2, "0")}:${durationMinute.padStart(2, "0")}:00`,
@@ -162,18 +306,139 @@ export default function CreateTestInCollection() {
 
           <div className="space-y-2">
             <Label htmlFor="test-pdf">فایل PDF آزمون *</Label>
-            <Select value={pdfFile} onValueChange={setPdfFile}>
-              <SelectTrigger>
-                <SelectValue placeholder="-- انتخاب فایل --" />
-              </SelectTrigger>
-              <SelectContent>
-                {files.map((f) => (
-                  <SelectItem key={f.id} value={f.id.toString()}>
-                    {f.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-3">
+              <Select value={pdfFile} onValueChange={setPdfFile}>
+                <SelectTrigger>
+                  <SelectValue placeholder="-- انتخاب فایل --" />
+                </SelectTrigger>
+                <SelectContent>
+                  {files.map((f) => (
+                    <SelectItem key={f.id} value={f.id.toString()}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <div className="pt-2">
+                <Label htmlFor="upload-test-file">یا آپلود فایل PDF جدید:</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="upload-test-file"
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => setSelectedTestFile(e.target.files?.[0] || null)}
+                        className="flex-1 pr-28 rtl"
+                      />
+                      <label htmlFor="upload-test-file" className="absolute top-0 right-0">
+                        <Button 
+                          type="button" 
+                          variant="secondary" 
+                          size="sm"
+                          className="h-full rounded-l-none border-l"
+                        >
+                          انتخاب فایل
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {selectedTestFile && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground flex-1 truncate">
+                        {selectedTestFile.name}
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => handleTestFileUpload()}
+                        disabled={uploadingTestFile}
+                      >
+                        {uploadingTestFile ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current ml-2"></div>
+                            در حال آپلود...
+                          </>
+                        ) : (
+                          <>آپلود فایل</>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="answers-pdf">فایل پاسخنامه (اختیاری)</Label>
+            <div className="space-y-3">
+              <Select value={answersFile || "none"} onValueChange={(value) => setAnswersFile(value === "none" ? null : value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="-- انتخاب فایل --" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">هیچکدام</SelectItem>
+                  {files.map((f) => (
+                    <SelectItem key={f.id} value={f.id.toString()}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <div className="pt-2">
+                <Label htmlFor="upload-answers-file">یا آپلود فایل پاسخنامه جدید:</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="upload-answers-file"
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => setSelectedAnswersFile(e.target.files?.[0] || null)}
+                        className="flex-1 pr-28 rtl"
+                      />
+                      <label htmlFor="upload-answers-file" className="absolute top-0 right-0">
+                        <Button 
+                          type="button" 
+                          variant="secondary" 
+                          size="sm"
+                          className="h-full rounded-l-none border-l"
+                        >
+                          انتخاب فایل
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {selectedAnswersFile && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground flex-1 truncate">
+                        {selectedAnswersFile.name}
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => handleAnswersFileUpload()}
+                        disabled={uploadingAnswersFile}
+                      >
+                        {uploadingAnswersFile ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current ml-2"></div>
+                            در حال آپلود...
+                          </>
+                        ) : (
+                          <>آپلود فایل</>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

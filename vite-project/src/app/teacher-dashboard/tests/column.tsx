@@ -8,7 +8,7 @@ import { type ColumnDef } from "@tanstack/react-table"
 //   const j = toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate())
 //   return `${j.jy}/${j.jm.toString().padStart(2, '0')}/${j.jd.toString().padStart(2, '0')}`
 // }
-// @ts-ignore
+// @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali'
 
 function convertToJalali(isoDate: string): string {

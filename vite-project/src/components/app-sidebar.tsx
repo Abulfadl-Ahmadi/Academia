@@ -11,6 +11,8 @@ import {
   TvMinimalPlay,
   ShoppingCart,
   FileText,
+  LifeBuoy,
+  Bot,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -52,6 +54,21 @@ const data = {
   ],
   navMain: [
     {
+      title: "هوش مصنوعی",
+      url: "/panel/support/ask-ai",
+      icon: Bot,
+      items: [
+        {
+          title: "گفتگوهای من",
+          url: "/panel/support/ask-ai",
+        },
+        {
+          title: "گفتگوی جدید",
+          url: "/panel/support/ask-ai/new",
+        },
+      ],
+    },
+    {
       title: "کلاس‌های من",
       url: "/panel/courses",
       icon: TvMinimalPlay,
@@ -61,16 +78,12 @@ const data = {
           url: "/panel/courses",
         },
         {
-          title: "سالیانه",
-          url: "#",
+          title: "دوره‌های فعال",
+          url: "/panel/courses/active",
         },
         {
-          title: "امتحان نهایی",
-          url: "#",
-        },
-        {
-          title: "نکته و تست",
-          url: "#",
+          title: "دوره‌های کامل شده",
+          url: "/panel/courses/completed",
         },
       ],
     },
@@ -84,23 +97,27 @@ const data = {
           url: "/panel/test-collections",
         },
         {
-          title: "آزمون‌های موجود",
-          url: "/panel/test-collections",
+          title: "آزمون‌های فعال",
+          url: "/panel/tests/active",
+        },
+        {
+          title: "تاریخچه آزمون‌ها",
+          url: "/panel/tests/history",
         },
       ],
     },
     {
       title: "فایل‌های من",
-      url: "/panel/products",
+      url: "/panel/files",
       icon: FileText,
       items: [
         {
           title: "جزوه‌ها",
-          url: "/panel/products",
+          url: "/panel/files",
         },
         {
-          title: "کتاب‌ها",
-          url: "/panel/products",
+          title: "فایل‌های دانلود شده",
+          url: "/panel/files/downloaded",
         }
       ],
     },
@@ -115,7 +132,30 @@ const data = {
         },
         {
           title: "سبد خرید",
-          url: "/shop",
+          url: "/shop/cart",
+        },
+        {
+          title: "خریدهای قبلی",
+          url: "/shop/orders",
+        },
+      ],
+    },
+    {
+      title: "پشتیبانی",
+      url: "/panel/support",
+      icon: LifeBuoy,
+      items: [
+        {
+          title: "تیکت‌های من",
+          url: "/panel/support",
+        },
+        {
+          title: "ثبت تیکت جدید",
+          url: "/panel/support/new",
+        },
+        {
+          title: "هوش مصنوعی",
+          url: "/panel/support/ask-ai",
         },
       ],
     },
@@ -123,11 +163,11 @@ const data = {
   projects: [
     {
       name: "تقویم برنامه‌ها",
-      url: "#",
+      url: "/panel/calendar",
       icon: CalendarDays,
     },
   ],
-    home: [
+  home: [
     {
       name: "خانه",
       url: "/panel",

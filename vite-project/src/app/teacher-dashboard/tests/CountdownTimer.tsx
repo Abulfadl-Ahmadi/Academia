@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 interface CountdownTimerProps {
   endTime: string; // ISO datetime string
@@ -6,11 +6,11 @@ interface CountdownTimerProps {
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ endTime, onTimeUp }) => {
-  const calculateTimeLeft = () => {
+  const calculateTimeLeft = useCallback(() => {
     const now = new Date().getTime();
     const end = new Date(endTime).getTime();
     return Math.max(Math.floor((end - now) / 1000), 0);
-  };
+  }, [endTime]);
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
@@ -25,7 +25,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ endTime, onTimeUp }) =>
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endTime, timeLeft, onTimeUp]);
+  }, [endTime, timeLeft, onTimeUp, calculateTimeLeft]);
 
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60)

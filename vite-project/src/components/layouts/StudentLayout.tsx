@@ -25,7 +25,9 @@ export const StudentLayout = () => {
     profile: 'پروفایل',
     products: 'محصولات من',
     courses: 'دوره‌های من',
-    transactions: 'تراکنش‌ها'
+    transactions: 'تراکنش‌ها',
+    support: 'پشتیبانی',
+    'ask-ai': 'هوش مصنوعی'
   };
 
   // Generate dynamic breadcrumb based on current path
@@ -73,6 +75,8 @@ export const StudentLayout = () => {
                   {segment === 'products' && 'محصولات من'}
                   {segment === 'courses' && 'دوره‌های من'}
                   {segment === 'transactions' && 'تراکنش‌ها'}
+                  {segment === 'support' && 'پشتیبانی'}
+                  {segment === 'ask-ai' && 'هوش مصنوعی'}
                   {isDynamicSegment && courseTitle ? courseTitle : ''}
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -127,7 +131,7 @@ export const StudentLayout = () => {
       // Reset course title when not on a course detail page
       setCourseTitle(null);
     }
-  }, [location.pathname]);
+  }, [location.pathname, courseTitle]);
 
   return (
         <SidebarProvider>

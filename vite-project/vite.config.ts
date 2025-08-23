@@ -22,6 +22,12 @@ export default defineConfig({
       output: {
         manualChunks: undefined, // Optional: prevents React-PDF splitting
       },
+      external: [
+        '@react-pdf-viewer/core/lib/styles/index.css',
+        '@react-pdf-viewer/scroll-mode/lib/styles/index.css',
+        '@react-pdf-viewer/page-navigation/lib/styles/index.css',
+        '@react-pdf-viewer/zoom/lib/styles/index.css'
+      ]
     },
   },
     optimizeDeps: {

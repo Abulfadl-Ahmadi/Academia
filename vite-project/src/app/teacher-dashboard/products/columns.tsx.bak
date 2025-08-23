@@ -1,0 +1,191 @@
+import type { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+// @ts-ignore
+import moment from 'moment-jalaali';
+
+function convertToJalali(isoDate: string): string {
+  return moment(isoDate).format('jYYYY/jMM/jDD HH:mm');
+}
+
+export type Product = {
+  id: number;
+  title: string;
+  description: string;
+  product_type: string;
+  price: number;
+  image?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  sales_count?: number;
+};
+
+export const columns: ColumnDef<Product>[] = [
+  {
+    id: "actions",
+    header: "عملیات",
+    cell: ({ row }) => {
+      const product = row.original;
+      
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">منوی عملیات</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>عملیات</DropdownMenuLabel>
+            <DropdownMenuItem 
+              onClick={() => window.location.href = `/shop/products/${product.id}`}
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" /> مشاهده
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => window.location.href = `/panel/products/edit/${product.id}`}
+              className="flex items-center gap-2"
+            >
+              <Edit className="h-4 w-4" /> ویرایش
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={() => alert(`حذف محصول ${product.title}`)}
+              className="text-red-600 flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" /> حذف
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="انتخاب همه"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="انتخاب سطر"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "title",
+    header: "عنوان",
+    cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
+  },
+  {
+    accessorKey: "product_type",
+    header: "نوع محصول",
+    cell: ({ row }) => {
+      const type = row.getValue("product_type") as string;
+      
+      // Debug info
+      console.log("Product type:", type);
+      
+      return (
+        <div className="font-iransans text-right" dir="rtl">
+          {type === "course" && <span className="font-iransans">دوره آموزشی</span>}
+          {type === "file" && <span className="font-iransans">فایل</span>}
+          {type === "test" && <span className="font-iransans">آزمون</span>}
+          {!["course", "file", "test"].includes(type) && <span className="font-iransans">{type}</span>}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "price",
+    header: "قیمت (تومان)",
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"));
+      const formatted = new Intl.NumberFormat("fa-IR").format(price);
+      return <div>{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "is_active",
+    header: "وضعیت",
+    cell: ({ row }) => {
+      const isActive = row.getValue("is_active") as boolean;
+      return isActive ? (
+        <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">فعال</Badge>
+      ) : (
+        <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">غیرفعال</Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "sales_count",
+    header: "تعداد فروش",
+    cell: ({ row }) => {
+      const salesCount = row.getValue("sales_count") as number;
+      return <div>{salesCount || 0}</div>;
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: "تاریخ ایجاد",
+    cell: ({ row }) => {
+      const date = row.getValue("created_at") as string;
+      return date ? convertToJalali(date) : "—";
+    },
+  }
+];
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">منوی عملیات</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>عملیات</DropdownMenuLabel>
+            <DropdownMenuItem 
+              onClick={() => window.location.href = `/shop/products/${product.id}`}
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" /> مشاهده
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => window.location.href = `/panel/products/edit/${product.id}`}
+              className="flex items-center gap-2"
+            >
+              <Edit className="h-4 w-4" /> ویرایش
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={() => alert(`حذف محصول ${product.title}`)}
+              className="text-red-600 flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" /> حذف
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];

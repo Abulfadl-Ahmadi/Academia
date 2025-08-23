@@ -11,14 +11,14 @@ import { ThemeProvider } from "@/context/ThemeContext"
 import { FontProvider } from "@/context/FontContext"
 import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
-import TestDetailPage from './app/teacher-dashboard/tests/page'
+import TestPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
 import HomePage from '@/components/HomePage'
 import { Footer } from '@/components/Footer'
 import ProfileGuard from '@/components/ProfileGuard'
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import TestPage from './app/teacher-dashboard/tests/TestPage'
+import TestDetailPage from './app/teacher-dashboard/tests/TestPageRedesigned'
 import ShopPage from './app/shop/page'
 import ProductDetailPage from './app/shop/[id]/page'
 import { Toaster } from "@/components/ui/sonner"

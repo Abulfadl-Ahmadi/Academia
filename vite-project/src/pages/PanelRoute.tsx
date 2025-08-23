@@ -7,10 +7,25 @@ import SessionsPage from "@/app/teacher-dashboard/groups/session/page"
 import SessionsDetailPage from "@/app/teacher-dashboard/groups/session/page"
 import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo1"
 // import TestPage from '@/app/teacher-dashboard/tests/TestPage'
+
+// Support Tickets Components
+import TicketsList from "@/features/tickets/TicketsList"
+import NewTicket from "@/features/tickets/NewTicket"
+import TicketDetail from "@/features/tickets/TicketDetail"
+import AskAI from "@/features/tickets/AskAI"
+import { AIConversationList, AIConversationDetail } from "@/features/tickets/AIConversations"
 import ProfilePage from "@/app/dashboard/profile/page"
 import Home from "@/app/dashboard/home/page"
 import TransactionsPage from "@/app/teacher-dashboard/transactions/page"
+import NewTransactionPage from "@/app/teacher-dashboard/transactions/new/page"
+import UploadFilePage from "@/app/teacher-dashboard/files/upload/page"
+import CalendarPage from "@/app/shared/calendar/page"
+import CompletedCoursesPage from "@/app/dashboard/courses/completed/page"
+import ActiveTestsPage from "@/app/dashboard/tests/active/page"
+import TestHistoryPage from "@/app/dashboard/tests/history/page"
+import TestResult from "@/app/dashboard/tests/result/[id]"
 import MyProducts from "@/app/dashboard/MyProducts"
+import TeacherProducts from "@/app/teacher-dashboard/products/page"
 import CourseDetailPage from "@/app/teacher-dashboard/courses/[courseId]/page"
 import StudentCourseDetailPage from "@/app/dashboard/courses/[courseId]/page"
 import StudentCoursesPage from "@/app/dashboard/courses/page"
@@ -24,7 +39,8 @@ import TestCollectionList from "@/testCollections/TestCollectionList"
 import TestCollectionDetail from "@/testCollections/TestCollectionDetail"
 import TestCollectionStatistics from "@/testCollections/TestCollectionStatistics"
 import StudentProgressList from "@/testCollections/StudentProgressList"
-import TestCollectionForm from "@/testCollections/TestCollectionForm"
+// Explicitly import the TypeScript version with extension
+import TestCollectionForm from "@/testCollections/TestCollectionForm.tsx"
 import CreateTestInCollection from "@/testCollections/CreateTestInCollection"
 
 // Layout components
@@ -55,16 +71,28 @@ export default function PanelRoute() {
         <Route index element={<Home />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/products" element={<MyProducts />} />
+        <Route path="/files" element={<div>فایل‌های من</div>} />
+        <Route path="/files/downloaded" element={<div>فایل‌های دانلود شده</div>} />
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/courses" element={<StudentCoursesPage />} />
+        <Route path="/courses/active" element={<StudentCoursesPage />} />
+        <Route path="/courses/completed" element={<CompletedCoursesPage />} />
         <Route path="/courses/:courseId" element={<StudentCourseDetailPage />} />
         <Route path="/video/:sessionId?" element={<VideoPage />} />
-        {/* <Route path="/tests" element={<StudentTestsList />} /> */}
+        <Route path="/calendar" element={<CalendarPage />} />
+        {/* Test Collections routes for students */}
         <Route path="/test-collections" element={<TestCollectionList />} />
         <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
-        <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
-        {/* <Route path='/tests/:id/detail' element={<TestDetailPage />}  /> */}
-        {/* <Route path="/tests/result/:id" element={<StudentTestResult />} /> */}
+        <Route path="/tests/active" element={<ActiveTestsPage />} />
+        <Route path="/tests/history" element={<TestHistoryPage />} />
+        <Route path="/tests/result/:id" element={<TestResult />} />
+        {/* Support Tickets routes for students */}
+        <Route path="/support" element={<TicketsList />} />
+        <Route path="/support/new" element={<NewTicket />} />
+        <Route path="/support/ask-ai/new" element={<AskAI />} />
+        <Route path="/support/ask-ai/:id" element={<AIConversationDetail />} />
+        <Route path="/support/ask-ai" element={<AIConversationList />} />
+        <Route path="/support/:id" element={<TicketDetail />} />
       </Route>
     </Routes>
   )
@@ -80,20 +108,30 @@ export default function PanelRoute() {
         <Route path="/courses/:id/sessions" element={<SessionsPage />} />
         <Route path="/courses/:course_id/sessions/:session_id" element={<SessionsDetailPage />} />
         <Route path="/profile" element={<TeacherProfilePage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/files" element={<FilesPage />} />
+        <Route path="/files/upload" element={<UploadFilePage />} />
         <Route path="/videos" element={<UploadVideo />} />
-        {/* <Route path="/tests" element={<TeacherTestsList />} />
-        <Route path="/tests/create" element={<TeacherTestApp />} />
-        <Route path="/tests/:id" element={<div>مشاهده آزمون</div>} />
-        <Route path="/tests/report/:id" element={<TestReport />} /> */}
+        {/* Test Collections routes - order is important */}
         <Route path="/test-collections" element={<TestCollectionList />} />
         <Route path="/test-collections/new" element={<TestCollectionForm />} />
         <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
+        <Route path="/test-collections/:id/edit" element={<TestCollectionForm />} />
         <Route path="/test-collections/:id/create-test" element={<CreateTestInCollection />} />
         <Route path="/test-collections/:id/statistics" element={<TestCollectionStatistics />} />
         <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
+        <Route path="/tests/result/:id" element={<TestResult />} />
         <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/transactions/new" element={<NewTransactionPage />} />
+        <Route path="/products" element={<TeacherProducts />} />
         <Route path="/products/create" element={<CreateProductPage />} />
+        {/* Support Tickets routes for teachers */}
+        <Route path="/support" element={<TicketsList />} />
+        <Route path="/support/new" element={<NewTicket />} />
+        <Route path="/support/ask-ai/new" element={<AskAI />} />
+        <Route path="/support/ask-ai/:id" element={<AIConversationDetail />} />
+        <Route path="/support/ask-ai" element={<AIConversationList />} />
+        <Route path="/support/:id" element={<TicketDetail />} />
         {/* <Route path="/videos" element={<VideoPage />} */}
       </Route>
     </Routes>

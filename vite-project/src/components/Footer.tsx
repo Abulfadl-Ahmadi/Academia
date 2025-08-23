@@ -114,19 +114,19 @@ export function Footer() {
                 {[
                   { 
                     icon: Instagram, 
-                    href: "https://instagram.com/arian_tafazzolizadeh", 
+                    href: "https://instagram.com/ariantafazzolizadeh", 
                     label: "Instagram",
                     color: "hover:text-pink-400"
                   },
                   { 
                     icon: Send, 
-                    href: "https://t.me/arian_tafazzolizadeh", 
+                    href: "https://t.me/ariantafazzolizadehmath", 
                     label: "Telegram",
                     color: "hover:text-blue-400"
                   },
                   { 
                     icon: Youtube, 
-                    href: "https://youtube.com/@arian_tafazzolizadeh", 
+                    href: "https://www.aparat.com/ArianTafazolizadeh", 
                     label: "YouTube",
                     color: "hover:text-red-400"
                   }

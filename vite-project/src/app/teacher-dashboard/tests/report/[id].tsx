@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Search, ArrowLeft, Download } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
-// @ts-ignore
+// @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali';
 
 interface Answer {
@@ -88,8 +88,11 @@ const TestReport = () => {
         const response = await axiosInstance.get(`/tests/report/${id}/`);
         setReport(response.data);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'خطا در دریافت گزارش آزمون');
+      } catch (err) {
+        console.error('Error fetching test report:', err);
+        // Type assertion to access the response property safely
+        const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'خطا در دریافت گزارش آزمون';
+        setError(errorMsg);
       } finally {
         setLoading(false);
       }

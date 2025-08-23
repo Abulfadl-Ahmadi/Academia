@@ -111,8 +111,8 @@ export function RegisterForm({
     setLoading(true)
 
     try {
-      const response = await axios.post(
-        baseURL + "/verify-email/",
+      const response = await axiosInstance.post(
+        "/verify-email/",
         {
           email: email,
           code: verificationCode,
@@ -146,8 +146,8 @@ export function RegisterForm({
     setLoading(true)
 
     try {
-      const response = await axios.post(
-        baseURL + "/complete-registration/",
+      const response = await axiosInstance.post(
+        "/complete-registration/",
         {
           email: formData.user.email,
           username: formData.user.username,
@@ -194,8 +194,8 @@ export function RegisterForm({
 
     try {
       // First send verification code to email
-      const response = await axios.post(
-        baseURL + "/send-verification/",
+      const response = await axiosInstance.post(
+        "/send-verification/",
         {
           email: formData.user.email,
         }
@@ -228,7 +228,7 @@ export function RegisterForm({
     setLoading(true)
 
     try {
-      const response = await axiosInstance.post('/send-verification-code/', { 
+      const response = await axiosInstance.post('/send-verification/', { 
         email: email 
       })
       
@@ -384,7 +384,10 @@ export function RegisterForm({
           </div>
           */}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full"
+          // disabled={loading}
+          disabled={true}
+          >
             {loading ? "در حال ثبت نام..." : "ثبت نام"}
           </Button>
 

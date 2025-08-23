@@ -15,7 +15,8 @@ import {
   Edit,
   Clock,
   Eye,
-  Trash2
+  Trash2,
+  BarChart3
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
 import EditSessionModal from "./EditSessionModal";
@@ -41,14 +42,16 @@ interface Session {
   is_published: boolean;
 }
 
-interface Test {
+
+
+interface TestCollection {
   id: number;
-  title: string;
-  test_type: string;
+  name: string;
   description: string;
-  duration_minutes: number;
-  total_points: number;
-  due_date: string;
+  total_tests: number;
+  student_count: number;
+  created_by_name: string;
+  created_at: string;
   is_active: boolean;
 }
 
@@ -65,7 +68,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const navigate = useNavigate();
   const [course, setCourse] = useState<Course | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [tests, setTests] = useState<Test[]>([]);
+  const [testCollections, setTestCollections] = useState<TestCollection[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddSession, setShowAddSession] = useState(false);
@@ -74,15 +77,15 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const fetchCourseData = useCallback(async () => {
     try {
       setLoading(true);
-      const [courseResponse, sessionsResponse, testsResponse] = await Promise.all([
+      const [courseResponse, sessionsResponse, collectionsResponse] = await Promise.all([
         axiosInstance.get(`/courses/${courseId}/`),
         axiosInstance.get(`/courses/${courseId}/sessions/`),
-        axiosInstance.get(`/courses/${courseId}/tests/`)
+        axiosInstance.get(`/courses/${courseId}/test_collections/`)
       ]);
       
       setCourse(courseResponse.data);
       setSessions(sessionsResponse.data);
-      setTests(testsResponse.data);
+      setTestCollections(collectionsResponse.data);
       setStudents(courseResponse.data.students);
     } catch (error) {
       console.error("Error fetching course data:", error);
@@ -208,8 +211,8 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
             <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
               <FileText className="w-6 h-6 text-green-600" />
               <div>
-                <div className="text-lg font-bold text-green-600">{tests.length}</div>
-                <div className="text-sm text-green-600">آزمون</div>
+                <div className="text-lg font-bold text-green-600">{testCollections.length}</div>
+                <div className="text-sm text-green-600">مجموعه آزمون</div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-lg">
@@ -234,7 +237,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       <Tabs defaultValue="sessions" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="sessions">جلسات ({sessions.length})</TabsTrigger>
-          <TabsTrigger value="tests">آزمون‌ها ({tests.length})</TabsTrigger>
+          <TabsTrigger value="tests">مجموعه آزمون‌ها ({testCollections.length})</TabsTrigger>
           <TabsTrigger value="students">دانش‌آموزان ({course.students_count})</TabsTrigger>
         </TabsList>
 
@@ -283,28 +286,35 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>آزمون‌های دوره</CardTitle>
-                <Button variant="outline" className="flex items-center gap-2">
+                <CardTitle>مجموعه آزمون‌های دوره</CardTitle>
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={() => navigate(`/panel/test-collections/new?courseId=${courseId}`)}
+                >
                   <Plus className="w-4 h-4" />
-                  افزودن آزمون جدید
+                  افزودن مجموعه آزمون جدید
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {tests.length === 0 ? (
+              {testCollections.length === 0 ? (
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز آزمونی ایجاد نشده است</h3>
-                  <p className="text-muted-foreground mb-6">برای شروع، اولین آزمون دوره را ایجاد کنید</p>
-                  <Button variant="outline">
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز مجموعه آزمونی ایجاد نشده است</h3>
+                  <p className="text-muted-foreground mb-6">برای شروع، اولین مجموعه آزمون دوره را ایجاد کنید</p>
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate(`/panel/test-collections/new?courseId=${courseId}`)}
+                  >
                     <Plus className="w-4 h-4 ml-2" />
-                    افزودن آزمون جدید
+                    افزودن مجموعه آزمون جدید
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {tests.map((test) => (
-                    <TestCard key={test.id} test={test} />
+                  {testCollections.map((collection) => (
+                    <CollectionCard key={collection.id} collection={collection} />
                   ))}
                 </div>
               )}
@@ -465,11 +475,14 @@ function SessionCard({ session, onDelete, onTogglePublish, onEdit }: SessionCard
   );
 }
 
-interface TestCardProps {
-  test: Test;
+
+
+interface CollectionCardProps {
+  collection: TestCollection;
 }
 
-function TestCard({ test }: TestCardProps) {
+function CollectionCard({ collection }: CollectionCardProps) {
+  const navigate = useNavigate();
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
@@ -480,54 +493,51 @@ function TestCard({ test }: TestCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <Badge variant="outline">{getTestTypeLabel(test.test_type)}</Badge>
-              <Badge variant={test.is_active ? "default" : "secondary"}>
-                {test.is_active ? "فعال" : "غیرفعال"}
+              <Badge variant={collection.is_active ? "default" : "secondary"}>
+                {collection.is_active ? "فعال" : "غیرفعال"}
               </Badge>
             </div>
-            <h3 className="text-lg font-medium mb-2">{test.title}</h3>
+            <h3 className="text-lg font-medium mb-2">{collection.name}</h3>
             <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-              {test.description || "توضیحی برای این آزمون ثبت نشده است"}
+              {collection.description || "توضیحی برای این مجموعه آزمون ثبت نشده است"}
             </p>
             
             <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
               <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{test.duration_minutes} دقیقه</span>
+                <FileText className="w-3 h-3" />
+                <span>{collection.total_tests} آزمون</span>
               </div>
               <div className="flex items-center gap-1">
-                <FileText className="w-3 h-3" />
-                <span>{test.total_points} نمره</span>
+                <Users className="w-3 h-3" />
+                <span>{collection.student_count} دانش‌آموز</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                <span>{formatDate(test.due_date)}</span>
+                <span>{formatDate(collection.created_at)}</span>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-2 ml-4">
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate(`/panel/test-collections/${collection.id}`)}
+            >
               <Eye className="w-4 h-4 ml-2" />
-              مشاهده
+              مشاهده و ویرایش
             </Button>
-            <Button variant="outline" size="sm">
-              <Edit className="w-4 h-4 ml-2" />
-              ویرایش
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate(`/panel/test-collections/${collection.id}/statistics`)}
+            >
+              <BarChart3 className="w-4 h-4 ml-2" />
+              آمار
             </Button>
           </div>
         </div>
       </CardContent>
     </Card>
   );
-}
-
-function getTestTypeLabel(type: string) {
-  const labels: Record<string, string> = {
-    weekly: "آزمون هفتگی",
-    midterm: "میان‌ترم",
-    final: "پایان‌ترم",
-    assignment: "تکلیف",
-  };
-  return labels[type] || type;
 }

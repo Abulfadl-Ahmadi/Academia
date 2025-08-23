@@ -101,8 +101,19 @@ class CourseViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def tests(self, request, pk=None):
         course = self.get_object()
-        tests = Test.objects.filter(course=course)
+        tests = Test.objects.filter(test_collection__courses=course)
         serializer = TestCreateSerializer(tests, many=True, context={'request': request})
+        return Response(serializer.data)
+        
+    @action(detail=True, methods=['get'])
+    def test_collections(self, request, pk=None):
+        """Get test collections for a specific course"""
+        course = self.get_object()
+        from tests.models import TestCollection
+        from tests.serializers import TestCollectionSerializer
+        
+        collections = TestCollection.objects.filter(courses=course)
+        serializer = TestCollectionSerializer(collections, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get', 'post'])
