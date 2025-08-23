@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "powershell -ExecutionPolicy Bypass -File prepare-build.ps1",
+    "prebuild": "node prebuild.js",
     "build": "tsc -p tsconfig.build.json && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "linux-build": "chmod +x prepare-build.sh && ./prepare-build.sh && tsc -p tsconfig.build.json && vite build",
+    "windows-build": "powershell -ExecutionPolicy Bypass -File prepare-build.ps1 && tsc -p tsconfig.build.json && vite build"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.6.2",

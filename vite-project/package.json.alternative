@@ -1,0 +1,9 @@
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node prebuild.js",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "linux-build": "chmod +x prepare-build.sh && ./prepare-build.sh && tsc -p tsconfig.build.json && vite build",
+    "windows-build": "powershell -ExecutionPolicy Bypass -File prepare-build.ps1 && tsc -p tsconfig.build.json && vite build"
+  }
