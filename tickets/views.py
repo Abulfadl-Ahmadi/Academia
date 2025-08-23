@@ -32,7 +32,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Teachers and staff can see all tickets
-        if user.is_staff or (hasattr(user, 'is_teacher') and user.is_teacher):
+        if user.is_staff or user.role != 'student':
             return Ticket.objects.all()
         
         # Students can see only their own tickets
