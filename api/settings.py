@@ -250,6 +250,8 @@ try:
     env_path = os.path.join(BASE_DIR, 'api_keys', '.env')
     load_dotenv(dotenv_path=env_path)
     GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
+    LIARA_API_KEY = os.environ.get('LIARA_API_KEY', '')
 except ImportError:
     GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
+    LIARA_API_KEY = os.environ.get('LIARA_API_KEY', '')
 
