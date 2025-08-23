@@ -13,16 +13,16 @@ const updateSW = registerSW({
   onOfflineReady() {
     console.log('Application is ready for offline usage')
     // Show a notification to the user that the app is ready for offline use
-    const offlineReadyNotification = document.createElement('div')
-    offlineReadyNotification.className = 'offline-ready-notification'
-    offlineReadyNotification.textContent = 'اپلیکیشن برای استفاده آفلاین آماده است.'
+    // const offlineReadyNotification = document.createElement('div')
+    // offlineReadyNotification.className = 'offline-ready-notification'
+    // offlineReadyNotification.textContent = 'اپلیکیشن برای استفاده آفلاین آماده است.'
     
-    document.body.appendChild(offlineReadyNotification)
+    // document.body.appendChild(offlineReadyNotification)
     
     // Hide notification after 3 seconds
-    setTimeout(() => {
-      offlineReadyNotification.remove()
-    }, 3000)
+    // setTimeout(() => {
+    //   offlineReadyNotification.remove()
+    // }, 3000)
   }
 })
 
