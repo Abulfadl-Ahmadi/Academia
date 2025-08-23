@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import '/src/assets/IranSansXPro/Webfonts/fontiran.css';
-import '/src/assets/RaviPro/Ravi Family/Webfonts/fontiran.css';
+// import '/src/assets/IranSansXPro/Webfonts/fontiran.css';
+// import '/src/assets/RaviPro/RaviFamily/Webfonts/fontiran.css';
 import './pwa.css' // Import PWA styles
 
 // Import service worker registration

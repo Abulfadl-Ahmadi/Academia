@@ -17,6 +17,7 @@ import HomePage from '@/components/HomePage'
 import { Footer } from '@/components/Footer'
 import ProfileGuard from '@/components/ProfileGuard'
 
+import { HomeHome } from './homehome'
 // PDF styles are loaded from index.html
 import '@/utils/pdf-styles';
 import TestDetailPage from './app/teacher-dashboard/tests/TestPageRedesigned'
@@ -79,9 +80,10 @@ function App() {
           path="/"
           element={
             <>
-            <Navbar />
+            {/* <Navbar />
             <HomePage />
-            <Footer />
+            <Footer /> */}
+            <HomeHome />
             </>
           }
         />
