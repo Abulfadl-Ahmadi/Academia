@@ -212,17 +212,40 @@ export function AIConversationDetail() {
     
     try {
       setSending(true);
+      // ابتدا پیام کاربر را نشان بده تا تجربه کاربری بهتری داشته باشد
+      const userMessage = {
+        id: Date.now(), // یک ID موقت
+        conversation_id: Number(id),
+        role: 'user',
+        content: messageInput.trim(),
+        created_at: new Date().toISOString()
+      };
+      
+      setMessages(prevMessages => [...prevMessages, userMessage]);
+      const currentInput = messageInput.trim();
+      setMessageInput('');
+      
+      // اسکرول به پایین صفحه
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+      
       const response = await axiosInstance.post(`/support/ai/conversations/${id}/add_message/`, {
-        content: messageInput.trim()
+        content: currentInput
       });
       
-      setMessages(prevMessages => [
-        ...prevMessages,
-        response.data.user_message,
-        response.data.ai_message
-      ]);
-      
-      setMessageInput('');
+      // جایگزین کردن پیام موقت کاربر با پیام واقعی از سرور و اضافه کردن پاسخ هوش مصنوعی
+      setMessages(prevMessages => {
+        const withoutTemp = prevMessages.filter(msg => msg.id !== userMessage.id);
+        return [
+          ...withoutTemp,
+          response.data.user_message,
+          response.data.ai_message
+        ];
+      });
       
       // اسکرول به پایین صفحه
       setTimeout(() => {
@@ -234,7 +257,19 @@ export function AIConversationDetail() {
       
     } catch (error) {
       console.error('خطا در ارسال پیام:', error);
-      toast.error('خطا در ارسال پیام');
+      
+      // حذف پیام موقت کاربر در صورت خطا
+      setMessages(prevMessages => prevMessages.filter(msg => msg.id !== userMessage.id));
+      
+      // نمایش خطای مناسب
+      if (error?.response?.status === 503) {
+        toast.error('سرویس هوش مصنوعی در حال حاضر در دسترس نیست. لطفا بعدا تلاش کنید.');
+      } else {
+        toast.error('خطا در ارسال پیام. لطفا دوباره تلاش کنید.');
+      }
+      
+      // پیام کاربر را به ورودی برگردان
+      setMessageInput(currentInput);
     } finally {
       setSending(false);
     }
