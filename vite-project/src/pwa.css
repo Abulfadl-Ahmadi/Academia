@@ -1,0 +1,55 @@
+.offline-ready-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4c51bf;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-family: 'Vazirmatn', sans-serif;
+  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+  text-align: center;
+  font-size: 16px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Add styles for offline app mode */
+.app-offline {
+  position: relative;
+}
+
+.app-offline::after {
+  content: 'شما در حالت آفلاین هستید';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f7b731;
+  color: #333;
+  text-align: center;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 100;
+}

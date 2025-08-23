@@ -1,0 +1,29 @@
+{
+  "name": "آکادمی آرین تفضلی‌زاده",
+  "short_name": "آکادمی",
+  "description": "آموزش حرفه‌ای ریاضیات برای رشته‌های ریاضی و تجربی",
+  "theme_color": "#4c51bf",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "pwa-icons/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "pwa-icons/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "pwa-icons/pwa-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
