@@ -17,7 +17,8 @@ import HomePage from '@/components/HomePage'
 import { Footer } from '@/components/Footer'
 import ProfileGuard from '@/components/ProfileGuard'
 
-import '@react-pdf-viewer/core/lib/styles/index.css';
+// PDF styles are loaded from index.html
+import '@/utils/pdf-styles';
 import TestDetailPage from './app/teacher-dashboard/tests/TestPageRedesigned'
 import ShopPage from './app/shop/page'
 import ProductDetailPage from './app/shop/[id]/page'
