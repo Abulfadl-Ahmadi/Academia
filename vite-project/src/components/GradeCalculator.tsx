@@ -28,8 +28,8 @@ export default function GradeCalculator() {
 
     setResult({
       finalPercentage: Math.round(finalPercentage * 100) / 100,
-      netCorrect,
-      negativePoints
+      netCorrect: Math.round(netCorrect),
+      negativePoints: Math.round(negativePoints)
     })
   }
 
@@ -159,7 +159,7 @@ export default function GradeCalculator() {
               </div>
             </div>
 
-            {(result.negativePoints > 0 || result.netCorrect < 0) && (
+            {/* {(result.negativePoints > 0 || result.netCorrect < 0) && (
               <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
                 <div className="flex items-center gap-2 text-red-700">
                   <AlertCircle className="h-4 w-4" />
@@ -179,7 +179,7 @@ export default function GradeCalculator() {
               <p className="text-sm text-muted-foreground">
                 از مجموع {total} سوال، {result.netCorrect} سوال صحیح محاسبه شده است
               </p>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       )}
