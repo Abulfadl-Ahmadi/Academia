@@ -24,6 +24,7 @@ import TestDetailPage from './app/teacher-dashboard/tests/TestPageRedesigned'
 import ShopPage from './app/shop/page'
 import ProductDetailPage from './app/shop/[id]/page'
 import { Toaster } from "@/components/ui/sonner"
+import GradeCalculatorPage from '@/pages/GradeCalculatorPage'
 
 function PreApp() {
   return (
@@ -76,6 +77,7 @@ function App() {
             <Footer />
           </ProfileGuard>
         } />
+        <Route path="/grade-calculator" element={<GradeCalculatorPage />} />
         <Route
           path="/"
           element={
