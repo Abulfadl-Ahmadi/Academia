@@ -20,7 +20,7 @@ export default function GradeCalculator() {
 
   const calculateGrade = () => {
     // محاسبه نمره منفی: هر ۳ سوال غلط یک سوال درست را حذف می‌کند
-    const negativePoints = Math.floor(wrong / 3)
+    const negativePoints = (wrong / 3)
     const netCorrect = correct - negativePoints  // حذف Math.max برای اجازه دادن به نمرات منفی
     
     // محاسبه درصد نهایی
