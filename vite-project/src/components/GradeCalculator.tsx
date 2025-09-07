@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,32 +12,37 @@ interface CalculationResult {
 }
 
 export default function GradeCalculator() {
-  const [correct, setCorrect] = useState<number>(0)
-  const [wrong, setWrong] = useState<number>(0)
-  const [blank, setBlank] = useState<number>(0)
-  const [total, setTotal] = useState<number>(20)
+  const [correct, setCorrect] = useState<string>('')
+  const [wrong, setWrong] = useState<string>('')
+  const [blank, setBlank] = useState<string>('')
+  const [total, setTotal] = useState<string>('20')
   const [result, setResult] = useState<CalculationResult | null>(null)
 
   const calculateGrade = () => {
+    // تبدیل string ها به number
+    const correctNum = parseInt(correct) || 0
+    const wrongNum = parseInt(wrong) || 0
+    const totalNum = parseInt(total) || 1
+    
     // محاسبه نمره منفی: هر ۳ سوال غلط یک سوال درست را حذف می‌کند
-    const negativePoints = (wrong / 3)
-    const netCorrect = correct - negativePoints  // حذف Math.max برای اجازه دادن به نمرات منفی
+    const negativePoints = (wrongNum / 3)
+    const netCorrect = correctNum - negativePoints  // حذف Math.max برای اجازه دادن به نمرات منفی
     
     // محاسبه درصد نهایی
-    const finalPercentage = total > 0 ? (netCorrect / total) * 100 : 0
+    const finalPercentage = totalNum > 0 ? (netCorrect / totalNum) * 100 : 0
 
     setResult({
       finalPercentage: Math.round(finalPercentage * 100) / 100,
-      netCorrect: Math.round(netCorrect),
-      negativePoints: Math.round(negativePoints)
+      netCorrect: Math.round(netCorrect * 100) / 100,
+      negativePoints: Math.round(negativePoints * 100) / 100
     })
   }
 
   const resetForm = () => {
-    setCorrect(0)
-    setWrong(0)
-    setBlank(0)
-    setTotal(20)
+    setCorrect('')
+    setWrong('')
+    setBlank('')
+    setTotal('20')
     setResult(null)
   }
 
@@ -62,8 +67,9 @@ export default function GradeCalculator() {
                 type="number"
                 min="0"
                 value={correct}
-                onChange={(e) => setCorrect(Number(e.target.value) || 0)}
+                onChange={(e) => setCorrect(e.target.value)}
                 className="text-center"
+                placeholder="0"
               />
             </div>
             
@@ -74,8 +80,9 @@ export default function GradeCalculator() {
                 type="number"
                 min="0"
                 value={wrong}
-                onChange={(e) => setWrong(Number(e.target.value) || 0)}
+                onChange={(e) => setWrong(e.target.value)}
                 className="text-center"
+                placeholder="0"
               />
             </div>
             
@@ -86,8 +93,9 @@ export default function GradeCalculator() {
                 type="number"
                 min="0"
                 value={blank}
-                onChange={(e) => setBlank(Number(e.target.value) || 0)}
+                onChange={(e) => setBlank(e.target.value)}
                 className="text-center"
+                placeholder="0"
               />
             </div>
             
@@ -98,18 +106,19 @@ export default function GradeCalculator() {
                 type="number"
                 min="1"
                 value={total}
-                onChange={(e) => setTotal(Number(e.target.value) || 1)}
+                onChange={(e) => setTotal(e.target.value)}
                 className="text-center"
+                placeholder="20"
               />
             </div>
           </div>
 
           {/* نمایش خلاصه */}
-          <div className=" p-4 rounded-lg">
+          <div className="p-4 rounded-lg">
             <p className="text-sm text-muted-foreground">
-              مجموع پاسخ داده شده: {correct + wrong + blank} از {total}
+              مجموع پاسخ داده شده: {(parseInt(correct) || 0) + (parseInt(wrong) || 0) + (parseInt(blank) || 0)} از {parseInt(total) || 0}
             </p>
-            {correct + wrong + blank !== total && (
+            {(parseInt(correct) || 0) + (parseInt(wrong) || 0) + (parseInt(blank) || 0) !== (parseInt(total) || 0) && (
               <div className="flex items-center gap-2 mt-2 text-amber-600">
                 <AlertCircle className="h-4 w-4" />
                 <span className="text-sm">
@@ -132,7 +141,7 @@ export default function GradeCalculator() {
 
       {/* نمایش نتیجه */}
       {result && (
-        <Card className={`border-2 ${result.finalPercentage >= 0 ? 'border-green-500/10 bg-green-500/5' : 'border-red-200 bg-red-50'}`}>
+        <Card className={`border-2 ${result.finalPercentage >= 0 ? 'border-green-500/10 bg-green-500/5' : 'border-red-500/10 bg-red-500/5'}`}>
           <CardHeader>
             <CardTitle className={`${result.finalPercentage >= 0 ? 'text-green-800' : 'text-red-800'}`}>نتیجه محاسبه</CardTitle>
           </CardHeader>
@@ -145,41 +154,40 @@ export default function GradeCalculator() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-              <div className="p-3 rounded-lg">
-                <div className="text-2xl font-semibold text-blue-600">{correct}</div>
+              <div className=" p-3 rounded-lg">
+                <div className="text-2xl font-semibold text-blue-600">{correct || '0'}</div>
                 <div className="text-sm text-muted-foreground">سوالات درست</div>
               </div>
               <div className="p-3 rounded-lg">
-                <div className="text-2xl font-semibold text-red-600">{wrong}</div>
+                <div className="text-2xl font-semibold text-red-600">{wrong || '0'}</div>
                 <div className="text-sm text-muted-foreground">سوالات غلط</div>
               </div>
               <div className="p-3 rounded-lg">
-                <div className="text-2xl font-semibold text-muted-foreground">{blank}</div>
+                <div className="text-2xl font-semibold text-muted-foreground">{blank || '0'}</div>
                 <div className="text-sm text-muted-foreground">سوالات نزده</div>
               </div>
             </div>
 
-            {/* {(result.negativePoints > 0 || result.netCorrect < 0) && (
-              <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+            {result.negativePoints > 0 && (
+              <div className="bg-red-500/5 border border-red-500/10 p-3 rounded-lg">
                 <div className="flex items-center gap-2 text-red-700">
                   <AlertCircle className="h-4 w-4" />
                   <span className="font-medium">نمره منفی:</span>
                 </div>
                 <p className="text-sm text-red-600 mt-1">
-                  {result.negativePoints} سوال درست به علت {wrong} سوال غلط کسر شد
+                  {result.negativePoints} سوال درست به علت {wrong || '0'} سوال غلط کسر شد
                 </p>
                 <p className="text-sm text-red-600">
                   تعداد نهایی سوالات درست: {result.netCorrect}
-                  {result.netCorrect < 0 && ' (منفی)'}
                 </p>
               </div>
             )}
             
             <div className="text-center pt-2">
               <p className="text-sm text-muted-foreground">
-                از مجموع {total} سوال، {result.netCorrect} سوال صحیح محاسبه شده است
+                از مجموع {total || '0'} سوال، {result.netCorrect} سوال صحیح محاسبه شده است
               </p>
-            </div> */}
+            </div>
           </CardContent>
         </Card>
       )}
