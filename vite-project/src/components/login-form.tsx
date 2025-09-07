@@ -20,6 +20,7 @@ export function LoginForm({
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 // inside LoginForm.tsx
 const { login, user } = useUser()
@@ -28,6 +29,8 @@ console.log(user)
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
   setError("")
+  setIsLoading(true) // شروع loading
+  
   try {
     const response = await axios.post(
       baseURL+"/login/", // Updated endpoint
@@ -54,6 +57,8 @@ const handleSubmit = async (e: React.FormEvent) => {
     } else {
       setError("خطایی رخ داد. دوباره تلاش کنید.")
     }
+  } finally {
+    setIsLoading(false) // پایان loading
   }
 }
 
@@ -83,6 +88,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="john"
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -101,11 +107,22 @@ const handleSubmit = async (e: React.FormEvent) => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                ورود
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    در حال ورود...
+                  </>
+                ) : (
+                  "ورود"
+                )}
               </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
