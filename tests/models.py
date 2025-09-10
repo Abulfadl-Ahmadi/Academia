@@ -74,10 +74,24 @@ class TestCollection(models.Model):
         return (completed / total) * 100
 
 
+class TestType(models.TextChoices):
+    SCHEDULED = 'scheduled', 'آزمون زمان‌بندی شده'
+    TOPIC_BASED = 'topic_based', 'آزمون مبحثی آزاد'
+    PRACTICE = 'practice', 'آزمون تمرینی'
+
+
 class Test(models.Model):
     name = models.CharField(max_length=255, verbose_name="نام آزمون")
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="معلم")
+    
+    # نوع آزمون
+    test_type = models.CharField(
+        max_length=20,
+        choices=TestType.choices,
+        default=TestType.SCHEDULED,
+        verbose_name="نوع آزمون"
+    )
     
     # اتصال به مجموعه آزمون (الزامی)
     test_collection = models.ForeignKey(
@@ -89,12 +103,35 @@ class Test(models.Model):
         blank=True
     )
     
+    # اتصال به مبحث درخت دانش (جدید)
+    topic = models.ForeignKey(
+        'knowledge.Topic',
+        on_delete=models.SET_NULL,
+        related_name='topic_tests',
+        verbose_name="مبحث مرتبط",
+        null=True,
+        blank=True,
+        help_text="مبحث درخت دانشی که این آزمون به آن مربوط است"
+    )
+    
     pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF", related_name='test_file')
     answers_file = models.ForeignKey(File, on_delete=models.SET_NULL, verbose_name="فایل پاسخنامه", related_name='test_answers_file', null=True, blank=True)
-    start_time = models.DateTimeField(verbose_name="زمان شروع")
-    end_time = models.DateTimeField(verbose_name="زمان پایان")
+    
+    # فیلدهای زمان‌بندی (فقط برای آزمون‌های زمان‌بندی شده)
+    start_time = models.DateTimeField(
+        verbose_name="زمان شروع", 
+        null=True, 
+        blank=True,
+        help_text="فقط برای آزمون‌های زمان‌بندی شده الزامی است"
+    )
+    end_time = models.DateTimeField(
+        verbose_name="زمان پایان", 
+        null=True, 
+        blank=True,
+        help_text="فقط برای آزمون‌های زمان‌بندی شده الزامی است"
+    )
     duration = models.DurationField(verbose_name="مدت زمان آزمون")
-    frequency = models.CharField(max_length=100, verbose_name="تکرار")  # e.g. 'once', 'weekly', etc.
+    frequency = models.CharField(max_length=100, verbose_name="تکرار", blank=True, null=True)  # e.g. 'once', 'weekly', etc.
     
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ آخرین بروزرسانی")
@@ -104,9 +141,89 @@ class Test(models.Model):
         verbose_name = "آزمون"
         verbose_name_plural = "آزمون‌ها"
         ordering = ['-created_at']
+    
+    def clean(self):
+        """اعتبارسنجی مدل"""
+        from django.core.exceptions import ValidationError
+        
+        # بررسی فیلدهای الزامی برای آزمون‌های زمان‌بندی شده
+        if self.test_type == TestType.SCHEDULED:
+            if not self.start_time:
+                raise ValidationError({
+                    'start_time': 'زمان شروع برای آزمون‌های زمان‌بندی شده الزامی است'
+                })
+            if not self.end_time:
+                raise ValidationError({
+                    'end_time': 'زمان پایان برای آزمون‌های زمان‌بندی شده الزامی است'
+                })
+            if not self.test_collection:
+                raise ValidationError({
+                    'test_collection': 'مجموعه آزمون برای آزمون‌های زمان‌بندی شده الزامی است'
+                })
+        
+        # بررسی فیلدهای الزامی برای آزمون‌های مبحثی
+        elif self.test_type == TestType.TOPIC_BASED:
+            if not self.topic:
+                raise ValidationError({
+                    'topic': 'مبحث برای آزمون‌های مبحثی الزامی است'
+                })
+        
+        # بررسی تداخل زمانی برای آزمون‌های زمان‌بندی شده
+        if (self.test_type == TestType.SCHEDULED and 
+            self.start_time and self.end_time and 
+            self.start_time >= self.end_time):
+            raise ValidationError({
+                'end_time': 'زمان پایان باید بعد از زمان شروع باشد'
+            })
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} - {self.test_collection.name}"
+        if self.test_type == TestType.TOPIC_BASED and self.topic:
+            return f"{self.name} - {self.topic.name}"
+        elif self.test_collection:
+            return f"{self.name} - {self.test_collection.name}"
+        return self.name
+    
+    def is_topic_based(self):
+        """آیا این آزمون مبحثی است؟"""
+        return self.test_type == TestType.TOPIC_BASED
+    
+    def is_scheduled(self):
+        """آیا این آزمون زمان‌بندی شده است؟"""
+        return self.test_type == TestType.SCHEDULED
+    
+    def can_student_take_now(self, student=None):
+        """آیا دانش‌آموز می‌تواند الان این آزمون را بدهد؟"""
+        if self.test_type == TestType.TOPIC_BASED:
+            # آزمون‌های مبحثی همیشه در دسترس هستند
+            return True
+        elif self.test_type == TestType.SCHEDULED:
+            # بررسی زمان شروع و پایان
+            from django.utils import timezone
+            now = timezone.now()
+            return (self.start_time and self.end_time and 
+                    self.start_time <= now <= self.end_time)
+        return False
+    
+    def get_display_status(self):
+        """وضعیت نمایشی آزمون"""
+        if self.test_type == TestType.TOPIC_BASED:
+            return "آزاد - همیشه در دسترس"
+        elif self.test_type == TestType.SCHEDULED:
+            from django.utils import timezone
+            now = timezone.now()
+            if self.start_time and self.end_time:
+                if now < self.start_time:
+                    return f"شروع در {self.start_time.strftime('%Y/%m/%d %H:%M')}"
+                elif now > self.end_time:
+                    return "به پایان رسیده"
+                else:
+                    return "در حال برگزاری"
+            return "زمان‌بندی نشده"
+        return "نامشخص"
 
     def get_accessible_students(self):
         """دانش‌آموزانی که به این آزمون دسترسی دارند"""
@@ -119,6 +236,20 @@ class Test(models.Model):
     def get_completed_count(self):
         """تعداد کسانی که آزمون را تکمیل کرده‌اند"""
         return self.studenttestsession_set.filter(status='completed').count()
+
+    def get_total_questions(self):
+        """محاسبه تعداد کل سوالات بر اساس پاسخ‌های موجود"""
+        # اگر کلید سوالات موجود است، از آن استفاده کن
+        primary_keys = self.primary_keys.all()
+        if primary_keys.exists():
+            # بیشترین شماره سوال را پیدا کن
+            max_question = primary_keys.aggregate(
+                max_question=models.Max('question_number')
+            )['max_question']
+            return max_question if max_question else 60
+        
+        # پیش‌فرض: 60 سوال
+        return 60
 
     def get_average_score(self):
         """میانگین نمرات آزمون"""
@@ -209,14 +340,35 @@ class StudentTestSession(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        from django.utils import timezone
+        
         if not self.entry_time:
             self.entry_time = timezone.now()
+        
         if not self.end_time:
+            # برای آزمون‌های مبحثی، زمان پایان بر اساس مدت زمان محاسبه می‌شود
             self.end_time = self.entry_time + self.test.duration
+        
         super().save(*args, **kwargs)
 
     def is_expired(self):
+        from django.utils import timezone
         return timezone.now() >= self.end_time
+    
+    def can_continue(self):
+        """آیا دانش‌آموز می‌تواند آزمون را ادامه دهد؟"""
+        if self.status == 'completed':
+            return False
+        
+        # برای آزمون‌های مبحثی، تا زمانی که expire نشده باشد قابل ادامه است
+        if self.test.test_type == TestType.TOPIC_BASED:
+            return not self.is_expired()
+        
+        # برای آزمون‌های زمان‌بندی شده، باید در بازه زمانی آزمون باشیم
+        elif self.test.test_type == TestType.SCHEDULED:
+            return self.test.can_student_take_now() and not self.is_expired()
+        
+        return False
 
 class StudentTestSessionLog(models.Model):
     session = models.ForeignKey(StudentTestSession, on_delete=models.CASCADE, related_name='logs')
