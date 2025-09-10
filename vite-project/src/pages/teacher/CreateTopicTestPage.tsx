@@ -25,6 +25,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import { toast } from 'sonner';
 import { knowledgeApi } from '@/features/knowledge/api';
 import axiosInstance from '@/lib/axios';
+import { useSidebar } from '@/components/ui/sidebar';
 import type { CreateTopicTestData, Subject } from '@/features/knowledge/types';
 
 interface FileItem {
@@ -37,20 +38,26 @@ interface FileItem {
 // Answer Key Grid Component
 const AnswerKeyGrid = ({ 
   answers, 
-  onAnswerChange 
+  onAnswerChange,
+  questionCount 
 }: { 
   answers: string[]; 
-  onAnswerChange: (index: number, value: string) => void 
+  onAnswerChange: (index: number, value: string) => void;
+  questionCount: number;
 }) => {
+  const { state } = useSidebar();
+  
   const renderColumn = (startIndex: number) => (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {Array.from({ length: 10 }, (_, i) => {
         const questionIndex = startIndex + i;
         const questionNumber = questionIndex + 1;
         
+        if (questionNumber > questionCount) return null;
+        
         return (
-          <div key={questionIndex} className="flex items-center gap-3">
-            <span className="text-sm font-medium w-6 text-right">
+          <div key={questionIndex} className="flex items-center gap-2">
+            <span className="text-sm font-medium w-5 pl-2 text-left">
               {questionNumber}
             </span>
             <RadioGroup.Root
@@ -81,9 +88,25 @@ const AnswerKeyGrid = ({
     </div>
   );
 
+  // Dynamic grid columns based on sidebar state
+  const getGridClasses = () => {
+    if (state === "collapsed") {
+      // Sidebar is collapsed - more space available
+      return "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 ۲xl:grid-cols-7";
+    } else {
+      // Sidebar is expanded - less space available  
+      return "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-2 2md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
+    }
+  };
+
+  // Calculate number of columns needed
+  const columnsNeeded = Math.ceil(questionCount / 10);
+
   return (
-    <div className="grid grid-cols-6 gap-6 p-4 bg-muted/30 rounded-lg">
-      {Array.from({ length: 6 }, (_, colIndex) => renderColumn(colIndex * 10))}
+    <div className={`${getGridClasses()} gap-3 sm:gap-4 lg:gap-5 xl:gap-6 p-3 sm:p-4 bg-muted/30 rounded-lg`}>
+      {Array.from({ length: columnsNeeded }, (_, colIndex) => 
+        renderColumn(colIndex * 10)
+      )}
     </div>
   );
 };
@@ -121,6 +144,7 @@ export default function CreateTopicTestPage() {
   const [selectedSubject, setSelectedSubject] = useState<number>(0);
   const [selectedChapter, setSelectedChapter] = useState<number>(0);
   const [selectedSection, setSelectedSection] = useState<number>(0);
+  const [questionCount, setQuestionCount] = useState<number>(60);
   const [answerKeys, setAnswerKeys] = useState<string[]>(Array(60).fill(''));
 
   // Load subjects and files
@@ -362,7 +386,7 @@ export default function CreateTopicTestPage() {
           is_active: true,
           keys: [],
         }));
-        setAnswerKeys(Array(60).fill(''));
+        setAnswerKeys(Array(questionCount).fill(''));
         toast.success('فرم برای ایجاد آزمون بعدی آماده است');
       } else {
         navigate('/panel/topic-tests');
@@ -384,7 +408,7 @@ export default function CreateTopicTestPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -397,7 +421,6 @@ export default function CreateTopicTestPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">ایجاد آزمون مبحثی جدید</h1>
-          <p className="text-gray-600">آزمون جدید مرتبط با مباحث درخت دانش ایجاد کنید</p>
         </div>
       </div>
 
@@ -411,7 +434,7 @@ export default function CreateTopicTestPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">نام آزمون *</Label>
                 <Input
@@ -438,6 +461,23 @@ export default function CreateTopicTestPage() {
                     <SelectItem value="PT120M">120 دقیقه</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="questionCount">تعداد سوالات</Label>
+                <Input
+                  id="questionCount"
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={questionCount}
+                  onChange={(e) => {
+                    const count = parseInt(e.target.value) || 60;
+                    setQuestionCount(count);
+                    setAnswerKeys(Array(count).fill(''));
+                  }}
+                  placeholder="60"
+                />
               </div>
             </div>
 
@@ -742,12 +782,13 @@ export default function CreateTopicTestPage() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="answer-keys">
                 <AccordionTrigger className="text-base font-medium">
-                  کلیدهای پاسخ (60 سوال)
+                  کلیدهای پاسخ ({questionCount} سوال)
                 </AccordionTrigger>
                 <AccordionContent>
                   <AnswerKeyGrid 
                     answers={answerKeys} 
-                    onAnswerChange={handleAnswerChange} 
+                    onAnswerChange={handleAnswerChange}
+                    questionCount={questionCount}
                   />
                 </AccordionContent>
               </AccordionItem>
