@@ -41,11 +41,14 @@ class SubjectSerializer(serializers.ModelSerializer):
     """سریالایزر برای کتاب درسی"""
     chapters = ChapterSerializer(many=True, read_only=True)
     total_topics = serializers.ReadOnlyField(source='get_total_topics')
+    book_file_title = serializers.CharField(source='book_file.title', read_only=True)
+    book_file_url = serializers.URLField(source='book_file.arvan_url', read_only=True)
     
     class Meta:
         model = Subject
         fields = [
             'id', 'name', 'grade', 'description', 'cover_image', 
+            'book_file', 'book_file_title', 'book_file_url',
             'chapters', 'total_topics'
         ]
 

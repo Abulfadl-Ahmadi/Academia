@@ -15,6 +15,8 @@ from .serializers import (
 )
 from tests.models import Test, StudentTestSession
 from tests.serializers import TestDetailSerializer
+from contents.models import File
+from contents.serializers import FileSerializer
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
@@ -24,6 +26,13 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    @action(detail=False, methods=['get'])
+    def book_files(self, request):
+        """لیست فایل‌های کتاب برای انتخاب"""
+        book_files = File.objects.filter(content_type='book')
+        serializer = FileSerializer(book_files, many=True)
+        return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
     def knowledge_tree(self, request):

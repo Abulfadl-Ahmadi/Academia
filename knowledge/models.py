@@ -9,6 +9,19 @@ class Subject(models.Model):
     grade = models.IntegerField(verbose_name="پایه تحصیلی")  # 10, 11, 12
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
     cover_image = models.ImageField(upload_to='subjects/', blank=True, null=True, verbose_name="تصویر جلد")
+    
+    # فایل کتاب
+    book_file = models.ForeignKey(
+        'contents.File',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subject_books',
+        limit_choices_to={'content_type': 'book'},
+        verbose_name="فایل کتاب",
+        help_text="فایل PDF کتاب درسی"
+    )
+    
     is_active = models.BooleanField(default=True, verbose_name="فعال")
     
     created_at = models.DateTimeField(auto_now_add=True)
