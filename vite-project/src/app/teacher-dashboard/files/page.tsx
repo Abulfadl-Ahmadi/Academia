@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react"
-import { columns, type File } from "@/app/teacher-dashboard/files/column"
-import { DataTable } from "@/components/ui/data-table"
+import { useEffect, useState } from "react";
+import { columns, type File } from "@/app/teacher-dashboard/files/column";
+import { DataTable } from "@/components/ui/data-table";
 import axiosInstance from "@/lib/axios";
-
-
 
 import {
   Drawer,
@@ -12,9 +10,9 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 // import { useForm } from "react-hook-form"
 // import { z } from "zod"
 // import { zodResolver } from "@hookform/resolvers/zod"
@@ -23,16 +21,14 @@ import {
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 // import { Label } from "@/components/ui/label"
-import FileCreateForm from "./FileCreateForm"
-
-
+import FileCreateForm from "./FileCreateForm";
 
 export default function FilesPage() {
-  const [files, setFiles] = useState<File[]>([])
-  const [loading, setLoading] = useState(true)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   // const token = localStorage.getItem("access_token")
   const baseURL = import.meta.env.VITE_API_BASE_URL;
   const [, setCourses] = useState<{ id: number; title: string }[]>([]);
@@ -56,21 +52,20 @@ export default function FilesPage() {
   //   },
   // });
 
-useEffect(() => {
-  axiosInstance
-    .get(baseURL + "/courses/") // This should return a list of groups
-    .then((res) => {
-      const groupList = res.data.map((course: any) => ({
-        id: course.id,
-        title:  course.title,
-      }))
-      setCourses(groupList)
-    })
-    .catch((err) => {
-      console.error("Error loading courses:", err)
-    })
-}, [])
-
+  useEffect(() => {
+    axiosInstance
+      .get(baseURL + "/courses/") // This should return a list of groups
+      .then((res) => {
+        const groupList = res.data.map((course: any) => ({
+          id: course.id,
+          title: course.title,
+        }));
+        setCourses(groupList);
+      })
+      .catch((err) => {
+        console.error("Error loading courses:", err);
+      });
+  }, []);
 
   useEffect(() => {
     axiosInstance
@@ -84,11 +79,11 @@ useEffect(() => {
           course: file.course_info.title || "",
           create_at: file.created_at || 0,
           course_session: file.class_session || 0,
-        }))
-        setFiles(data)
+        }));
+        setFiles(data);
       })
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
   // const handleCreateCourse = async (data: z.infer<typeof FormSchema>) => {
   //   setLoading(true)
@@ -117,7 +112,7 @@ useEffect(() => {
   //   }
   // }
 
-  if (loading) return <div className="p-4">در آپلود فایل...</div>
+  if (loading) return <div className="p-4">در آپلود فایل...</div>;
 
   // Prepare cuorse options for combobox
   // const courseOptions = courses.map(c => ({ label: c.title, value: c.id.toString() }));
@@ -126,44 +121,44 @@ useEffect(() => {
     <div className="p-4 space-y-4">
       <h2 className="text-2xl font-bold mb-4">کلاس‌های دانش‌آموزان</h2>
       <div className="md:hidden">
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerTrigger asChild>
-          <Button>ایجاد فایل</Button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>اپلود فایل </DrawerTitle>
-            <DrawerDescription>
-              گروهی جدید برای دانش آموزان ایجاد کنید.
-            </DrawerDescription>
-          </DrawerHeader>
- <div className="p-4">
-      <FileCreateForm
-        onSuccess={(newFile) => setFiles(prev => [...prev, newFile])}
-        onClose={() => setDrawerOpen(false)}
-        context="drawer"
-      />
-    </div>
-        </DrawerContent>
-      </Drawer>
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerTrigger asChild>
+            <Button>ایجاد فایل</Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>اپلود فایل </DrawerTitle>
+              <DrawerDescription>
+                گروهی جدید برای دانش آموزان ایجاد کنید.
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="p-4">
+              <FileCreateForm
+                onSuccess={(newFile) => setFiles((prev) => [...prev, newFile])}
+                onClose={() => setDrawerOpen(false)}
+                context="drawer"
+              />
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
       <div className="hidden md:block">
-    <Dialog>
-        <DialogTrigger asChild>
-          <Button>ایجاد فایل</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle>فرم ایجاد فایل</DialogTitle>
-    <FileCreateForm
-      onSuccess={(newFile) => setFiles(prev => [...prev, newFile])}
-      onClose={() => {}}
-      context="dialog"
-    />
-        </DialogContent>
-    </Dialog>
-</div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>ایجاد فایل</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogTitle>فرم ایجاد فایل</DialogTitle>
+            <FileCreateForm
+              onSuccess={(newFile) => setFiles((prev) => [...prev, newFile])}
+              onClose={() => {}}
+              context="dialog"
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <DataTable columns={columns} data={files} />
     </div>
-  )
+  );
 }
