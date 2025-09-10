@@ -1,30 +1,39 @@
-from django.test import TestCase
-from unittest.mock import patch
-from django.urls import reverse
-from rest_framework.test import APIClient
-from rest_framework import status
-from django.utils import timezone
-from datetime import timedelta
-from tests.models import StudentTestSession
-from tests.views import EnterTestView
-from django.http import HttpRequest
-from rest_framework.request import Request
-from rest_framework.response import Response
-from accounts.models import User
+import os
+import sys
+import django
+import datetime
 
-class EnterTestViewTests(TestCase):
-    def test_completed_test_response(self):
-        """Test that EnterTestView returns the correct response for completed tests"""
-        view = EnterTestView()
-        # Mock the request and response for a completed test
-        mock_response = Response({
-            "error": "completed",
-            "message": "شما قبلا این آزمون را به اتمام رسانده‌اید.",
-            "redirect_to": "/panel/tests/result/123/"
-        }, status=403)
-        
-        # Verify the response has the expected structure
-        self.assertEqual(mock_response.status_code, 403)
-        self.assertEqual(mock_response.data['error'], 'completed')
-        self.assertEqual(mock_response.data['message'], "شما قبلا این آزمون را به اتمام رسانده‌اید.")
-        self.assertEqual(mock_response.data['redirect_to'], '/panel/tests/result/123/')
+# Set up Django environment
+if __name__ == "__main__":
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
+    django.setup()
+
+    from tests.models import TestCollection, Test
+
+    collection = TestCollection.objects.get(id=5)
+
+    for i in range(10):
+        test = Test(
+            name=f"مرحله {i+1}",
+            description=f"آزمون مرحله {i+1} - تست خودکار",
+            test_collection=collection,
+            pdf_file_id=34,  # فرض بر این است که فایل PDF با ID 34 وجود دارد
+            duration="01:00:00",
+            frequency="once",
+            start_time=datetime.datetime.now() + datetime.timedelta(days=i),
+            end_time=datetime.datetime.now() + datetime.timedelta(days=i, hours=25),
+            keys=[
+                {"question_number": 1, "answer": 1},
+                {"question_number": 2, "answer": 2},
+                {"question_number": 3, "answer": 3},
+                {"question_number": 4, "answer": 4},
+                {"question_number": 5, "answer": 3},
+                {"question_number": 6, "answer": 2},
+                {"question_number": 7, "answer": 1},
+                {"question_number": 8, "answer": 2},
+                {"question_number": 9, "answer": 3},
+                {"question_number": 10, "answer": 4}
+            ]
+        )
+        test.save()
+        print(f"آزمون {test.name} با موفقیت ایجاد شد.")
