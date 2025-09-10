@@ -39,13 +39,18 @@ export function TeacherSidebar({
     axiosInstance.get("/course-catagory/") // آدرس API بک‌اند
       .then((res) => res.data)
       .then((data) => {
-        // اطمینان از اینکه data یک آرایه است
+        // اطمینان از اینکه data یک آرایه است یا pagination object
+        let categoriesArray = [];
         if (Array.isArray(data)) {
-          setCategories(data);
+          categoriesArray = data;
+        } else if (data && Array.isArray(data.results)) {
+          // Pagination format
+          categoriesArray = data.results;
         } else {
           console.warn("Categories data is not an array:", data);
-          setCategories([]);
+          categoriesArray = [];
         }
+        setCategories(categoriesArray);
       })
       .catch((err) => {
         console.error("خطا در گرفتن دسته‌بندی‌ها:", err);
