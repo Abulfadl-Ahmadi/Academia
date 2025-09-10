@@ -42,7 +42,19 @@ export default function StudentCoursesList() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/student-courses/");
-      setCourses(response.data);
+      
+      // Handle both array and pagination format
+      let coursesData = [];
+      if (Array.isArray(response.data)) {
+        coursesData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        coursesData = response.data.results;
+      } else {
+        console.warn("Courses data is not an array:", response.data);
+        coursesData = [];
+      }
+      
+      setCourses(coursesData);
     } catch (error) {
       console.error("Error fetching courses:", error);
       toast.error("خطا در دریافت دوره‌ها");
@@ -51,11 +63,11 @@ export default function StudentCoursesList() {
     }
   };
 
-  const filteredCourses = courses.filter(course =>
+  const filteredCourses = Array.isArray(courses) ? courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.teacher.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
   const handleViewCourse = (courseId: number) => {
     window.location.href = `/panel/courses/${courseId}`;
