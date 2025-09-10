@@ -5,6 +5,8 @@ from rest_framework.decorators import action
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Avg
+from django.http import HttpResponse, Http404
+from django.core.exceptions import PermissionDenied
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
     StudentTestSessionLog, TestCollection, StudentProgress
@@ -77,8 +79,19 @@ class UpdateDeleteTestView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # فقط آزمون‌هایی که این کاربر (مثلاً معلم) ساخته دیده و ویرایش/حذف بشن (اگر creator اضافه کردی)
+        user = self.request.user
+        if user.role == "teacher":
+            # فقط آزمون‌هایی که این معلم ساخته
+            return Test.objects.filter(teacher=user)
+        # ادمین همه آزمون‌ها را می‌بیند
         return Test.objects.all()
+
+    def perform_destroy(self, instance):
+        # اطمینان از اینکه فقط معلم سازنده می‌تواند حذف کند
+        user = self.request.user
+        if user.role == "teacher" and instance.teacher != user:
+            raise PermissionDenied("شما فقط می‌توانید آزمون‌های خود را حذف کنید")
+        instance.delete()
 
 class EnterTestView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -159,8 +172,8 @@ class EnterTestView(views.APIView):
             "test_id": test.id,
             "pdf_file_url": request.build_absolute_uri(pdf_url) if pdf_url else None,
             "duration_minutes": int(test.duration.total_seconds() / 60),
-            "entry_time": session.entry_time,
-            "end_time": session.entry_time + test.duration
+            "entry_time": session.entry_time.isoformat(),
+            "end_time": session.end_time.isoformat()
         }, status=201)
 
 
@@ -171,6 +184,11 @@ class SubmitAnswerView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         session_id = request.data.get("session_id")
         answers = request.data.get("answers")  # list of dicts: [{"question_number": 1, "answer": 2}, ...]
+        
+        # Support for single answer format
+        question_number = request.data.get("question_number")
+        answer = request.data.get("answer")
+        
         user = request.user
 
         try:
@@ -184,18 +202,53 @@ class SubmitAnswerView(generics.CreateAPIView):
         if session.status == "completed":
             return Response({"error": "You've submitted your answer sheet and you can no longer modify it."}, status=403)
 
+        # Handle single answer format (question_number and answer directly in payload)
+        if question_number is not None and answer is not None and answers is None:
+            try:
+                question_number = int(question_number)
+                answer = int(answer) if answer != "" else None
+            except (ValueError, TypeError):
+                return Response({"error": "question_number and answer must be integers"}, status=status.HTTP_400_BAD_REQUEST)
+                
+            StudentAnswer.objects.update_or_create(
+                session=session,
+                question_number=question_number,
+                defaults={"answer": answer}
+            )
+            return Response({"message": "Answer submitted."})
+
+        # Handle multiple answers format
         if isinstance(answers, str):
             try:
                 answers = json.loads(answers)
             except json.JSONDecodeError:
                 return Response({"error": "Invalid JSON in answers"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if answers is None or empty
+        if answers is None:
+            return Response({"error": "Either 'answers' array or 'question_number' and 'answer' are required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not isinstance(answers, list):
+            return Response({"error": "Answers must be a list"}, status=status.HTTP_400_BAD_REQUEST)
 
         for a in answers:
+            # Validate answer format
+            if not isinstance(a, dict):
+                return Response({"error": "Each answer must be a dictionary"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if "question_number" not in a or "answer" not in a:
+                return Response({"error": "Each answer must have 'question_number' and 'answer' fields"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                question_number = int(a["question_number"])
+                answer = int(a["answer"]) if a["answer"] != "" else None
+            except (ValueError, TypeError):
+                return Response({"error": "question_number and answer must be integers"}, status=status.HTTP_400_BAD_REQUEST)
+                
             StudentAnswer.objects.update_or_create(
                 session=session,
-                question_number= a["question_number"],
-                defaults={"answer": a["answer"]}
+                question_number=question_number,
+                defaults={"answer": answer}
             )
 
         return Response({"message": "Answers submitted."})
@@ -205,17 +258,49 @@ class GetAnswersView(views.APIView):
 
     def get(self, request):
         session_id = request.query_params.get("session_id")
+        test_id = request.query_params.get("test_id")
         user = request.user
 
-        try:
-            session = StudentTestSession.objects.get(id=session_id, user=user)
-        except StudentTestSession.DoesNotExist:
-            return Response({"error": "Session not found"}, status=404)
+        # اگر session_id داده شده، از آن استفاده کن
+        if session_id:
+            try:
+                session = StudentTestSession.objects.get(id=session_id, user=user)
+            except StudentTestSession.DoesNotExist:
+                return Response({"error": "Session not found"}, status=404)
+        # اگر test_id داده شده، session فعال را پیدا کن
+        elif test_id:
+            try:
+                test = Test.objects.get(id=test_id)
+                session = StudentTestSession.objects.get(
+                    user=user, 
+                    test=test, 
+                    status__in=['active', 'inactive']
+                )
+            except (Test.DoesNotExist, StudentTestSession.DoesNotExist):
+                return Response({"error": "No active session found for this test"}, status=404)
+        else:
+            return Response({"error": "session_id or test_id is required"}, status=400)
+
+        # چک کردن انقضای session
+        if session.is_expired():
+            session.status = 'expired'
+            session.save()
+            return Response({"error": "Session has expired"}, status=403)
 
         answers = StudentAnswer.objects.filter(session=session)
         data = {answer.question_number: answer.answer for answer in answers}
 
-        return Response(data)
+        # برگرداندن اطلاعات session همراه با answers
+        return Response({
+            "answers": data,
+            "session": {
+                "id": session.id,
+                "test_id": session.test.id,
+                "entry_time": session.entry_time.isoformat(),
+                "end_time": session.end_time.isoformat(),
+                "status": session.status
+            }
+        })
 
 class FinishTestView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -511,15 +596,150 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                     progress.update_progress()
                 
                 progress_data.append({
-                    'student': {
-                        'id': student.id,
-                        'username': student.username,
-                        'first_name': student.first_name,
-                        'last_name': student.last_name
-                    },
-                    'progress': StudentProgressSerializer(progress).data
+                    'id': progress.id,
+                    'student_name': f"{student.first_name} {student.last_name}",
+                    'completed_tests': progress.completed_tests,
+                    'total_score': progress.total_score,
+                    'progress_percentage': progress.progress_percentage,
+                    'average_score': progress.average_score,
+                    'is_completed': progress.is_completed,
+                    'last_activity': progress.last_activity
                 })
             
             return Response(progress_data)
+    
+    @action(detail=True, methods=['get'])
+    def student_test_results(self, request, pk=None):
+        """نتایج آزمون‌های دانش‌آموز در مجموعه آزمون برای نمودار"""
+        test_collection = self.get_object()
+        user = request.user
+        
+        if user.role != "student":
+            return Response(
+                {'error': 'این endpoint فقط برای دانش‌آموزان است'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # دریافت همه آزمون‌های این مجموعه
+        tests = test_collection.tests.all().order_by('created_at')
+        
+        results = []
+        for test in tests:
+            # پیدا کردن session تکمیل شده دانش‌آموز برای این آزمون
+            session = StudentTestSession.objects.filter(
+                user=user,
+                test=test,
+                status='completed'
+            ).first()
+            
+            if session:
+                # محاسبه نمره
+                answers = StudentAnswer.objects.filter(session=session)
+                correct_answers = 0
+                wrong_answers = 0
+                total_questions = test.get_total_questions()
+                
+                answer_map = {a.question_number: a for a in answers}
+                for q_num in range(1, total_questions + 1):
+                    answer = answer_map.get(q_num)
+                    try:
+                        correct_key = test.primary_keys.get(question_number=q_num)
+                        if answer:
+                            is_correct = answer.answer == correct_key.answer
+                            if is_correct:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
+                    except:
+                        continue
+                
+                # محاسبه درصد نمره
+                score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
+                score_percentage = max(0, score_percentage/3)  # حداقل صفر
+                
+                results.append({
+                    'test_name': test.name,
+                    'test_id': test.id,
+                    'score': correct_answers,
+                    'percentage': round(score_percentage, 1),
+                    'date': session.exit_time.strftime('%Y-%m-%d') if session.exit_time else session.entry_time.strftime('%Y-%m-%d'),
+                    'total_questions': total_questions,
+                    'correct_answers': correct_answers,
+                    'wrong_answers': wrong_answers
+                })
+            else:
+                # اگر آزمون داده نشده، نمره صفر
+                results.append({
+                    'test_name': test.name,
+                    'test_id': test.id,
+                    'score': 0,
+                    'percentage': 0,
+                    'date': None,
+                    'total_questions': test.get_total_questions(),
+                    'correct_answers': 0,
+                    'wrong_answers': 0
+                })
+        
+        return Response(results)
+
+
+class SecureTestFileView(views.APIView):
+    """
+    View امن برای دسترسی به فایل‌های آزمون
+    فقط کاربران مجاز می‌توانند به فایل‌ها دسترسی داشته باشند
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, test_id, file_type):
+        try:
+            test = Test.objects.get(id=test_id)
+        except Test.DoesNotExist:
+            raise Http404("آزمون یافت نشد")
+
+        user = request.user
+
+        # بررسی دسترسی برای فایل PDF سوالات
+        if file_type == 'pdf':
+            # معلم همیشه می‌تواند فایل PDF را ببیند
+            if user.role == 'teacher' and test.teacher == user:
+                file_obj = test.pdf_file
+            # دانش‌آموز فقط در صورت داشتن session فعال یا غیرفعال (اما معتبر)
+            elif user.role == 'student':
+                active_session = StudentTestSession.objects.filter(
+                    user=user,
+                    test=test,
+                    status__in=['active', 'inactive']  # هم active و هم inactive قبول شود
+                ).first()
+                
+                if not active_session:
+                    raise PermissionDenied("برای دسترسی به سوالات باید ابتدا آزمون را شروع کنید")
+                
+                # بررسی اینکه آیا زمان آزمون هنوز تمام نشده
+                from django.utils import timezone
+                if timezone.now() > active_session.end_time:
+                    active_session.status = 'expired'
+                    active_session.save()
+                    raise PermissionDenied("زمان آزمون به پایان رسیده است")
+                    
+                file_obj = test.pdf_file
+            else:
+                raise PermissionDenied("شما مجاز به دسترسی به این فایل نیستید")
+
+        # بررسی دسترسی برای فایل پاسخنامه
+        elif file_type == 'answers':
+            # فقط معلم می‌تواند پاسخنامه را ببیند
+            if user.role != 'teacher' or test.teacher != user:
+                raise PermissionDenied("فقط معلم آزمون می‌تواند پاسخنامه را ببیند")
+            file_obj = test.answers_file
+        else:
+            raise Http404("نوع فایل نامعتبر")
+
+        if not file_obj or not file_obj.file:
+            raise Http404("فایل یافت نشد")
+
+        # ارسال فایل
+        response = HttpResponse(file_obj.file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{file_obj.file.name}"'
+        return response
         
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
