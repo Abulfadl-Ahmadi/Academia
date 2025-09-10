@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./components/ui/rtl-table.css";
+@import "katex/dist/katex.min.css";
 
 @import './assets/IranSansXPro/Webfonts/fontiran.css';
 @import './assets/RaviPro/RaviFamily/Webfonts/fontiran.css';
@@ -174,4 +175,375 @@ html.font-ravi {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Persian Calendar Styles */
+.persian-calendar-container .rmdp-container {
+  direction: rtl;
+  font-family: 'IRANSansX', 'Vazirmatn', sans-serif;
+  width: 100%;
+}
+
+.persian-calendar-container .rmdp-calendar {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: static !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.persian-calendar-container .rmdp-header {
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 12px 12px 0 0;
+}
+
+.persian-calendar-container .rmdp-header-values {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.persian-calendar-container .rmdp-arrow-container {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.persian-calendar-container .rmdp-arrow-container:hover {
+  background: var(--primary);
+  opacity: 0.8;
+  scale: 1.05;
+}
+
+.persian-calendar-container .rmdp-day-picker {
+  background: var(--background);
+  padding: 0.5rem;
+}
+
+.persian-calendar-container .rmdp-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.persian-calendar-container .rmdp-day {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.persian-calendar-container .rmdp-day:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  scale: 1.02;
+}
+
+.persian-calendar-container .rmdp-selected {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.persian-calendar-container .rmdp-today {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: bold;
+  border: 2px solid var(--primary);
+}
+
+.persian-calendar-container .rmdp-week-day {
+  color: var(--muted-foreground);
+  font-weight: 600;
+  padding: 0.75rem;
+  text-align: center;
+  background: var(--muted/50);
+  border-radius: 6px;
+  margin: 2px;
+}
+
+.persian-calendar-container .rmdp-day.rmdp-deactive {
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* Make sure calendar is always visible */
+.persian-calendar-container .rmdp-wrapper {
+  position: static !important;
+  box-shadow: none !important;
+}
+
+.persian-calendar-container .rmdp-calendar {
+  position: static !important;
+  transform: none !important;
+}
+
+/* KaTeX Math Display Styles */
+.katex-display {
+  margin: 1.5em 0;
+  text-align: center !important;
+  overflow-x: auto;
+  direction: ltr;
+  display: block;
+  width: 100%;
+}
+
+.katex {
+  font-size: 1.1em;
+  direction: ltr;
+}
+
+/* Math expressions should always be LTR and centered for display */
+.katex-display .katex {
+  direction: ltr !important;
+  text-align: center !important;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+/* Additional math centering */
+.math-display,
+.math-display > *,
+div[class*="math-display"] {
+  text-align: center !important;
+  width: 100%;
+  display: block;
+}
+
+/* Ensure all block math is centered */
+.katex-display,
+.math-block,
+.math-display {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Smooth scrolling for messages container */
+#messages-container {
+  scroll-behavior: smooth;
+}
+
+/* Better scroll styling */
+#messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+#messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#messages-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark #messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark #messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Prevent page scroll for AI conversation pages */
+.ai-conversation-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Ensure chat container takes full height */
+.chat-container {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Prevent body scroll when in AI conversation */
+body:has(.ai-conversation-detail) {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Alternative approach for body scroll prevention */
+html, body {
+  overflow-x: hidden;
+}
+
+body.ai-conversation-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+.katex-inline {
+  direction: ltr !important;
+  display: inline-block;
+}
+
+/* Inline math in text */
+.katex-inline .katex {
+  direction: ltr !important;
+}
+
+/* Force LTR for all inline math expressions */
+span.katex {
+  direction: ltr !important;
+  display: inline-block;
+}
+
+/* Math inside paragraphs */
+p .katex,
+div .katex {
+  direction: ltr !important;
+}
+
+/* Math expressions in dark mode */
+.dark .katex {
+  color: hsl(var(--foreground));
+}
+
+.dark .katex .mord {
+  color: hsl(var(--foreground));
+}
+
+.dark .katex .mop {
+  color: hsl(var(--primary));
+}
+
+.dark .katex .mbin {
+  color: hsl(var(--accent-foreground));
+}
+
+.dark .katex .mrel {
+  color: hsl(var(--accent-foreground));
+}
+
+/* Responsive math display */
+@media (max-width: 640px) {
+  .katex-display {
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+  
+  .katex {
+    font-size: 1em;
+  }
+}
+
+/* Better math inline display */
+.katex-inline {
+  margin: 0 2px;
+  direction: ltr !important;
+}
+
+/* Force LTR for math inline wrapper */
+.math-inline-wrapper {
+  direction: ltr !important;
+  display: inline-block;
+}
+
+/* Math block styling */
+.math-display {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  border: 1px solid hsl(var(--border));
+  direction: ltr !important;
+}
+
+/* Ensure all math elements are LTR */
+.katex * {
+  direction: ltr !important;
+}
+
+/* Override RTL for math containers */
+.prose .katex-display,
+.prose .katex-inline,
+.prose .katex {
+  direction: ltr !important;
+  text-align: center;
+}
+
+/* More specific selectors for inline math */
+.prose p .katex,
+.prose div .katex,
+.prose span .katex {
+  direction: ltr !important;
+  display: inline-block;
+}
+
+/* Ensure math symbols and operators are LTR */
+.katex .mord,
+.katex .mop,
+.katex .mbin,
+.katex .mrel,
+.katex .mpunct,
+.katex .mopen,
+.katex .mclose {
+  direction: ltr !important;
+}
+
+/* Responsive Table Styles */
+.responsive-table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.responsive-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.responsive-table-container::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.responsive-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.responsive-table-container::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Table Cell Truncation */
+.table-cell-truncate {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .responsive-table-container {
+    font-size: 14px;
+  }
+  
+  .table-cell-truncate {
+    max-width: 120px;
+  }
 }
