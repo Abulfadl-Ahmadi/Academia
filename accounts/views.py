@@ -336,23 +336,45 @@ class LoginView(APIView):
                 }
             }, status=status.HTTP_200_OK)
 
+            # Set cookie parameters based on environment
+            from django.conf import settings
+            is_production = not settings.DEBUG
+            
             # Set tokens in HttpOnly cookies
-            response.set_cookie(
-                key="access",
-                value=str(refresh.access_token),
-                httponly=True,
-                secure=True,
-                samesite="None",
-                domain=".ariantafazolizadeh.ir"
-            )
-            response.set_cookie(
-                key="refresh",
-                value=str(refresh),
-                httponly=True,
-                secure=True,
-                samesite="None",
-                domain=".ariantafazolizadeh.ir"
-            )
+            if is_production:
+                # Production settings
+                response.set_cookie(
+                    key="access",
+                    value=str(refresh.access_token),
+                    httponly=True,
+                    secure=True,
+                    samesite="None",
+                    domain=".ariantafazolizadeh.ir"
+                )
+                response.set_cookie(
+                    key="refresh",
+                    value=str(refresh),
+                    httponly=True,
+                    secure=True,
+                    samesite="None",
+                    domain=".ariantafazolizadeh.ir"
+                )
+            else:
+                # Development settings
+                response.set_cookie(
+                    key="access",
+                    value=str(refresh.access_token),
+                    httponly=True,
+                    secure=False,
+                    samesite="Lax"
+                )
+                response.set_cookie(
+                    key="refresh",
+                    value=str(refresh),
+                    httponly=True,
+                    secure=False,
+                    samesite="Lax"
+                )
             print(response.cookies)
             return response
         print(f"Failed login attempt for username: {username}")
@@ -370,14 +392,30 @@ class RefreshTokenView(APIView):
             access = refresh.access_token
 
             response = Response({"message": "Access token refreshed"})
-            response.set_cookie(
-                key="access",
-                value=str(access),
-                httponly=True,
-                secure=True,
-                samesite="None",
-                domain=".ariantafazolizadeh.ir"
-            )
+            
+            # Set cookie parameters based on environment
+            from django.conf import settings
+            is_production = not settings.DEBUG
+            
+            if is_production:
+                # Production settings
+                response.set_cookie(
+                    key="access",
+                    value=str(access),
+                    httponly=True,
+                    secure=True,
+                    samesite="None",
+                    domain=".ariantafazolizadeh.ir"
+                )
+            else:
+                # Development settings
+                response.set_cookie(
+                    key="access",
+                    value=str(access),
+                    httponly=True,
+                    secure=False,
+                    samesite="Lax"
+                )
             return response
         except Exception:
             raise AuthenticationFailed("Invalid or expired refresh token")
@@ -386,8 +424,19 @@ class RefreshTokenView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logged out"}, status=status.HTTP_200_OK)
-        response.delete_cookie("access", domain=".ariantafazolizadeh.ir")
-        response.delete_cookie("refresh", domain=".ariantafazolizadeh.ir")
+        
+        # Set cookie parameters based on environment
+        from django.conf import settings
+        is_production = not settings.DEBUG
+        
+        if is_production:
+            # Production settings
+            response.delete_cookie("access", domain=".ariantafazolizadeh.ir")
+            response.delete_cookie("refresh", domain=".ariantafazolizadeh.ir")
+        else:
+            # Development settings
+            response.delete_cookie("access")
+            response.delete_cookie("refresh")
         return response
 
 
