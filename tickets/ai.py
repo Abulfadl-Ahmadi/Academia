@@ -46,13 +46,44 @@ def generate_ai_response(question, context_messages=None, max_retries=2):
     if not MODEL:
         raise ValueError("هیچ کلید API تنظیم نشده است")
     
+    # System prompt برای فرمت صحیح ریاضی
+    math_formatting_instructions = """
+شما یک استاد ریاضی هستید. لطفاً در پاسخ‌هایتان قوانین زیر را رعایت کنید:
+
+**برای فرمول‌های ریاضی:**
+- برای فرمول‌های inline (درون متن): از $فرمول$ استفاده کنید
+- برای فرمول‌های block (جداگانه): از $$فرمول$$ استفاده کنید
+- برای توان: از ^ استفاده کنید، مثال: $x^2$ یا $x^{2n+1}$
+- برای زیرنویس: از _ استفاده کنید، مثال: $x_1$ یا $x_{max}$
+- برای انتگرال: $\\int$ یا $\\int_{a}^{b}$
+- برای انتگرال دوگانه: $\\iint$ یا $\\iint_{S}$
+- برای انتگرال سطحی: $\\iint_{S} f(x,y,z) \\, dS$
+- برای مشتق جزئی: $\\frac{\\partial f}{\\partial x}$
+- برای رادیکال: $\\sqrt{x}$ یا $\\sqrt[n]{x}$
+- برای کسر: $\\frac{صورت}{مخرج}$
+
+**مثال‌های صحیح:**
+- متن معمولی با $x^2 + y^2 = r^2$ فرمول درون متن
+- فرمول جداگانه: $$\\int_{0}^{\\pi/2} \\sin^2(\\theta) \\, d\\theta$$
+- انتگرال سطحی: $$\\iint_{S} (x^2 + xy) \\, dS$$
+
+**اشتباهات رایج که نباید کنید:**
+- استفاده از HTML tags مثل <sub> یا <sup>
+- نوشتن فرمول بدون $ یا $$
+- استفاده از x² بجای $x^2$
+
+لطفاً هر پاسخ ریاضی‌تان را طبق این قوانین فرمت کنید.
+"""
+    
     retry_count = 0
     
     while retry_count <= max_retries:
         try:
             if USE_LIARA:
                 # استفاده از Liara API با OpenAI client
-                messages = []
+                messages = [
+                    {"role": "system", "content": math_formatting_instructions}
+                ]
                 
                 # اضافه کردن بافت گفتگو اگر موجود باشد
                 if context_messages:
@@ -74,12 +105,15 @@ def generate_ai_response(question, context_messages=None, max_retries=2):
                 model = genai.GenerativeModel(MODEL)
                 
                 # اگر بافت موجود باشد، آن را به سوال اضافه کنیم
-                prompt = question
+                prompt = f"{math_formatting_instructions}\n\n"
+                
                 if context_messages:
                     context = []
                     for msg in context_messages:
                         context.append(f"{msg['role']}: {msg['content']}")
-                    prompt = f"با توجه به گفتگوی قبلی:\n\n{'\n'.join(context)}\n\nسوال جدید: {question}"
+                    prompt += f"با توجه به گفتگوی قبلی:\n\n{'\n'.join(context)}\n\nسوال جدید: {question}"
+                else:
+                    prompt += f"سوال: {question}"
                 
                 response = model.generate_content(prompt)
                 return response.text
@@ -194,6 +228,8 @@ class AIConversationViewSet(viewsets.ModelViewSet):
             
             # بروزرسانی زمان آخرین بروزرسانی گفتگو
             conversation.save()
+            
+            print(f"AI Response: {ai_response}")
             
             return Response({
                 'user_message': AIMessageSerializer(user_message).data,
