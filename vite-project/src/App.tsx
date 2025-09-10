@@ -11,20 +11,21 @@ import { ThemeProvider } from "@/context/ThemeContext"
 import { FontProvider } from "@/context/FontContext"
 import { useUser } from "@/context/UserContext"
 import PanelRoute from './pages/PanelRoute'
-import TestPage from './app/teacher-dashboard/tests/page'
 import { Worker } from '@react-pdf-viewer/core';
-import HomePage from '@/components/HomePage'
 import { Footer } from '@/components/Footer'
 import ProfileGuard from '@/components/ProfileGuard'
 
 import { HomeHome } from './homehome'
+import { TeacherKnowledgePanel } from '@/features/knowledge'
 // PDF styles are loaded from index.html
 import '@/utils/pdf-styles';
-import TestDetailPage from './app/teacher-dashboard/tests/TestPageRedesigned'
+import TestPage from './app/teacher-dashboard/tests/TestPageNew'
+import TestInfoPage from './components/TestDetailPage'
 import ShopPage from './app/shop/page'
 import ProductDetailPage from './app/shop/[id]/page'
 import { Toaster } from "@/components/ui/sonner"
 import GradeCalculatorPage from '@/pages/GradeCalculatorPage'
+import MathTestPage from '@/pages/MathTestPage'
 
 function PreApp() {
   return (
@@ -54,9 +55,17 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/complete-profile" element={<ProfileCompletePage />} />
+        <Route path='/tests/:testId/info' element={
+          <ProfileGuard>
+            <Navbar />
+            <TestInfoPage />
+            <Footer />
+          </ProfileGuard>
+        } />
         <Route path='/tests/:id/' element={<TestPage />}  />
-        <Route path='/tests/:id/detail' element={<TestDetailPage />}  />
+        <Route path='/tests/:id/detail' element={<TestPage />}  />
         <Route path="/panel/*" element={<PanelRoute />} />
+        <Route path="/teacher/knowledge" element={<TeacherKnowledgePanel />} />
         <Route path="/logout" element={<LogoutPage />} />
 
         <Route path="/shop" element={
@@ -78,6 +87,7 @@ function App() {
           </ProfileGuard>
         } />
         <Route path="/grade-calculator" element={<GradeCalculatorPage />} />
+        <Route path="/math-test" element={<MathTestPage />} />
         <Route
           path="/"
           element={
