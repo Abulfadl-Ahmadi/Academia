@@ -246,18 +246,8 @@ export default function CalendarPage() {
               selected={selectedDate}
               onSelect={setSelectedDate}
               className="rounded-md border-0 w-full"
-              dir="rtl"
               weekStartsOn={6} // Saturday
               fixedWeeks
-              locale={{
-                localize: {
-                  day: (n: number) => ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'][n],
-                  month: (n: number) => [
-                    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-                    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-                  ][n]
-                }
-              }}
               classNames={{
                 nav_button_previous: "absolute right-1",
                 nav_button_next: "absolute left-1",
