@@ -44,8 +44,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const res = await axiosInstance.get("/profiles/", {
         withCredentials: true,
       });
-      const userData = res.data[0];
-      const{
+      
+      console.log("API Response:", res.data); // Debug log
+      
+      // Handle both old format (array) and new format (pagination object)
+      let userData;
+      if (res.data.results && Array.isArray(res.data.results)) {
+        // New pagination format
+        userData = res.data.results[0];
+        console.log("Using pagination format, userData:", userData);
+      } else if (Array.isArray(res.data)) {
+        // Old array format
+        userData = res.data[0];
+        console.log("Using array format, userData:", userData);
+      } else {
+        throw new Error("Invalid response format");
+      }
+      
+      if (!userData) {
+        throw new Error("No user data found");
+      }
+      
+      const {
         user: {
           username,
           first_name,
@@ -63,9 +83,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         role,
         id,
       });
-      // console.log("User fetched:", res.data);
+      console.log("User set successfully:", { username, first_name, last_name, email, role, id });
       markLoggedIn();
     } catch (err) {
+      console.error("Failed to fetch user:", err);
       setUser(null);
       markLoggedOut();
     } finally {
