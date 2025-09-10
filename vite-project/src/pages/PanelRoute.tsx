@@ -34,6 +34,10 @@ import CreateCoursePage from "@/app/teacher-dashboard/courses/create/page"
 import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
 import VideoPage from "@/app/dashboard/video/page"
 
+// Topic Tests Components
+import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
+import CreateTopicTestPage from "@/pages/teacher/CreateTopicTestPage"
+
 // Test Collection Components
 import TestCollectionList from "@/testCollections/TestCollectionList"
 import TestCollectionDetail from "@/testCollections/TestCollectionDetail"
@@ -42,6 +46,7 @@ import StudentProgressList from "@/testCollections/StudentProgressList"
 // Explicitly import the TypeScript version with extension
 import TestCollectionForm from "@/testCollections/TestCollectionForm.tsx"
 import CreateTestInCollection from "@/testCollections/CreateTestInCollection"
+import EditTestInCollection from "@/testCollections/EditTestInCollection"
 
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout"
@@ -83,6 +88,7 @@ export default function PanelRoute() {
         {/* Test Collections routes for students */}
         <Route path="/test-collections" element={<TestCollectionList />} />
         <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
+        <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
         <Route path="/tests/active" element={<ActiveTestsPage />} />
         <Route path="/tests/history" element={<TestHistoryPage />} />
         <Route path="/tests/result/:id" element={<TestResult />} />
@@ -118,13 +124,17 @@ export default function PanelRoute() {
         <Route path="/test-collections/:id" element={<TestCollectionDetail />} />
         <Route path="/test-collections/:id/edit" element={<TestCollectionForm />} />
         <Route path="/test-collections/:id/create-test" element={<CreateTestInCollection />} />
-        <Route path="/test-collections/:id/statistics" element={<TestCollectionStatistics />} />
+        <Route path="/test-collections/:id/tests/:testId/edit" element={<EditTestInCollection />} />
         <Route path="/test-collections/:id/progress" element={<StudentProgressList />} />
+        <Route path="/test-collections/:id/statistics" element={<TestCollectionStatistics />} />
         <Route path="/tests/result/:id" element={<TestResult />} />
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/transactions/new" element={<NewTransactionPage />} />
         <Route path="/products" element={<TeacherProducts />} />
         <Route path="/products/create" element={<CreateProductPage />} />
+        {/* Topic Tests Routes */}
+        <Route path="/topic-tests" element={<TopicTestsPage />} />
+        <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
         {/* Support Tickets routes for teachers */}
         <Route path="/support" element={<TicketsList />} />
         <Route path="/support/new" element={<NewTicket />} />
