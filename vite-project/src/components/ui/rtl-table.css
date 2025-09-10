@@ -21,6 +21,52 @@
   unicode-bidi: embed;
 }
 
+/* Responsive table container */
+.responsive-table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Table responsive behavior */
+.rtl-table {
+  min-width: 650px; /* Minimum width for table */
+  width: 100%;
+}
+
+/* Better responsive handling when sidebar is open */
+@media (min-width: 1024px) {
+  .rtl-table {
+    min-width: 600px; /* Reduce min-width on desktop when sidebar open */
+  }
+}
+
+/* Mobile and tablet responsive */
+@media (max-width: 1023px) {
+  .rtl-table {
+    min-width: 700px; /* Force horizontal scroll on smaller screens */
+  }
+  
+  .rtl-table th, 
+  .rtl-table td {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem;
+  }
+}
+
+/* When sidebar is collapsed or mobile */
+@media (max-width: 768px) {
+  .rtl-table {
+    min-width: 800px; /* Force horizontal scroll on mobile */
+  }
+  
+  .rtl-table th, 
+  .rtl-table td {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8125rem;
+  }
+}
+
 /* Ensure Persian text has proper spacing */
 span[class*="font-iransans"], 
 div[class*="font-iransans"] {
