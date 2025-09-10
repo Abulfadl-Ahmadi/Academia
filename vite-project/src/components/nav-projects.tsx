@@ -31,12 +31,15 @@ export function NavProjects({
   }[]
 }) {
   const { isMobile } = useSidebar()
+  
+  // اطمینان از اینکه projects یک آرایه است
+  const safeProjects = Array.isArray(projects) ? projects : [];
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       {/* <SidebarGroupLabel>Projects</SidebarGroupLabel> */}
       <SidebarMenu>
-        {projects.map((item) => (
+        {safeProjects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>

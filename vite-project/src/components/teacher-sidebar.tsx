@@ -38,8 +38,19 @@ export function TeacherSidebar({
   React.useEffect(() => {
     axiosInstance.get("/course-catagory/") // آدرس API بک‌اند
       .then((res) => res.data)
-      .then((data) => setCategories(data))
-      .catch((err) => console.error("خطا در گرفتن دسته‌بندی‌ها:", err));
+      .then((data) => {
+        // اطمینان از اینکه data یک آرایه است
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.warn("Categories data is not an array:", data);
+          setCategories([]);
+        }
+      })
+      .catch((err) => {
+        console.error("خطا در گرفتن دسته‌بندی‌ها:", err);
+        setCategories([]); // در صورت خطا، آرایه خالی قرار دهیم
+      });
   }, []);
 
   const data = {
@@ -54,10 +65,10 @@ export function TeacherSidebar({
             title: "همه کلاس‌ها",
             url: "/panel/courses",
           },
-          ...categories.map((cat) => ({
+          ...(Array.isArray(categories) ? categories.map((cat) => ({
             title: cat.name,
             url: `/panel/courses?category=${cat.id}`, // می‌تونی فیلتر بزنی
-          })),
+          })) : []),
         ],
       },
       {
@@ -199,9 +210,9 @@ export function TeacherSidebar({
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <NavProjects projects={data.home} />
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.home || []} />
+        <NavMain items={data.navMain || []} />
+        <NavProjects projects={data.projects || []} />
       </SidebarContent>
       <SidebarFooter>
         {loading ? (

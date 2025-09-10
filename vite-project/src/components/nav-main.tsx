@@ -31,11 +31,14 @@ export function NavMain({
     }[]
   }[]
 }) {
+  // اطمینان از اینکه items یک آرایه است
+  const safeItems = Array.isArray(items) ? items : [];
+  
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
-        {items.map((item) => (
+        {safeItems.map((item) => (
           <Collapsible
             key={item.title}
             asChild
