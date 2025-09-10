@@ -52,6 +52,7 @@ import EditTestInCollection from "@/testCollections/EditTestInCollection"
 import { StudentLayout } from "@/components/layouts/StudentLayout"
 import { TeacherLayout } from "@/components/layouts/TeacherLayout"
 import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page"
+import { TeacherKnowledgePanel } from "@/features/knowledge"
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -143,6 +144,7 @@ export default function PanelRoute() {
         <Route path="/support/ask-ai" element={<AIConversationList />} />
         <Route path="/support/:id" element={<TicketDetail />} />
         {/* <Route path="/videos" element={<VideoPage />} */}
+        <Route path="/knowledge" element={<TeacherKnowledgePanel />} />
       </Route>
     </Routes>
   )
