@@ -22,10 +22,11 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { knowledgeApi } from '../api';
-import type { Subject, CreateSubjectData } from '../types';
+import type { Subject, CreateSubjectData, File } from '../types';
 
 export function SubjectManager() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [bookFiles, setBookFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -33,16 +34,39 @@ export function SubjectManager() {
     name: '',
     grade: 10,
     description: '',
+    book_file: undefined,
   });
 
   useEffect(() => {
     loadSubjects();
+    loadBookFiles();
   }, []);
+
+  const loadBookFiles = async () => {
+    try {
+      const response = await knowledgeApi.getBookFiles();
+      setBookFiles(response.data || []);
+    } catch (error) {
+      console.error('خطا در بارگذاری فایل‌های کتاب:', error);
+    }
+  };
 
   const loadSubjects = async () => {
     try {
       const response = await knowledgeApi.getSubjects();
-      setSubjects(response.data);
+      
+      // Handle both array and pagination format
+      let subjectsData = [];
+      if (Array.isArray(response.data)) {
+        subjectsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        subjectsData = response.data.results;
+      } else {
+        console.warn("Subjects data is not an array:", response.data);
+        subjectsData = [];
+      }
+      
+      setSubjects(subjectsData);
     } catch (error) {
       toast.error('خطا در بارگذاری کتاب‌ها');
       console.error(error);
@@ -57,12 +81,22 @@ export function SubjectManager() {
     try {
       if (editingSubject) {
         const response = await knowledgeApi.updateSubject(editingSubject.id, formData);
-        setSubjects(subjects.map(s => s.id === editingSubject.id ? response.data : s));
+        const updatedSubject = response.data;
+        setSubjects(prevSubjects => 
+          Array.isArray(prevSubjects) 
+            ? prevSubjects.map(s => s.id === editingSubject.id ? updatedSubject : s)
+            : []
+        );
         toast.success('کتاب با موفقیت ویرایش شد');
         setEditingSubject(null);
       } else {
         const response = await knowledgeApi.createSubject(formData);
-        setSubjects([...subjects, response.data]);
+        const newSubject = response.data;
+        setSubjects(prevSubjects => 
+          Array.isArray(prevSubjects) 
+            ? [...prevSubjects, newSubject]
+            : [newSubject]
+        );
         toast.success('کتاب جدید با موفقیت ایجاد شد');
         setIsCreateOpen(false);
       }
@@ -80,13 +114,18 @@ export function SubjectManager() {
       name: subject.name,
       grade: subject.grade,
       description: subject.description || '',
+      book_file: subject.book_file,
     });
   };
 
   const handleDelete = async (id: number) => {
     try {
       await knowledgeApi.deleteSubject(id);
-      setSubjects(subjects.filter(s => s.id !== id));
+      setSubjects(prevSubjects => 
+        Array.isArray(prevSubjects) 
+          ? prevSubjects.filter(s => s.id !== id)
+          : []
+      );
       toast.success('کتاب با موفقیت حذف شد');
     } catch (error) {
       toast.error('خطا در حذف کتاب');
@@ -95,7 +134,7 @@ export function SubjectManager() {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', grade: 10, description: '' });
+    setFormData({ name: '', grade: 10, description: '', book_file: undefined });
     setEditingSubject(null);
   };
 
@@ -162,6 +201,26 @@ export function SubjectManager() {
                   rows={3}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="book_file">فایل کتاب (اختیاری)</Label>
+                <Select 
+                  value={formData.book_file?.toString() || 'none'} 
+                  onValueChange={(value) => setFormData({...formData, book_file: value === 'none' ? undefined : parseInt(value)})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="فایل کتاب را انتخاب کنید..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">بدون فایل</SelectItem>
+                    {bookFiles.map((file) => (
+                      <SelectItem key={file.id} value={file.id.toString()}>
+                        {file.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
@@ -175,7 +234,7 @@ export function SubjectManager() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {subjects.map((subject) => (
+        {Array.isArray(subjects) && subjects.map((subject) => (
           <Card key={subject.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -195,6 +254,13 @@ export function SubjectManager() {
                 <span>{subject.total_topics} مبحث</span>
                 <span>{subject.chapters.length} فصل</span>
               </div>
+
+              {subject.book_file_title && (
+                <div className="mb-4 p-2 bg-blue-50 rounded-lg">
+                  <p className="text-xs text-blue-600 font-medium">فایل کتاب:</p>
+                  <p className="text-sm text-blue-800">{subject.book_file_title}</p>
+                </div>
+              )}
               
               <div className="flex gap-2">
                 <Button
@@ -269,6 +335,26 @@ export function SubjectManager() {
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-book_file">فایل کتاب (اختیاری)</Label>
+              <Select 
+                value={formData.book_file?.toString() || 'none'} 
+                onValueChange={(value) => setFormData({...formData, book_file: value === 'none' ? undefined : parseInt(value)})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="فایل کتاب را انتخاب کنید..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">بدون فایل</SelectItem>
+                  {bookFiles.map((file) => (
+                    <SelectItem key={file.id} value={file.id.toString()}>
+                      {file.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="flex justify-end gap-2">

@@ -11,10 +11,10 @@ export function TeacherKnowledgePanel() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
+      {/* <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-gray-900">مدیریت درخت دانش</h1>
         <p className="text-gray-600">مدیریت کتاب‌ها، فصل‌ها، زیربخش‌ها و مباحث درسی</p>
-      </div>
+      </div> */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">

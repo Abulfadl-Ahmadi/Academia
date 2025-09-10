@@ -1,21 +1,15 @@
 import { useState, useEffect } from 'react';
 import { 
-  ChevronDown, 
-  ChevronRight, 
-  BookOpen, 
-  FileText, 
-  Target,
   Plus,
-  Edit
+  Edit,
+  Folder,
+  FolderOpen,
+  Book,
+  BookOpen,
+  FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 import {
   Dialog,
   DialogContent,
@@ -227,11 +221,11 @@ export function KnowledgeTreeManager() {
 
   const getDifficultyBadgeColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-orange-100 text-orange-800';
-      case 'expert': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'beginner': return 'bg-green-500/5 text-green-600/90';
+      case 'intermediate': return 'bg-yellow-500/5 text-yellow-600/90';
+      case 'advanced': return 'bg-orange-500/5 text-orange-600/90';
+      case 'expert': return 'bg-red-500/5 text-red-600/90';
+      default: return 'bg-gray-500/5 text-gray-600/90';
     }
   };
 
@@ -254,188 +248,141 @@ export function KnowledgeTreeManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">درخت دانش</h2>
-          <p className="text-gray-600">ساختار سلسله‌مراتبی مباحث آموزشی</p>
+          <h2 className="text-xl font-bold">درخت دانش</h2>
+          <p className="text-sm text-muted-foreground">ساختار سلسله‌مراتبی مباحث آموزشی</p>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {subjects.map((subject) => (
-          <Card key={subject.id} className="overflow-hidden">
-            <Collapsible 
-              open={expandedSubjects.has(subject.id)}
-              onOpenChange={() => toggleSubject(subject.id)}
-            >
-              <CollapsibleTrigger asChild>
-                <CardHeader className="hover:bg-gray-50 cursor-pointer transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {expandedSubjects.has(subject.id) ? 
-                        <ChevronDown className="w-5 h-5" /> : 
-                        <ChevronRight className="w-5 h-5" />
-                      }
-                      <BookOpen className="w-6 h-6 text-blue-600" />
-                      <div>
-                        <CardTitle className="text-lg">{subject.name}</CardTitle>
-                        <p className="text-sm text-gray-600">پایه {subject.grade}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{subject.chapters.length} فصل</Badge>
-                      <Badge variant="outline">{subject.total_topics} مبحث</Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openChapterDialog(subject.id);
-                        }}
+      <div className="bg-card border rounded-lg p-4" dir="rtl">
+        <div className="text-sm">
+          {subjects.map((subject) => (
+            <div key={subject.id} className="mb-2">
+              {/* Subject Level */}
+              <div 
+                className="flex items-center gap-3 hover:bg-muted/50 rounded px-3 py-1 cursor-pointer group"
+                onClick={() => toggleSubject(subject.id)}
+              >
+                {expandedSubjects.has(subject.id) ? 
+                  <FolderOpen className="w-5 h-5" /> : 
+                  <Folder className="w-5 h-5" />
+                }
+                <span className="font-semibold">{subject.name}</span>
+                <span className="text-xs text-muted-foreground">({subject.grade} پایه)</span>
+                <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Badge variant="secondary" className="text-xs">{subject.chapters.length}</Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openChapterDialog(subject.id);
+                    }}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Chapters */}
+              {expandedSubjects.has(subject.id) && (
+                <div className="mr-5 mt-1 space-y-1 border-r border-muted-foreground/20 pr-1">
+                  {subject.chapters.map((chapter) => (
+                    <div key={chapter.id}>
+                      <div 
+                        className="flex items-center gap-3 hover:bg-muted/30 rounded px-3 py-1 cursor-pointer group"
+                        onClick={() => toggleChapter(chapter.id)}
                       >
-                        <Plus className="w-3 h-3 mr-1" />
-                        فصل جدید
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="space-y-3 mr-8">
-                    {subject.chapters.map((chapter) => (
-                      <Card key={chapter.id} className="border-l-4 border-l-blue-200">
-                        <Collapsible
-                          open={expandedChapters.has(chapter.id)}
-                          onOpenChange={() => toggleChapter(chapter.id)}
-                        >
-                          <CollapsibleTrigger asChild>
-                            <CardHeader className="pb-3 hover:bg-gray-50 cursor-pointer">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  {expandedChapters.has(chapter.id) ? 
-                                    <ChevronDown className="w-4 h-4" /> : 
-                                    <ChevronRight className="w-4 h-4" />
-                                  }
-                                  <FileText className="w-5 h-5 text-green-600" />
-                                  <div>
-                                    <h4 className="font-medium">فصل {chapter.order}: {chapter.name}</h4>
-                                    {chapter.description && (
-                                      <p className="text-sm text-gray-600">{chapter.description}</p>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">{chapter.sections.length} زیربخش</Badge>
-                                  <Badge variant="outline">{chapter.total_topics} مبحث</Badge>
+                        {expandedChapters.has(chapter.id) ? 
+                          <BookOpen className="w-4 h-4" /> : 
+                          <Book className="w-4 h-4" />
+                        }
+                        <span className="font-medium">فصل {chapter.order}: {chapter.name}</span>
+                        <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Badge variant="outline" className="text-xs">{chapter.sections.length}</Badge>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openSectionDialog(chapter.id);
+                            }}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Sections */}
+                      {expandedChapters.has(chapter.id) && (
+                        <div className="mr-5 mt-1 space-y-1 border-r border-muted-foreground/15 pr-1">
+                          {chapter.sections.map((section) => (
+                            <div key={section.id}>
+                              <div 
+                                className="flex items-center gap-3 hover:bg-muted/20 rounded px-3 py-1 cursor-pointer group"
+                                onClick={() => toggleSection(section.id)}
+                              >
+                                <FileText className="w-4 h-4" />
+                                <span>{section.name}</span>
+                                <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Badge variant="outline" className="text-xs">{section.topics.length}</Badge>
                                   <Button
                                     size="sm"
-                                    variant="outline"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      openSectionDialog(chapter.id);
+                                      openTopicDialog(section.id);
                                     }}
                                   >
-                                    <Plus className="w-3 h-3 mr-1" />
-                                    زیربخش
+                                    <Plus className="w-3 h-3" />
                                   </Button>
                                 </div>
                               </div>
-                            </CardHeader>
-                          </CollapsibleTrigger>
-                          
-                          <CollapsibleContent>
-                            <CardContent className="pt-0">
-                              <div className="space-y-2 mr-6">
-                                {chapter.sections.map((section) => (
-                                  <Card key={section.id} className="border-l-4 border-l-green-200">
-                                    <Collapsible
-                                      open={expandedSections.has(section.id)}
-                                      onOpenChange={() => toggleSection(section.id)}
-                                    >
-                                      <CollapsibleTrigger asChild>
-                                        <CardHeader className="pb-2 hover:bg-gray-50 cursor-pointer">
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                              {expandedSections.has(section.id) ? 
-                                                <ChevronDown className="w-3 h-3" /> : 
-                                                <ChevronRight className="w-3 h-3" />
-                                              }
-                                              <Target className="w-4 h-4 text-purple-600" />
-                                              <div>
-                                                <h5 className="font-medium text-sm">{section.name}</h5>
-                                                {section.description && (
-                                                  <p className="text-xs text-gray-600">{section.description}</p>
-                                                )}
-                                              </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                              <Badge variant="outline" className="text-xs">
-                                                {section.topics.length} مبحث
-                                              </Badge>
-                                              <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-6 px-2 text-xs"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  openTopicDialog(section.id);
-                                                }}
-                                              >
-                                                <Plus className="w-2 h-2 mr-1" />
-                                                مبحث
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        </CardHeader>
-                                      </CollapsibleTrigger>
-                                      
-                                      <CollapsibleContent>
-                                        <CardContent className="pt-0">
-                                          <div className="space-y-1 mr-4">
-                                            {section.topics.map((topic) => (
-                                              <div 
-                                                key={topic.id} 
-                                                className="flex items-center justify-between p-2 bg-gray-50 rounded border-l-2 border-l-purple-200"
-                                              >
-                                                <div className="flex items-center gap-2">
-                                                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                                                  <span className="text-sm font-medium">{topic.name}</span>
-                                                  <Badge 
-                                                    className={`text-xs ${getDifficultyBadgeColor(topic.difficulty)}`}
-                                                  >
-                                                    {getDifficultyLabel(topic.difficulty)}
-                                                  </Badge>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                  <span>{topic.estimated_study_time} دقیقه</span>
-                                                  <span>{topic.available_tests_count} آزمون</span>
-                                                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
-                                                    <Edit className="w-3 h-3" />
-                                                  </Button>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </CardContent>
-                                      </CollapsibleContent>
-                                    </Collapsible>
-                                  </Card>
-                                ))}
-                              </div>
-                            </CardContent>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </Card>
-                    ))}
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
-        ))}
+
+                              {/* Topics */}
+                              {expandedSections.has(section.id) && (
+                                <div className="mr-5 mt-1 space-y-1 border-r border-muted-foreground/10 pr-1">
+                                  {section.topics.map((topic) => (
+                                    <div key={topic.id}>
+                                      <div className="flex items-center gap-3 hover:bg-muted/10 rounded px-3 py-1 group">
+                                        {/* <Target className="w-4 h-4" /> */}
+                                        <span className="text-sm">{topic.name}</span>
+                                        <Badge 
+                                          className={`text-xs ml-2 ${getDifficultyBadgeColor(topic.difficulty)}`}
+                                        >
+                                          {getDifficultyLabel(topic.difficulty)}
+                                        </Badge>
+                                        <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <span className="text-xs text-muted-foreground">{topic.estimated_study_time}د</span>
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-5 w-5 p-0"
+                                          >
+                                            <Edit className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Chapter Dialog */}
