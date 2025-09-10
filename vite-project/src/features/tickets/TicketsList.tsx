@@ -155,7 +155,7 @@ export default function TicketsList() {
   };
 
   // فیلتر کردن تیکت‌ها بر اساس جستجو و فیلترهای انتخاب شده
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = (Array.isArray(tickets) ? tickets : []).filter(ticket => {
     // جستجو در عنوان و توضیحات
     const matchesSearch = searchTerm === '' || 
       ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -342,16 +342,16 @@ export default function TicketsList() {
                 {isTeacher && (
                   <div className="flex gap-4">
                     <div>
-                      باز: {tickets.filter(t => t.status === 'open').length}
+                      باز: {(Array.isArray(tickets) ? tickets : []).filter(t => t.status === 'open').length}
                     </div>
                     <div>
-                      در حال بررسی: {tickets.filter(t => t.status === 'in_progress').length}
+                      در حال بررسی: {(Array.isArray(tickets) ? tickets : []).filter(t => t.status === 'in_progress').length}
                     </div>
                     <div>
-                      حل شده: {tickets.filter(t => t.status === 'resolved').length}
+                      حل شده: {(Array.isArray(tickets) ? tickets : []).filter(t => t.status === 'resolved').length}
                     </div>
                     <div>
-                      بسته شده: {tickets.filter(t => t.status === 'closed').length}
+                      بسته شده: {(Array.isArray(tickets) ? tickets : []).filter(t => t.status === 'closed').length}
                     </div>
                   </div>
                 )}

@@ -35,17 +35,30 @@ export default function TeacherProducts() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/shop/products/");
-      setProducts(response.data);
+      
+      // Handle both array and pagination format
+      let productsData = [];
+      if (Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        productsData = response.data.results;
+      } else {
+        console.warn("Products data is not an array:", response.data);
+        productsData = [];
+      }
+      
+      setProducts(productsData);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("خطا در دریافت محصولات");
+      setProducts([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
   };
 
   const filterByType = (type: string) => {
-    return products.filter(product => product.product_type === type);
+    return (Array.isArray(products) ? products : []).filter(product => product.product_type === type);
   };
 
   const getActiveTab = () => {

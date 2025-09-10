@@ -42,16 +42,29 @@ export default function TestCollectionList() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/test-collections/");
-      setCollections(response.data);
+      
+      // Handle both array and pagination format
+      let collectionsData = [];
+      if (Array.isArray(response.data)) {
+        collectionsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        collectionsData = response.data.results;
+      } else {
+        console.warn("Test collections data is not an array:", response.data);
+        collectionsData = [];
+      }
+      
+      setCollections(collectionsData);
     } catch (error) {
       console.error("Error fetching test collections:", error);
       toast.error("خطا در دریافت مجموعه آزمون‌ها");
+      setCollections([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredCollections = collections.filter(collection =>
+  const filteredCollections = (Array.isArray(collections) ? collections : []).filter(collection =>
     collection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     collection.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
