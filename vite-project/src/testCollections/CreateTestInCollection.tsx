@@ -47,7 +47,19 @@ export default function CreateTestInCollection() {
     const fetchFiles = async () => {
       try {
         const res = await axiosInstance.get(`${baseURL}/files/?content_type=test`);
-        const fileList = res.data.map((file: { id: number; title?: string }) => ({
+        
+        // Handle both array and pagination format
+        let filesData = [];
+        if (Array.isArray(res.data)) {
+          filesData = res.data;
+        } else if (res.data && Array.isArray(res.data.results)) {
+          filesData = res.data.results;
+        } else {
+          console.warn("Files data is not an array:", res.data);
+          filesData = [];
+        }
+        
+        const fileList = filesData.map((file: { id: number; title?: string }) => ({
           id: file.id,
           name: file.title || `File ${file.id}`,
         }));

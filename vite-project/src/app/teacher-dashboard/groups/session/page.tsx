@@ -18,7 +18,19 @@ export default function SessionsPage() {
     axiosInstance(`courses/${id}/sessions/`)
       .then((res) => {
         if (!res) throw new Error('Failed to fetch sessions');
-        return res.data;
+        
+        // Handle both array and pagination format
+        let sessionsData = [];
+        if (Array.isArray(res.data)) {
+          sessionsData = res.data;
+        } else if (res.data && Array.isArray(res.data.results)) {
+          sessionsData = res.data.results;
+        } else {
+          console.warn("Sessions data is not an array:", res.data);
+          sessionsData = [];
+        }
+        
+        return sessionsData;
       })
       .then((sessions) => {
         setData(sessions);

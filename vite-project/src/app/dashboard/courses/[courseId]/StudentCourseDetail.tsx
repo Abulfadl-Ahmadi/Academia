@@ -70,7 +70,19 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
       ]);
       
       setCourse(courseResponse.data);
-      setSessions(sessionsResponse.data);
+      
+      // Handle both array and pagination format for sessions
+      let sessionsData = [];
+      if (Array.isArray(sessionsResponse.data)) {
+        sessionsData = sessionsResponse.data;
+      } else if (sessionsResponse.data && Array.isArray(sessionsResponse.data.results)) {
+        sessionsData = sessionsResponse.data.results;
+      } else {
+        console.warn("Sessions data is not an array:", sessionsResponse.data);
+        sessionsData = [];
+      }
+      
+      setSessions(sessionsData);
     } catch (error) {
       console.error("Error fetching course data:", error);
       toast.error("خطا در دریافت اطلاعات دوره");

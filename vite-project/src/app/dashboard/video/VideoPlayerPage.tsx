@@ -69,7 +69,19 @@ export default function VideoPlayerPage() {
       // Fetch related sessions from the same course
       if (response.data.course) {
         const relatedResponse = await axiosInstance.get(`/courses/${response.data.course}/student-sessions/`);
-        setRelatedSessions(relatedResponse.data.filter((s: Session) => s.id !== id));
+        
+        // Handle both array and pagination format
+        let sessionsData = [];
+        if (Array.isArray(relatedResponse.data)) {
+          sessionsData = relatedResponse.data;
+        } else if (relatedResponse.data && Array.isArray(relatedResponse.data.results)) {
+          sessionsData = relatedResponse.data.results;
+        } else {
+          console.warn("Sessions data is not an array:", relatedResponse.data);
+          sessionsData = [];
+        }
+        
+        setRelatedSessions(sessionsData.filter((s: Session) => s.id !== id));
       }
     } catch (error) {
       console.error("Error fetching session data:", error);

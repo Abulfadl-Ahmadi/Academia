@@ -59,7 +59,19 @@ export default function ShopPage() {
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get('/shop/products/')
-      setProducts(response.data)
+      
+      // Handle both array and pagination format
+      let productsData = [];
+      if (Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        productsData = response.data.results;
+      } else {
+        console.warn("Products data is not an array:", response.data);
+        productsData = [];
+      }
+      
+      setProducts(productsData)
     } catch (error) {
       toast.error("خطا در بارگذاری محصولات")
     } finally {

@@ -71,7 +71,18 @@ export default function FilesPage() {
     axiosInstance
       .get(baseURL + "/files/")
       .then((res) => {
-        const data = res.data.map((file: any) => ({
+        // Handle both array and pagination format
+        let filesData = [];
+        if (Array.isArray(res.data)) {
+          filesData = res.data;
+        } else if (res.data && Array.isArray(res.data.results)) {
+          filesData = res.data.results;
+        } else {
+          console.warn("Files data is not an array:", res.data);
+          filesData = [];
+        }
+        
+        const data = filesData.map((file: any) => ({
           file_id: file.file_id,
           file: file.file,
           title: file.title,

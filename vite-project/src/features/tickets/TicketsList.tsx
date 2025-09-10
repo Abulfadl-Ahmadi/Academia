@@ -101,7 +101,19 @@ export default function TicketsList() {
         // The baseURL already includes '/api/', so we don't need to add it here
         const response = await axiosInstance.get('/support/tickets/');
         console.log('Tickets response data:', response.data);
-        setTickets(response.data);
+        
+        // Handle both array and pagination format
+        let ticketsData = [];
+        if (Array.isArray(response.data)) {
+          ticketsData = response.data;
+        } else if (response.data && Array.isArray(response.data.results)) {
+          ticketsData = response.data.results;
+        } else {
+          console.warn("Tickets data is not an array:", response.data);
+          ticketsData = [];
+        }
+        
+        setTickets(ticketsData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching tickets:', error);

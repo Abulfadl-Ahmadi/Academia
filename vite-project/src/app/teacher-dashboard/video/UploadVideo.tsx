@@ -42,7 +42,19 @@ const UploadVideo: React.FC = () => {
         const fetchCourses = async () => {
           try {
             const response = await axiosInstance.get('/courses/');
-            setCourses(response.data);
+            
+            // Handle both array and pagination format
+            let coursesData = [];
+            if (Array.isArray(response.data)) {
+              coursesData = response.data;
+            } else if (response.data && Array.isArray(response.data.results)) {
+              coursesData = response.data.results;
+            } else {
+              console.warn("Courses data is not an array:", response.data);
+              coursesData = [];
+            }
+            
+            setCourses(coursesData);
           } catch (err) {
             setError('Failed to fetch courses.');
           }

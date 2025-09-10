@@ -138,7 +138,7 @@ export function TopicTestManager() {
       const [testsResponse, topicsResponse, filesResponse, subjectsResponse] = await Promise.all([
         knowledgeApi.getTopicTests(),
         knowledgeApi.getTopics(),
-        axiosInstance.get<File[]>('/files/?content_type=test'),
+        axiosInstance.get('/files/?content_type=test'),
         knowledgeApi.getKnowledgeTree() // درخت دانش کامل
       ]);
       
@@ -146,7 +146,19 @@ export function TopicTestManager() {
       setTests(testsData);
       setAllTests(testsData); // ذخیره کل آزمون‌ها برای فیلتر
       setTopics(topicsResponse.data);
-      setFiles(filesResponse.data);
+      
+      // Handle both array and pagination format for files
+      let filesData = [];
+      if (Array.isArray(filesResponse.data)) {
+        filesData = filesResponse.data;
+      } else if (filesResponse.data && Array.isArray(filesResponse.data.results)) {
+        filesData = filesResponse.data.results;
+      } else {
+        console.warn("Files data is not an array:", filesResponse.data);
+        filesData = [];
+      }
+      
+      setFiles(filesData);
       setSubjects(subjectsResponse.data);
     } catch (error) {
       toast.error('خطا در بارگذاری داده‌ها');

@@ -84,8 +84,31 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       ]);
       
       setCourse(courseResponse.data);
-      setSessions(sessionsResponse.data);
-      setTestCollections(collectionsResponse.data);
+      
+      // Handle both array and pagination format for sessions
+      let sessionsData = [];
+      if (Array.isArray(sessionsResponse.data)) {
+        sessionsData = sessionsResponse.data;
+      } else if (sessionsResponse.data && Array.isArray(sessionsResponse.data.results)) {
+        sessionsData = sessionsResponse.data.results;
+      } else {
+        console.warn("Sessions data is not an array:", sessionsResponse.data);
+        sessionsData = [];
+      }
+      
+      // Handle both array and pagination format for test collections
+      let collectionsData = [];
+      if (Array.isArray(collectionsResponse.data)) {
+        collectionsData = collectionsResponse.data;
+      } else if (collectionsResponse.data && Array.isArray(collectionsResponse.data.results)) {
+        collectionsData = collectionsResponse.data.results;
+      } else {
+        console.warn("Test collections data is not an array:", collectionsResponse.data);
+        collectionsData = [];
+      }
+      
+      setSessions(sessionsData);
+      setTestCollections(collectionsData);
       setStudents(courseResponse.data.students);
     } catch (error) {
       console.error("Error fetching course data:", error);

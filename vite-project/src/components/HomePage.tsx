@@ -186,18 +186,42 @@ export default function HomePage() {
           // If courses endpoint fails, try teacher-courses or shop/products with course filter
           try {
             response = await axiosInstance.get("/shop/products/");
+            
+            // Handle both array and pagination format
+            let productsData = [];
+            if (Array.isArray(response.data)) {
+              productsData = response.data;
+            } else if (response.data && Array.isArray(response.data.results)) {
+              productsData = response.data.results;
+            } else {
+              console.warn("Products data is not an array:", response.data);
+              productsData = [];
+            }
+            
             // Filter only course products and map to Course interface
-            response.data = response.data.filter(
+            productsData = productsData.filter(
               (product: Course) => product.product_type === "course"
             );
+            response.data = productsData;
           } catch {
             // Last fallback to teacher-courses (may require auth)
             response = await axiosInstance.get("/teacher-courses/");
           }
         }
 
+        // Handle pagination format for the main response too
+        let coursesData = [];
+        if (Array.isArray(response.data)) {
+          coursesData = response.data;
+        } else if (response.data && Array.isArray(response.data.results)) {
+          coursesData = response.data.results;
+        } else {
+          console.warn("Courses data is not an array:", response.data);
+          coursesData = [];
+        }
+
         // Take only first 6 courses for featured section
-        const featuredCourses = response.data.slice(0, 6);
+        const featuredCourses = coursesData.slice(0, 6);
         setCourses(featuredCourses);
         setError(null);
       } catch (err) {
