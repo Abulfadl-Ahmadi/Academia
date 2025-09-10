@@ -276,7 +276,7 @@ export default function TicketsList() {
                     </TableRow>
                   ) : (
                     filteredTickets.map((ticket) => (
-                      <TableRow key={ticket.id} className="cursor-pointer hover:bg-gray-50" onClick={() => navigate(`/panel/support/${ticket.id}`)}>
+                      <TableRow key={ticket.id} className="cursor-pointer hover:bg-gray-500/7" onClick={() => navigate(`/panel/support/${ticket.id}`)}>
                         <TableCell className="font-medium">{ticket.title}</TableCell>
                         {isTeacher && (
                           <TableCell>

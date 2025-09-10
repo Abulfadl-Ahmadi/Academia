@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Send, Bot, UserRound, Clock, Plus, Archive, MoreHorizontal } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MathRenderer } from '@/components/ui/math-renderer-optimized';
 
 // نوع برای گفتگوی هوش مصنوعی
 interface AIConversation {
@@ -39,6 +38,12 @@ export function AIConversationList() {
 
   useEffect(() => {
     fetchConversations();
+    
+    // Cleanup scroll prevention
+    return () => {
+      document.body.classList.remove('ai-conversation-active');
+      document.body.style.overflow = '';
+    };
   }, []);
 
   const fetchConversations = async () => {
@@ -79,9 +84,9 @@ export function AIConversationList() {
   };
 
   return (
-    <div className="container mx-auto px-1 sm:px-4">
-      <Card className="overflow-hidden">
-        <CardHeader className="p-3 sm:p-6">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <Card className="h-full overflow-hidden flex flex-col">
+        <CardHeader className="p-3 sm:p-6 shrink-0">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Bot size={20} />
@@ -101,7 +106,7 @@ export function AIConversationList() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-3 sm:p-6">
+        <CardContent className="p-3 sm:p-6 flex-1 overflow-y-auto min-h-0">
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -117,7 +122,7 @@ export function AIConversationList() {
               </Button>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-right">
+                <div className="bg-blue-500/4 border border-blue-500/8 rounded-md p-4 text-right">
                   <h4 className="font-medium text-blue-800 mb-2">چرا از هوش مصنوعی استفاده کنیم؟</h4>
                   <ul className="text-blue-700 text-sm space-y-2">
                     <li>• دریافت کمک فوری برای سوالات درسی</li>
@@ -126,7 +131,7 @@ export function AIConversationList() {
                     <li>• امکان پرسش سوالات پیگیری</li>
                   </ul>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-md p-4 text-right">
+                <div className="bg-green-500/4 border border-green-500/8 rounded-md p-4 text-right">
                   <h4 className="font-medium text-green-800 mb-2">ویژگی‌های گفتگو با هوش مصنوعی</h4>
                   <ul className="text-green-700 text-sm space-y-2">
                     <li>• ذخیره تاریخچه گفتگوها برای مراجعه بعدی</li>
@@ -207,6 +212,16 @@ export function AIConversationDetail() {
     }
   }, [id, fetchConversation]);
 
+  // Prevent body scroll
+  useEffect(() => {
+    // No longer needed since we're not using fixed positioning
+    return () => {
+      // Cleanup just in case
+      document.body.classList.remove('ai-conversation-active');
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const sendMessage = async () => {
     if (!messageInput.trim() || !id) return;
     
@@ -225,13 +240,13 @@ export function AIConversationDetail() {
       const currentInput = messageInput.trim();
       setMessageInput('');
       
-      // اسکرول به پایین صفحه
+      // اسکرول به پایین صفحه بعد از اضافه کردن پیام کاربر
       setTimeout(() => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth'
-        });
-      }, 100);
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      }, 50);
       
       const response = await axiosInstance.post(`/support/ai/conversations/${id}/add_message/`, {
         content: currentInput
@@ -247,13 +262,13 @@ export function AIConversationDetail() {
         ];
       });
       
-      // اسکرول به پایین صفحه
+      // اسکرول به پایین صفحه بعد از دریافت پاسخ
       setTimeout(() => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth'
-        });
-      }, 100);
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      }, 200);
       
     } catch (error) {
       console.error('خطا در ارسال پیام:', error);
@@ -308,32 +323,46 @@ export function AIConversationDetail() {
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
-    if (messages.length > 0 && !loading && !sending) {
+    if (messages.length > 0 && !loading) {
       const messagesContainer = document.getElementById('messages-container');
       if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
       }
     }
-  }, [messages, loading, sending]);
+  }, [messages.length, loading]);
+
+  // Auto-scroll during message sending
+  useEffect(() => {
+    if (sending) {
+      const messagesContainer = document.getElementById('messages-container');
+      if (messagesContainer) {
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+      }
+    }
+  }, [sending]);
 
   return (
-    <div className="container mx-auto px-1 sm:px-4 h-[calc(100vh-8rem)] flex flex-col">
-      <Card className="p-0 gap-0 flex flex-col h-full overflow-hidden">
-        <CardHeader className=" sm:p-6 shrink-0">
-          <div className="p-0 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <Card className="flex flex-col h-full overflow-hidden">
+        <CardHeader className="shrink-0 border-b">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <div className="flex items-center">
-              <Bot size={20} />
+              <Bot size={18} />
               <div>
                 {titleEditing ? (
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex flex-wrap">
                     <input
                       type="text"
                       value={titleInput}
                       onChange={(e) => setTitleInput(e.target.value)}
-                      className="border rounded px-2 py-1 w-full sm:w-auto"
+                      className="border rounded px-2 py-1 text-sm w-full sm:w-auto"
                       onKeyDown={(e) => e.key === 'Enter' && updateTitle()}
                     />
-                    <div className="flex gap-2 mt-1 sm:mt-0">
+                    <div className="flex gap-1 mt-1 sm:mt-0">
                       <Button variant="outline" size="sm" onClick={updateTitle}>ذخیره</Button>
                       <Button variant="ghost" size="sm" onClick={() => {
                         setTitleInput(conversation?.title || '');
@@ -342,23 +371,24 @@ export function AIConversationDetail() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-xl sm:text-2xl">{conversation?.title || 'گفتگو با هوش مصنوعی'}</CardTitle>
+                  <div className="flex items-center">
+                    <CardTitle className="text-lg sm:text-xl">{conversation?.title || 'گفتگو با هوش مصنوعی'}</CardTitle>
                     <Button variant="ghost" size="sm" onClick={() => setTitleEditing(true)}>
-                      <MoreHorizontal size={16} />
+                      <MoreHorizontal size={14} />
                     </Button>
                   </div>
                 )}
-                <CardDescription>پرسش و پاسخ با هوش مصنوعی</CardDescription>
+                {/* <CardDescription className="text-xs sm:text-sm">پرسش و پاسخ با هوش مصنوعی</CardDescription> */}
               </div>
             </div>
-            <Button variant="outline" onClick={() => navigate('/panel/support/ask-ai')} className="w-full sm:w-auto mt-2 sm:mt-0">
-              <Archive size={16} className="ml-1" />
+            <Button variant="outline" size="sm" onClick={() => navigate('/panel/support/ask-ai')} className="w-full sm:w-auto mt-1 sm:mt-0">
+              <Archive size={14} className="ml-1" />
               همه گفتگوها
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+        
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden min-h-0">
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -366,17 +396,16 @@ export function AIConversationDetail() {
           ) : (
             <div 
               id="messages-container" 
-              className="flex-1 overflow-y-auto px-3 sm:px-6 py-4"
+              className="flex-1 overflow-y-auto px-2 sm:px-4 py-2 space-y-3"
             >
-              <div className="">
               {messages.length === 0 ? (
-                <div className="text-center p-3 sm:p-10 border border-dashed rounded-lg">
-                  <Bot size={48} className="mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium">گفتگوی جدید</h3>
-                  <p className="text-muted-foreground mb-4">پرسش خود را مطرح کنید و پاسخ فوری دریافت کنید</p>
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3 sm:p-4 text-right mt-4 sm:mt-6">
-                    <h4 className="font-medium text-blue-800 mb-2">چطور می‌توانم از هوش مصنوعی کمک بگیرم؟</h4>
-                    <ul className="text-blue-700 text-sm space-y-1 sm:space-y-2">
+                <div className="text-center p-2 sm:p-6 border border-dashed rounded-lg">
+                  <Bot size={36} className="mx-auto mb-3 text-muted-foreground" />
+                  <h3 className="text-base font-medium">گفتگوی جدید</h3>
+                  <p className="text-muted-foreground mb-3 text-sm">پرسش خود را مطرح کنید و پاسخ فوری دریافت کنید</p>
+                  <div className="bg-blue-500/4 border border-blue-500/8 rounded-md p-2 sm:p-3 text-right mt-3">
+                    <h4 className="font-medium text-blue-800 mb-2 text-sm">چطور می‌توانم از هوش مصنوعی کمک بگیرم؟</h4>
+                    <ul className="text-blue-700 text-xs space-y-1">
                       <li>• سوالات درسی خود را به صورت واضح مطرح کنید</li>
                       <li>• کمک در حل مسائل ریاضی و فیزیک</li>
                       <li>• پرسش سوالات پیگیری درباره یک موضوع</li>
@@ -387,18 +416,18 @@ export function AIConversationDetail() {
               ) : (
                 messages.map((message) => (
                   <div key={message.id} className={`
-                    rounded-lg p-2 sm:p-4 
+                    rounded-lg p-2 sm:p-3 mb-3
                     ${message.role === 'user' 
-                      ? 'bg-primary/5 border ml-2 sm:ml-5 border-primary/20 shadow-sm' 
-                      : 'mr-2 sm:mr-5'}
+                      ? 'bg-primary/5 border ml-2 sm:ml-6 border-primary/20 shadow-sm' 
+                      : 'mr-2 sm:mr-6 bg-muted/30'}
                   `}>
                     <div className="flex items-center gap-2 mb-2">
                       {message.role === 'user' ? (
-                        <UserRound size={16} className="shrink-0" />
+                        <UserRound size={14} className="shrink-0 text-primary" />
                       ) : (
-                        <Bot size={16} className="shrink-0" />
+                        <Bot size={14} className="shrink-0 text-blue-600" />
                       )}
-                      <h3 className="font-medium text-sm sm:text-base truncate">
+                      <h3 className="font-medium text-xs sm:text-sm">
                         {message.role === 'user' ? 'شما' : 'هوش مصنوعی'}
                       </h3>
                       <span className="text-xs text-muted-foreground mr-auto whitespace-nowrap">
@@ -406,48 +435,26 @@ export function AIConversationDetail() {
                       </span>
                     </div>
                     
-                    {message.role === 'user' ? (
-                      <div className="whitespace-pre-wrap">{message.content}</div>
-                    ) : (
-                      <div className="prose prose-slate dark:prose-invert max-w-none">
-                        <ReactMarkdown 
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            // @ts-expect-error - inline prop is correctly handled by ReactMarkdown
-                            code: ({inline, ...props}) => 
-                              inline ? 
-                                <code className="bg-muted/70 px-1 py-0.5 rounded text-sm" {...props} /> : 
-                                <code className="block bg-muted/70 p-2 rounded-md my-2 text-sm overflow-x-auto" {...props} />,
-                            p: (props) => <p className="mb-4" {...props} />,
-                            pre: (props) => <pre className="bg-muted/70 p-3 rounded-md my-3 overflow-x-auto" {...props} />,
-                            h1: (props) => <h1 className="text-2xl font-bold mt-6 mb-3" {...props} />,
-                            h2: (props) => <h2 className="text-xl font-bold mt-5 mb-3" {...props} />,
-                            h3: (props) => <h3 className="text-lg font-bold mt-4 mb-2" {...props} />,
-                            ul: (props) => <ul className="list-disc list-inside mb-4 pr-5" {...props} />,
-                            ol: (props) => <ol className="list-decimal list-inside mb-4 pr-5" {...props} />,
-                            a: (props) => <a className="text-primary hover:underline" {...props} />,
-                            blockquote: (props) => <blockquote className="border-r-4 border-primary/30 pr-3 py-1 my-3 italic" {...props} />,
-                          }}
-                        >
-                          {message.content}
-                        </ReactMarkdown>
-                      </div>
-                    )}
+                    <div className="message-content">
+                      {message.role === 'user' ? (
+                        <div className="whitespace-pre-wrap text-sm">{message.content}</div>
+                      ) : (
+                        <MathRenderer content={message.content} />
+                      )}
+                    </div>
                   </div>
                 ))
               )}
-              </div>
             </div>
           )}
           
-          <div className="border-t shrink-0 p-3 sm:p-6 pt-3 sm:pt-4">
-            <div className="space-y-3">
-                <div className="flex flex-row sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="border-t shrink-0 p-1 sm:p-3 bg-background">
+            <div className="flex gap-2 items-end">
               <Textarea
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="سوال خود را بنویسید..."
-                className="order-1 min-h-7 sm:min-h-28 focus:ring-2"
+                className="flex-1 min-h-[40px] max-h-20 resize-none text-sm"
                 disabled={sending || loading}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.ctrlKey) {
@@ -455,29 +462,22 @@ export function AIConversationDetail() {
                   }
                 }}
               />
-              
-                {/* <span className="text-xs text-muted-foreground order-2 sm:order-1">
-                  برای ارسال می‌توانید از کلیدهای <kbd className="px-1 py-0.5 bg-muted/70 rounded text-xs">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-muted/70 rounded text-xs">Enter</kbd> استفاده کنید.
-                </span> */}
-                <Button 
-                  onClick={sendMessage} 
-                  disabled={sending || loading || !messageInput.trim()}
-                  className="order-0"
-                >
-                  {sending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {/* در حال ارسال... */}
-                    </>
-                  ) : (
-                    <>
-                      <Send size={16} />
-                      {/* ارسال پیام */}
-                    </>
-                  )}
-                </Button>
-              </div>
+              <Button 
+                onClick={sendMessage} 
+                disabled={sending || loading || !messageInput.trim()}
+                className="shrink-0 h-[40px]"
+                size="sm"
+              >
+                {sending ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Send size={12} />
+                )}
+              </Button>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              برای ارسال از <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> استفاده کنید
+            </p>
           </div>
         </CardContent>
       </Card>
