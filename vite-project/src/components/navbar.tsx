@@ -49,9 +49,10 @@ export default function Navbar({
   name = "آرین تفضلی‌زاده",
   homeUrl = "#",
   mobileLinks = [
-    { text: "فروشگاه", href: "#" },
+    { text: "فروشگاه", href: "/shop" },
     { text: "کلاس‌ها", href: "#" },
     { text: "آزمون‌‌ها", href: "#" },
+    { text: "محاسبه‌گر درصد", href: "/grade-calculator" },
     { text: "تماس با ما", href: "#" },
   ],
   actions = [
