@@ -1,9 +1,21 @@
+export interface File {
+  id: number;
+  title: string;
+  file_type: string;
+  content_type: string;
+  arvan_url?: string;
+  created_at: string;
+}
+
 export interface Subject {
   id: number;
   name: string;
   grade: number;
   description?: string;
   cover_image?: string;
+  book_file?: number;
+  book_file_title?: string;
+  book_file_url?: string;
   total_topics: number;
   chapters: Chapter[];
 }
@@ -74,6 +86,7 @@ export interface CreateSubjectData {
   name: string;
   grade: number;
   description?: string;
+  book_file?: number;
 }
 
 export interface CreateChapterData {

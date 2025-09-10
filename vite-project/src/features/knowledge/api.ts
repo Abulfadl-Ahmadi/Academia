@@ -6,6 +6,7 @@ import type {
   Topic,
   TopicDetail,
   TopicTest,
+  File,
   CreateSubjectData,
   CreateChapterData,
   CreateSectionData,
@@ -14,6 +15,10 @@ import type {
 } from './types';
 
 export const knowledgeApi = {
+  // Book Files
+  getBookFiles: () =>
+    axiosInstance.get<File[]>('/knowledge/subjects/book_files/'),
+  
   // Subjects
   getSubjects: () => 
     axiosInstance.get<Subject[]>('/knowledge/subjects/'),
