@@ -142,10 +142,42 @@ export function TopicTestManager() {
         knowledgeApi.getKnowledgeTree() // درخت دانش کامل
       ]);
       
-      const testsData = testsResponse.data;
+      // Handle both array and pagination format for tests
+      let testsData = [];
+      if (Array.isArray(testsResponse.data)) {
+        testsData = testsResponse.data;
+      } else if (testsResponse.data && Array.isArray(testsResponse.data.results)) {
+        testsData = testsResponse.data.results;
+      } else {
+        console.warn("Tests data is not an array:", testsResponse.data);
+        testsData = [];
+      }
+      
+      // Handle both array and pagination format for topics
+      let topicsData = [];
+      if (Array.isArray(topicsResponse.data)) {
+        topicsData = topicsResponse.data;
+      } else if (topicsResponse.data && Array.isArray(topicsResponse.data.results)) {
+        topicsData = topicsResponse.data.results;
+      } else {
+        console.warn("Topics data is not an array:", topicsResponse.data);
+        topicsData = [];
+      }
+      
+      // Handle both array and pagination format for subjects
+      let subjectsData = [];
+      if (Array.isArray(subjectsResponse.data)) {
+        subjectsData = subjectsResponse.data;
+      } else if (subjectsResponse.data && Array.isArray(subjectsResponse.data.results)) {
+        subjectsData = subjectsResponse.data.results;
+      } else {
+        console.warn("Subjects data is not an array:", subjectsResponse.data);
+        subjectsData = [];
+      }
+      
       setTests(testsData);
       setAllTests(testsData); // ذخیره کل آزمون‌ها برای فیلتر
-      setTopics(topicsResponse.data);
+      setTopics(topicsData);
       
       // Handle both array and pagination format for files
       let filesData = [];
@@ -159,7 +191,7 @@ export function TopicTestManager() {
       }
       
       setFiles(filesData);
-      setSubjects(subjectsResponse.data);
+      setSubjects(subjectsData);
     } catch (error) {
       toast.error('خطا در بارگذاری داده‌ها');
       console.error(error);

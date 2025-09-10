@@ -131,7 +131,18 @@ export default function CreateTopicTestPage() {
         axiosInstance.get('/files/?content_type=test')
       ]);
       
-      setSubjects(subjectsResponse.data);
+      // Handle both array and pagination format for subjects
+      let subjectsData = [];
+      if (Array.isArray(subjectsResponse.data)) {
+        subjectsData = subjectsResponse.data;
+      } else if (subjectsResponse.data && Array.isArray(subjectsResponse.data.results)) {
+        subjectsData = subjectsResponse.data.results;
+      } else {
+        console.warn("Subjects data is not an array:", subjectsResponse.data);
+        subjectsData = [];
+      }
+      
+      setSubjects(subjectsData);
       
       // Handle both array and pagination format for files
       let filesData = [];
@@ -152,7 +163,7 @@ export default function CreateTopicTestPage() {
       // Check if there's a pre-selected topic from URL params
       const topicId = searchParams.get('topic');
       if (topicId) {
-        await loadTopicHierarchy(parseInt(topicId), subjectsResponse.data);
+        await loadTopicHierarchy(parseInt(topicId), subjectsData);
       }
     } catch (error) {
       toast.error('خطا در بارگذاری داده‌ها');
