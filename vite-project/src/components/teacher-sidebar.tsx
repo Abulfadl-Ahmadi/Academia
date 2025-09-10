@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   LifeBuoy,
   Bot,
+  Target,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -91,6 +92,22 @@ export function TeacherSidebar({
             title: "آمار و گزارشات",
             url: "/panel/test-collections",
             description: "مشاهده آمار آزمون‌های موجود در هر مجموعه"
+          },
+        ],
+      },
+      {
+        title: "آزمون‌های مبحثی",
+        url: "/panel/topic-tests",
+        icon: Target,
+        items: [
+          {
+            title: "لیست آزمون‌های مبحثی",
+            url: "/panel/topic-tests",
+          },
+          {
+            title: "ایجاد آزمون مبحثی",
+            url: "/panel/topic-tests",
+            description: "آزمون‌های آزاد مرتبط با مباحث درخت دانش"
           },
         ],
       },
