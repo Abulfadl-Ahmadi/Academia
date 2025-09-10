@@ -206,13 +206,17 @@ class CompleteRegistrationView(APIView):
                 key="access",
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=False,  # Set to True in production (HTTPS)
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
                 httponly=True,
-                secure=False,
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             
             return response
@@ -251,13 +255,17 @@ class RegisterView(APIView):
                 key="access",
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=False,  # Set to True in production (HTTPS)
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
                 httponly=True,
-                secure=False,
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             
             return response
@@ -333,13 +341,17 @@ class LoginView(APIView):
                 key="access",
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=False,       # Set to True in production (HTTPS)
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
                 httponly=True,
-                secure=False,
+                secure=True,
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             print(response.cookies)
             return response
@@ -363,7 +375,8 @@ class RefreshTokenView(APIView):
                 value=str(access),
                 httponly=True,
                 secure=True,
-                samesite="Lax"
+                samesite="None",
+                domain=".ariantafazolizadeh.ir"
             )
             return response
         except Exception:
@@ -373,8 +386,8 @@ class RefreshTokenView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logged out"}, status=status.HTTP_200_OK)
-        response.delete_cookie("access")
-        response.delete_cookie("refresh")
+        response.delete_cookie("access", domain=".ariantafazolizadeh.ir")
+        response.delete_cookie("refresh", domain=".ariantafazolizadeh.ir")
         return response
 
 

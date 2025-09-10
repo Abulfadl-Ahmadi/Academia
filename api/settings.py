@@ -62,8 +62,24 @@ CORS_ALLOW_HEADERS = [
     "content-type",
     "x-csrftoken",
     "x-requested-with",
+    "accept",
+    "accept-encoding",
+    "accept-language",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "cache-control",
+    "connection",
+    "host",
+    "origin",
+    "pragma",
+    "referer",
+    "sec-fetch-dest",
+    "sec-fetch-mode",
+    "sec-fetch-site",
+    "user-agent",
 ]
-CORS_EXPOSE_HEADERS = ["Content-Disposition"]
+CORS_EXPOSE_HEADERS = ["Content-Disposition", "Content-Type"]
+CORS_PREFLIGHT_MAX_AGE = 600
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -89,6 +105,16 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', cast=int, default=86400)  # 24 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_HTTPONLY = True
+
+# Cookie Domain Settings for Cross-Subdomain Authentication
+if not DEBUG:
+    SESSION_COOKIE_DOMAIN = '.ariantafazolizadeh.ir'
+    CSRF_COOKIE_DOMAIN = '.ariantafazolizadeh.ir'
+    SESSION_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_SAMESITE = 'None'
+else:
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
 # Application definition
 
 INSTALLED_APPS = [

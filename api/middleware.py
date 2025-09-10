@@ -25,11 +25,14 @@ class RefreshTokenMiddleware(MiddlewareMixin):
 
     def process_response(self, request, response):
         if hasattr(request, "_new_access_token"):
+            from django.conf import settings
+            
             response.set_cookie(
                 key="access",
                 value=request._new_access_token,
                 httponly=True,
-                samesite="Lax",
-                secure=False,
+                samesite="None" if not settings.DEBUG else "Lax",
+                secure=not settings.DEBUG,
+                domain=".ariantafazolizadeh.ir" if not settings.DEBUG else None,
             )
         return response
