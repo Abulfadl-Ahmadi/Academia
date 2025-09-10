@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from datetime import timedelta
 
 from contents.models import File
 from .models import (
@@ -69,6 +70,13 @@ class TestCreateSerializer(serializers.ModelSerializer):
         user = request.user if request else None
 
         keys_data = validated_data.pop('keys', None)
+        
+        # تبدیل duration از دقیقه به timedelta
+        if 'duration' in validated_data:
+            duration_minutes = validated_data['duration']
+            if isinstance(duration_minutes, (int, float)):
+                validated_data['duration'] = timedelta(minutes=duration_minutes)
+        
         test = Test.objects.create(teacher=user, **validated_data)
 
         for key in keys_data:
@@ -88,13 +96,29 @@ class TestCreateSerializer(serializers.ModelSerializer):
 class TestUpdateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
     pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    answers_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST),
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Test
-        fields = ['name', 'description', 'test_collection', 'pdf_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
+        fields = ['name', 'description', 'test_collection', 'pdf_file', 'answers_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
 
     def update(self, instance, validated_data):
         keys_data = validated_data.pop('keys', None)
+
+        # تبدیل duration از string به timedelta
+        if 'duration' in validated_data:
+            duration_str = validated_data['duration']
+            if isinstance(duration_str, str):
+                # فرمت: "HH:MM:SS"
+                parts = duration_str.split(':')
+                hours = int(parts[0])
+                minutes = int(parts[1])
+                seconds = int(parts[2]) if len(parts) > 2 else 0
+                validated_data['duration'] = timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
         # ابتدا خود آزمون رو آپدیت کن
         for attr, value in validated_data.items():
@@ -102,10 +126,15 @@ class TestUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         if keys_data is not None:
+            # حذف کلیدهای قبلی
+            PrimaryKey.objects.filter(test=instance).delete()
 
             # کلیدهای جدید رو ذخیره کن
             for key in keys_data:
-                PrimaryKey.objects.update_or_create(test=instance, question_number=key["question_number"],defaults={"answer": key["answer"]}
+                PrimaryKey.objects.update_or_create(
+                    test=instance, 
+                    question_number=key["question_number"],
+                    defaults={"answer": key["answer"]}
                 )
 
         return instance
@@ -113,24 +142,102 @@ class TestUpdateSerializer(serializers.ModelSerializer):
 class TestDetailSerializer(serializers.ModelSerializer):
     pdf_file_url = serializers.SerializerMethodField()
     answers_file_url = serializers.SerializerMethodField()
+    collection = serializers.SerializerMethodField()
+    questions_count = serializers.SerializerMethodField()
+    total_questions = serializers.SerializerMethodField()
+    time_limit = serializers.SerializerMethodField()
+    duration_formatted = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
+    keys = serializers.SerializerMethodField()  # فقط برای معلم
+    pdf_file = serializers.SerializerMethodField()  # فقط ID برای معلم
+    answers_file = serializers.SerializerMethodField()  # فقط ID برای معلم
     
     class Meta:
         model = Test
         fields = ["id", 'name', 'description', 'test_collection', 'pdf_file', 'answers_file', 
-                 'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'frequency']
+                 'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'duration_formatted', 'frequency',
+                 'collection', 'questions_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys']
         read_only_fields = ['teacher']
+
+    def get_pdf_file(self, obj):
+        """فقط معلم‌ها می‌توانند ID فایل PDF را ببینند"""
+        request = self.context.get('request')
+        if request and request.user.role == 'teacher':
+            return obj.pdf_file.id if obj.pdf_file else None
+        return None
+
+    def get_answers_file(self, obj):
+        """فقط معلم‌ها می‌توانند ID فایل پاسخنامه را ببینند"""
+        request = self.context.get('request')
+        if request and request.user.role == 'teacher':
+            return obj.answers_file.id if obj.answers_file else None
+        return None
+
+    def get_keys(self, obj):
+        """فقط معلم‌ها می‌توانند پاسخ‌های صحیح را ببینند"""
+        request = self.context.get('request')
+        if request and request.user.role == 'teacher':
+            keys_data = []
+            for key in obj.primary_keys.all():
+                keys_data.append({
+                    'question_number': key.question_number,
+                    'answer': key.answer
+                })
+            return keys_data
+        return []  # برای دانش‌آموزان آرایه خالی برمی‌گردانیم
 
     def get_pdf_file_url(self, obj):
         request = self.context.get('request')
-        if obj.pdf_file and obj.pdf_file.file:
-            return request.build_absolute_uri(obj.pdf_file.file.url) if request else obj.pdf_file.file.url
+        if request:
+            # همیشه URL امن را برمی‌گردانیم، کنترل دسترسی در SecureTestFileView انجام می‌شود
+            from django.urls import reverse
+            return request.build_absolute_uri(
+                reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'pdf'})
+            )
         return None
         
     def get_answers_file_url(self, obj):
+        """فقط معلم‌ها می‌توانند فایل پاسخنامه را ببینند"""
         request = self.context.get('request')
-        if obj.answers_file and obj.answers_file.file:
-            return request.build_absolute_uri(obj.answers_file.file.url) if request else obj.answers_file.file.url
+        if request and request.user.role == 'teacher' and obj.answers_file:
+            # همیشه URL امن را برمی‌گردانیم، کنترل دسترسی در SecureTestFileView انجام می‌شود
+            from django.urls import reverse
+            return request.build_absolute_uri(
+                reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'answers'})
+            )
+        return None  # دانش‌آموزان نمی‌توانند فایل پاسخنامه را ببینند
+
+    def get_collection(self, obj):
+        if obj.test_collection:
+            return {
+                'id': obj.test_collection.id,
+                'name': obj.test_collection.name,
+                'created_by_name': f"{obj.test_collection.created_by.first_name} {obj.test_collection.created_by.last_name}".strip() or obj.test_collection.created_by.username
+            }
         return None
+
+    def get_questions_count(self, obj):
+        # برای حالا یک عدد ثابت برمی‌گردانیم، بعداً می‌توان از PDF استخراج کرد
+        return 20
+
+    def get_total_questions(self, obj):
+        """محاسبه تعداد کل سوالات"""
+        return obj.get_total_questions()
+
+    def get_time_limit(self, obj):
+        # زمان آزمون را بر حسب دقیقه برمی‌گردانیم
+        if obj.duration:
+            return int(obj.duration.total_seconds() // 60)
+        return 60  # پیش‌فرض 60 دقیقه
+
+    def get_duration_formatted(self, obj):
+        # زمان آزمون را به صورت ساعت:دقیقه برمی‌گردانیم
+        if obj.duration:
+            total_seconds = int(obj.duration.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            return f"{hours:02d}:{minutes:02d}"
+        return "01:00"  # پیش‌فرض 1 ساعت
 
 
 class TestCollectionSerializer(serializers.ModelSerializer):
@@ -271,4 +378,79 @@ class StudentProgressSerializer(serializers.ModelSerializer):
             'started_at', 'last_activity', 'is_completed'
         ]
         read_only_fields = ['started_at', 'last_activity']
+
+
+class TopicTestCreateSerializer(serializers.ModelSerializer):
+    """سریالایزر برای ایجاد آزمون مبحثی"""
+    keys = PrimaryKeySerializer(many=True, required=False)
+    pdf_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST)
+    )
+    answers_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST),
+        required=False,
+        allow_null=True
+    )
+    
+    class Meta:
+        model = Test
+        fields = [
+            'id', 'name', 'description', 'topic', 'pdf_file', 'answers_file',
+            'duration', 'keys', 'is_active'
+        ]
+        read_only_fields = ['teacher', 'test_type']
+    
+    def create(self, validated_data):
+        keys_data = validated_data.pop('keys', [])
+        validated_data['test_type'] = 'topic_based'  # Use string instead of TestType enum
+        validated_data['teacher'] = self.context['request'].user
+        
+        test = Test.objects.create(**validated_data)
+        
+        # ایجاد کلیدها
+        for key_data in keys_data:
+            PrimaryKey.objects.create(test=test, **key_data)
+        
+        return test
+
+
+class TopicTestDetailSerializer(serializers.ModelSerializer):
+    """سریالایزر تفصیلی آزمون مبحثی"""
+    keys = PrimaryKeySerializer(source='primary_keys', many=True, read_only=True)
+    topic_name = serializers.CharField(source='topic.name', read_only=True)
+    topic_detail = serializers.SerializerMethodField()
+    display_status = serializers.ReadOnlyField(source='get_display_status')
+    can_take_now = serializers.SerializerMethodField()
+    total_questions = serializers.ReadOnlyField(source='get_total_questions')
+    participants_count = serializers.ReadOnlyField(source='get_participants_count')
+    
+    class Meta:
+        model = Test
+        fields = [
+            'id', 'name', 'description', 'test_type', 'topic', 'topic_name',
+            'topic_detail', 'pdf_file', 'answers_file', 'duration',
+            'display_status', 'can_take_now', 'total_questions',
+            'participants_count', 'is_active', 'created_at', 'keys'
+        ]
+    
+    def get_topic_detail(self, obj):
+        if obj.topic:
+            return {
+                'id': obj.topic.id,
+                'name': obj.topic.name,
+                'section': obj.topic.section.name,
+                'chapter': obj.topic.section.chapter.name,
+                'subject': obj.topic.section.chapter.subject.name,
+                'difficulty': obj.topic.difficulty
+            }
+        return None
+    
+    def get_can_take_now(self, obj):
+        return obj.can_student_take_now()
+
+
+class StartTopicTestSerializer(serializers.Serializer):
+    """سریالایزر برای شروع آزمون مبحثی"""
+    test_id = serializers.IntegerField()
+    device_id = serializers.CharField(max_length=200, required=False)
 
