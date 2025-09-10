@@ -6,8 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { useUser } from "@/context/UserContext";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AxiosError } from "axios";
 import { 
   BookOpen, 
   Users, 
@@ -21,14 +19,36 @@ import {
   PlayCircle,
   Clock,
   Plus,
-  CheckCircle
+  CheckCircle,
+  Share2
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import ShareTestModal from "@/components/ShareTestModal";
 
-async function getDeviceId() {
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    return result.visitorId;
+// Helper function for formatting Persian date and time
+const formatPersianDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const persianDate = date.toLocaleDateString('fa-IR');
+  const persianTime = date.toLocaleTimeString('fa-IR', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+  return { date: persianDate, time: persianTime };
+};
+
+interface Test {
+  id: number;
+  name: string;
+  description: string;
+  questions_count: number;
+  time_limit: number;
+  is_active: boolean;
+  created_at: string;
+  start_time: string;
+  end_time: string;
+  pdf_file_url: string;
+  answers_file_url?: string;
+  status?: string; // "completed", "in_progress", etc.
 }
 
 interface TestCollection {
@@ -41,18 +61,7 @@ interface TestCollection {
   created_at: string;
   is_active: boolean;
   course_details: Array<{id: number, title: string}>;
-  tests?: Array<{
-    id: number;
-    name: string;
-    description: string;
-    questions_count: number;
-    time_limit: number;
-    is_active: boolean;
-    created_at: string;
-    pdf_file_url: string;
-    answers_file_url?: string;
-    status?: string; // "completed", "in_progress", etc.
-  }>;
+  tests?: Array<Test>;
 }
 
 export default function TestCollectionDetail() {
@@ -61,44 +70,25 @@ export default function TestCollectionDetail() {
   const { user } = useUser();
   const [collection, setCollection] = useState<TestCollection | null>(null);
   const [loading, setLoading] = useState(true);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedTest, setSelectedTest] = useState<Test | null>(null);
 
-  const handleStartTest = async (testId: number) => {
-    try {
-      const res = await axiosInstance.post(`/enter-test/`, {
-        test_id: testId,
-        device_id: await getDeviceId(),
-      });
-
-      console.log("Session started:", res.data);
-
-      // ریدایرکت به صفحه آزمون با session data
-      navigate(`/tests/${testId}/detail`, { state: { session: res.data } });
-    } catch (err) {
-      console.error("Error starting session:", err);
-      const error = err as AxiosError<{error?: string, detail?: string, message?: string, redirect_to?: string}>;
-      
-      // Handle completed test case specifically
-      if (error.response?.data?.error === "completed" && error.response?.data?.redirect_to) {
-        toast.info(error.response.data.message || "شما قبلا این آزمون را به اتمام رسانده‌اید");
-        navigate(error.response.data.redirect_to); // Redirect to the test results page
-        return;
-      }
-      
-      // Handle other errors
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
-      } else if (error.response?.data?.detail) {
-        toast.error(error.response.data.detail);
-      } else if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("خطا در شروع آزمون");
-      }
-    }
-  };
-  
   const handleViewResult = (testId: number) => {
     navigate(`/panel/tests/result/${testId}`);
+  };
+
+  const handleEditTest = (testId: number) => {
+    navigate(`/panel/test-collections/${id}/tests/${testId}/edit`);
+  };
+
+  const handleTestStatistics = (testId: number) => {
+    // فعلاً به صفحه نتایج آزمون هدایت می‌کنیم
+    navigate(`/panel/tests/result/${testId}`);
+  };
+
+  const handleShareTest = (test: Test) => {
+    setSelectedTest(test);
+    setShareModalOpen(true);
   };
 
   const fetchCollection = useCallback(async () => {
@@ -331,7 +321,17 @@ export default function TestCollectionDetail() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          <span>{new Date(test.created_at).toLocaleDateString('fa-IR')}</span>
+                          <span>ایجاد: {formatPersianDateTime(test.created_at).date}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+                        <div className="flex items-center gap-1">
+                          <PlayCircle className="h-4 w-4 text-green-600" />
+                          <span>شروع: {formatPersianDateTime(test.start_time).date} - {formatPersianDateTime(test.start_time).time}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="h-4 w-4 text-red-600" />
+                          <span>پایان: {formatPersianDateTime(test.end_time).date} - {formatPersianDateTime(test.end_time).time}</span>
                         </div>
                       </div>
                     </div>
@@ -356,11 +356,29 @@ export default function TestCollectionDetail() {
                               پاسخنامه
                             </Button>
                           )}
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditTest(test.id)}
+                            title="ویرایش آزمون"
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleTestStatistics(test.id)}
+                            title="آمار و نتایج آزمون"
+                          >
                             <BarChart3 className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleShareTest(test)}
+                            title="اشتراک‌گذاری آزمون"
+                          >
+                            <Share2 className="h-4 w-4" />
                           </Button>
                         </>
                       ) : test.status === "completed" ? (
@@ -375,7 +393,7 @@ export default function TestCollectionDetail() {
                       ) : (
                         <Button 
                           size="sm"
-                          onClick={() => handleStartTest(test.id)}
+                          onClick={() => navigate(`/tests/${test.id}/info`)}
                         >
                           <PlayCircle className="h-4 w-4 ml-1" />
                           شروع آزمون
@@ -408,6 +426,17 @@ export default function TestCollectionDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* Share Test Modal */}
+      {selectedTest && collection && (
+        <ShareTestModal
+          test={selectedTest}
+          collection={collection}
+          isOpen={shareModalOpen}
+          onOpenChange={setShareModalOpen}
+          shareUrl={`${window.location.origin}/test-collections/${collection.id}/tests/${selectedTest.id}`}
+        />
+      )}
     </div>
   );
 }
