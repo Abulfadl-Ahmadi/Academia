@@ -41,16 +41,29 @@ export default function CoursesList() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/teacher-courses/");
-      setCourses(response.data);
+      
+      // Handle both array and pagination format
+      let coursesData = [];
+      if (Array.isArray(response.data)) {
+        coursesData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        coursesData = response.data.results;
+      } else {
+        console.warn("Courses data is not an array:", response.data);
+        coursesData = [];
+      }
+      
+      setCourses(coursesData);
     } catch (error) {
       console.error("Error fetching courses:", error);
       toast.error("خطا در دریافت دوره‌ها");
+      setCourses([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredCourses = courses.filter(course =>
+  const filteredCourses = (Array.isArray(courses) ? courses : []).filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
