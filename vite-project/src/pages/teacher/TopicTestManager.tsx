@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 import { knowledgeApi } from '@/features/knowledge/api';
 import { DataTable } from '@/components/ui/data-table-with-selection';
 import { topicTestColumns, type TopicTestForTable } from './topic-tests-columns';
-import { api } from '@/lib/api';
+import axiosInstance from '@/lib/axios';
 import type { TopicTest, CreateTopicTestData, Topic, Subject } from '@/features/knowledge/types';
 
 interface File {
@@ -138,7 +138,7 @@ export function TopicTestManager() {
       const [testsResponse, topicsResponse, filesResponse, subjectsResponse] = await Promise.all([
         knowledgeApi.getTopicTests(),
         knowledgeApi.getTopics(),
-        api.get<File[]>('/files/?content_type=test'),
+        axiosInstance.get<File[]>('/files/?content_type=test'),
         knowledgeApi.getKnowledgeTree() // درخت دانش کامل
       ]);
       

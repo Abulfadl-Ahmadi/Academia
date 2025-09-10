@@ -24,7 +24,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { toast } from 'sonner';
 import { knowledgeApi } from '@/features/knowledge/api';
-import { api } from '@/lib/api';
 import axiosInstance from '@/lib/axios';
 import type { CreateTopicTestData, Subject } from '@/features/knowledge/types';
 
@@ -129,7 +128,7 @@ export default function CreateTopicTestPage() {
     try {
       const [subjectsResponse, filesResponse] = await Promise.all([
         knowledgeApi.getKnowledgeTree(), // This gives us the full hierarchical structure
-        api.get<FileItem[]>('/files/?content_type=test')
+        axiosInstance.get<FileItem[]>('/files/?content_type=test')
       ]);
       
       setSubjects(subjectsResponse.data);

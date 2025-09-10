@@ -23,7 +23,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { knowledgeApi } from '../api';
-import { api } from '@/lib/api';
+import axiosInstance from '@/lib/axios';
 import type { TopicTest, CreateTopicTestData, Topic } from '../types';
 
 interface File {
@@ -61,7 +61,7 @@ export function TopicTestManager() {
       const [testsResponse, topicsResponse, filesResponse] = await Promise.all([
         knowledgeApi.getTopicTests(),
         knowledgeApi.getTopics(),
-        api.get<File[]>('/files/?content_type=test')
+        axiosInstance.get<File[]>('/files/?content_type=test')
       ]);
       
       setTests(testsResponse.data);
