@@ -2,8 +2,8 @@
  * This script determines the correct build preparation script to run based on the platform
  */
 
-const fs = require('fs');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import { execSync } from 'child_process';
 
 // Check if this is a Linux/Unix system
 const isUnix = fs.existsSync('/bin/bash');
