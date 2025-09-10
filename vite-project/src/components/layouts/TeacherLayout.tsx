@@ -29,6 +29,7 @@ export const TeacherLayout = () => {
     files: 'فایل‌ها',
     videos: 'ویدیوها',
     tests: 'آزمون‌ها',
+    'topic-tests': 'آزمون‌های مبحثی',
     transactions: 'تراکنش‌ها'
   };
   
@@ -76,6 +77,7 @@ export const TeacherLayout = () => {
                   {segment === 'files' && 'فایل‌ها'}
                   {segment === 'videos' && 'ویدیوها'}
                   {segment === 'tests' && 'آزمون‌ها'}
+                  {segment === 'topic-tests' && 'آزمون‌های مبحثی'}
                   {segment === 'create' && 'ایجاد آزمون'}
                   {segment === 'transactions' && 'تراکنش‌ها'}
                   {segment === 'sessions' && 'جلسات'}
@@ -136,9 +138,9 @@ export const TeacherLayout = () => {
   }, [location.pathname]);
 
   return (
-        <SidebarProvider>
+    <SidebarProvider>
       <TeacherSidebar />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col min-w-0 overflow-hidden">
         <header className="sticky top-0 z-30 bg-inherit flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator
@@ -149,7 +151,7 @@ export const TeacherLayout = () => {
             {generateBreadcrumb()}  
           </Breadcrumb>
         </header>
-        <div className="p-5"><Outlet /></div>
+        <div className="p-5 min-w-0 overflow-hidden flex-1"><Outlet /></div>
       </SidebarInset>
     </SidebarProvider>
   );
