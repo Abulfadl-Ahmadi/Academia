@@ -183,8 +183,20 @@ export default function ProfilePage() {
       
       // Fetch profile data
       const response = await axiosInstance.get("/profiles/");
-      if (response.data && response.data.length > 0) {
-        const profileData = response.data[0];
+      
+      // Handle both array and pagination format
+      let profilesData = [];
+      if (Array.isArray(response.data)) {
+        profilesData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        profilesData = response.data.results;
+      } else {
+        console.warn("Profiles data is not an array:", response.data);
+        profilesData = [];
+      }
+      
+      if (profilesData.length > 0) {
+        const profileData = profilesData[0];
         setProfile({
           national_id: profileData.national_id || "",
           phone_number: profileData.phone_number || "",
