@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 export const useFullscreen = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const toggle = useCallback(() => {
+  const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
         .then(() => setIsFullscreen(true))
@@ -17,6 +17,8 @@ export const useFullscreen = () => {
     }
   }, []);
   
+  const toggle = toggleFullscreen; // For backward compatibility
+  
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -29,5 +31,5 @@ export const useFullscreen = () => {
     };
   }, []);
   
-  return { toggle, isFullscreen };
+  return { toggle, toggleFullscreen, isFullscreen };
 };
