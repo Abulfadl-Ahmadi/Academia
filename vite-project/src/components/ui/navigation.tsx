@@ -55,6 +55,12 @@ export default function Navigation({
     {
       title: "فروشگاه",
       isLink: true,
+      href: "/shop",
+    },
+    {
+      title: "محاسبه‌گر درصد",
+      isLink: true,
+      href: "/grade-calculator",
     },
     {
       title: "تماس با ما",
