@@ -11,16 +11,24 @@ from .views import (
     GetAnswersView,
     ExitTestView,
     TestCollectionViewSet,
+    SecureTestFileView,
+)
+from .topic_tests_views import (
+    TopicTestViewSet,
+    RandomTopicTestView,
+    StudentTopicTestHistoryView
 )
 
 router = DefaultRouter()
 router.register(r'test-collections', TestCollectionViewSet, basename='test-collections')
+router.register(r'topic-tests', TopicTestViewSet, basename='topic-tests')
 
 urlpatterns = [
     path('', include(router.urls)),
     path('tests/', ListCreateTestView.as_view(), name='create-test'),
     path('tests/<int:pk>/update', UpdateDeleteTestView.as_view(), name='update-delete-test'),
-    path('tests/<int:pk>/', TestDetailView.as_view(), name='update-delete-test'),
+    path('tests/<int:pk>/', TestDetailView.as_view(), name='test-detail'),
+    path('tests/<int:test_id>/file/<str:file_type>/', SecureTestFileView.as_view(), name='secure-test-file'),
 
     path('enter-test/', EnterTestView.as_view(), name='enter-test'),
     path('submit-answer/', SubmitAnswerView.as_view(), name='submit-answer'),
@@ -29,4 +37,8 @@ urlpatterns = [
     path('finish-test/', FinishTestView.as_view(), name='finish-test'),
 
     path('tests/report/<int:test_id>/', CreateReport.as_view(), name='create-report'),
+    
+    # URLs جدید برای آزمون‌های مبحثی
+    path('topic-tests/random/', RandomTopicTestView.as_view(), name='random-topic-test'),
+    path('topic-tests/my-history/', StudentTopicTestHistoryView.as_view(), name='student-topic-test-history'),
 ]
