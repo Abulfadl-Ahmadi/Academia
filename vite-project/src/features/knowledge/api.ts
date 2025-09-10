@@ -1,4 +1,4 @@
-import { api } from '@/lib/api';
+import axiosInstance from '@/lib/axios';
 import type {
   Subject,
   Chapter,
@@ -16,76 +16,76 @@ import type {
 export const knowledgeApi = {
   // Subjects
   getSubjects: () => 
-    api.get<Subject[]>('/knowledge/subjects/'),
+    axiosInstance.get<Subject[]>('/knowledge/subjects/'),
   
   createSubject: (data: CreateSubjectData) =>
-    api.post<Subject>('/knowledge/subjects/', data),
+    axiosInstance.post<Subject>('/knowledge/subjects/', data),
   
   updateSubject: (id: number, data: Partial<CreateSubjectData>) =>
-    api.patch<Subject>(`/knowledge/subjects/${id}/`, data),
+    axiosInstance.patch<Subject>(`/knowledge/subjects/${id}/`, data),
   
   deleteSubject: (id: number) =>
-    api.delete(`/knowledge/subjects/${id}/`),
+    axiosInstance.delete(`/knowledge/subjects/${id}/`),
 
   // Chapters
   getChapters: () =>
-    api.get<Chapter[]>('/knowledge/chapters/'),
+    axiosInstance.get<Chapter[]>('/knowledge/chapters/'),
   
   createChapter: (data: CreateChapterData) =>
-    api.post<Chapter>('/knowledge/chapters/', data),
+    axiosInstance.post<Chapter>('/knowledge/chapters/', data),
   
   updateChapter: (id: number, data: Partial<CreateChapterData>) =>
-    api.patch<Chapter>(`/knowledge/chapters/${id}/`, data),
+    axiosInstance.patch<Chapter>(`/knowledge/chapters/${id}/`, data),
   
   deleteChapter: (id: number) =>
-    api.delete(`/knowledge/chapters/${id}/`),
+    axiosInstance.delete(`/knowledge/chapters/${id}/`),
 
   // Sections
   getSections: () =>
-    api.get<Section[]>('/knowledge/sections/'),
+    axiosInstance.get<Section[]>('/knowledge/sections/'),
   
   createSection: (data: CreateSectionData) =>
-    api.post<Section>('/knowledge/sections/', data),
+    axiosInstance.post<Section>('/knowledge/sections/', data),
   
   updateSection: (id: number, data: Partial<CreateSectionData>) =>
-    api.patch<Section>(`/knowledge/sections/${id}/`, data),
+    axiosInstance.patch<Section>(`/knowledge/sections/${id}/`, data),
   
   deleteSection: (id: number) =>
-    api.delete(`/knowledge/sections/${id}/`),
+    axiosInstance.delete(`/knowledge/sections/${id}/`),
 
   // Topics
   getTopics: () =>
-    api.get<Topic[]>('/knowledge/topics/'),
+    axiosInstance.get<Topic[]>('/knowledge/topics/'),
   
   getTopicDetail: (id: number) =>
-    api.get<TopicDetail>(`/knowledge/topics/${id}/`),
+    axiosInstance.get<TopicDetail>(`/knowledge/topics/${id}/`),
   
   createTopic: (data: CreateTopicData) =>
-    api.post<Topic>('/knowledge/topics/', data),
+    axiosInstance.post<Topic>('/knowledge/topics/', data),
   
   updateTopic: (id: number, data: Partial<CreateTopicData>) =>
-    api.patch<Topic>(`/knowledge/topics/${id}/`, data),
+    axiosInstance.patch<Topic>(`/knowledge/topics/${id}/`, data),
   
   deleteTopic: (id: number) =>
-    api.delete(`/knowledge/topics/${id}/`),
+    axiosInstance.delete(`/knowledge/topics/${id}/`),
 
   // Knowledge Tree
   getKnowledgeTree: () =>
-    api.get<Subject[]>('/knowledge/knowledge-tree/'),
+    axiosInstance.get<Subject[]>('/knowledge/knowledge-tree/'),
 
   // Topic Tests
   getTopicTests: () =>
-    api.get<TopicTest[]>('/topic-tests/'),
+    axiosInstance.get<TopicTest[]>('/topic-tests/'),
   
   getTopicTestsByTopic: (topicId: number) =>
-    api.get<{topic: TopicDetail, tests: TopicTest[], total_tests: number}>(`/topic-tests/by_topic/?topic_id=${topicId}`),
+    axiosInstance.get<{topic: TopicDetail, tests: TopicTest[], total_tests: number}>(`/topic-tests/by_topic/?topic_id=${topicId}`),
   
   createTopicTest: (data: CreateTopicTestData) =>
-    api.post<TopicTest>('/topic-tests/', data),
+    axiosInstance.post<TopicTest>('/topic-tests/', data),
   
   updateTopicTest: (id: number, data: Partial<CreateTopicTestData>) =>
-    api.patch<TopicTest>(`/topic-tests/${id}/`, data),
+    axiosInstance.patch<TopicTest>(`/topic-tests/${id}/`, data),
   
   deleteTopicTest: (id: number) =>
-    api.delete(`/topic-tests/${id}/`),
+    axiosInstance.delete(`/topic-tests/${id}/`),
 };
