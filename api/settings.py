@@ -24,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eoyg85*%3f6fry(_noxil)))7109*&186z63ax@34e%3wy2rv3'
+SECRET_KEY = config('SECRET_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool, default=False)
 
 # Email settings
 try:
@@ -43,18 +44,18 @@ except UndefinedValueError:
     DEFAULT_FROM_EMAIL = 'no-reply@localhost'
 
 
-ALLOWED_HOSTS = ['*']
-# CORS_ALLOW_ALL_ORIGINS = True
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+
+# CORS Settings - More restrictive for production
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool, default=False)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://192.168.1.10:5173",
-    config("SERVER_IP"),
+    origin.strip() for origin in config('CORS_ALLOWED_ORIGINS', 
+    default="http://localhost:5173,http://127.0.0.1:5173").split(',')
 ]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://192.168.1.10:5173",
-    config("SERVER_IP"),
+    origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', 
+    default="http://localhost:5173,http://127.0.0.1:5173").split(',')
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -67,7 +68,27 @@ CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 AUTH_USER_MODEL = 'accounts.User'
 
 TIME_ZONE = 'Asia/Tehran'
-USE_TZ=True
+USE_TZ = True
+
+# Security Settings
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# HTTPS Settings (enable in production)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', cast=bool, default=not DEBUG)
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', cast=int, default=31536000 if not DEBUG else 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', cast=bool, default=not DEBUG)
+SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', cast=bool, default=not DEBUG)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool, default=not DEBUG)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool, default=not DEBUG)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if not DEBUG else None
+
+# Session Security
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', cast=int, default=86400)  # 24 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+CSRF_COOKIE_HTTPONLY = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -89,6 +110,7 @@ INSTALLED_APPS = [
     'shop',
     'finance',
     'tickets',
+    'knowledge',
 ]
 
 MIDDLEWARE = [
@@ -120,19 +142,19 @@ TEMPLATES = [
     },
 ]
 
-# Parspack Object Storage settings
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)  # c242950
-AWS_S3_REGION_NAME = 'default'
-AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default=None)  # https://c242950.parspack.net
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.parspack.net' if AWS_STORAGE_BUCKET_NAME else ''
-AWS_S3_VERIFY = False
-AWS_DEFAULT_ACL = 'public-read'
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-AWS_S3_FILE_OVERWRITE = False
+# Parspack Object Storage settings - Use environment variables
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='default')
+AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL')
+AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN', default=f'{AWS_STORAGE_BUCKET_NAME}.parspack.net')
+AWS_S3_VERIFY = config('AWS_S3_VERIFY', cast=bool, default=False)
+AWS_DEFAULT_ACL = config('AWS_DEFAULT_ACL', default='public-read')
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': f"max-age={config('AWS_CACHE_CONTROL_MAX_AGE', cast=int, default=86400)}"}
+AWS_S3_FILE_OVERWRITE = config('AWS_S3_FILE_OVERWRITE', cast=bool, default=False)
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Always use disk
+FILE_UPLOAD_MAX_MEMORY_SIZE = config('FILE_UPLOAD_MAX_MEMORY_SIZE', cast=int, default=0)
 
 STORAGES = {
     "default": {
@@ -167,9 +189,14 @@ STORAGES = {
     },
 }
 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/' if AWS_S3_CUSTOM_DOMAIN else 'static/'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/' if AWS_S3_CUSTOM_DOMAIN else '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/' if AWS_S3_CUSTOM_DOMAIN else '/media/'
+
+# File Upload Security
+FILE_UPLOAD_PERMISSIONS = 0o644
+DATA_UPLOAD_MAX_MEMORY_SIZE = config('DATA_UPLOAD_MAX_MEMORY_SIZE', cast=int, default=5242880)  # 5MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = config('DATA_UPLOAD_MAX_NUMBER_FIELDS', cast=int, default=1000)
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
@@ -177,10 +204,18 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database configuration with environment variables
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME', default=str(BASE_DIR / 'db.sqlite3')),
+        'USER': config('DB_USER', default=''),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default=''),
+        'PORT': config('DB_PORT', default=''),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        } if config('DB_ENGINE', default='').startswith('django.db.backends.mysql') else {},
     }
 }
 
@@ -231,27 +266,91 @@ REST_FRAMEWORK = {
         'api.auth.CookieJWTAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': config('THROTTLE_ANON_RATE', default='100/hour'),
+        'user': config('THROTTLE_USER_RATE', default='1000/hour')
+    },
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': config('API_PAGE_SIZE', cast=int, default=20)
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=config('JWT_ACCESS_TOKEN_LIFETIME_MINUTES', cast=int, default=15)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=config('JWT_REFRESH_TOKEN_LIFETIME_DAYS', cast=int, default=7)),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': config('JWT_SIGNING_KEY', default=SECRET_KEY),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
-# Google Gemini API Key
-# برای امنیت بیشتر بهتر است از متغیرهای محیطی استفاده شود
+# API Keys - Use environment variables
 try:
     from dotenv import load_dotenv
     # Load API keys from .env file
     env_path = os.path.join(BASE_DIR, 'api_keys', '.env')
     load_dotenv(dotenv_path=env_path)
-    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
-    LIARA_API_KEY = os.environ.get('LIARA_API_KEY', '')
-except ImportError:
-    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
-    LIARA_API_KEY = os.environ.get('LIARA_API_KEY', '')
+    GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+    LIARA_API_KEY = config('LIARA_API_KEY')
+except (ImportError, UndefinedValueError):
+    GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='')
+    LIARA_API_KEY = config('LIARA_API_KEY', default='')
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 
