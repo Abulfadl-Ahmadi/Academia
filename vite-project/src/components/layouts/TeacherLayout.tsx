@@ -30,7 +30,8 @@ export const TeacherLayout = () => {
     videos: 'ویدیوها',
     tests: 'آزمون‌ها',
     'topic-tests': 'آزمون‌های مبحثی',
-    transactions: 'تراکنش‌ها'
+    transactions: 'تراکنش‌ها',
+    knowledge: 'درخت دانش'
   };
   
   // Generate dynamic breadcrumb based on current path

@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   Bot,
   Target,
+  TreePine,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -60,6 +61,23 @@ export function TeacherSidebar({
 
   const data = {
     navMain: [
+      {
+        title: "درخت دانش",
+        url: "/panel/knowledge",
+        icon: TreePine,
+        items: [
+          {
+            title: "مدیریت کتاب‌ها",
+            url: "/panel/knowledge",
+            description: "مدیریت کتاب‌های درسی و ساختار درخت دانش"
+          },
+          {
+            title: "نمای درختی",
+            url: "/panel/knowledge",
+            description: "مشاهده ساختار کامل درخت دانش"
+          },
+        ],
+      },
       {
         title: "کلاس‌ها",
         url: "/panel/courses",
