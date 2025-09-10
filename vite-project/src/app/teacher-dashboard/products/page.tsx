@@ -119,76 +119,94 @@ export default function TeacherProducts() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">مدیریت محصولات</h2>
-        <div className="flex gap-2">
+    <div className="space-y-6 w-full min-w-0">
+      <div className="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:justify-between lg:items-center min-w-0">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">مدیریت محصولات</h2>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0">
           {selectedRows.length > 0 && (
             <>
-              <Button variant="destructive" onClick={handleDeleteSelected}>
-                <Trash2 className="ml-2 h-4 w-4" /> حذف {selectedRows.length} مورد
+              <Button variant="destructive" onClick={handleDeleteSelected} className="flex items-center justify-center gap-2" size="sm">
+                <Trash2 className="h-4 w-4" /> 
+                <span className="hidden sm:inline">حذف {selectedRows.length} مورد</span>
+                <span className="sm:hidden">حذف ({selectedRows.length})</span>
               </Button>
-              <Button variant="outline" onClick={handleExportSelected}>
-                <Download className="ml-2 h-4 w-4" /> دانلود {selectedRows.length} مورد
+              <Button variant="outline" onClick={handleExportSelected} className="flex items-center justify-center gap-2" size="sm">
+                <Download className="h-4 w-4" /> 
+                <span className="hidden sm:inline">دانلود {selectedRows.length} مورد</span>
+                <span className="sm:hidden">دانلود ({selectedRows.length})</span>
               </Button>
             </>
           )}
-          <Button onClick={() => window.location.href = "/panel/products/create"}>
-            <Plus className="ml-2 h-4 w-4" /> محصول جدید
+          <Button onClick={() => window.location.href = "/panel/products/create"} className="flex items-center justify-center gap-2" size="sm">
+            <Plus className="h-4 w-4" /> 
+            <span className="hidden sm:inline">محصول جدید</span>
+            <span className="sm:hidden">جدید</span>
           </Button>
         </div>
       </div>
       
-      <Card>
+      <Card className="w-full min-w-0">
         <CardHeader>
           <CardTitle>لیست محصولات</CardTitle>
           <CardDescription>محصولاتی که برای فروش در سایت منتشر کرده‌اید</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-hidden">
           <Tabs defaultValue={getActiveTab()} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="all">همه ({products.length})</TabsTrigger>
-              <TabsTrigger value="courses">
-                دوره‌ها ({filterByType("course").length})
-              </TabsTrigger>
-              <TabsTrigger value="files">
-                فایل‌ها ({filterByType("file").length})
-              </TabsTrigger>
-              <TabsTrigger value="tests">
-                آزمون‌ها ({filterByType("test").length})
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto mb-6">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 min-w-fit">
+                <TabsTrigger value="all" className="text-xs sm:text-sm whitespace-nowrap">همه ({products.length})</TabsTrigger>
+                <TabsTrigger value="courses" className="text-xs sm:text-sm whitespace-nowrap">
+                  دوره‌ها ({filterByType("course").length})
+                </TabsTrigger>
+                <TabsTrigger value="files" className="text-xs sm:text-sm whitespace-nowrap">
+                  فایل‌ها ({filterByType("file").length})
+                </TabsTrigger>
+                <TabsTrigger value="tests" className="text-xs sm:text-sm whitespace-nowrap">
+                  آزمون‌ها ({filterByType("test").length})
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value="all" className="mt-6">
-              <DataTable 
-                columns={columns} 
-                data={products} 
-                onRowSelectionChange={setSelectedRows}
-              />
+            <TabsContent value="all" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={products} 
+                  onRowSelectionChange={setSelectedRows}
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="courses" className="mt-6">
-              <DataTable 
-                columns={columns} 
-                data={filterByType("course")}
-                onRowSelectionChange={setSelectedRows} 
-              />
+            <TabsContent value="courses" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={filterByType("course")}
+                  onRowSelectionChange={setSelectedRows} 
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="files" className="mt-6">
-              <DataTable 
-                columns={columns} 
-                data={filterByType("file")}
-                onRowSelectionChange={setSelectedRows} 
-              />
+            <TabsContent value="files" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={filterByType("file")}
+                  onRowSelectionChange={setSelectedRows} 
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="tests" className="mt-6">
-              <DataTable 
-                columns={columns} 
-                data={filterByType("test")}
-                onRowSelectionChange={setSelectedRows} 
-              />
+            <TabsContent value="tests" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={filterByType("test")}
+                  onRowSelectionChange={setSelectedRows} 
+                />
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
