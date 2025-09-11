@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, Save, Plus, BookOpen, FileText } from 'lucide-react';
+import { ArrowRight, Save, Plus, BookOpen, FileText, ChevronRight, ChevronDown, Folder as FolderIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -27,6 +27,10 @@ import { knowledgeApi } from '@/features/knowledge/api';
 import axiosInstance from '@/lib/axios';
 import { useSidebar } from '@/components/ui/sidebar';
 import type { CreateTopicTestData, Folder } from '@/features/knowledge/types';
+
+// توسعه نوع Folder برای داشتن children اختیاری بدون استفاده از any
+interface FolderWithChildren extends Folder { children?: FolderWithChildren[] }
+const hasChildren = (f: Folder | FolderWithChildren): f is FolderWithChildren => Array.isArray((f as FolderWithChildren).children);
 
 // Lightweight pagination shape to safely narrow API responses without 'any'
 // Removed legacy PaginatedSubjects interface (no longer needed after folder migration)
@@ -122,6 +126,8 @@ export default function CreateTopicTestPage() {
   const [folderTree, setFolderTree] = useState<Folder[]>([]);
   const [folderLoading, setFolderLoading] = useState<boolean>(false);
   const [selectedFolderIds, setSelectedFolderIds] = useState<number[]>([]);
+  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set()); // کنترل باز/بسته بودن نودها
+  const [parentMap, setParentMap] = useState<Record<number, number | null>>({}); // برای باز کردن خودکار اجداد در حالت ویرایش
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -168,7 +174,18 @@ export default function CreateTopicTestPage() {
       // Load folder tree
       try {
         const fRes = await knowledgeApi.getFolderTree();
-        setFolderTree(fRes.data as Folder[]);
+  const tree = fRes.data as FolderWithChildren[];
+        setFolderTree(tree);
+        // ساخت parent map جهت باز کردن مسیرهای انتخاب‌شده در حالت ویرایش
+        const map: Record<number, number | null> = {};
+        const buildMap = (nodes: FolderWithChildren[], parentId: number | null) => {
+          nodes.forEach(n => {
+            map[n.id] = parentId;
+            if (hasChildren(n) && n.children && n.children.length) buildMap(n.children, n.id);
+          });
+        };
+        buildMap(tree, null);
+        setParentMap(map);
       } catch (e) {
         console.warn('Failed loading folder tree', e);
       }
@@ -254,26 +271,67 @@ export default function CreateTopicTestPage() {
   }, [testId]);
 
   // Legacy hierarchy code removed.
-  // Recursive folder rendering
-  const renderFolders = (nodes: Folder[]) => (
+  // مدیریت باز/بسته شدن نودها
+  const toggleExpand = (id: number) => {
+    setExpandedFolders(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  // در حالت ویرایش، پس از بارگذاری پوشه‌ها و انتخاب پوشه‌ها، اجداد پوشه‌های انتخاب‌شده را باز کن
+  useEffect(() => {
+    if (!editing || selectedFolderIds.length === 0 || Object.keys(parentMap).length === 0) return;
+    const toExpand = new Set<number>();
+    selectedFolderIds.forEach(id => {
+      let current = parentMap[id];
+      while (current) {
+        toExpand.add(current);
+        current = parentMap[current] || null;
+      }
+    });
+    if (toExpand.size > 0) {
+      setExpandedFolders(prev => new Set([...prev, ...toExpand]));
+    }
+  }, [editing, selectedFolderIds, parentMap]);
+
+  // رندر درخت پوشه‌ها به صورت تودرتو و تاشونده
+  const renderFolders = (nodes: (Folder | FolderWithChildren)[], depth: number = 0) => (
     <ul className="space-y-1">
       {nodes.map(node => {
+  const children = hasChildren(node) ? node.children : undefined;
+  const childExists = !!children && children.length > 0;
+  const expanded = childExists && expandedFolders.has(node.id);
         const checked = selectedFolderIds.includes(node.id);
         return (
           <li key={node.id}>
             <div className="flex items-center gap-2">
+              {childExists ? (
+                <button
+                  type="button"
+                  onClick={() => toggleExpand(node.id)}
+                  className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted transition"
+                  aria-label={expanded ? 'Collapse' : 'Expand'}
+                >
+                  {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </button>
+              ) : (
+                <span className="w-5 h-5 inline-block" />
+              )}
               <Checkbox
                 checked={checked}
                 onCheckedChange={(val) => {
                   setSelectedFolderIds(prev => val ? [...prev, node.id] : prev.filter(id => id !== node.id));
                 }}
               />
-              <span className="text-sm font-medium">{node.name}</span>
+              <FolderIcon className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-medium truncate max-w-[200px]" title={node.name}>{node.name}</span>
               <span className="text-xs text-muted-foreground">#{node.id}</span>
             </div>
-            {node.children && node.children.length > 0 && (
-              <div className="ms-4 border-s ps-3 mt-1">
-                {renderFolders(node.children)}
+      {childExists && expanded && (
+              <div className="ms-6 border-s ps-3 mt-1">
+        {children && renderFolders(children, depth + 1)}
               </div>
             )}
           </li>
