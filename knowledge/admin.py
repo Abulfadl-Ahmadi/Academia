@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Chapter, Section, Topic, StudentTopicProgress
+from .models import Subject, Chapter, Section, Lesson, TopicCategory, Topic, StudentTopicProgress
 
 
 class ChapterInline(admin.TabularInline):
@@ -10,6 +10,18 @@ class ChapterInline(admin.TabularInline):
 
 class SectionInline(admin.TabularInline):
     model = Section
+    extra = 1
+    fields = ['name', 'order', 'description']
+
+
+class LessonInline(admin.TabularInline):
+    model = Lesson
+    extra = 1
+    fields = ['name', 'order', 'description']
+
+
+class TopicCategoryInline(admin.TabularInline):
+    model = TopicCategory
     extra = 1
     fields = ['name', 'order', 'description']
 
@@ -47,10 +59,36 @@ class ChapterAdmin(admin.ModelAdmin):
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'chapter', 'order', 'topics_count']
+    list_display = ['name', 'chapter', 'order', 'lessons_count']
     list_filter = ['chapter__subject', 'chapter', 'created_at']
     search_fields = ['name', 'description', 'chapter__name']
     ordering = ['chapter', 'order']
+    inlines = [LessonInline]
+    
+    def lessons_count(self, obj):
+        return obj.lessons.count()
+    lessons_count.short_description = 'تعداد درس‌ها'
+
+
+@admin.register(Lesson)
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ['name', 'section', 'order', 'topic_categories_count']
+    list_filter = ['section__chapter__subject', 'section__chapter', 'section', 'created_at']
+    search_fields = ['name', 'description', 'section__name']
+    ordering = ['section', 'order']
+    inlines = [TopicCategoryInline]
+    
+    def topic_categories_count(self, obj):
+        return obj.topic_categories.count()
+    topic_categories_count.short_description = 'تعداد دسته‌های موضوع'
+
+
+@admin.register(TopicCategory)
+class TopicCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'lesson', 'order', 'topics_count']
+    list_filter = ['lesson__section__chapter__subject', 'lesson__section__chapter', 'lesson__section', 'lesson', 'created_at']
+    search_fields = ['name', 'description', 'lesson__name']
+    ordering = ['lesson', 'order']
     inlines = [TopicInline]
     
     def topics_count(self, obj):
@@ -61,20 +99,20 @@ class SectionAdmin(admin.ModelAdmin):
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'section', 'order', 'difficulty', 
+        'name', 'topic_category', 'order', 'difficulty', 
         'estimated_study_time', 'get_available_tests_count'
     ]
     list_filter = [
-        'difficulty', 'section__chapter__subject', 
-        'section__chapter', 'created_at'
+        'difficulty', 'topic_category__lesson__section__chapter__subject', 
+        'topic_category__lesson__section__chapter', 'created_at'
     ]
     search_fields = ['name', 'description', 'tags']
     filter_horizontal = ['prerequisites']
-    ordering = ['section', 'order']
+    ordering = ['topic_category', 'order']
     
     fieldsets = (
         ('اطلاعات پایه', {
-            'fields': ('name', 'section', 'order', 'description')
+            'fields': ('name', 'topic_category', 'order', 'description')
         }),
         ('تنظیمات', {
             'fields': ('difficulty', 'estimated_study_time', 'tags')
@@ -98,7 +136,7 @@ class StudentTopicProgressAdmin(admin.ModelAdmin):
     ]
     list_filter = [
         'is_mastered', 'topic__difficulty', 
-        'topic__section__chapter__subject', 'mastery_date'
+        'topic__topic_category__lesson__section__chapter__subject', 'mastery_date'
     ]
     search_fields = [
         'student__username', 'student__first_name', 'student__last_name',

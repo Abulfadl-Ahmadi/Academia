@@ -10,7 +10,6 @@ import {
   CreditCard,
   ShoppingCart,
   LifeBuoy,
-  Bot,
   Target,
   TreePine,
 } from "lucide-react";
@@ -75,6 +74,11 @@ export function TeacherSidebar({
             title: "نمای درختی",
             url: "/panel/knowledge",
             description: "مشاهده ساختار کامل درخت دانش"
+          },
+          {
+            title: "پوشه‌ها (مباحث جدید)",
+            url: "/panel/folders",
+            description: "مدیریت پوشه‌های سلسله‌مراتبی بینهایت"
           },
         ],
       },

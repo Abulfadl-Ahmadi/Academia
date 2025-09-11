@@ -4,6 +4,7 @@ from accounts.models import User
 from courses.models import Course
 from django.utils import timezone
 from datetime import timedelta
+from knowledge.models import Folder
 
 
 class TestCollection(models.Model):
@@ -136,6 +137,9 @@ class Test(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ آخرین بروزرسانی")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
+    # مسیر سلسله مراتبی انتخاب‌شده وقتی topic نهایی موجود نیست
+    knowledge_path = models.JSONField(null=True, blank=True, default=list, help_text="Path nodes when no final topic exists: list of {level: str, id: int | null}")
+    folders = models.ManyToManyField(Folder, blank=True, related_name='tests', verbose_name="پوشه‌ها", help_text="پوشه(های) مرتبط برای آزمون مبحثی")
 
     class Meta:
         verbose_name = "آزمون"
@@ -163,9 +167,21 @@ class Test(models.Model):
         
         # بررسی فیلدهای الزامی برای آزمون‌های مبحثی
         elif self.test_type == TestType.TOPIC_BASED:
-            if not self.topic:
+            # Accept any of: final topic, knowledge_path, or at least one folder (including pending unsaved m2m passed by serializer)
+            pending_folders = getattr(self, '_pending_folders', None)
+            has_folders = False
+            if pending_folders:
+                try:
+                    has_folders = len(pending_folders) > 0
+                except TypeError:
+                    has_folders = False
+            else:
+                # Only reliable after initial save; during first save m2m not yet available
+                if self.pk:
+                    has_folders = self.folders.exists()
+            if not self.topic and not (self.knowledge_path and len(self.knowledge_path) > 0) and not has_folders:
                 raise ValidationError({
-                    'topic': 'مبحث برای آزمون‌های مبحثی الزامی است'
+                    'topic': 'برای آزمون مبحثی باید یکی از این‌ها انتخاب شود: مبحث نهایی، مسیر دانش (knowledge_path) یا حداقل یک پوشه'
                 })
         
         # بررسی تداخل زمانی برای آزمون‌های زمان‌بندی شده
@@ -177,8 +193,22 @@ class Test(models.Model):
             })
     
     def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
+        # Custom save to allow folder-based validation when only folders provided.
+        # First, if object has no PK yet and only pending folders supplied (set by serializer) skip strict topic/knowledge_path check now.
+        if self.pk:
+            self.clean()
+            return super().save(*args, **kwargs)
+        try:
+            pending_folders = getattr(self, '_pending_folders', None)
+            if pending_folders and len(pending_folders) > 0 and self.test_type == TestType.TOPIC_BASED and not self.topic and not (self.knowledge_path and len(self.knowledge_path) > 0):
+                # Temporarily bypass the clean check; we'll rely on serializer-level validation already ensuring at least one input.
+                return super().save(*args, **kwargs)
+            # Otherwise run normal validation
+            self.clean()
+            return super().save(*args, **kwargs)
+        finally:
+            if hasattr(self, '_pending_folders'):
+                delattr(self, '_pending_folders')
 
     def __str__(self):
         if self.test_type == TestType.TOPIC_BASED and self.topic:

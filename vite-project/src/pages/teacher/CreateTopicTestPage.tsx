@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, Save, Plus, BookOpen, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +26,10 @@ import { toast } from 'sonner';
 import { knowledgeApi } from '@/features/knowledge/api';
 import axiosInstance from '@/lib/axios';
 import { useSidebar } from '@/components/ui/sidebar';
-import type { CreateTopicTestData, Subject } from '@/features/knowledge/types';
+import type { CreateTopicTestData, Folder } from '@/features/knowledge/types';
+
+// Lightweight pagination shape to safely narrow API responses without 'any'
+// Removed legacy PaginatedSubjects interface (no longer needed after folder migration)
 
 interface FileItem {
   id: number;
@@ -113,13 +116,15 @@ const AnswerKeyGrid = ({
 
 export default function CreateTopicTestPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { testId } = useParams();
   const baseURL = import.meta.env.VITE_API_BASE_URL;
-  
-  // States for hierarchical selection
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+  // New folders tree (infinite depth)
+  const [folderTree, setFolderTree] = useState<Folder[]>([]);
+  const [folderLoading, setFolderLoading] = useState<boolean>(false);
+  const [selectedFolderIds, setSelectedFolderIds] = useState<number[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // File upload states
@@ -132,7 +137,6 @@ export default function CreateTopicTestPage() {
   const [formData, setFormData] = useState<CreateTopicTestData>({
     name: '',
     description: '',
-    topic: 0,
     pdf_file: 0,
     answers_file: 0,
     duration: 'PT30M',
@@ -140,34 +144,15 @@ export default function CreateTopicTestPage() {
     keys: [],
   });
 
-  // Selection states
-  const [selectedSubject, setSelectedSubject] = useState<number>(0);
-  const [selectedChapter, setSelectedChapter] = useState<number>(0);
-  const [selectedSection, setSelectedSection] = useState<number>(0);
+  // (Legacy selection states removed – folders replace the old hierarchy)
   const [questionCount, setQuestionCount] = useState<number>(60);
   const [answerKeys, setAnswerKeys] = useState<string[]>(Array(60).fill(''));
 
   // Load subjects and files
   const loadInitialData = useCallback(async () => {
     try {
-      const [subjectsResponse, filesResponse] = await Promise.all([
-        knowledgeApi.getKnowledgeTree(), // This gives us the full hierarchical structure
-        axiosInstance.get('/files/?content_type=test')
-      ]);
-      
-      // Handle both array and pagination format for subjects
-      let subjectsData = [];
-      if (Array.isArray(subjectsResponse.data)) {
-        subjectsData = subjectsResponse.data;
-      } else if (subjectsResponse.data && Array.isArray(subjectsResponse.data.results)) {
-        subjectsData = subjectsResponse.data.results;
-      } else {
-        console.warn("Subjects data is not an array:", subjectsResponse.data);
-        subjectsData = [];
-      }
-      
-      setSubjects(subjectsData);
-      
+      setFolderLoading(true);
+      const filesResponse = await axiosInstance.get('/files/?content_type=test');
       // Handle both array and pagination format for files
       let filesData = [];
       if (Array.isArray(filesResponse.data)) {
@@ -180,103 +165,124 @@ export default function CreateTopicTestPage() {
       }
       
       setFiles(filesData);
+      // Load folder tree
+      try {
+        const fRes = await knowledgeApi.getFolderTree();
+        setFolderTree(fRes.data as Folder[]);
+      } catch (e) {
+        console.warn('Failed loading folder tree', e);
+      }
       
       console.log('Loaded files:', filesData);
-      console.log('Filtered PDF files:', filesData.filter(f => f.content_type === 'test' && f.file_type === 'application/pdf'));
-
-      // Check if there's a pre-selected topic from URL params
-      const topicId = searchParams.get('topic');
-      if (topicId) {
-        await loadTopicHierarchy(parseInt(topicId), subjectsData);
-      }
+      console.log('Filtered PDF files:', filesData.filter((f: FileItem) => f.content_type === 'test' && f.file_type === 'application/pdf'));
     } catch (error) {
       toast.error('خطا در بارگذاری داده‌ها');
       console.error('Error loading initial data:', error);
     } finally {
       setLoading(false);
+      setFolderLoading(false);
     }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     loadInitialData();
   }, [loadInitialData]);
 
-  // Load the full hierarchy for a specific topic
-  const loadTopicHierarchy = async (topicId: number, allSubjects: Subject[]) => {
-    try {
-      // Find the subject that contains this topic
-      let foundHierarchy: { subjectId: number, chapterId: number, sectionId: number } | null = null;
-      
-      for (const subject of allSubjects) {
-        for (const chapter of subject.chapters) {
-          for (const section of chapter.sections) {
-            if (section.topics.some(t => t.id === topicId)) {
-              foundHierarchy = {
-                subjectId: subject.id,
-                chapterId: chapter.id,
-                sectionId: section.id
-              };
-              break;
-            }
-          }
-          if (foundHierarchy) break;
+  // Load existing test for edit mode
+  useEffect(() => {
+    const loadExisting = async () => {
+      if (!testId) return;
+      try {
+        setLoading(true);
+        const resp = await knowledgeApi.getTopicTests();
+        interface KeyItem { question_number: number; answer: number }
+        interface RespTest { id: number; name: string; description?: string; pdf_file?: number; answers_file?: number; duration?: string; duration_formatted?: string; is_active?: boolean; keys?: KeyItem[]; folders?: {id:number; name:string}[] }
+        let testData: RespTest | undefined;
+        if (Array.isArray(resp.data)) {
+          testData = (resp.data as RespTest[]).find(t => t.id === parseInt(testId));
+        } else if (resp.data && Array.isArray((resp.data as {results: RespTest[]}).results)) {
+          testData = (resp.data as {results: RespTest[]}).results.find(t => t.id === parseInt(testId));
         }
-        if (foundHierarchy) break;
+        if (!testData) {
+          toast.error('آزمون یافت نشد');
+          return;
+        }
+        setEditing(true);
+        // Duration normalization: server may send duration like "01:00" or seconds; we fallback to PTxxM if cannot parse
+        const durationVal = testData.duration || testData.duration_formatted;
+        let isoDuration = 'PT30M';
+        if (typeof durationVal === 'string') {
+          // Try HH:MM
+            const parts = durationVal.split(':');
+            if (parts.length >= 2) {
+              const h = parseInt(parts[0]) || 0;
+              const m = parseInt(parts[1]) || 0;
+              const totalM = h * 60 + m;
+              isoDuration = `PT${totalM}M`;
+            }
+        }
+        setFormData(prev => ({
+          ...prev,
+          name: testData.name || '',
+          description: testData.description || '',
+          pdf_file: testData.pdf_file || 0,
+          answers_file: testData.answers_file || 0,
+          duration: isoDuration,
+          is_active: testData.is_active !== false,
+          keys: (testData.keys || []).map((k: KeyItem) => ({ question_number: k.question_number, answer: k.answer }))
+        }));
+        // Pre-fill keys if available
+        if (testData.keys && Array.isArray(testData.keys)) {
+          const maxQ = Math.max(60, ...testData.keys.map((k: KeyItem) => k.question_number));
+          setQuestionCount(maxQ);
+          const arr = Array(maxQ).fill('');
+          testData.keys.forEach((k: KeyItem) => { arr[k.question_number - 1] = k.answer.toString(); });
+          setAnswerKeys(arr);
+        }
+        // Pre-select folders
+        if (testData.folders && Array.isArray(testData.folders)) {
+          setSelectedFolderIds(testData.folders.map(f => f.id));
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error('خطا در بارگذاری آزمون');
+      } finally {
+        setLoading(false);
       }
+    };
+    loadExisting();
+  }, [testId]);
 
-      if (foundHierarchy) {
-        setSelectedSubject(foundHierarchy.subjectId);
-        setSelectedChapter(foundHierarchy.chapterId);
-        setSelectedSection(foundHierarchy.sectionId);
-        setFormData(prev => ({ ...prev, topic: topicId }));
-      }
-    } catch (error) {
-      console.error('Error loading topic hierarchy:', error);
-    }
-  };
+  // Legacy hierarchy code removed.
+  // Recursive folder rendering
+  const renderFolders = (nodes: Folder[]) => (
+    <ul className="space-y-1">
+      {nodes.map(node => {
+        const checked = selectedFolderIds.includes(node.id);
+        return (
+          <li key={node.id}>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={checked}
+                onCheckedChange={(val) => {
+                  setSelectedFolderIds(prev => val ? [...prev, node.id] : prev.filter(id => id !== node.id));
+                }}
+              />
+              <span className="text-sm font-medium">{node.name}</span>
+              <span className="text-xs text-muted-foreground">#{node.id}</span>
+            </div>
+            {node.children && node.children.length > 0 && (
+              <div className="ms-4 border-s ps-3 mt-1">
+                {renderFolders(node.children)}
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
 
-  // Get filtered chapters for selected subject
-  const getAvailableChapters = () => {
-    if (!selectedSubject) return [];
-    const subject = subjects.find(s => s.id === selectedSubject);
-    return subject ? subject.chapters : [];
-  };
-
-  // Get filtered sections for selected chapter
-  const getAvailableSections = () => {
-    if (!selectedChapter) return [];
-    const subject = subjects.find(s => s.id === selectedSubject);
-    const chapter = subject?.chapters.find(c => c.id === selectedChapter);
-    return chapter ? chapter.sections : [];
-  };
-
-  // Get filtered topics for selected section
-  const getAvailableTopics = () => {
-    if (!selectedSection) return [];
-    const subject = subjects.find(s => s.id === selectedSubject);
-    const chapter = subject?.chapters.find(c => c.id === selectedChapter);
-    const section = chapter?.sections.find(s => s.id === selectedSection);
-    return section ? section.topics : [];
-  };
-
-  // Handle selection changes
-  const handleSubjectChange = (subjectId: number) => {
-    setSelectedSubject(subjectId);
-    setSelectedChapter(0);
-    setSelectedSection(0);
-    setFormData(prev => ({ ...prev, topic: 0 }));
-  };
-
-  const handleChapterChange = (chapterId: number) => {
-    setSelectedChapter(chapterId);
-    setSelectedSection(0);
-    setFormData(prev => ({ ...prev, topic: 0 }));
-  };
-
-  const handleSectionChange = (sectionId: number) => {
-    setSelectedSection(sectionId);
-    setFormData(prev => ({ ...prev, topic: 0 }));
-  };
+  // (Legacy selection handlers removed)
 
   const handleAnswerChange = (index: number, value: string) => {
     const newAnswers = [...answerKeys];
@@ -350,36 +356,39 @@ export default function CreateTopicTestPage() {
   };
 
   const handleSubmit = async (saveAndCreateAnother: boolean = false) => {
-    if (!formData.topic || !formData.pdf_file || !formData.name.trim()) {
-      toast.error('لطفاً تمام فیلدهای ضروری را پر کنید');
+    if (selectedFolderIds.length === 0) {
+      toast.error('حداقل یک پوشه را انتخاب کنید');
+      return;
+    }
+    if (!formData.pdf_file || !formData.name.trim()) {
+      toast.error('نام و فایل PDF الزامی است');
       return;
     }
 
     setSubmitting(true);
-
-    // Convert answer keys to the format expected by backend
     const keysArray = answerKeys
-      .map((answer, index) => ({
-        question_number: index + 1,
-        answer: parseInt(answer) || 1
-      }))
+      .map((answer, index) => ({ question_number: index + 1, answer: parseInt(answer) || 1 }))
       .filter(key => answerKeys[key.question_number - 1] !== '');
 
-    const submitData = {
+    const submitData: CreateTopicTestData = {
       ...formData,
       keys: keysArray,
+      folders: selectedFolderIds,
     };
 
     try {
+      if (editing && testId) {
+        await knowledgeApi.updateTopicTest(parseInt(testId), submitData);
+        toast.success('آزمون به‌روزرسانی شد');
+        navigate('/panel/topic-tests');
+        return;
+      }
       await knowledgeApi.createTopicTest(submitData);
       toast.success('آزمون با موفقیت ایجاد شد');
-      
       if (saveAndCreateAnother) {
-        // Reset form but keep topic selection
-        setFormData(prev => ({
+  setFormData(() => ({
           name: '',
           description: '',
-          topic: prev.topic, // Keep the selected topic
           pdf_file: 0,
           answers_file: 0,
           duration: 'PT30M',
@@ -387,7 +396,8 @@ export default function CreateTopicTestPage() {
           keys: [],
         }));
         setAnswerKeys(Array(questionCount).fill(''));
-        toast.success('فرم برای ایجاد آزمون بعدی آماده است');
+        setSelectedFolderIds([]);
+        toast.success('فرم آماده آزمون بعدی شد');
       } else {
         navigate('/panel/topic-tests');
       }
@@ -410,7 +420,7 @@ export default function CreateTopicTestPage() {
   return (
     <div className="w-full mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+  <div className="flex items-center gap-4">
         <Button
           variant="outline"
           size="sm"
@@ -420,7 +430,7 @@ export default function CreateTopicTestPage() {
           بازگشت
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">ایجاد آزمون مبحثی جدید</h1>
+          <h1 className="text-2xl font-bold">{editing ? 'ویرایش آزمون مبحثی' : 'ایجاد آزمون مبحثی جدید'}</h1>
         </div>
       </div>
 
@@ -430,7 +440,7 @@ export default function CreateTopicTestPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              اطلاعات پایه
+              {editing ? 'ویرایش اطلاعات آزمون' : 'اطلاعات پایه'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -503,117 +513,31 @@ export default function CreateTopicTestPage() {
           </CardContent>
         </Card>
 
-        {/* Topic Selection */}
+        {/* Folder Selection (replaces old hierarchy) */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
-              انتخاب مبحث *
+              {editing ? 'پوشه‌های مرتبط' : 'انتخاب پوشه‌ها *'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {/* Subject Selection */}
-              <div className="space-y-2">
-                <Label>کتاب درسی</Label>
-                <Select 
-                  value={selectedSubject.toString()} 
-                  onValueChange={(value) => {
-                    const subjectId = parseInt(value);
-                    handleSubjectChange(subjectId);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب کتاب" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjects.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id.toString()}>
-                        {subject.name} - پایه {subject.grade}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Chapter Selection */}
-              <div className="space-y-2">
-                <Label>فصل</Label>
-                <Select 
-                  value={selectedChapter.toString()} 
-                  onValueChange={(value) => {
-                    const chapterId = parseInt(value);
-                    handleChapterChange(chapterId);
-                  }}
-                  disabled={!selectedSubject}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب فصل" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableChapters().map((chapter) => (
-                      <SelectItem key={chapter.id} value={chapter.id.toString()}>
-                        {chapter.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="text-xs text-muted-foreground">پوشه‌ها جایگزین ساختار قدیمی (کتاب، فصل، ... ) شده‌اند. حداقل یک پوشه را انتخاب کنید.</div>
+            <div className="max-h-96 overflow-auto pr-2 border rounded p-3">
+              {folderLoading && <p className="text-sm">در حال بارگذاری...</p>}
+              {!folderLoading && folderTree.length === 0 && <p className="text-sm text-muted-foreground">هیچ پوشه‌ای ایجاد نشده است.</p>}
+              {!folderLoading && folderTree.length > 0 && renderFolders(folderTree)}
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Section Selection */}
-              <div className="space-y-2">
-                <Label>بخش</Label>
-                <Select 
-                  value={selectedSection.toString()} 
-                  onValueChange={(value) => {
-                    const sectionId = parseInt(value);
-                    handleSectionChange(sectionId);
-                  }}
-                  disabled={!selectedChapter}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب بخش" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableSections().map((section) => (
-                      <SelectItem key={section.id} value={section.id.toString()}>
-                        {section.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Topic Selection */}
-              <div className="space-y-2">
-                <Label>مبحث</Label>
-                <Select 
-                  value={formData.topic.toString()} 
-                  onValueChange={(value) => setFormData({ ...formData, topic: parseInt(value) })}
-                  disabled={!selectedSection}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب مبحث" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableTopics().map((topic) => (
-                      <SelectItem key={topic.id} value={topic.id.toString()}>
-                        {topic.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            {selectedFolderIds.length > 0 && (
+              <div className="text-xs text-green-600">{selectedFolderIds.length} پوشه انتخاب شد</div>
+            )}
           </CardContent>
         </Card>
 
         {/* File Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>فایل‌ها</CardTitle>
+            <CardTitle>{editing ? 'فایل‌های آزمون' : 'فایل‌ها'}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* PDF File Section */}
@@ -625,7 +549,6 @@ export default function CreateTopicTestPage() {
                   <TabsTrigger value="select">انتخاب از فایل‌های موجود</TabsTrigger>
                   <TabsTrigger value="upload">آپلود فایل جدید</TabsTrigger>
                 </TabsList>
-                
                 <TabsContent value="select" className="space-y-2">
                   <Select 
                     value={formData.pdf_file.toString()} 
@@ -702,7 +625,6 @@ export default function CreateTopicTestPage() {
                   <TabsTrigger value="select">انتخاب از فایل‌های موجود</TabsTrigger>
                   <TabsTrigger value="upload">آپلود فایل جدید</TabsTrigger>
                 </TabsList>
-                
                 <TabsContent value="select" className="space-y-2">
                   <Select 
                     value={formData.answers_file?.toString() || "0"} 
@@ -813,7 +735,7 @@ export default function CreateTopicTestPage() {
             disabled={submitting}
           >
             <Plus className="w-4 h-4 mr-2" />
-            ذخیره و ساخت یکی دیگر
+            {editing ? 'ذخیره و ماندن' : 'ذخیره و ساخت یکی دیگر'}
           </Button>
           
           <Button
@@ -822,7 +744,7 @@ export default function CreateTopicTestPage() {
             disabled={submitting}
           >
             <Save className="w-4 h-4 mr-2" />
-            ذخیره آزمون
+            {editing ? 'ذخیره تغییرات' : 'ذخیره آزمون'}
           </Button>
         </div>
       </form>

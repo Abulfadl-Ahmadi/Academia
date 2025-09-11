@@ -37,6 +37,7 @@ import VideoPage from "@/app/dashboard/video/page"
 // Topic Tests Components
 import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
 import CreateTopicTestPage from "@/pages/teacher/CreateTopicTestPage"
+import FolderManagerPage from "@/pages/teacher/FolderManagerPage"
 
 // Test Collection Components
 import TestCollectionList from "@/testCollections/TestCollectionList"
@@ -135,7 +136,9 @@ export default function PanelRoute() {
         <Route path="/products/create" element={<CreateProductPage />} />
         {/* Topic Tests Routes */}
         <Route path="/topic-tests" element={<TopicTestsPage />} />
-        <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
+  <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
+  <Route path="/topic-tests/:testId/edit" element={<CreateTopicTestPage />} />
+  <Route path="/folders" element={<FolderManagerPage />} />
         {/* Support Tickets routes for teachers */}
         <Route path="/support" element={<TicketsList />} />
         <Route path="/support/new" element={<NewTicket />} />

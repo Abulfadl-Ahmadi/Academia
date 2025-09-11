@@ -8,6 +8,7 @@ from .models import (
 )
 from courses.models import Course
 from accounts.models import User
+from knowledge.models import Folder
 
 
 class PrimaryKeySerializer(serializers.ModelSerializer):
@@ -392,12 +393,49 @@ class TopicTestCreateSerializer(serializers.ModelSerializer):
         allow_null=True
     )
     
+    # Flexible dynamic path: array of {level, id}
+    knowledge_path = serializers.ListField(
+        child=serializers.DictField(child=serializers.CharField(), allow_empty=False),
+        required=False,
+        write_only=True,
+        help_text="Ordered list of levels: [{level: 'subject', id: 12}, ...]"
+    )
+    folders = serializers.PrimaryKeyRelatedField(queryset=Folder.objects.all(), many=True, required=False, allow_empty=True)
+
     class Meta:
         model = Test
         fields = [
-            'id', 'name', 'description', 'topic', 'pdf_file', 'answers_file',
-            'duration', 'keys', 'is_active'
+            'id', 'name', 'description', 'topic', 'knowledge_path', 'folders',
+            'pdf_file', 'answers_file', 'duration', 'keys', 'is_active'
         ]
+
+    def validate_knowledge_path(self, value):
+        if not isinstance(value, list):
+            raise serializers.ValidationError('knowledge_path must be a list')
+        normalized = []
+        for idx, item in enumerate(value):
+            if not isinstance(item, dict):
+                raise serializers.ValidationError(f'Item {idx} must be an object with level and id')
+            level = item.get('level')
+            level_id = item.get('id')
+            if not level or level_id in (None, ''):
+                raise serializers.ValidationError(f'Item {idx} missing level or id')
+            # Convert id to int if possible
+            try:
+                level_id = int(level_id)
+            except (TypeError, ValueError):
+                raise serializers.ValidationError(f'Item {idx} id must be integer-like')
+            normalized.append({'level': level, 'id': level_id})
+        return normalized
+
+    def validate(self, attrs):
+        # Ensure at least one of topic, knowledge_path, or folders provided
+        topic = attrs.get('topic')
+        kp = attrs.get('knowledge_path')
+        folders = attrs.get('folders')
+        if not topic and not kp and (not folders or len(folders) == 0):
+            raise serializers.ValidationError('حداقل یکی از موارد زیر لازم است: topic یا knowledge_path یا folders')
+        return super().validate(attrs)
         read_only_fields = ['teacher', 'test_type']
     
     def create(self, validated_data):
@@ -405,7 +443,18 @@ class TopicTestCreateSerializer(serializers.ModelSerializer):
         validated_data['test_type'] = 'topic_based'  # Use string instead of TestType enum
         validated_data['teacher'] = self.context['request'].user
         
-        test = Test.objects.create(**validated_data)
+        # Dynamic path
+        knowledge_path = validated_data.pop('knowledge_path', None)
+        folders = validated_data.pop('folders', [])
+        # Attach pending folders info pre-save so model.clean can validate
+        test = Test(**validated_data)
+        test._pending_folders = folders  # transient attribute used in model.clean
+        test.save()
+        if knowledge_path:
+            test.knowledge_path = knowledge_path
+            test.save(update_fields=['knowledge_path'])
+        if folders:
+            test.folders.set(folders)
         
         # ایجاد کلیدها
         for key_data in keys_data:
@@ -424,23 +473,30 @@ class TopicTestDetailSerializer(serializers.ModelSerializer):
     total_questions = serializers.ReadOnlyField(source='get_total_questions')
     participants_count = serializers.ReadOnlyField(source='get_participants_count')
     
+    folders = serializers.SerializerMethodField()
+
     class Meta:
         model = Test
         fields = [
             'id', 'name', 'description', 'test_type', 'topic', 'topic_name',
             'topic_detail', 'pdf_file', 'answers_file', 'duration',
             'display_status', 'can_take_now', 'total_questions',
-            'participants_count', 'is_active', 'created_at', 'keys'
+            'participants_count', 'is_active', 'created_at', 'keys', 'knowledge_path', 'folders'
         ]
+
+    def get_folders(self, obj):
+        return [{'id': f.id, 'name': f.name, 'path_ids': f.path_ids} for f in obj.folders.all()]
     
     def get_topic_detail(self, obj):
         if obj.topic:
             return {
                 'id': obj.topic.id,
                 'name': obj.topic.name,
-                'section': obj.topic.section.name,
-                'chapter': obj.topic.section.chapter.name,
-                'subject': obj.topic.section.chapter.subject.name,
+                'topic_category': obj.topic.topic_category.name if obj.topic.topic_category else 'نامشخص',
+                'lesson': obj.topic.topic_category.lesson.name if obj.topic.topic_category else 'نامشخص',
+                'section': obj.topic.topic_category.lesson.section.name if obj.topic.topic_category else 'نامشخص',
+                'chapter': obj.topic.topic_category.lesson.section.chapter.name if obj.topic.topic_category else 'نامشخص',
+                'subject': obj.topic.topic_category.lesson.section.chapter.subject.name if obj.topic.topic_category else 'نامشخص',
                 'difficulty': obj.topic.difficulty
             }
         return None

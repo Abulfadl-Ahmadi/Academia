@@ -2,12 +2,21 @@ from rest_framework import serializers
 from .models import File
 from utils.vod import create_upload_url
 from utils.vod import get_video_player_url
+from botocore.exceptions import ClientError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class FileSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField()
     # player_url = serializers.SerializerMethodField()
-    course = serializers.PrimaryKeyRelatedField(queryset=File._meta.get_field('course').related_model.objects.all())
+    # Make course optional (tests / standalone PDFs may not belong to a course)
+    course = serializers.PrimaryKeyRelatedField(
+        queryset=File._meta.get_field('course').related_model.objects.all(),
+        required=False,
+        allow_null=True
+    )
     course_info = serializers.SerializerMethodField(read_only=True)
     file_id = serializers.CharField(read_only=True)
     class Meta:
@@ -60,6 +69,24 @@ class FileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    def create(self, validated_data):
+        """Override create to surface storage (e.g. S3) errors as validation errors instead of 500."""
+        try:
+            return super().create(validated_data)
+        except ClientError as e:
+            # Provide a cleaner message to the client
+            code = getattr(e, 'response', {}).get('Error', {}).get('Code')
+            msg = getattr(e, 'response', {}).get('Error', {}).get('Message')
+            logger.error("S3 ClientError during file save", exc_info=True, extra={
+                'error_code': code,
+                'error_message': msg,
+                'operation': 'upload'
+            })
+            raise serializers.ValidationError({'file': f'Storage upload failed ({code}): {msg}'})
+        except Exception as e:  # Fallback generic error
+            logger.error("Generic storage error during file save", exc_info=True)
+            raise serializers.ValidationError({'file': f'Storage upload failed: {str(e)}'})
     
 
 class FileUploadSerializer(serializers.Serializer):

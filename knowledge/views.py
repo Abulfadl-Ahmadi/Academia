@@ -6,12 +6,12 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
 
-from .models import Subject, Chapter, Section, Topic, StudentTopicProgress
+from .models import Subject, Chapter, Section, Lesson, TopicCategory, Topic, StudentTopicProgress, Folder
 from .serializers import (
-    SubjectSerializer, ChapterSerializer, SectionSerializer, 
-    TopicSerializer, StudentTopicProgressSerializer,
+    SubjectSerializer, ChapterSerializer, SectionSerializer, LessonSerializer,
+    TopicCategorySerializer, TopicSerializer, StudentTopicProgressSerializer,
     TopicTestRequestSerializer, KnowledgeTreeSerializer,
-    TopicDetailSerializer
+    TopicDetailSerializer, FolderSerializer
 )
 from tests.models import Test, StudentTestSession
 from tests.serializers import TestDetailSerializer
@@ -19,10 +19,10 @@ from contents.models import File
 from contents.serializers import FileSerializer
 
 
-class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
+class SubjectViewSet(viewsets.ModelViewSet):
     """ViewSet برای مشاهده کتاب‌های درسی"""
     queryset = Subject.objects.filter(is_active=True).prefetch_related(
-        'chapters__sections__topics'
+        'chapters__sections__lessons__topic_categories__topics'
     )
     serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -48,7 +48,7 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
         student = request.user
         
         # تمام مباحث این کتاب
-        topics = Topic.objects.filter(section__chapter__subject=subject)
+        topics = Topic.objects.filter(topic_category__lesson__section__chapter__subject=subject)
         
         # پیشرفت‌های موجود
         progresses = StudentTopicProgress.objects.filter(
@@ -71,24 +71,38 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(data)
 
 
-class ChapterViewSet(viewsets.ReadOnlyModelViewSet):
+class ChapterViewSet(viewsets.ModelViewSet):
     """ViewSet برای مشاهده فصل‌ها"""
-    queryset = Chapter.objects.all().prefetch_related('sections__topics')
+    queryset = Chapter.objects.all().prefetch_related('sections__lessons__topic_categories__topics')
     serializer_class = ChapterSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class SectionViewSet(viewsets.ReadOnlyModelViewSet):
+class SectionViewSet(viewsets.ModelViewSet):
     """ViewSet برای مشاهده زیربخش‌ها"""
-    queryset = Section.objects.all().prefetch_related('topics')
+    queryset = Section.objects.all().prefetch_related('lessons__topic_categories__topics')
     serializer_class = SectionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class TopicViewSet(viewsets.ReadOnlyModelViewSet):
+class LessonViewSet(viewsets.ModelViewSet):
+    """ViewSet برای مشاهده درس‌ها"""
+    queryset = Lesson.objects.all().prefetch_related('topic_categories__topics')
+    serializer_class = LessonSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TopicCategoryViewSet(viewsets.ModelViewSet):
+    """ViewSet برای مشاهده دسته‌های موضوع"""
+    queryset = TopicCategory.objects.all().prefetch_related('topics')
+    serializer_class = TopicCategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TopicViewSet(viewsets.ModelViewSet):
     """ViewSet برای مشاهده مباحث"""
     queryset = Topic.objects.all().select_related(
-        'section__chapter__subject'
+        'topic_category__lesson__section__chapter__subject'
     ).prefetch_related('prerequisites')
     permission_classes = [permissions.IsAuthenticated]
     
@@ -173,10 +187,10 @@ class StudentTopicProgressViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.role == 'student':
             return StudentTopicProgress.objects.filter(
                 student=self.request.user
-            ).select_related('topic__section__chapter__subject')
+            ).select_related('topic__topic_category__lesson__section__chapter__subject')
         elif self.request.user.role in ['teacher', 'admin']:
             return StudentTopicProgress.objects.all().select_related(
-                'student', 'topic__section__chapter__subject'
+                'student', 'topic__topic_category__lesson__section__chapter__subject'
             )
         return StudentTopicProgress.objects.none()
     
@@ -229,13 +243,29 @@ class StudentTopicProgressViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(data)
 
 
+class FolderViewSet(viewsets.ModelViewSet):
+    """CRUD برای پوشه‌های سلسله مراتبی جدید"""
+    queryset = Folder.objects.all().prefetch_related('children')
+    serializer_class = FolderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = ['parent']
+    search_fields = ['name']
+    ordering_fields = ['order', 'name']
+
+    @action(detail=False, methods=['get'])
+    def tree(self, request):
+        roots = Folder.objects.filter(parent__isnull=True).order_by('order', 'id')
+        data = FolderSerializer(roots, many=True).data
+        return Response(data)
+
+
 class KnowledgeTreeView(APIView):
     """View برای نمایش کامل درخت دانش"""
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
         subjects = Subject.objects.filter(is_active=True).prefetch_related(
-            'chapters__sections__topics'
+            'chapters__sections__lessons__topic_categories__topics'
         )
         serializer = SubjectSerializer(subjects, many=True)
         return Response(serializer.data)

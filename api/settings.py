@@ -168,19 +168,21 @@ TEMPLATES = [
     },
 ]
 
-# Parspack Object Storage settings - Use environment variables
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='default')
-AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL')
-AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN', default=f'{AWS_STORAGE_BUCKET_NAME}.parspack.net')
-AWS_S3_VERIFY = config('AWS_S3_VERIFY', cast=bool, default=False)
-AWS_DEFAULT_ACL = config('AWS_DEFAULT_ACL', default='public-read')
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': f"max-age={config('AWS_CACHE_CONTROL_MAX_AGE', cast=int, default=86400)}"}
-AWS_S3_FILE_OVERWRITE = config('AWS_S3_FILE_OVERWRITE', cast=bool, default=False)
+"""Parspack Object Storage settings (original working block)"""
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)  # e.g. c242950
+AWS_S3_REGION_NAME = 'default'  # ParsPack region placeholder
+AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default=None)  # e.g. https://c242950.parspack.net
+AWS_S3_CUSTOM_DOMAIN = ''  # disable custom domain for debug to avoid duplication and 403
+AWS_S3_VERIFY = False
+AWS_DEFAULT_ACL = None  # avoid sending ACL headers (BucketOwnerEnforced scenarios)
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_S3_FILE_OVERWRITE = True  # skip exists() HEAD to reduce 403 surface
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_ADDRESSING_STYLE = 'path'  # match typical S3 Browser default
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-FILE_UPLOAD_MAX_MEMORY_SIZE = config('FILE_UPLOAD_MAX_MEMORY_SIZE', cast=int, default=0)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # always use disk
 
 STORAGES = {
     "default": {
@@ -195,7 +197,9 @@ STORAGES = {
             "default_acl": AWS_DEFAULT_ACL,
             "object_parameters": AWS_S3_OBJECT_PARAMETERS,
             "verify": AWS_S3_VERIFY,
-            "location": "media",  # Prefix for media files
+            "location": "media",
+            "addressing_style": AWS_S3_ADDRESSING_STYLE,
+            "signature_version": AWS_S3_SIGNATURE_VERSION,
         },
     },
     "staticfiles": {
@@ -210,14 +214,16 @@ STORAGES = {
             "default_acl": AWS_DEFAULT_ACL,
             "object_parameters": AWS_S3_OBJECT_PARAMETERS,
             "verify": AWS_S3_VERIFY,
-            "location": "static",  # Prefix for static files
+            "location": "static",
+            "addressing_style": AWS_S3_ADDRESSING_STYLE,
+            "signature_version": AWS_S3_SIGNATURE_VERSION,
         },
     },
 }
 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/' if AWS_S3_CUSTOM_DOMAIN else '/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/' if AWS_S3_CUSTOM_DOMAIN else '/media/'
+MEDIA_URL = '/media/'  # local style URLs for now; can switch back after success
 
 # File Upload Security
 FILE_UPLOAD_PERMISSIONS = 0o644

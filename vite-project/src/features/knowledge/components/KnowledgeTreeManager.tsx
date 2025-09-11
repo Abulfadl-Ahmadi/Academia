@@ -32,6 +32,8 @@ import type {
   Subject,
   CreateChapterData,
   CreateSectionData,
+  CreateLessonData,
+  CreateTopicCategoryData,
   CreateTopicData
 } from '../types';
 
@@ -41,10 +43,14 @@ export function KnowledgeTreeManager() {
   const [expandedSubjects, setExpandedSubjects] = useState<Set<number>>(new Set());
   const [expandedChapters, setExpandedChapters] = useState<Set<number>>(new Set());
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set());
+  const [expandedLessons, setExpandedLessons] = useState<Set<number>>(new Set());
+  const [expandedTopicCategories, setExpandedTopicCategories] = useState<Set<number>>(new Set());
   
   // Form states
   const [isChapterDialogOpen, setIsChapterDialogOpen] = useState(false);
   const [isSectionDialogOpen, setIsSectionDialogOpen] = useState(false);
+  const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
+  const [isTopicCategoryDialogOpen, setIsTopicCategoryDialogOpen] = useState(false);
   const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
 
   const [chapterForm, setChapterForm] = useState<CreateChapterData>({
@@ -61,8 +67,22 @@ export function KnowledgeTreeManager() {
     description: '',
   });
 
-  const [topicForm, setTopicForm] = useState<CreateTopicData>({
+  const [lessonForm, setLessonForm] = useState<CreateLessonData>({
     section: 0,
+    name: '',
+    order: 1,
+    description: '',
+  });
+
+  const [topicCategoryForm, setTopicCategoryForm] = useState<CreateTopicCategoryData>({
+    lesson: 0,
+    name: '',
+    order: 1,
+    description: '',
+  });
+
+  const [topicForm, setTopicForm] = useState<CreateTopicData>({
+    topic_category: 0,
     name: '',
     order: 1,
     description: '',
@@ -117,6 +137,26 @@ export function KnowledgeTreeManager() {
     setExpandedSections(newExpanded);
   };
 
+  const toggleLesson = (lessonId: number) => {
+    const newExpanded = new Set(expandedLessons);
+    if (newExpanded.has(lessonId)) {
+      newExpanded.delete(lessonId);
+    } else {
+      newExpanded.add(lessonId);
+    }
+    setExpandedLessons(newExpanded);
+  };
+
+  const toggleTopicCategory = (topicCategoryId: number) => {
+    const newExpanded = new Set(expandedTopicCategories);
+    if (newExpanded.has(topicCategoryId)) {
+      newExpanded.delete(topicCategoryId);
+    } else {
+      newExpanded.add(topicCategoryId);
+    }
+    setExpandedTopicCategories(newExpanded);
+  };
+
   const handleCreateChapter = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -145,6 +185,34 @@ export function KnowledgeTreeManager() {
     }
   };
 
+  const handleCreateLesson = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await knowledgeApi.createLesson(lessonForm);
+      toast.success('درس جدید ایجاد شد');
+      setIsLessonDialogOpen(false);
+      loadKnowledgeTree();
+      setLessonForm({ section: 0, name: '', order: 1, description: '' });
+    } catch (error) {
+      toast.error('خطا در ایجاد درس');
+      console.error(error);
+    }
+  };
+
+  const handleCreateTopicCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await knowledgeApi.createTopicCategory(topicCategoryForm);
+      toast.success('دسته موضوع جدید ایجاد شد');
+      setIsTopicCategoryDialogOpen(false);
+      loadKnowledgeTree();
+      setTopicCategoryForm({ lesson: 0, name: '', order: 1, description: '' });
+    } catch (error) {
+      toast.error('خطا در ایجاد دسته موضوع');
+      console.error(error);
+    }
+  };
+
   const handleCreateTopic = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -153,7 +221,7 @@ export function KnowledgeTreeManager() {
       setIsTopicDialogOpen(false);
       loadKnowledgeTree();
       setTopicForm({
-        section: 0,
+        topic_category: 0,
         name: '',
         order: 1,
         description: '',
@@ -196,19 +264,65 @@ export function KnowledgeTreeManager() {
     setIsSectionDialogOpen(true);
   };
 
-  const openTopicDialog = (sectionId: number) => {
-    let topic_count = 0;
+  const openLessonDialog = (sectionId: number) => {
+    let lesson_count = 0;
     for (const subject of subjects) {
       for (const chapter of subject.chapters) {
         const section = chapter.sections.find(s => s.id === sectionId);
         if (section) {
-          topic_count = section.topics.length;
+          lesson_count = section.lessons?.length || 0;
           break;
         }
       }
     }
-    setTopicForm({
+    setLessonForm({
       section: sectionId,
+      name: '',
+      order: lesson_count + 1,
+      description: '',
+    });
+    setIsLessonDialogOpen(true);
+  };
+
+  const openTopicCategoryDialog = (lessonId: number) => {
+    let category_count = 0;
+    for (const subject of subjects) {
+      for (const chapter of subject.chapters) {
+        for (const section of chapter.sections) {
+          const lesson = section.lessons?.find(l => l.id === lessonId);
+          if (lesson) {
+            category_count = lesson.topic_categories?.length || 0;
+            break;
+          }
+        }
+      }
+    }
+    setTopicCategoryForm({
+      lesson: lessonId,
+      name: '',
+      order: category_count + 1,
+      description: '',
+    });
+    setIsTopicCategoryDialogOpen(true);
+  };
+
+  const openTopicDialog = (topicCategoryId: number) => {
+    let topic_count = 0;
+    for (const subject of subjects) {
+      for (const chapter of subject.chapters) {
+        for (const section of chapter.sections) {
+          for (const lesson of section.lessons || []) {
+            const topicCategory = lesson.topic_categories?.find(tc => tc.id === topicCategoryId);
+            if (topicCategory) {
+              topic_count = topicCategory.topics?.length || 0;
+              break;
+            }
+          }
+        }
+      }
+    }
+    setTopicForm({
+      topic_category: topicCategoryId,
       name: '',
       order: topic_count + 1,
       description: '',
@@ -329,14 +443,14 @@ export function KnowledgeTreeManager() {
                                 <FileText className="w-4 h-4" />
                                 <span>{section.name}</span>
                                 <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Badge variant="outline" className="text-xs">{section.topics.length}</Badge>
+                                  <Badge variant="outline" className="text-xs">{section.lessons?.length || 0}</Badge>
                                   <Button
                                     size="sm"
                                     variant="ghost"
                                     className="h-6 w-6 p-0"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      openTopicDialog(section.id);
+                                      openLessonDialog(section.id);
                                     }}
                                   >
                                     <Plus className="w-3 h-3" />
@@ -344,30 +458,91 @@ export function KnowledgeTreeManager() {
                                 </div>
                               </div>
 
-                              {/* Topics */}
+                              {/* Lessons */}
                               {expandedSections.has(section.id) && (
                                 <div className="mr-5 mt-1 space-y-1 border-r border-muted-foreground/10 pr-1">
-                                  {section.topics.map((topic) => (
-                                    <div key={topic.id}>
-                                      <div className="flex items-center gap-3 hover:bg-muted/10 rounded px-3 py-1 group">
-                                        {/* <Target className="w-4 h-4" /> */}
-                                        <span className="text-sm">{topic.name}</span>
-                                        <Badge 
-                                          className={`text-xs ml-2 ${getDifficultyBadgeColor(topic.difficulty)}`}
-                                        >
-                                          {getDifficultyLabel(topic.difficulty)}
-                                        </Badge>
+                                  {section.lessons?.map((lesson) => (
+                                    <div key={lesson.id}>
+                                      <div 
+                                        className="flex items-center gap-3 hover:bg-muted/15 rounded px-3 py-1 cursor-pointer group"
+                                        onClick={() => toggleLesson(lesson.id)}
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                        <span className="text-sm">درس {lesson.order}: {lesson.name}</span>
                                         <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <span className="text-xs text-muted-foreground">{topic.estimated_study_time}د</span>
+                                          <Badge variant="outline" className="text-xs">{lesson.topic_categories?.length || 0}</Badge>
                                           <Button
                                             size="sm"
                                             variant="ghost"
-                                            className="h-5 w-5 p-0"
+                                            className="h-6 w-6 p-0"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openTopicCategoryDialog(lesson.id);
+                                            }}
                                           >
-                                            <Edit className="w-3 h-3" />
+                                            <Plus className="w-3 h-3" />
                                           </Button>
                                         </div>
                                       </div>
+
+                                      {/* Topic Categories */}
+                                      {expandedLessons.has(lesson.id) && (
+                                        <div className="mr-5 mt-1 space-y-1 border-r border-muted-foreground/5 pr-1">
+                                          {lesson.topic_categories?.map((topicCategory) => (
+                                            <div key={topicCategory.id}>
+                                              <div 
+                                                className="flex items-center gap-3 hover:bg-muted/10 rounded px-3 py-1 cursor-pointer group"
+                                                onClick={() => toggleTopicCategory(topicCategory.id)}
+                                              >
+                                                <FileText className="w-4 h-4" />
+                                                <span className="text-sm">{topicCategory.name}</span>
+                                                <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                                  <Badge variant="outline" className="text-xs">{topicCategory.topics?.length || 0}</Badge>
+                                                  <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    className="h-6 w-6 p-0"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      openTopicDialog(topicCategory.id);
+                                                    }}
+                                                  >
+                                                    <Plus className="w-3 h-3" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+
+                                              {/* Topics */}
+                                              {expandedTopicCategories.has(topicCategory.id) && (
+                                                <div className="mr-5 mt-1 space-y-1 pr-1">
+                                                  {topicCategory.topics?.map((topic) => (
+                                                    <div key={topic.id}>
+                                                      <div className="flex items-center gap-3 hover:bg-muted/5 rounded px-3 py-1 group">
+                                                        <span className="text-sm">{topic.name}</span>
+                                                        <Badge 
+                                                          className={`text-xs ml-2 ${getDifficultyBadgeColor(topic.difficulty)}`}
+                                                        >
+                                                          {getDifficultyLabel(topic.difficulty)}
+                                                        </Badge>
+                                                        <div className="flex items-center gap-1 mr-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                                          <span className="text-xs text-muted-foreground">{topic.estimated_study_time}د</span>
+                                                          <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            className="h-5 w-5 p-0"
+                                                          >
+                                                            <Edit className="w-3 h-3" />
+                                                          </Button>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -480,6 +655,106 @@ export function KnowledgeTreeManager() {
                 انصراف
               </Button>
               <Button type="submit">ایجاد زیربخش</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lesson Dialog */}
+      <Dialog open={isLessonDialogOpen} onOpenChange={setIsLessonDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>ایجاد درس جدید</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateLesson} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="lesson-name">نام درس</Label>
+              <Input
+                id="lesson-name"
+                value={lessonForm.name}
+                onChange={(e) => setLessonForm({...lessonForm, name: e.target.value})}
+                placeholder="مثال: معرفی ماتریس و اعمال روی ماتریس‌ها"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="lesson-order">شماره درس</Label>
+              <Input
+                id="lesson-order"
+                type="number"
+                value={lessonForm.order}
+                onChange={(e) => setLessonForm({...lessonForm, order: parseInt(e.target.value)})}
+                min="1"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="lesson-description">توضیحات</Label>
+              <Textarea
+                id="lesson-description"
+                value={lessonForm.description}
+                onChange={(e) => setLessonForm({...lessonForm, description: e.target.value})}
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsLessonDialogOpen(false)}>
+                انصراف
+              </Button>
+              <Button type="submit">ایجاد درس</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Topic Category Dialog */}
+      <Dialog open={isTopicCategoryDialogOpen} onOpenChange={setIsTopicCategoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>ایجاد دسته موضوع جدید</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateTopicCategory} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="topic-category-name">نام دسته موضوع</Label>
+              <Input
+                id="topic-category-name"
+                value={topicCategoryForm.name}
+                onChange={(e) => setTopicCategoryForm({...topicCategoryForm, name: e.target.value})}
+                placeholder="مثال: ضرب در ماتریس‌ها"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="topic-category-order">شماره ترتیب</Label>
+              <Input
+                id="topic-category-order"
+                type="number"
+                value={topicCategoryForm.order}
+                onChange={(e) => setTopicCategoryForm({...topicCategoryForm, order: parseInt(e.target.value)})}
+                min="1"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="topic-category-description">توضیحات</Label>
+              <Textarea
+                id="topic-category-description"
+                value={topicCategoryForm.description}
+                onChange={(e) => setTopicCategoryForm({...topicCategoryForm, description: e.target.value})}
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsTopicCategoryDialogOpen(false)}>
+                انصراف
+              </Button>
+              <Button type="submit">ایجاد دسته موضوع</Button>
             </div>
           </form>
         </DialogContent>

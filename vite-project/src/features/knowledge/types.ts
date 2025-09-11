@@ -34,6 +34,24 @@ export interface Section {
   name: string;
   order: number;
   description?: string;
+  total_topics: number;
+  lessons: Lesson[];
+}
+
+export interface Lesson {
+  id: number;
+  name: string;
+  order: number;
+  description?: string;
+  total_topics: number;
+  topic_categories: TopicCategory[];
+}
+
+export interface TopicCategory {
+  id: number;
+  name: string;
+  order: number;
+  description?: string;
   topics_count: number;
   topics: Topic[];
 }
@@ -50,6 +68,8 @@ export interface Topic {
 }
 
 export interface TopicDetail extends Topic {
+  topic_category_name: string;
+  lesson_name: string;
   section_name: string;
   chapter_name: string;
   subject_name: string;
@@ -66,6 +86,8 @@ export interface TopicTest {
   topic_detail: {
     id: number;
     name: string;
+    topic_category: string;
+    lesson: string;
     section: string;
     chapter: string;
     subject: string;
@@ -80,6 +102,17 @@ export interface TopicTest {
     question_number: number;
     answer: number;
   }>;
+}
+
+export interface Folder {
+  id: number;
+  name: string;
+  parent?: number | null;
+  description?: string;
+  order: number;
+  depth: number;
+  path_ids: number[];
+  children?: Folder[];
 }
 
 export interface CreateSubjectData {
@@ -103,8 +136,22 @@ export interface CreateSectionData {
   description?: string;
 }
 
-export interface CreateTopicData {
+export interface CreateLessonData {
   section: number;
+  name: string;
+  order: number;
+  description?: string;
+}
+
+export interface CreateTopicCategoryData {
+  lesson: number;
+  name: string;
+  order: number;
+  description?: string;
+}
+
+export interface CreateTopicData {
+  topic_category: number;
   name: string;
   order: number;
   description?: string;
@@ -116,7 +163,9 @@ export interface CreateTopicData {
 export interface CreateTopicTestData {
   name: string;
   description?: string;
-  topic: number;
+  topic?: number; // optional now
+  knowledge_path?: Array<{ level: string; id: number }>;
+  folders?: number[];
   pdf_file: number;
   answers_file?: number;
   duration: string; // ISO duration format "PT30M"

@@ -47,7 +47,9 @@ class File(models.Model):
         Course,
         on_delete=models.CASCADE,
         related_name='files',
-        help_text="The course this file is associated with"
+        help_text="The course this file is associated with",
+        null=True,
+        blank=True
     )
 
     session = models.ForeignKey(

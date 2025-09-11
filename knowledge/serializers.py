@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Subject, Chapter, Section, Topic, StudentTopicProgress
+from .models import Subject, Chapter, Section, Lesson, TopicCategory, Topic, StudentTopicProgress, Folder
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -9,32 +9,75 @@ class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = [
-            'id', 'name', 'order', 'description', 'difficulty',
+            'id', 'topic_category', 'name', 'order', 'description', 'difficulty',
             'tags', 'estimated_study_time', 'available_tests_count'
         ]
 
 
-class SectionSerializer(serializers.ModelSerializer):
-    """سریالایزر برای زیربخش"""
+class FolderSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+    path_ids = serializers.ReadOnlyField()
+    depth = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Folder
+        fields = ['id', 'name', 'parent', 'description', 'order', 'depth', 'path_ids', 'children']
+
+    def get_children(self, obj):
+        children = obj.children.all().order_by('order', 'id')
+        return FolderSerializer(children, many=True, context=self.context).data
+
+
+class TopicCategorySerializer(serializers.ModelSerializer):
+    """سریالایزر برای دسته موضوع"""
     topics = TopicSerializer(many=True, read_only=True)
     topics_count = serializers.SerializerMethodField()
     
     class Meta:
-        model = Section
-        fields = ['id', 'name', 'order', 'description', 'topics', 'topics_count']
+        model = TopicCategory
+        fields = ['id', 'lesson', 'name', 'order', 'description', 'topics', 'topics_count']
     
     def get_topics_count(self, obj):
         return obj.topics.count()
 
 
+class LessonSerializer(serializers.ModelSerializer):
+    """سریالایزر برای درس"""
+    topic_categories = TopicCategorySerializer(many=True, read_only=True)
+    total_topics = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Lesson
+        fields = ['id', 'section', 'name', 'order', 'description', 'topic_categories', 'total_topics']
+    
+    def get_total_topics(self, obj):
+        return Topic.objects.filter(topic_category__lesson=obj).count()
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    """سریالایزر برای زیربخش"""
+    lessons = LessonSerializer(many=True, read_only=True)
+    total_topics = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Section
+        fields = ['id', 'chapter', 'name', 'order', 'description', 'lessons', 'total_topics']
+    
+    def get_total_topics(self, obj):
+        return Topic.objects.filter(topic_category__lesson__section=obj).count()
+
+
 class ChapterSerializer(serializers.ModelSerializer):
     """سریالایزر برای فصل"""
     sections = SectionSerializer(many=True, read_only=True)
-    total_topics = serializers.ReadOnlyField(source='get_total_topics')
+    total_topics = serializers.SerializerMethodField()
     
     class Meta:
         model = Chapter
-        fields = ['id', 'name', 'order', 'description', 'sections', 'total_topics']
+        fields = ['id', 'subject', 'name', 'order', 'description', 'sections', 'total_topics']
+    
+    def get_total_topics(self, obj):
+        return Topic.objects.filter(topic_category__lesson__section__chapter=obj).count()
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -87,9 +130,11 @@ class KnowledgeTreeSerializer(serializers.ModelSerializer):
 
 class TopicDetailSerializer(serializers.ModelSerializer):
     """سریالایزر تفصیلی برای مبحث"""
-    section_name = serializers.CharField(source='section.name', read_only=True)
-    chapter_name = serializers.CharField(source='section.chapter.name', read_only=True)
-    subject_name = serializers.CharField(source='section.chapter.subject.name', read_only=True)
+    topic_category_name = serializers.CharField(source='topic_category.name', read_only=True)
+    lesson_name = serializers.CharField(source='topic_category.lesson.name', read_only=True)
+    section_name = serializers.CharField(source='topic_category.lesson.section.name', read_only=True)
+    chapter_name = serializers.CharField(source='topic_category.lesson.section.chapter.name', read_only=True)
+    subject_name = serializers.CharField(source='topic_category.lesson.section.chapter.subject.name', read_only=True)
     prerequisites = TopicSerializer(many=True, read_only=True)
     available_tests_count = serializers.ReadOnlyField(source='get_available_tests_count')
     
@@ -97,6 +142,6 @@ class TopicDetailSerializer(serializers.ModelSerializer):
         model = Topic
         fields = [
             'id', 'name', 'order', 'description', 'difficulty', 'tags',
-            'estimated_study_time', 'section_name', 'chapter_name', 'subject_name',
-            'prerequisites', 'available_tests_count'
+            'estimated_study_time', 'topic_category_name', 'lesson_name', 'section_name', 
+            'chapter_name', 'subject_name', 'prerequisites', 'available_tests_count'
         ]

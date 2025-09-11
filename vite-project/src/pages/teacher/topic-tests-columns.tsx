@@ -23,15 +23,16 @@ export type TopicTestForTable = {
   id: number;
   name: string;
   description?: string;
-  topic_name: string;
-  topic_detail: {
+  topic_name?: string | null;
+  topic_detail?: {
     id: number;
     name: string;
     section: string;
     chapter: string;
     subject: string;
     difficulty: string;
-  };
+  } | null;
+  folders?: { id: number; name: string; path_ids: number[] }[];
   duration_minutes: number;
   total_questions: number;
   participants_count: number;
@@ -82,30 +83,29 @@ export const topicTestColumns: ColumnDef<TopicTestForTable>[] = [
     size: 200,
   },
   {
-    accessorKey: "topic_name",
-    header: () => <span className="font-iransans">مبحث</span>,
-    cell: ({ row }) => (
-      <div className="font-iransans max-w-[150px] truncate" title={row.getValue("topic_name") as string}>
-        {row.getValue("topic_name")}
-      </div>
-    ),
-    size: 150,
-  },
-  {
-    accessorKey: "topic_detail",
-    header: () => <span className="font-iransans">درس</span>,
+    id: "folders_or_topic",
+    header: () => <span className="font-iransans">پوشه‌ها / مبحث</span>,
     cell: ({ row }) => {
-      const detail = row.getValue("topic_detail") as TopicTestForTable["topic_detail"];
-      return (
-        <div className="font-iransans text-sm max-w-[180px]">
-          <div className="truncate" title={detail.subject}>{detail.subject}</div>
-          <div className="text-muted-foreground text-xs truncate" title={`${detail.chapter} - ${detail.section}`}>
-            {detail.chapter} - {detail.section}
+      const original = row.original as TopicTestForTable;
+      if (original.folders && original.folders.length) {
+        return (
+          <div className="flex flex-wrap gap-1 max-w-[260px]">
+            {original.folders.slice(0,4).map(f => (
+              <Badge key={f.id} variant="outline" className="font-iransans text-[10px]">
+                {f.name}
+              </Badge>
+            ))}
+            {original.folders.length > 4 && (
+              <span className="text-[10px] text-muted-foreground">+{original.folders.length - 4}</span>
+            )}
           </div>
-        </div>
-      );
+        );
+      }
+      // Fallback to legacy topic fields
+      const name = original.topic_name || '—';
+      return <div className="font-iransans text-sm max-w-[200px] truncate" title={name}>{name}</div>;
     },
-    size: 180,
+    size: 260,
   },
   {
     accessorKey: "duration_minutes",

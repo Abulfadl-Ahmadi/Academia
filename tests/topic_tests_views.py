@@ -30,7 +30,7 @@ class TopicTestViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(teacher=self.request.user)
         # ادمین همه آزمون‌ها را می‌بیند
         
-        return queryset.select_related('topic__section__chapter__subject')
+        return queryset.select_related('topic__topic_category__lesson__section__chapter__subject')
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -169,9 +169,11 @@ class TopicTestViewSet(viewsets.ModelViewSet):
                         'topic': {
                             'id': test.topic.id,
                             'name': test.topic.name,
-                            'section': test.topic.section.name,
-                            'chapter': test.topic.section.chapter.name,
-                            'subject': test.topic.section.chapter.subject.name,
+                            'topic_category': test.topic.topic_category.name if test.topic.topic_category else 'نامشخص',
+                            'lesson': test.topic.topic_category.lesson.name if test.topic.topic_category else 'نامشخص',
+                            'section': test.topic.topic_category.lesson.section.name if test.topic.topic_category else 'نامشخص',
+                            'chapter': test.topic.topic_category.lesson.section.chapter.name if test.topic.topic_category else 'نامشخص',
+                            'subject': test.topic.topic_category.lesson.section.chapter.subject.name if test.topic.topic_category else 'نامشخص',
                             'difficulty': test.topic.difficulty
                         },
                         'tests': []
@@ -256,7 +258,7 @@ class StudentTopicTestHistoryView(APIView):
         sessions = StudentTestSession.objects.filter(
             user=request.user,
             test__test_type=TestType.TOPIC_BASED
-        ).select_related('test__topic__section__chapter__subject').order_by('-entry_time')
+        ).select_related('test__topic__topic_category__lesson__section__chapter__subject').order_by('-entry_time')
         
         # گروه‌بندی بر اساس مبحث
         history_by_topic = {}

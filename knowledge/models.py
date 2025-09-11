@@ -38,7 +38,45 @@ class Subject(models.Model):
     
     def get_total_topics(self):
         """تعداد کل مباحث این کتاب"""
-        return Topic.objects.filter(section__chapter__subject=self).count()
+        return Topic.objects.filter(topic_category__lesson__section__chapter__subject=self).count()
+
+
+class Folder(models.Model):
+    """پوشه سلسله مراتبی عمومی برای درخت دانش جدید (نامحدود عمق)."""
+    name = models.CharField(max_length=200, verbose_name="نام پوشه")
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE, verbose_name="پوشه والد")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    order = models.PositiveIntegerField(default=0, verbose_name="ترتیب")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "پوشه"
+        verbose_name_plural = "پوشه‌ها"
+        ordering = ['parent__id', 'order', 'id']
+        unique_together = ['parent', 'name']
+
+    def __str__(self):
+        return self.name if not self.parent else f"{self.parent} / {self.name}"
+
+    @property
+    def path_ids(self):
+        """لیست ID ها از ریشه تا این پوشه"""
+        ids = []
+        node = self
+        while node:
+            ids.append(node.id)
+            node = node.parent
+        return list(reversed(ids))
+
+    @property
+    def depth(self):
+        d = 0
+        node = self.parent
+        while node:
+            d += 1
+            node = node.parent
+        return d
 
 
 class Chapter(models.Model):
@@ -62,7 +100,7 @@ class Chapter(models.Model):
     
     def get_total_topics(self):
         """تعداد کل مباحث این فصل"""
-        return Topic.objects.filter(section__chapter=self).count()
+        return Topic.objects.filter(topic_category__lesson__section__chapter=self).count()
 
 
 class Section(models.Model):
@@ -85,6 +123,46 @@ class Section(models.Model):
         return f"{self.chapter.name} - {self.name}"
 
 
+class Lesson(models.Model):
+    """درس - سطح جدید بین Section و Topic"""
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='lessons', verbose_name="زیربخش")
+    name = models.CharField(max_length=200, verbose_name="نام درس")
+    order = models.PositiveIntegerField(verbose_name="ترتیب")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "درس"
+        verbose_name_plural = "درس‌ها"
+        ordering = ['section', 'order']
+        unique_together = ['section', 'order']
+    
+    def __str__(self):
+        return f"{self.section.name} - درس {self.order}: {self.name}"
+
+
+class TopicCategory(models.Model):
+    """دسته‌بندی موضوعات - سطح جدید بین Lesson و Topic"""
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='topic_categories', verbose_name="درس")
+    name = models.CharField(max_length=200, verbose_name="نام دسته موضوع")
+    order = models.PositiveIntegerField(verbose_name="ترتیب")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "دسته موضوع"
+        verbose_name_plural = "دسته‌های موضوع"
+        ordering = ['lesson', 'order']
+        unique_together = ['lesson', 'order']
+    
+    def __str__(self):
+        return f"{self.lesson.name} - {self.name}"
+
+
 class DifficultyLevel(models.TextChoices):
     BEGINNER = 'beginner', 'مبتدی'
     INTERMEDIATE = 'intermediate', 'متوسط' 
@@ -94,7 +172,12 @@ class DifficultyLevel(models.TextChoices):
 
 class Topic(models.Model):
     """مبحث نهایی - مثل قضیه تالس، نظریه فیثاغورث"""
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='topics', verbose_name="زیربخش")
+    # فیلد جدید برای سلسله مراتب جدید
+    topic_category = models.ForeignKey(TopicCategory, on_delete=models.CASCADE, related_name='topics', verbose_name="دسته موضوع", null=True, blank=True)
+    
+    # فیلد قدیمی برای سازگاری - موقتاً نگه داشته می‌شود
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='old_topics', verbose_name="زیربخش (قدیمی)", null=True, blank=True)
+    
     name = models.CharField(max_length=200, verbose_name="نام مبحث")
     order = models.PositiveIntegerField(verbose_name="ترتیب")
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
@@ -131,11 +214,11 @@ class Topic(models.Model):
     class Meta:
         verbose_name = "مبحث"
         verbose_name_plural = "مباحث"
-        ordering = ['section', 'order']
-        unique_together = ['section', 'order']
+        ordering = ['topic_category', 'order']
+        unique_together = ['topic_category', 'order']
     
     def __str__(self):
-        return f"{self.section.chapter.subject.name} - {self.name}"
+        return f"{self.topic_category.lesson.section.chapter.subject.name} - {self.name}"
     
     def get_available_tests_count(self):
         """تعداد آزمون‌های موجود برای این مبحث"""

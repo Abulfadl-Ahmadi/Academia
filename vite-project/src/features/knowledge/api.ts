@@ -3,6 +3,8 @@ import type {
   Subject,
   Chapter,
   Section,
+  Lesson,
+  TopicCategory,
   Topic,
   TopicDetail,
   TopicTest,
@@ -10,8 +12,11 @@ import type {
   CreateSubjectData,
   CreateChapterData,
   CreateSectionData,
+  CreateLessonData,
+  CreateTopicCategoryData,
   CreateTopicData,
-  CreateTopicTestData
+  CreateTopicTestData,
+  Folder
 } from './types';
 
 export const knowledgeApi = {
@@ -58,6 +63,32 @@ export const knowledgeApi = {
   deleteSection: (id: number) =>
     axiosInstance.delete(`/knowledge/sections/${id}/`),
 
+  // Lessons
+  getLessons: () =>
+    axiosInstance.get<Lesson[]>('/knowledge/lessons/'),
+  
+  createLesson: (data: CreateLessonData) =>
+    axiosInstance.post<Lesson>('/knowledge/lessons/', data),
+  
+  updateLesson: (id: number, data: Partial<CreateLessonData>) =>
+    axiosInstance.patch<Lesson>(`/knowledge/lessons/${id}/`, data),
+  
+  deleteLesson: (id: number) =>
+    axiosInstance.delete(`/knowledge/lessons/${id}/`),
+
+  // Topic Categories
+  getTopicCategories: () =>
+    axiosInstance.get<TopicCategory[]>('/knowledge/topic-categories/'),
+  
+  createTopicCategory: (data: CreateTopicCategoryData) =>
+    axiosInstance.post<TopicCategory>('/knowledge/topic-categories/', data),
+  
+  updateTopicCategory: (id: number, data: Partial<CreateTopicCategoryData>) =>
+    axiosInstance.patch<TopicCategory>(`/knowledge/topic-categories/${id}/`, data),
+  
+  deleteTopicCategory: (id: number) =>
+    axiosInstance.delete(`/knowledge/topic-categories/${id}/`),
+
   // Topics
   getTopics: () =>
     axiosInstance.get<Topic[]>('/knowledge/topics/'),
@@ -73,6 +104,18 @@ export const knowledgeApi = {
   
   deleteTopic: (id: number) =>
     axiosInstance.delete(`/knowledge/topics/${id}/`),
+
+  // Folders (new infinite hierarchy)
+  getFolders: (parent?: number | null) =>
+    axiosInstance.get<Folder[]>(`/knowledge/folders/${parent ? `?parent=${parent}` : ''}`),
+  getFolderTree: () =>
+    axiosInstance.get<Folder[]>('/knowledge/folders/tree/'),
+  createFolder: (data: Partial<Folder>) =>
+    axiosInstance.post<Folder>('/knowledge/folders/', data),
+  updateFolder: (id: number, data: Partial<Folder>) =>
+    axiosInstance.patch<Folder>(`/knowledge/folders/${id}/`, data),
+  deleteFolder: (id: number) =>
+    axiosInstance.delete(`/knowledge/folders/${id}/`),
 
   // Knowledge Tree
   getKnowledgeTree: () =>
