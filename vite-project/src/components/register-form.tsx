@@ -29,41 +29,24 @@ export function RegisterForm({
 }: React.ComponentProps<"div">) {
   const [step, setStep] = useState<RegistrationStep>('form')
   const [formData, setFormData] = useState({
-    user: {
-      username: "",
-      email: "",
-      password: "",
-      first_name: "",
-      last_name: "",
-    },
-    national_id: "",
-    phone_number: "",
-    // birth_date: null,
-    grade: "",
+    password: "",
+    passwordConfirm: "",
+    firstName: "",
+    lastName: "",
+    email: "", // Optional email
   })
   // const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
   const [verificationCode, setVerificationCode] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
   const navigate = useNavigate()
 
   const handleInputChange = (field: string, value: string) => {
-    if (field.startsWith('user.')) {
-      const userField = field.split('.')[1]
-      setFormData(prev => ({
-        ...prev,
-        user: {
-          ...prev.user,
-          [userField]: value
-        }
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: value
-      }))
-    }
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
 
   // const handleSendVerification = async (email: string) => {
@@ -105,25 +88,25 @@ export function RegisterForm({
   //   }
   // }
 
-  const handleVerifyEmail = async (e: React.FormEvent) => {
+  const handleVerifyPhone = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setLoading(true)
 
     try {
       const response = await axiosInstance.post(
-        "/verify-email/",
+        "/verify-phone/",
         {
-          email: email,
+          phone_number: phoneNumber,
           code: verificationCode,
         }
         // { withCredentials: true }
       )
 
-      console.log("Email verified:", response.data)
+      console.log("Phone verified:", response.data)
       setStep('complete')
     } catch (err: unknown) {
-      console.error("Verify email error:", err)
+      console.error("Verify phone error:", err)
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosError = err as { response?: { data?: Record<string, unknown> } }
         const errorData = axiosError.response?.data
@@ -149,15 +132,13 @@ export function RegisterForm({
       const response = await axiosInstance.post(
         "/complete-registration/",
         {
-          email: formData.user.email,
-          username: formData.user.username,
-          password: formData.user.password,
-          first_name: "", // Empty for simple registration
-          last_name: "", // Empty for simple registration
-          national_id: "", // Empty for simple registration
-          phone_number: "", // Empty for simple registration
-          // birth_date: "", // Empty string instead of null
-          grade: "", // Empty for simple registration
+          phone_number: phoneNumber,
+          username: phoneNumber, // Use phone number as username
+          password: formData.password,
+          password_confirm: formData.passwordConfirm,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email || undefined, // Optional email
         }
         // { withCredentials: true }
       )
@@ -165,7 +146,7 @@ export function RegisterForm({
       navigate("/login", { 
         state: { 
           message: 'ثبت نام با موفقیت انجام شد. اکنون وارد شوید.',
-          email: formData.user.email 
+          phone_number: phoneNumber 
         } 
       });
     } catch (err: unknown) {
@@ -187,25 +168,36 @@ export function RegisterForm({
     }
   }
 
+  const validatePhoneNumber = (phone: string) => {
+    // Iranian mobile number validation (starts with 09 and 10 digits total)
+    const phoneRegex = /^09\d{9}$/
+    return phoneRegex.test(phone)
+  }
+
   const handleSendVerification = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validatePhoneNumber(phoneNumber)) {
+      setError("شماره موبایل باید با 09 شروع شود و 11 رقم باشد")
+      return
+    }
+    
     setError("")
     setLoading(true)
 
     try {
-      // First send verification code to email
+      // First send verification code to phone
       const response = await axiosInstance.post(
-        "/send-verification/",
+        "/send-phone-verification/",
         {
-          email: formData.user.email,
+          phone_number: phoneNumber,
         }
         // { withCredentials: true }
       )
       console.log("Verification code sent:", response.data)
-      setEmail(formData.user.email)
       setStep('verification')
     } catch (err: unknown) {
-      console.error("Complete registration error:", err)
+      console.error("Send verification error:", err)
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosError = err as { response?: { data?: Record<string, unknown> } }
         const errorData = axiosError.response?.data
@@ -213,10 +205,10 @@ export function RegisterForm({
           const errorMessages = Object.values(errorData).flat()
           setError(errorMessages.join(', '))
         } else {
-          setError(String(errorData) || "خطا در تکمیل ثبت‌نام")
+          setError(String(errorData))
         }
       } else {
-        setError("خطا در تکمیل ثبت‌نام. لطفاً دوباره تلاش کنید.")
+        setError("خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.")
       }
     } finally {
       setLoading(false)
@@ -228,8 +220,8 @@ export function RegisterForm({
     setLoading(true)
 
     try {
-      const response = await axiosInstance.post('/send-verification/', { 
-        email: email 
+      const response = await axiosInstance.post('/send-phone-verification/', { 
+        phone_number: phoneNumber 
       })
       
       if (response.status === 200) {
@@ -271,25 +263,13 @@ export function RegisterForm({
         <div className="grid gap-4">
           {/* User Information */}
           <div className="grid gap-3">
-            <Label htmlFor="username">نام‌کاربری *</Label>
+            <Label htmlFor="phoneNumber">شماره موبایل *</Label>
             <Input
-              id="username"
-              type="text"
-              value={formData.user.username}
-              onChange={(e) => handleInputChange('user.username', e.target.value)}
-              placeholder="نام کاربری خود را وارد کنید"
-              required
-            />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="email">ایمیل *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.user.email}
-              onChange={(e) => handleInputChange('user.email', e.target.value)}
-              placeholder="example@email.com"
+              id="phoneNumber"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="09123456789"
               required
             />
           </div>
@@ -299,10 +279,55 @@ export function RegisterForm({
             <Input
               id="password"
               type="password"
-              value={formData.user.password}
-              onChange={(e) => handleInputChange('user.password', e.target.value)}
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
               placeholder="حداقل 6 کاراکتر"
               required
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="passwordConfirm">تکرار گذرواژه *</Label>
+            <Input
+              id="passwordConfirm"
+              type="password"
+              value={formData.passwordConfirm}
+              onChange={(e) => handleInputChange('passwordConfirm', e.target.value)}
+              placeholder="گذرواژه را تکرار کنید"
+              required
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="firstName">نام</Label>
+            <Input
+              id="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              placeholder="نام"
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="lastName">نام خانوادگی</Label>
+            <Input
+              id="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              placeholder="نام خانوادگی"
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="email">ایمیل (اختیاری)</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="example@email.com"
             />
           </div>
 
@@ -385,8 +410,8 @@ export function RegisterForm({
           */}
 
           <Button type="submit" className="w-full"
-          // disabled={loading}
-          disabled={true}
+          disabled={loading}
+          // disabled={true}
           >
             {loading ? "در حال ثبت نام..." : "ثبت نام"}
           </Button>
@@ -403,12 +428,12 @@ export function RegisterForm({
   )
 
   const renderVerificationStep = () => (
-    <form onSubmit={handleVerifyEmail}>
+    <form onSubmit={handleVerifyPhone}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center text-center">
-          <h1 className="text-2xl font-bold">تایید ایمیل</h1>
+          <h1 className="text-2xl font-bold">تایید شماره موبایل</h1>
           <p className="text-muted-foreground text-balance">
-            کد تایید به ایمیل {email} ارسال شد
+            کد تایید به شماره {phoneNumber} ارسال شد
           </p>
         </div>
 
