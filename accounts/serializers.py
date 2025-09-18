@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 from .models import UserProfile, VerificationCode
 from .validators import validate_iranian_national_id
 
@@ -20,8 +21,17 @@ class SendVerificationCodeSerializer(serializers.Serializer):
     # last_name = serializers.CharField(required=False, allow_blank=True)
 
 
+class SendPhoneVerificationCodeSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(validators=[RegexValidator(r'^09\d{9}$', 'Enter a valid 11-digit Iranian phone number')])
+
+
 class VerifyEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)
+
+
+class VerifyPhoneSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(validators=[RegexValidator(r'^09\d{9}$', 'Enter a valid 11-digit Iranian phone number')])
     code = serializers.CharField(max_length=6, min_length=6)
 
 
@@ -71,12 +81,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class CompleteRegistrationSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    phone_number = serializers.CharField(validators=[RegexValidator(r'^09\d{9}$', 'Enter a valid 11-digit Iranian phone number')])
     username = serializers.CharField()
     password = serializers.CharField(min_length=6)
     first_name = serializers.CharField(required=False, allow_blank=True)
     last_name = serializers.CharField(required=False, allow_blank=True)
     national_id = serializers.CharField(required=False, allow_blank=True)
-    phone_number = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=False, allow_blank=True)
     # birth_date = serializers.DateField(required=False)
     grade = serializers.CharField(required=False, allow_blank=True)

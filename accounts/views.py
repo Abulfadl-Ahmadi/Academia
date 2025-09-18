@@ -11,10 +11,12 @@ from .serializers import (
     UserProfileSerializer, 
     UserSerializer, 
     SendVerificationCodeSerializer,
+    SendPhoneVerificationCodeSerializer,
     VerifyEmailSerializer,
+    VerifyPhoneSerializer,
     CompleteRegistrationSerializer
 )
-from .utils import send_verification_email
+from .utils import send_verification_email, send_verification_sms
 from django.core.cache import cache
 
 
@@ -66,6 +68,38 @@ class SendVerificationCodeView(APIView):
             else:
                 return Response(
                     {"error": "خطا در ارسال ایمیل. لطفاً دوباره تلاش کنید"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SendPhoneVerificationCodeView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """
+        Send verification code to phone number
+        """
+        serializer = SendPhoneVerificationCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            
+            VerificationCode.objects.filter(phone_number=phone_number).delete()
+            # Create verification code
+            verification_code = VerificationCode.create_for_phone(phone_number)
+            
+            # Send SMS
+            sms_sent = send_verification_sms(phone_number, verification_code.code)
+
+            if sms_sent:
+                return Response({
+                    "message": "کد تایید به شماره موبایل شما ارسال شد",
+                    "phone_number": phone_number
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"error": "خطا در ارسال پیامک. لطفاً دوباره تلاش کنید"}, 
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
         
@@ -128,40 +162,85 @@ class VerifyEmailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class VerifyPhoneView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """
+        Verify phone number with code
+        """
+        serializer = VerifyPhoneSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            code = serializer.validated_data['code']
+            
+            try:
+                verification_code = VerificationCode.objects.get(phone_number=phone_number, code=code)
+                
+                if not verification_code.is_valid():
+                    if verification_code.is_expired():
+                        return Response(
+                            {"error": "کد تایید منقضی شده است"}, 
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    else:
+                        return Response(
+                            {"error": "کد تایید نامعتبر است"}, 
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                
+                # Mark code as used
+                verification_code.is_used = True
+                verification_code.save()
+                
+                return Response({
+                    "message": "شماره موبایل با موفقیت تایید شد",
+                    "phone_number": phone_number
+                }, status=status.HTTP_200_OK)
+                
+            except VerificationCode.DoesNotExist:
+                return Response(
+                    {"error": "کد تایید نامعتبر است"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CompleteRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
     
     def post(self, request):
         """
-        Complete registration after email verification
+        Complete registration after phone verification
         """
         serializer = CompleteRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data['email']
+            phone_number = serializer.validated_data['phone_number']
             
-            # Check if email was verified
-            # verification_code = (
-            #     VerificationCode.objects
-            #     .filter(email=email, is_used=True)
-            #     .order_by('-created_at')
-            #     .first()
-            # )
+            # Check if phone was verified
+            verification_code = (
+                VerificationCode.objects
+                .filter(phone_number=phone_number, is_used=True)
+                .order_by('-created_at')
+                .first()
+            )
 
-            # if not verification_code:
-            #     return Response(
-            #         {"error": "لطفاً ابتدا ایمیل خود را تایید کنید"}, 
-            #         status=status.HTTP_400_BAD_REQUEST
-            #     )
+            if not verification_code:
+                return Response(
+                    {"error": "لطفاً ابتدا شماره موبایل خود را تایید کنید"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
             # Create user
             user_data = {
                 'username': serializer.validated_data['username'],
-                'email': email,
+                'email': serializer.validated_data.get('email', ''),
                 'password': serializer.validated_data['password'],
                 'first_name': serializer.validated_data.get('first_name', ''),
                 'last_name': serializer.validated_data.get('last_name', ''),
                 'role': User.STUDENT,
-                'is_email_verified': True
+                'is_email_verified': False  # Email not verified yet
             }
             
             user = User(**user_data)
@@ -171,7 +250,7 @@ class CompleteRegistrationView(APIView):
             # Create profile
             profile_data = {
                 'national_id': serializer.validated_data.get('national_id', ''),
-                'phone_number': serializer.validated_data.get('phone_number', ''),
+                'phone_number': phone_number,
                 'birth_date': serializer.validated_data.get('birth_date'),
                 'grade': serializer.validated_data.get('grade', ''),
             }
@@ -181,16 +260,11 @@ class CompleteRegistrationView(APIView):
             # Generate tokens
             refresh = RefreshToken.for_user(user)
             
-            # Clear cache
-            # cache_key = f"registration_data_{email}"
-            # cache.delete(cache_key)
-
-            VerificationCode.objects.filter(email=user.email).delete()
-            code = VerificationCode.create_for_email(user.email)
-            # send_email(user.email, code.code)
+            # Clear verification codes
+            VerificationCode.objects.filter(phone_number=phone_number).delete()
             
             response = Response({
-                "message": "ثبت‌نام با موفقیت انجام شد، لطفا ایمیل خود را تایید کنید.",
+                "message": "ثبت‌نام با موفقیت انجام شد.",
                 "user": {
                     "username": user.username,
                     "email": user.email,

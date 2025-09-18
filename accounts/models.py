@@ -53,14 +53,24 @@ class User(AbstractUser):
 
 
 class VerificationCode(models.Model):
-    email = models.EmailField()
+    EMAIL = 'email'
+    PHONE = 'phone'
+    TYPE_CHOICES = (
+        (EMAIL, 'Email'),
+        (PHONE, 'Phone'),
+    )
+    
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=11, blank=True, null=True, validators=[RegexValidator(r'^09\d{9}$', 'Enter a valid 11-digit Iranian phone number')])
     code = models.CharField(max_length=6)
+    type = models.CharField(max_length=5, choices=TYPE_CHOICES, default=EMAIL)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     is_used = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"{self.email} - {self.code}"
+        target = self.email if self.type == self.EMAIL else self.phone_number
+        return f"{target} - {self.code}"
     
     def is_expired(self):
         return timezone.now() > self.expires_at
@@ -86,7 +96,25 @@ class VerificationCode(models.Model):
         return cls.objects.create(
             email=email,
             code=code,
-            expires_at=expires_at
+            expires_at=expires_at,
+            type=cls.EMAIL
+        )
+    
+    @classmethod
+    def create_for_phone(cls, phone_number):
+        """Create a new verification code for a phone number"""
+        # Delete any existing unused codes for this phone
+        cls.objects.filter(phone_number=phone_number, is_used=False).delete()
+        
+        # Create new code
+        code = cls.generate_code()
+        expires_at = timezone.now() + timedelta(minutes=10)  # 10 minutes expiry
+        
+        return cls.objects.create(
+            phone_number=phone_number,
+            code=code,
+            expires_at=expires_at,
+            type=cls.PHONE
         )
 
 
