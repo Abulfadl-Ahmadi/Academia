@@ -23,6 +23,10 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} - {self.user.username} - {self.status}"
 
+    @property
+    def order_items(self):
+        return list(self.items.all())
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -82,3 +86,24 @@ class UserAccess(models.Model):
         if not self.expires_at:
             return False
         return timezone.now() > self.expires_at
+
+
+class Payment(models.Model):
+    class PaymentStatus(models.TextChoices):
+        PENDING = 'pending', _('Pending')
+        SUCCESS = 'success', _('Success')
+        FAILED = 'failed', _('Failed')
+        CANCELLED = 'cancelled', _('Cancelled')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
+    amount = models.IntegerField()  # Amount in Tomans
+    authority = models.CharField(max_length=100, unique=True)  # Zarinpal authority
+    ref_id = models.CharField(max_length=100, blank=True, null=True)  # Reference ID from Zarinpal
+    status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Payment #{self.id} - {self.user.username} - {self.amount} Tomans - {self.status}"

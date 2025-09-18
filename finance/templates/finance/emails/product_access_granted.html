@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <title>دسترسی به محصول</title>
+</head>
+<body style="font-family: tahoma, Arial, sans-serif; direction: rtl; text-align: right;">
+  <h2>دسترسی به محصولات برای شما فعال شد</h2>
+  <p>سفارش: #{{ order.id }}</p>
+  <h3>اقلام:</h3>
+  <ul>
+    {% for item in order_items %}
+      <li>{{ item.product.title }} × {{ item.quantity }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

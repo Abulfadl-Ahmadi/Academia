@@ -2,14 +2,17 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.db import transaction
 from django.utils import timezone
-from .models import Order, OrderItem, Transaction, UserAccess
+from django.conf import settings
+import requests
+from .models import Order, OrderItem, Transaction, UserAccess, Payment
 from courses.models import Course
 from .serializers import (
     OrderSerializer, OrderCreateSerializer, TransactionSerializer,
-    TransactionCreateSerializer, UserAccessSerializer, OrderStatusUpdateSerializer
+    TransactionCreateSerializer, UserAccessSerializer, OrderStatusUpdateSerializer,
+    PaymentSerializer, PaymentInitiateSerializer
 )
 from shop.models import Product
 from accounts.models import UserProfile
@@ -23,18 +26,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'admin':
-            return Order.objects.all().select_related('user').prefetch_related('items')
-        return Order.objects.filter(user=user).select_related('user').prefetch_related('items')
+            return Order.objects.all().select_related('user').prefetch_related('items__product')
+        return Order.objects.filter(user=user).select_related('user').prefetch_related('items__product')
 
     def get_serializer_class(self):
         if self.action == 'create':
             return OrderCreateSerializer
         return OrderSerializer
 
-    def perform_create(self, serializer):
-        order = serializer.save()
-        # Send notification email to admin when order is created
-        send_purchase_notification_email(order)
+    def create(self, request, *args, **kwargs):
+        """Use OrderCreateSerializer for input, but return OrderSerializer as output."""
+        input_serializer = OrderCreateSerializer(data=request.data, context={"request": request})
+        input_serializer.is_valid(raise_exception=True)
+        order = input_serializer.save()
+
+        # Send notification email to admin when order is created (best-effort)
+        try:
+            send_purchase_notification_email(order)
+        except Exception:
+            pass
+
+        output_serializer = OrderSerializer(order, context={"request": request})
+        headers = self.get_success_headers(output_serializer.data)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
@@ -283,3 +297,173 @@ class ProductAccessCheckView(APIView):
                 "has_access": False,
                 "message": "Product not purchased"
             })
+
+
+class PaymentInitiateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = PaymentInitiateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        order_id = serializer.validated_data['order_id']
+        # For security, always use the server-calculated amount from the order
+        description = serializer.validated_data.get('description', f'پرداخت سفارش #{order_id}')
+
+        # Get the order
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+        except Order.DoesNotExist:
+            return Response({"error": "سفارش یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if order is already paid
+        if order.status == Order.OrderStatus.PAID:
+            return Response({"error": "این سفارش قبلاً پرداخت شده است"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        # Prepare Zarinpal request (single correct version)
+        callback_url = f"{settings.SERVER_IP} /finance/payment/callback/"
+        zarinpal_data = {
+            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
+            "amount": order.total_amount,
+            "callback_url": callback_url,
+            "description": description
+        }
+
+        try:
+            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
+            result = response.json()
+        except Exception as e:
+            return Response({"error": f"خطا در ارتباط با درگاه پرداخت: {e}"}, status=status.HTTP_502_BAD_GATEWAY)
+
+        if result.get("data") and result["data"].get("authority"):
+            authority = result["data"]["authority"]
+            payment = Payment.objects.create(
+                user=request.user,
+                order=order,
+                amount=order.total_amount,
+                description=description,
+                authority=authority
+            )
+            startpay_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
+            return Response({"payment_url": startpay_url, "authority": authority})
+        else:
+            error_message = result.get("errors", ["خطا در دریافت کد پرداخت"])[0]
+            return Response({"error": error_message}, status=status.HTTP_502_BAD_GATEWAY)
+
+        # Prepare Zarinpal request
+        callback_url = f"{settings.SERVER_IP}/finance/payment/callback/"
+        zarinpal_data = {
+            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
+            "amount": order.total_amount,
+            "callback_url": callback_url,
+            "description": description
+        }
+
+        try:
+            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
+            response_data = response.json()
+
+            if response_data.get('data', {}).get('code') == 100:
+                authority = response_data['data']['authority']
+                payment.authority = authority
+                payment.save()
+
+                payment_url = f"{settings.ZARINPAL_START_PAY_URL}{authority}"
+                return Response({
+                    "payment_url": payment_url,
+                    "authority": authority
+                })
+            else:
+                payment.status = Payment.PaymentStatus.FAILED
+                payment.save()
+                return Response({
+                    "error": "خطا در ایجاد پرداخت",
+                    "code": response_data.get('data', {}).get('code')
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        except requests.RequestException as e:
+            payment.status = Payment.PaymentStatus.FAILED
+            payment.save()
+            return Response({"error": "خطا در اتصال به درگاه پرداخت"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PaymentCallbackView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        authority = request.GET.get('Authority')
+        status_param = request.GET.get('Status')
+
+        FRONTEND_URL = "http://localhost:5173"
+        if not authority or status_param != 'OK':
+            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+
+        try:
+            payment = Payment.objects.get(authority=authority)
+        except Payment.DoesNotExist:
+            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+
+        # Verify payment with Zarinpal
+        verify_data = {
+            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
+            "authority": authority,
+            "amount": payment.amount
+        }
+
+        try:
+            response = requests.post(settings.ZARINPAL_VERIFY_URL, json=verify_data, timeout=10)
+            response_data = response.json()
+
+            if response_data.get('data', {}).get('code') == 100:
+                ref_id = response_data['data']['ref_id']
+                payment.ref_id = ref_id
+                payment.status = Payment.PaymentStatus.SUCCESS
+                payment.save()
+
+                # Update order status
+                if payment.order:
+                    payment.order.status = Order.OrderStatus.PAID
+                    payment.order.save()
+
+                    # Create transaction record
+                    Transaction.objects.create(
+                        order=payment.order,
+                        amount=payment.amount,
+                        transaction_type=Transaction.TransactionType.PURCHASE,
+                        payment_method=Transaction.PaymentMethod.ONLINE_PAYMENT,
+                        reference_number=ref_id,
+                        description=f"پرداخت آنلاین - کد پیگیری: {ref_id}",
+                        created_by=payment.user
+                    )
+
+                    # Grant product access
+                    for item in payment.order.items.all():
+                        access, created = UserAccess.objects.get_or_create(
+                            user=payment.user,
+                            product=item.product,
+                            order=payment.order,
+                            defaults={'is_active': True}
+                        )
+                        if not created and not access.is_active:
+                            access.is_active = True
+                            access.save()
+                        # Add user to course.students if not already
+                        course = getattr(item.product, 'course', None)
+                        if course and not course.students.filter(id=payment.user.id).exists():
+                            course.students.add(payment.user)
+
+                    # Send confirmation email
+                    send_payment_confirmation_email(payment.order)
+
+                return redirect(f"{FRONTEND_URL}/payment/success?ref_id={ref_id}")
+            else:
+                payment.status = Payment.PaymentStatus.FAILED
+                payment.save()
+                return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+
+        except requests.RequestException:
+            payment.status = Payment.PaymentStatus.FAILED
+            payment.save()
+            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")

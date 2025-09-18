@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <title>سفارش جدید</title>
+</head>
+<body style="font-family: tahoma, Arial, sans-serif; direction: rtl; text-align: right;">
+  <h2>سفارش جدید ثبت شد</h2>
+  <p>دانش‌آموز: {{ student.username }}</p>
+  <p>شماره سفارش: #{{ order.id }}</p>
+  <h3>اقلام سفارش:</h3>
+  <ul>
+    {% for item in order_items %}
+      <li>
+        {{ item.product.title }} × {{ item.quantity }} — قیمت واحد: {{ item.price }} — تخفیف: {{ item.discount_amount }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p>مبلغ کل: {{ total_amount }}</p>
+</body>
+</html>

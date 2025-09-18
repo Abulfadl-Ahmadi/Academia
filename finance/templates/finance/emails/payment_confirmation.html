@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <title>تأیید پرداخت</title>
+</head>
+<body style="font-family: tahoma, Arial, sans-serif; direction: rtl; text-align: right;">
+  <h2>پرداخت شما با موفقیت انجام شد</h2>
+  <p>شماره سفارش: #{{ order.id }}</p>
+  <h3>اقلام:</h3>
+  <ul>
+    {% for item in order_items %}
+      <li>{{ item.product.title }} × {{ item.quantity }}</li>
+    {% endfor %}
+  </ul>
+  <p>مبلغ کل: {{ total_amount }}</p>
+</body>
+</html>
