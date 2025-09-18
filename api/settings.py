@@ -28,6 +28,10 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=False)
+if DEBUG:
+    SERVER_IP = config('SERVER_IP', default="http://localhost:8000")
+else:
+    SERVER_IP = config('SERVER_IP', default="https://localhost:8000")
 
 # Email settings
 try:
@@ -43,6 +47,15 @@ except UndefinedValueError:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = 'no-reply@localhost'
 
+# SMS settings for sms.ir
+SMS_IR_API_KEY = config('SMS_IR_API_KEY', default='')
+
+# Zarinpal Payment Gateway Settings
+ZARINPAL_MERCHANT_ID = config('ZARINPAL_MERCHANT_ID', default='550e8400-e29b-41d4-a716-446655440000')
+ZARINPAL_SANDBOX = config('ZARINPAL_SANDBOX', cast=bool, default=True)
+ZARINPAL_REQUEST_URL = 'https://sandbox.zarinpal.com/pg/v4/payment/request.json' if ZARINPAL_SANDBOX else 'https://api.zarinpal.com/pg/v4/payment/request.json'
+ZARINPAL_VERIFY_URL = 'https://sandbox.zarinpal.com/pg/v4/payment/verify.json' if ZARINPAL_SANDBOX else 'https://api.zarinpal.com/pg/v4/payment/verify.json'
+ZARINPAL_STARTPAY_URL = 'https://sandbox.zarinpal.com/pg/StartPay/' if ZARINPAL_SANDBOX else 'https://www.zarinpal.com/pg/StartPay/'
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
