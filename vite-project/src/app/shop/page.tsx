@@ -44,7 +44,7 @@ export default function ShopPage() {
   const [cartOpen, setCartOpen] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [appliedDiscount, setAppliedDiscount] = useState<Discount | null>(null)
-  const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCart()
+  const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart()
 
   const TAX_RATE = 0.099 // 9.9%
 
@@ -184,18 +184,23 @@ export default function ShopPage() {
         discount_code: appliedDiscount?.code || undefined
       }))
 
-      await axiosInstance.post('/shop/purchase/', { items })
+      // Create order
+      const orderResponse = await axiosInstance.post('/finance/orders/', { items })
+      const orderId = orderResponse.data.id
 
-      toast.success("درخواست خرید شما با موفقیت ثبت شد. با شما تماس خواهیم گرفت.")
+      toast.success("سفارش شما ایجاد شد. در حال انتقال به درگاه پرداخت...")
 
       // Clear cart
-      // Cart will be cleared by the context after successful purchase
+      clearCart()
       setAppliedDiscount(null)
       setDiscountCode('')
       setCartOpen(false)
 
+      // Redirect to payment page with order ID
+      window.location.href = `/payment/initiate?orderId=${orderId}&amount=${calculateTotal()}`
+
     } catch (error) {
-      toast.error("خطا در ثبت سفارش")
+      toast.error("خطا در ایجاد سفارش")
     }
   }
 
