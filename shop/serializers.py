@@ -4,7 +4,7 @@ from accounts.serializers import UserSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    creator = UserSerializer(read_only=True)
+    creator = UserSerializer(read_only=True, required=False)
     current_price = serializers.ReadOnlyField()
     has_active_discount = serializers.ReadOnlyField()
     
