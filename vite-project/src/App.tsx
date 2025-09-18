@@ -26,6 +26,9 @@ import ProductDetailPage from './app/shop/[id]/page'
 import { Toaster } from "@/components/ui/sonner"
 import GradeCalculatorPage from '@/pages/GradeCalculatorPage'
 import MathTestPage from '@/pages/MathTestPage'
+import { PaymentInitiate } from '@/components/PaymentInitiate'
+import { PaymentSuccess } from '@/components/PaymentSuccess'
+import { PaymentFailed } from '@/components/PaymentFailed'
 
 function PreApp() {
   return (
@@ -88,6 +91,9 @@ function App() {
         } />
         <Route path="/grade-calculator" element={<GradeCalculatorPage />} />
         <Route path="/math-test" element={<MathTestPage />} />
+        <Route path="/payment/initiate" element={<PaymentInitiate />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/failed" element={<PaymentFailed />} />
         <Route
           path="/"
           element={

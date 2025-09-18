@@ -39,6 +39,10 @@ import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
 import CreateTopicTestPage from "@/pages/teacher/CreateTopicTestPage"
 import FolderManagerPage from "@/pages/teacher/FolderManagerPage"
 
+// Question Components
+import CreateQuestionPage from "@/app/teacher-dashboard/questions/create"
+import EditQuestionPage from "@/app/teacher-dashboard/questions/edit"
+
 // Test Collection Components
 import TestCollectionList from "@/testCollections/TestCollectionList"
 import TestCollectionDetail from "@/testCollections/TestCollectionDetail"
@@ -139,6 +143,9 @@ export default function PanelRoute() {
   <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
   <Route path="/topic-tests/:testId/edit" element={<CreateTopicTestPage />} />
   <Route path="/folders" element={<FolderManagerPage />} />
+        {/* Question Routes */}
+        <Route path="/questions/create" element={<CreateQuestionPage />} />
+        <Route path="/questions/:id/edit" element={<EditQuestionPage />} />
         {/* Support Tickets routes for teachers */}
         <Route path="/support" element={<TicketsList />} />
         <Route path="/support/new" element={<NewTicket />} />

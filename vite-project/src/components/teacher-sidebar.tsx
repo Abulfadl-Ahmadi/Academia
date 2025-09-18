@@ -144,8 +144,24 @@ export function TeacherSidebar({
           },
           {
             title: "ایجاد آزمون مبحثی",
-            url: "/panel/topic-tests",
+            url: "/panel/topic-tests/create",
             description: "آزمون‌های آزاد مرتبط با مباحث درخت دانش"
+          },
+        ],
+      },
+      {
+        title: "سوالات",
+        url: "/panel/questions",
+        icon: Target, // یا آیکون مناسب دیگر
+        items: [
+          {
+            title: "لیست سوالات",
+            url: "/panel/questions",
+          },
+          {
+            title: "ایجاد سوال",
+            url: "/panel/questions/create",
+            description: "ایجاد سوال جدید با پشتیبانی ریاضی"
           },
         ],
       },
