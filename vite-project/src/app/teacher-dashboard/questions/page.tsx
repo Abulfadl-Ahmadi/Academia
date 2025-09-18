@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 interface FilterOptions {
   search: string;
@@ -104,7 +104,7 @@ export default function QuestionsListPage() {
     const ordering = filters.sortOrder === 'asc' ? filters.sortBy : `-${filters.sortBy}`;
     params.append('ordering', ordering);
 
-    return `/api/questions/?${params.toString()}`;
+    return `/questions/?${params.toString()}`;
   }, [filters]);
 
   // Fetch questions
@@ -117,10 +117,10 @@ export default function QuestionsListPage() {
       console.log('Fetching questions from:', url);
       
       // First try to check if Django server is running
-      const testResponse = await axios.get('/api/');
+      const testResponse = await axiosInstance.get('/');
       console.log('Django API root response:', testResponse.data);
       
-      const response = await axios.get<QuestionsResponse>(url);
+      const response = await axiosInstance.get<QuestionsResponse>(url);
       
       console.log('Questions API response:', response.data);
       
@@ -147,8 +147,8 @@ export default function QuestionsListPage() {
   // Fetch stats
   const fetchStats = useCallback(async () => {
     try {
-      console.log('Fetching stats from: /api/questions/stats/');
-      const response = await axios.get<StatsResponse>('/api/questions/stats/');
+      console.log('Fetching stats from: /questions/stats/');
+      const response = await axiosInstance.get<StatsResponse>('/questions/stats/');
       console.log('Stats API response:', response.data);
       setStats(response.data);
     } catch (err) {
@@ -194,7 +194,7 @@ export default function QuestionsListPage() {
     }
 
     try {
-      await axios.delete(`/api/questions/${questionId}/`);
+      await axiosInstance.delete(`/questions/${questionId}/`);
       await fetchQuestions(paginationInfo.current_page, paginationInfo.page_size);
       await fetchStats();
     } catch (err) {
@@ -205,7 +205,7 @@ export default function QuestionsListPage() {
 
   const handleToggleStatus = async (questionId: number, isActive: boolean) => {
     try {
-      await axios.patch(`/api/questions/${questionId}/`, { is_active: isActive });
+      await axiosInstance.patch(`/questions/${questionId}/`, { is_active: isActive });
       await fetchQuestions(paginationInfo.current_page, paginationInfo.page_size);
       await fetchStats();
     } catch (err) {
