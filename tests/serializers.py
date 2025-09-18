@@ -512,6 +512,8 @@ class StartTopicTestSerializer(serializers.Serializer):
 
 
 class OptionSerializer(serializers.ModelSerializer):
+    option_image = serializers.ImageField(required=False, allow_null=True)
+    
     class Meta:
         model = Option
         fields = ['id', 'option_text', 'order', 'option_image']
@@ -533,8 +535,8 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = [
             'id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
-            'created_by', 'created_by_name', 'difficulty_level', 'points', 'estimated_time',
-            'is_active', 'topic', 'correct_option', 'options', 'images'
+            'created_by', 'created_by_name', 'difficulty_level', 'detailed_solution',
+            'is_active', 'correct_option', 'options', 'images'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']
 
@@ -558,6 +560,9 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        print("=== QUESTION CREATION DEBUG ===")
+        print("Raw validated_data:", validated_data)
+        
         request = self.context.get('request')
         user = request.user if request else None
         validated_data['created_by'] = user
@@ -567,25 +572,35 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         folders_data = validated_data.pop('folders', [])
         correct_option_index = validated_data.pop('correct_option_index', None)
 
+        print("Extracted options_data:", options_data)
+        print("Extracted folders_data:", folders_data)
+        print("correct_option_index:", correct_option_index)
+
         question = Question.objects.create(**validated_data)
+        print("Created question:", question.id)
         
         # Set folders using set() method for many-to-many
         if folders_data:
             question.folders.set(folders_data)
+            print("Set folders:", folders_data)
 
         # Create options
         created_options = []
         for option_data in options_data:
+            print("Creating option:", option_data)
             option = Option.objects.create(question=question, **option_data)
             created_options.append(option)
+            print("Created option:", option.id, option.option_text)
 
         # Set correct option if index is provided
         if correct_option_index is not None and 0 <= correct_option_index < len(created_options):
             question.correct_option = created_options[correct_option_index]
             question.save()
+            print("Set correct option:", created_options[correct_option_index].id)
 
         for image_data in images_data:
             QuestionImage.objects.create(question=question, **image_data)
 
+        print("=== QUESTION CREATION COMPLETE ===")
         return question
 

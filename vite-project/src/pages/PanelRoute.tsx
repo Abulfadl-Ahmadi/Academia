@@ -58,6 +58,7 @@ import { StudentLayout } from "@/components/layouts/StudentLayout"
 import { TeacherLayout } from "@/components/layouts/TeacherLayout"
 import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page"
 import { TeacherKnowledgePanel } from "@/features/knowledge"
+import QuestionsListPage from "@/app/teacher-dashboard/questions/page"
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -144,6 +145,7 @@ export default function PanelRoute() {
   <Route path="/topic-tests/:testId/edit" element={<CreateTopicTestPage />} />
   <Route path="/folders" element={<FolderManagerPage />} />
         {/* Question Routes */}
+        <Route path="/questions" element={<QuestionsListPage />} />
         <Route path="/questions/create" element={<CreateQuestionPage />} />
         <Route path="/questions/:id/edit" element={<EditQuestionPage />} />
         {/* Support Tickets routes for teachers */}

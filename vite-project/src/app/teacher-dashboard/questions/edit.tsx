@@ -24,9 +24,6 @@ const questionSchema = z.object({
   question_text: z.string().min(1, 'متن سوال الزامی است'),
   folders: z.array(z.number()).min(1, 'انتخاب حداقل یک پوشه الزامی است'),
   difficulty_level: z.enum(['easy', 'medium', 'hard']),
-  points: z.number().min(0).optional(),
-  estimated_time: z.string().optional(),
-  topic: z.number().optional(),
   detailed_solution: z.string().optional(),
   options: z.array(z.object({
     option_text: z.string().min(1, 'متن گزینه الزامی است'),
@@ -46,6 +43,7 @@ export default function EditQuestionPage() {
   const { id } = useParams<{ id: string }>();
   const [previewMode, setPreviewMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [folderTree, setFolderTree] = useState<Folder[]>([]);
   const [folderLoading, setFolderLoading] = useState<boolean>(false);
   const [selectedFolderIds, setSelectedFolderIds] = useState<number[]>([]);
@@ -140,25 +138,42 @@ export default function EditQuestionPage() {
 
   useEffect(() => {
     if (id) {
-      axiosInstance.get(`/tests/questions/${id}/`)
+      console.log('Loading question with ID:', id);
+      console.log('Full API URL will be:', `/questions/${id}/`);
+      
+      // Test API connectivity first
+      axiosInstance.get('/questions/')
+        .then(listRes => {
+          console.log('Questions list API works:', listRes.status);
+          console.log('Available questions:', listRes.data.results?.map(q => q.id));
+          
+          // Now try to get specific question
+          return axiosInstance.get(`/questions/${id}/`);
+        })
         .then(res => {
+          console.log('Question data loaded successfully:', res.data);
           const data = res.data;
           setSelectedFolderIds(data.folders || []);
           reset({
             question_text: data.question_text,
             folders: data.folders,
             difficulty_level: data.difficulty_level,
-            points: data.points,
-            estimated_time: data.estimated_time,
-            topic: data.topic,
             detailed_solution: data.detailed_solution,
-            options: data.options,
-            images: data.images,
+            options: data.options || [],
+            images: data.images || [],
           });
           setLoading(false);
         })
         .catch(err => {
           console.error('خطا در بارگذاری سوال:', err);
+          console.error('Error details:', err.response?.data);
+          console.error('Error status:', err.response?.status);
+          
+          if (err.response?.status === 404) {
+            setError(`سوال با شناسه ${id} یافت نشد.`);
+          } else {
+            setError('خطا در بارگذاری اطلاعات سوال');
+          }
           setLoading(false);
         });
     }
@@ -204,6 +219,23 @@ export default function EditQuestionPage() {
 
   if (loading) {
     return <div className="container mx-auto p-6">در حال بارگذاری...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h2 className="text-red-800 font-semibold mb-2">خطا</h2>
+          <p className="text-red-700">{error}</p>
+          <button 
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            بازگشت
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

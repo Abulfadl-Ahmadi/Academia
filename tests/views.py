@@ -11,6 +11,7 @@ from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
     StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage
 )
+from knowledge.models import Folder
 from .serializers import (
     TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
     TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer,
@@ -744,9 +745,16 @@ class SecureTestFileView(views.APIView):
         return response
 
 
+from .pagination import CustomPageNumberPagination
+
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filterset_fields = ['difficulty_level', 'folders', 'created_by']
+    search_fields = ['question_text', 'detailed_solution']
+    ordering_fields = ['created_at', 'updated_at', 'difficulty_level']
+    ordering = ['-created_at']
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -755,12 +763,75 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'teacher':
-            return Question.objects.filter(created_by=user)
-        return Question.objects.filter(is_active=True)
+        queryset = Question.objects.select_related('created_by', 'correct_option').prefetch_related('folders', 'options')
+        
+        # TODO: For debugging purposes, show all questions regardless of user
+        # Later, uncomment this for production:
+        # if user.role == 'teacher':
+        #     queryset = queryset.filter(created_by=user)
+        # else:
+        #     queryset = queryset.filter(is_active=True)
+        
+        print(f"DEBUG: User {user.username} (role: {user.role}) querying questions")
+        print(f"DEBUG: Total questions in queryset: {queryset.count()}")
+        
+        # فیلتر بر اساس پوشه
+        folder_id = self.request.query_params.get('folder', None)
+        if folder_id:
+            queryset = queryset.filter(folders__id=folder_id)
+        
+        # فیلتر بر اساس سطح دشواری
+        difficulty = self.request.query_params.get('difficulty', None)
+        if difficulty:
+            queryset = queryset.filter(difficulty_level=difficulty)
+        
+        # جستجوی متنی
+        search = self.request.query_params.get('search', None)
+        if search:
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(question_text__icontains=search) |
+                Q(detailed_solution__icontains=search) |
+                Q(options__option_text__icontains=search)
+            ).distinct()
+        
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def debug_info(self, request):
+        """Debug endpoint to check available questions"""
+        user = request.user
+        all_questions = Question.objects.all().values('id', 'question_text', 'created_by__username', 'is_active')
+        
+        return Response({
+            'current_user': {
+                'id': user.id,
+                'username': user.username,
+                'role': user.role,
+            },
+            'all_questions': list(all_questions),
+            'accessible_questions': [q.id for q in self.get_queryset()],
+        })
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """آمار کلی سوالات برای نمایش در فیلترها"""
+        user = request.user
+        base_queryset = Question.objects.filter(created_by=user) if user.role == 'teacher' else Question.objects.filter(is_active=True)
+        
+        stats = {
+            'total_questions': base_queryset.count(),
+            'by_difficulty': {
+                'easy': base_queryset.filter(difficulty_level='easy').count(),
+                'medium': base_queryset.filter(difficulty_level='medium').count(),
+                'hard': base_queryset.filter(difficulty_level='hard').count(),
+            },
+            'folders': list(Folder.objects.filter(questions__in=base_queryset).distinct().values('id', 'name', 'parent__name')),
+        }
+        return Response(stats)
 
 
 class OptionViewSet(viewsets.ModelViewSet):

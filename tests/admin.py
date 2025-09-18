@@ -188,13 +188,13 @@ class QuestionAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('اطلاعات سوال', {
-            'fields': ('question_text', 'folders', 'topic')
+            'fields': ('question_text', 'folders')
         }),
         ('گزینه‌ها و پاسخ', {
             'fields': ('correct_option',)
         }),
         ('تنظیمات', {
-            'fields': ('difficulty_level', 'points', 'estimated_time', 'is_active')
+            'fields': ('difficulty_level', 'detailed_solution', 'is_active')
         }),
         ('مدیریت', {
             'fields': ('created_by', 'created_at', 'updated_at'),
