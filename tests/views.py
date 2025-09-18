@@ -9,11 +9,12 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
-    StudentTestSessionLog, TestCollection, StudentProgress
+    StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage
 )
 from .serializers import (
     TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
-    TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer
+    TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer,
+    QuestionSerializer, QuestionCreateSerializer, OptionSerializer, QuestionImageSerializer
 )
 from rest_framework.exceptions import ValidationError
 import pytz
@@ -741,5 +742,48 @@ class SecureTestFileView(views.APIView):
         response = HttpResponse(file_obj.file.read(), content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="{file_obj.file.name}"'
         return response
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return QuestionCreateSerializer
+        return QuestionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'teacher':
+            return Question.objects.filter(created_by=user)
+        return Question.objects.filter(is_active=True)
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class OptionViewSet(viewsets.ModelViewSet):
+    queryset = Option.objects.all()
+    serializer_class = OptionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'teacher':
+            return Option.objects.filter(question__created_by=user)
+        return Option.objects.filter(question__is_active=True)
+
+
+class QuestionImageViewSet(viewsets.ModelViewSet):
+    queryset = QuestionImage.objects.all()
+    serializer_class = QuestionImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'teacher':
+            return QuestionImage.objects.filter(question__created_by=user)
+        return QuestionImage.objects.filter(question__is_active=True)
         
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)

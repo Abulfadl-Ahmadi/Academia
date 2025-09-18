@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     TestCollection, Test, PrimaryKey, StudentTestSession, 
-    StudentTestSessionLog, StudentAnswer, StudentProgress
+    StudentTestSessionLog, StudentAnswer, StudentProgress, Question, Option, QuestionImage
 )
 
 
@@ -165,3 +165,63 @@ class StudentProgressAdmin(admin.ModelAdmin):
             progress.update_progress()
         self.message_user(request, f"{queryset.count()} پیشرفت بروزرسانی شد.")
     update_all_progress.short_description = "بروزرسانی پیشرفت انتخاب شده‌ها"
+
+
+class OptionInline(admin.TabularInline):
+    model = Option
+    extra = 0
+
+
+class QuestionImageInline(admin.TabularInline):
+    model = QuestionImage
+    extra = 0
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('question_text_short', 'created_by', 'difficulty_level', 'is_active', 'created_at')
+    list_filter = ('difficulty_level', 'is_active', 'created_at', 'created_by')
+    search_fields = ('question_text', 'created_by__username')
+    readonly_fields = ('created_at', 'updated_at')
+    inlines = [OptionInline, QuestionImageInline]
+    list_per_page = 25
+
+    fieldsets = (
+        ('اطلاعات سوال', {
+            'fields': ('question_text', 'folders', 'topic')
+        }),
+        ('گزینه‌ها و پاسخ', {
+            'fields': ('correct_option',)
+        }),
+        ('تنظیمات', {
+            'fields': ('difficulty_level', 'points', 'estimated_time', 'is_active')
+        }),
+        ('مدیریت', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def question_text_short(self, obj):
+        return obj.question_text[:50] + '...' if len(obj.question_text) > 50 else obj.question_text
+    question_text_short.short_description = 'متن سوال'
+
+
+@admin.register(Option)
+class OptionAdmin(admin.ModelAdmin):
+    list_display = ('question', 'option_text_short', 'order')
+    list_filter = ('question__difficulty_level',)
+    search_fields = ('option_text', 'question__question_text')
+    list_per_page = 25
+
+    def option_text_short(self, obj):
+        return obj.option_text[:50] + '...' if len(obj.option_text) > 50 else obj.option_text
+    option_text_short.short_description = 'متن گزینه'
+
+
+@admin.register(QuestionImage)
+class QuestionImageAdmin(admin.ModelAdmin):
+    list_display = ('question', 'alt_text', 'order')
+    list_filter = ('question__difficulty_level',)
+    search_fields = ('alt_text', 'question__question_text')
+    list_per_page = 25

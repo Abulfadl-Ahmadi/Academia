@@ -483,3 +483,86 @@ class StudentProgress(models.Model):
             self.is_completed = True
         
         self.save()
+
+
+
+class Question(models.Model):
+    DIFFICULTY_CHOICES = [
+        ('easy', 'ساده'),
+        ('medium', 'متوسط'),
+        ('hard', 'دشوار'),
+    ]
+
+    question_text = models.TextField(verbose_name="متن سوال")
+    folders = models.ManyToManyField(Folder, blank=True, related_name='questions', verbose_name="پوشه‌ها")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ آخرین بروزرسانی")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="ایجاد شده توسط")
+    
+    difficulty_level = models.CharField(
+        max_length=10,
+        choices=DIFFICULTY_CHOICES,
+        default='medium',
+        verbose_name="سطح دشواری"
+    )
+    
+    detailed_solution = models.TextField(null=True, blank=True)
+    
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    
+    # فیلد جدید برای پاسخ صحیح (اختیاری، اگر نیاز به ذخیره پاسخ صحیح داشته باشید)
+    correct_option = models.ForeignKey(
+        'Option',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='correct_for_questions',
+        verbose_name="گزینه صحیح"
+    )
+
+    class Meta:
+        verbose_name = "سوال"
+        verbose_name_plural = "سوالات"
+
+    def __str__(self):
+        return self.question_text[:50]  # نمایش ابتدای متن سوال
+
+class Option(models.Model):
+    question = models.ForeignKey(
+        Question, 
+        on_delete=models.CASCADE, 
+        related_name='options',
+        verbose_name="سوال مرتبط"
+    )
+    option_text = models.CharField(max_length=500, verbose_name="متن گزینه")
+    order = models.PositiveIntegerField(default=1, verbose_name="ترتیب گزینه")  # برای مرتب‌سازی گزینه‌ها
+    option_image = models.ImageField(upload_to='options/', null=True, blank=True, verbose_name="تصویر گزینه")
+    class Meta:
+        verbose_name = "گزینه"
+        verbose_name_plural = "گزینه‌ها"
+        ordering = ['order']  # مرتب‌سازی بر اساس ترتیب
+
+    def __str__(self):
+        return f"{self.question.question_text[:30]} - {self.option_text[:30]}"
+
+
+class QuestionImage(models.Model):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name="سوال مرتبط"
+    )
+    image = models.ImageField(upload_to='question_images/', verbose_name="تصویر")
+    alt_text = models.CharField(max_length=255, blank=True, null=True, verbose_name="متن جایگزین")
+    order = models.PositiveIntegerField(default=1, verbose_name="ترتیب تصویر")
+
+    class Meta:
+        verbose_name = "تصویر سوال"
+        verbose_name_plural = "تصاویر سوال"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"تصویر برای {self.question.question_text[:30]}"
+
+

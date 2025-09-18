@@ -4,7 +4,7 @@ from datetime import timedelta
 from contents.models import File
 from .models import (
     Test, PrimaryKey, StudentTestSession, StudentAnswer,
-    TestCollection, StudentProgress
+    TestCollection, StudentProgress, Question, Option, QuestionImage
 )
 from courses.models import Course
 from accounts.models import User
@@ -509,4 +509,83 @@ class StartTopicTestSerializer(serializers.Serializer):
     """سریالایزر برای شروع آزمون مبحثی"""
     test_id = serializers.IntegerField()
     device_id = serializers.CharField(max_length=200, required=False)
+
+
+class OptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
+        fields = ['id', 'option_text', 'order', 'option_image']
+
+
+class QuestionImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionImage
+        fields = ['id', 'image', 'alt_text', 'order']
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    options = OptionSerializer(many=True, read_only=True)
+    images = QuestionImageSerializer(many=True, read_only=True)
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    folders_names = serializers.StringRelatedField(source='folders', many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = [
+            'id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
+            'created_by', 'created_by_name', 'difficulty_level', 'points', 'estimated_time',
+            'is_active', 'topic', 'correct_option', 'options', 'images'
+        ]
+        read_only_fields = ['created_by', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request else None
+        validated_data['created_by'] = user
+        return super().create(validated_data)
+
+
+class QuestionCreateSerializer(serializers.ModelSerializer):
+    options = OptionSerializer(many=True, required=False)
+    images = QuestionImageSerializer(many=True, required=False)
+    correct_option_index = serializers.IntegerField(required=False, write_only=True)
+
+    class Meta:
+        model = Question
+        fields = [
+            'question_text', 'folders', 'difficulty_level', 'detailed_solution',
+            'is_active', 'correct_option', 'options', 'images', 'correct_option_index'
+        ]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request else None
+        validated_data['created_by'] = user
+
+        options_data = validated_data.pop('options', [])
+        images_data = validated_data.pop('images', [])
+        folders_data = validated_data.pop('folders', [])
+        correct_option_index = validated_data.pop('correct_option_index', None)
+
+        question = Question.objects.create(**validated_data)
+        
+        # Set folders using set() method for many-to-many
+        if folders_data:
+            question.folders.set(folders_data)
+
+        # Create options
+        created_options = []
+        for option_data in options_data:
+            option = Option.objects.create(question=question, **option_data)
+            created_options.append(option)
+
+        # Set correct option if index is provided
+        if correct_option_index is not None and 0 <= correct_option_index < len(created_options):
+            question.correct_option = created_options[correct_option_index]
+            question.save()
+
+        for image_data in images_data:
+            QuestionImage.objects.create(question=question, **image_data)
+
+        return question
 

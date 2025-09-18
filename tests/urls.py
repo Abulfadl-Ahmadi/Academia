@@ -12,6 +12,9 @@ from .views import (
     ExitTestView,
     TestCollectionViewSet,
     SecureTestFileView,
+    QuestionViewSet,
+    OptionViewSet,
+    QuestionImageViewSet,
 )
 from .topic_tests_views import (
     TopicTestViewSet,
@@ -22,6 +25,9 @@ from .topic_tests_views import (
 router = DefaultRouter()
 router.register(r'test-collections', TestCollectionViewSet, basename='test-collections')
 router.register(r'topic-tests', TopicTestViewSet, basename='topic-tests')
+router.register(r'questions', QuestionViewSet, basename='questions')
+router.register(r'options', OptionViewSet, basename='options')
+router.register(r'question-images', QuestionImageViewSet, basename='question-images')
 
 urlpatterns = [
     path('', include(router.urls)),
