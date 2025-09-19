@@ -608,3 +608,59 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         print("=== QUESTION CREATION COMPLETE ===")
         return question
 
+    def update(self, instance, validated_data):
+        """Update question including folders, options (replace all), images, and correct option.
+        Expects optional 'correct_option_index' referring to the index in the provided options array (after filtering/ordering on client).
+        """
+        # Pop nested write-only fields
+        options_data = validated_data.pop('options', None)
+        images_data = validated_data.pop('images', None)
+        folders_data = validated_data.pop('folders', None)
+        correct_option_index = validated_data.pop('correct_option_index', None)
+
+        # Update simple fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Update folders if provided
+        if folders_data is not None:
+            instance.folders.set(folders_data)
+
+        created_options = []
+        # Replace options if provided
+        if options_data is not None:
+            # Delete existing options
+            Option.objects.filter(question=instance).delete()
+            # Recreate options in given order
+            for opt in options_data:
+                option = Option.objects.create(
+                    question=instance,
+                    option_text=opt.get('option_text', ''),
+                    order=opt.get('order') or (len(created_options) + 1),
+                    option_image=opt.get('option_image')
+                )
+                created_options.append(option)
+
+        # Replace images if provided
+        if images_data is not None:
+            QuestionImage.objects.filter(question=instance).delete()
+            for img in images_data:
+                QuestionImage.objects.create(
+                    question=instance,
+                    image=img.get('image'),
+                    alt_text=img.get('alt_text'),
+                    order=img.get('order') or 1
+                )
+
+        # Handle correct option by index if provided and options were provided/rebuilt
+        if correct_option_index is not None and created_options:
+            try:
+                instance.correct_option = created_options[int(correct_option_index)]
+                instance.save(update_fields=['correct_option'])
+            except (ValueError, IndexError):
+                # Ignore invalid index
+                pass
+
+        return instance
+

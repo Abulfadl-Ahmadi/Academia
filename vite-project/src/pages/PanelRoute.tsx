@@ -147,7 +147,7 @@ export default function PanelRoute() {
         {/* Question Routes */}
         <Route path="/questions" element={<QuestionsListPage />} />
         <Route path="/questions/create" element={<CreateQuestionPage />} />
-        <Route path="/questions/:id/edit" element={<EditQuestionPage />} />
+        <Route path="/questions/edit/:id" element={<EditQuestionPage />} />
         {/* Support Tickets routes for teachers */}
         <Route path="/support" element={<TicketsList />} />
         <Route path="/support/new" element={<NewTicket />} />

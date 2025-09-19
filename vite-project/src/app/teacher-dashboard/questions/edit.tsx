@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,23 +11,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MathPreview } from '@/components/MathPreview';
-import { Plus, Minus, Eye, ChevronRight, ChevronDown, Folder as FolderIcon } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { knowledgeApi } from '@/features/knowledge/api';
-import type { Folder } from '@/features/knowledge/types';
-
-// توسعه نوع Folder برای داشتن children اختیاری بدون استفاده از any
-interface FolderWithChildren extends Folder { children?: FolderWithChildren[] }
-const hasChildren = (f: Folder | FolderWithChildren): f is FolderWithChildren => Array.isArray((f as FolderWithChildren).children);
+import { Plus, Minus, Eye } from 'lucide-react';
+import { FolderSelector } from '@/components/FolderSelector';
 
 const questionSchema = z.object({
   question_text: z.string().min(1, 'متن سوال الزامی است'),
-  folders: z.array(z.number()).min(1, 'انتخاب حداقل یک پوشه الزامی است'),
   difficulty_level: z.enum(['easy', 'medium', 'hard']),
   detailed_solution: z.string().optional(),
+  correct_option_index: z.number().optional(),
   options: z.array(z.object({
-    option_text: z.string().min(1, 'متن گزینه الزامی است'),
-    order: z.number(),
+    option_text: z.string().optional(),
+    order: z.number().optional(),
     option_image: z.string().optional(),
   })).min(0),
   images: z.array(z.object({
@@ -44,13 +38,23 @@ export default function EditQuestionPage() {
   const [previewMode, setPreviewMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [folderTree, setFolderTree] = useState<Folder[]>([]);
-  const [folderLoading, setFolderLoading] = useState<boolean>(false);
   const [selectedFolderIds, setSelectedFolderIds] = useState<number[]>([]);
-  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
 
-  const { register, control, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<QuestionFormData>({
+  const { register, control, handleSubmit, watch, setValue, reset, getValues, formState: { errors } } = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
+    defaultValues: {
+      question_text: '',
+      difficulty_level: 'medium',
+      detailed_solution: '',
+      correct_option_index: undefined,
+      options: [
+        { option_text: '', order: 1 },
+        { option_text: '', order: 2 },
+        { option_text: '', order: 3 },
+        { option_text: '', order: 4 },
+      ],
+      images: []
+    }
   });
 
   const { fields: optionFields, append: appendOption, remove: removeOption } = useFieldArray({
@@ -66,101 +70,35 @@ export default function EditQuestionPage() {
   const watchedQuestionText = watch('question_text');
   const watchedOptions = watch('options');
 
-  const toggleExpand = useCallback((folderId: number) => {
-    setExpandedFolders(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(folderId)) {
-        newSet.delete(folderId);
-      } else {
-        newSet.add(folderId);
-      }
-      return newSet;
-    });
-  }, []);
-
-  const renderFolders = (nodes: (Folder | FolderWithChildren)[], depth: number = 0) => (
-    <ul className="space-y-1">
-      {nodes.map(node => {
-        const children = hasChildren(node) ? node.children : undefined;
-        const childExists = !!children && children.length > 0;
-        const expanded = childExists && expandedFolders.has(node.id);
-        const checked = selectedFolderIds.includes(node.id);
-        return (
-          <li key={node.id}>
-            <div className="flex items-center gap-2">
-              {childExists ? (
-                <button
-                  type="button"
-                  onClick={() => toggleExpand(node.id)}
-                  className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted transition"
-                  aria-label={expanded ? 'Collapse' : 'Expand'}
-                >
-                  {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                </button>
-              ) : (
-                <span className="w-5 h-5 inline-block" />
-              )}
-              <Checkbox
-                checked={checked}
-                onCheckedChange={(val) => {
-                  setSelectedFolderIds(prev => val ? [...prev, node.id] : prev.filter(id => id !== node.id));
-                }}
-              />
-              <FolderIcon className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium truncate max-w-[200px]" title={node.name}>{node.name}</span>
-              <span className="text-xs text-muted-foreground">#{node.id}</span>
-            </div>
-            {childExists && expanded && (
-              <div className="ms-6 border-s ps-3 mt-1">
-                {children && renderFolders(children, depth + 1)}
-              </div>
-            )}
-          </li>
-        );
-      })}
-    </ul>
-  );
-
-  useEffect(() => {
-    const loadFolders = async () => {
-      setFolderLoading(true);
-      try {
-        const tree = await knowledgeApi.getFolderTree();
-        setFolderTree(tree);
-      } catch (error) {
-        console.error('خطا در بارگذاری پوشه‌ها:', error);
-      } finally {
-        setFolderLoading(false);
-      }
-    };
-    loadFolders();
-  }, []);
-
   useEffect(() => {
     if (id) {
       console.log('Loading question with ID:', id);
       console.log('Full API URL will be:', `/questions/${id}/`);
       
-      // Test API connectivity first
-      axiosInstance.get('/questions/')
-        .then(listRes => {
-          console.log('Questions list API works:', listRes.status);
-          console.log('Available questions:', listRes.data.results?.map(q => q.id));
-          
-          // Now try to get specific question
-          return axiosInstance.get(`/questions/${id}/`);
-        })
+      axiosInstance.get(`/questions/${id}/`)
         .then(res => {
           console.log('Question data loaded successfully:', res.data);
           const data = res.data;
+          // Folders come as array of IDs
           setSelectedFolderIds(data.folders || []);
+          // Map options to shape used in form
+          type ApiOption = { id: number; option_text: string; order?: number };
+          const mappedOptions = (data.options || []).map((o: ApiOption, idx: number) => ({
+            option_text: o.option_text || '',
+            order: o.order ?? (idx + 1),
+          }));
           reset({
             question_text: data.question_text,
-            folders: data.folders,
             difficulty_level: data.difficulty_level,
             detailed_solution: data.detailed_solution,
-            options: data.options || [],
-            images: data.images || [],
+            correct_option_index: data.correct_option ? Math.max(0, (data.options || []).findIndex((o: ApiOption) => o.id === data.correct_option)) : undefined,
+            options: mappedOptions.length > 0 ? mappedOptions : [
+              { option_text: '', order: 1 },
+              { option_text: '', order: 2 },
+              { option_text: '', order: 3 },
+              { option_text: '', order: 4 },
+            ],
+            images: [],
           });
           setLoading(false);
         })
@@ -185,11 +123,22 @@ export default function EditQuestionPage() {
       return;
     }
     try {
+      // Filter options to only non-empty texts and re-order
+      const nonEmptyOptions = (data.options || []).filter(opt => (opt.option_text || '').trim());
+      const filteredOptions = nonEmptyOptions.map((opt, index) => ({
+        option_text: opt.option_text || '',
+        order: index + 1,
+      }));
+
       const formData = {
-        ...data,
+        question_text: data.question_text,
+        difficulty_level: data.difficulty_level,
+        detailed_solution: data.detailed_solution,
+        options: filteredOptions,
         folders: selectedFolderIds,
+        correct_option_index: data.correct_option_index,
       };
-      const response = await axiosInstance.put(`/tests/questions/${id}/`, formData);
+      const response = await axiosInstance.put(`/questions/${id}/`, formData);
       console.log('سوال بروزرسانی شد:', response.data);
       // redirect or show success
     } catch (error) {
@@ -272,7 +221,7 @@ export default function EditQuestionPage() {
             {/* Live Preview */}
             <div>
               <Label>پیش‌نمایش زنده:</Label>
-              <div className="border rounded-md p-4 mt-1 bg-gray-50">
+              <div className="border rounded-md p-4 mt-1">
                 <MathPreview text={watchedQuestionText || ''} />
               </div>
             </div>
@@ -293,7 +242,7 @@ export default function EditQuestionPage() {
                   placeholder="متن گزینه را وارد کنید"
                   rows={2}
                 />
-                <div className="border rounded-md p-2 bg-gray-50">
+                <div className="border rounded-md p-2">
                   <MathPreview text={watchedOptions?.[index]?.option_text || ''} />
                 </div>
                 {/* آپلود تصویر برای گزینه */}
@@ -362,42 +311,27 @@ export default function EditQuestionPage() {
             <CardTitle>تنظیمات</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="difficulty_level">سطح دشواری</Label>
-                <Select onValueChange={(value: 'easy' | 'medium' | 'hard') => setValue('difficulty_level', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب سطح" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="easy">ساده</SelectItem>
-                    <SelectItem value="medium">متوسط</SelectItem>
-                    <SelectItem value="hard">دشوار</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="points">امتیاز</Label>
-                <Input
-                  id="points"
-                  type="number"
-                  {...register('points', { valueAsNumber: true })}
-                />
-              </div>
+            <div>
+              <Label htmlFor="difficulty_level">سطح دشواری</Label>
+              <Select onValueChange={(value: 'easy' | 'medium' | 'hard') => setValue('difficulty_level', value)} defaultValue={getValues('difficulty_level') as 'easy' | 'medium' | 'hard' | undefined}>
+                <SelectTrigger>
+                  <SelectValue placeholder="انتخاب سطح" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">ساده</SelectItem>
+                  <SelectItem value="medium">متوسط</SelectItem>
+                  <SelectItem value="hard">دشوار</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <Label htmlFor="folders">پوشه‌ها (مباحث)</Label>
-              <div className="text-xs text-muted-foreground">پوشه‌ها جایگزین ساختار قدیمی (کتاب، فصل، ... ) شده‌اند. حداقل یک پوشه را انتخاب کنید.</div>
-              <div className="max-h-96 overflow-auto pr-2 border rounded p-3 mt-2">
-                {folderLoading && <p className="text-sm">در حال بارگذاری...</p>}
-                {!folderLoading && folderTree.length === 0 && <p className="text-sm text-muted-foreground">هیچ پوشه‌ای ایجاد نشده است.</p>}
-                {!folderLoading && folderTree.length > 0 && renderFolders(folderTree)}
-              </div>
-              {selectedFolderIds.length > 0 && (
-                <div className="text-xs text-green-600 mt-2">{selectedFolderIds.length} پوشه انتخاب شد</div>
-              )}
+              <FolderSelector
+                selectedFolderIds={selectedFolderIds}
+                onSelectionChange={setSelectedFolderIds}
+                required
+              />
             </div>
 
             <div>
@@ -409,6 +343,26 @@ export default function EditQuestionPage() {
                 rows={3}
               />
             </div>
+
+            {watchedOptions && watchedOptions.length > 0 && (
+              <div>
+                <Label htmlFor="correct_option_index">پاسخ صحیح</Label>
+                <Select onValueChange={(value) => setValue('correct_option_index', parseInt(value))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="انتخاب پاسخ صحیح" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {watchedOptions.map((opt, index) => (
+                      (opt.option_text || '').trim() && (
+                        <SelectItem key={index} value={index.toString()}>
+                          گزینه {index + 1}: {(opt.option_text || '').substring(0,50)}
+                        </SelectItem>
+                      )
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -419,7 +373,7 @@ export default function EditQuestionPage() {
               <CardTitle>پیش‌نمایش نهایی</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-md p-4 bg-white">
+              <div className="border rounded-md p-4">
                 <MathPreview text={watchedQuestionText || ''} />
                 {watchedOptions && watchedOptions.length > 0 && (
                   <div className="mt-4">
