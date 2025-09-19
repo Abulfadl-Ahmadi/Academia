@@ -100,6 +100,7 @@ export default function EditQuestionPage() {
 
   const watchedQuestionText = watch("question_text");
   const watchedOptions = watch("options");
+  const watchedDetailedSolution = watch("detailed_solution");
 
   useEffect(() => {
     if (id) {
@@ -416,6 +417,15 @@ export default function EditQuestionPage() {
                 placeholder="پاسخ تشریحی سوال"
                 rows={3}
               />
+              
+              {watchedDetailedSolution && (
+                <div className="mt-2">
+                  <Label>پیش‌نمایش پاسخ تشریحی:</Label>
+                  <div className="border rounded p-3">
+                    <MathPreview text={watchedDetailedSolution} />
+                  </div>
+                </div>
+              )}
             </div>
 
             {watchedOptions && watchedOptions.length > 0 && (
