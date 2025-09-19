@@ -5,6 +5,66 @@ from courses.models import Course
 from django.utils import timezone
 from datetime import timedelta
 from knowledge.models import Folder
+import secrets
+import hmac
+import hashlib
+from django.conf import settings
+import uuid
+
+# Base62 character set for secure ID generation
+BASE62_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+def generate_secure_question_id():
+    """
+    تولید شناسه شش‌کاراکتری امن برای سوال با رقم کنترل
+    ساختار: 5 کاراکتر تصادفی + 1 رقم کنترل
+    """
+    # گام 1: تولید 5 کاراکتر تصادفی از Base62
+    core_id = ''.join(secrets.choice(BASE62_CHARS) for _ in range(5))
+    
+    # گام 2: محاسبه رقم کنترل با HMAC-SHA256
+    control_digit = calculate_control_digit(core_id)
+    
+    # گام 3: ترکیب نهایی
+    return core_id + control_digit
+
+def calculate_control_digit(core_id):
+    """
+    محاسبه رقم کنترل با استفاده از HMAC-SHA256
+    """
+    # کلید مخفی از تنظیمات Django
+    secret_key = getattr(settings, 'QUESTION_ID_SECRET', settings.SECRET_KEY)
+    
+    # محاسبه HMAC-SHA256
+    mac = hmac.new(
+        secret_key.encode('utf-8'),
+        core_id.encode('utf-8'),
+        hashlib.sha256
+    )
+    
+    # گرفتن اولین بایت از هش و تبدیل به Base62
+    control_index = mac.digest()[0] % 62
+    return BASE62_CHARS[control_index]
+
+def validate_question_id(question_id):
+    """
+    اعتبارسنجی شناسه شش‌کاراکتری سوال
+    """
+    if not question_id or len(question_id) != 6:
+        return False
+    
+    # بررسی معتبر بودن کاراکترها
+    if not all(c in BASE62_CHARS for c in question_id):
+        return False
+    
+    # جداسازی 5 کاراکتر اول و رقم کنترل
+    core_id = question_id[:5]
+    provided_control = question_id[5]
+    
+    # محاسبه رقم کنترل مورد انتظار
+    expected_control = calculate_control_digit(core_id)
+    
+    return provided_control == expected_control
 
 
 class TestCollection(models.Model):
@@ -493,6 +553,15 @@ class Question(models.Model):
         ('hard', 'دشوار'),
     ]
 
+    # شناسه عمومی شش‌کاراکتری با رقم کنترل (غیرقابل حدس)
+    public_id = models.CharField(
+        max_length=6, 
+        unique=True, 
+        default=generate_secure_question_id,
+        verbose_name="شناسه عمومی",
+        help_text="شناسه شش‌کاراکتری با رقم کنترل برای نمایش عمومی"
+    )
+
     question_text = models.TextField(verbose_name="متن سوال")
     folders = models.ManyToManyField(Folder, blank=True, related_name='questions', verbose_name="پوشه‌ها")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
@@ -524,8 +593,37 @@ class Question(models.Model):
         verbose_name = "سوال"
         verbose_name_plural = "سوالات"
 
+    class Meta:
+        verbose_name = "سوال"
+        verbose_name_plural = "سوالات"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['public_id']),
+            models.Index(fields=['difficulty_level']),
+            models.Index(fields=['created_at']),
+        ]
+
     def __str__(self):
-        return self.question_text[:50]  # نمایش ابتدای متن سوال
+        return f"{self.public_id} - {self.question_text[:50]}"
+    
+    def get_folders_names(self):
+        """برگرداندن لیست نام پوشه‌های سوال"""
+        return [folder.name for folder in self.folders.all()]
+    
+    def validate_public_id(self):
+        """اعتبارسنجی شناسه عمومی"""
+        return validate_question_id(self.public_id)
+    
+    def save(self, *args, **kwargs):
+        """ذخیره سوال با اعتبارسنجی ID"""
+        if not self.public_id:
+            self.public_id = generate_secure_question_id()
+        
+        # اطمینان از یکتا بودن public_id
+        while Question.objects.filter(public_id=self.public_id).exclude(pk=self.pk).exists():
+            self.public_id = generate_secure_question_id()
+            
+        super().save(*args, **kwargs)
 
 class Option(models.Model):
     question = models.ForeignKey(

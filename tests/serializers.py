@@ -529,16 +529,20 @@ class QuestionSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, read_only=True)
     images = QuestionImageSerializer(many=True, read_only=True)
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
-    folders_names = serializers.StringRelatedField(source='folders', many=True, read_only=True)
+    folders_names = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
         fields = [
-            'id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
+            'id', 'public_id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
             'created_by', 'created_by_name', 'difficulty_level', 'detailed_solution',
             'is_active', 'correct_option', 'options', 'images'
         ]
-        read_only_fields = ['created_by', 'created_at', 'updated_at']
+        read_only_fields = ['created_by', 'created_at', 'updated_at', 'public_id']
+
+    def get_folders_names(self, obj):
+        """برگرداندن نام پوشه‌ها به عنوان آرایه"""
+        return obj.get_folders_names()
 
     def create(self, validated_data):
         request = self.context.get('request')

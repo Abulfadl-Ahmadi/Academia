@@ -13,6 +13,7 @@ interface Option {
 
 interface Question {
   id: number;
+  public_id: string; // شناسه شش‌کاراکتری امن
   question_text: string;
   difficulty_level: 'easy' | 'medium' | 'hard';
   folders: number[]; // Array of folder IDs
@@ -53,12 +54,8 @@ export function QuestionCard({
       case 'easy': return 'ساده';
       case 'medium': return 'متوسط';
       case 'hard': return 'دشوار';
-      default: return level;
+      default: return 'نامشخص';
     }
-  };
-
-  const formatQuestionId = (id: number) => {
-    return id.toString(16).padStart(4, '0').toUpperCase();
   };
 
   const renderFolderPath = () => {
@@ -82,9 +79,9 @@ export function QuestionCard({
       <CardContent className="p-0">
         {/* Header with metadata */}
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center mb-4">
-          {/* Question ID */}
+          {/* Question ID - نمایش شناسه امن */}
           <Badge variant="outline" className="font-mono text-xs">
-            {formatQuestionId(question.id)}
+            {question.public_id || 'N/A'}
           </Badge>
           
           {/* Folder path */}
