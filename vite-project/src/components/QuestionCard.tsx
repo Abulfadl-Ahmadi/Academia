@@ -3,7 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Edit, Trash2, Eye, EyeOff, MoreVertical, CheckCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Edit, Trash2, Eye, EyeOff, MoreVertical, CheckCircle, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Option {
   id: number;
@@ -20,6 +23,7 @@ interface Question {
   folders_names: string[]; // Array of folder names
   options: Option[];
   correct_option?: number;
+  detailed_solution?: string; // پاسخ تشریحی
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -40,6 +44,20 @@ export function QuestionCard({
   onToggleStatus, 
   showActions = true 
 }: QuestionCardProps) {
+  const [showSolutionDialog, setShowSolutionDialog] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
   const getDifficultyColor = (level: string) => {
     switch (level) {
       case 'easy': return 'bg-green-500/5 text-green-500 border-green-500/12';
@@ -74,6 +92,27 @@ export function QuestionCard({
     );
   };
 
+  // Shared content component for both Dialog and Drawer
+  const SolutionContent = () => (
+    <div className="space-y-4">
+      {/* Question text */}
+      <div>
+        <h4 className="font-medium text-sm text-muted-foreground mb-2">متن سوال:</h4>
+        <div className="p-3 bg-muted/50 rounded border">
+          <MathPreview text={question.question_text} />
+        </div>
+      </div>
+      
+      {/* Detailed solution */}
+      <div>
+        <h4 className="font-medium text-sm text-muted-foreground mb-2">پاسخ تشریحی:</h4>
+        <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
+          <MathPreview text={question.detailed_solution || ""} />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Card className={`${!question.is_active ? 'opacity-60 border-dashed p-4 gap-2' : 'p-4 gap-2 '}`}>
       <CardContent className="p-0">
@@ -92,9 +131,64 @@ export function QuestionCard({
           </div>
           
           {/* Difficulty */}
-          <Badge className={`text-xs ${getDifficultyColor(question.difficulty_level)}`}>
-            {getDifficultyLabel(question.difficulty_level)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={`text-xs ${getDifficultyColor(question.difficulty_level)}`}>
+              {getDifficultyLabel(question.difficulty_level)}
+            </Badge>
+            
+            {/* Show Answer Button */}
+            {question.detailed_solution && question.detailed_solution.trim() && (
+              <>
+                {/* Desktop Dialog */}
+                {!isMobile && (
+                  <Dialog open={showSolutionDialog} onOpenChange={setShowSolutionDialog}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 px-2 text-xs"
+                      >
+                        <FileText className="h-3 w-3 ml-1" />
+                        نمایش پاسخ
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="!max-w-4xl max-h-[85vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-right">پاسخ تشریحی سوال {question.public_id}</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-4">
+                        <SolutionContent />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+
+                {/* Mobile Drawer */}
+                {isMobile && (
+                  <Drawer open={showSolutionDialog} onOpenChange={setShowSolutionDialog}>
+                    <DrawerTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 px-2 text-xs"
+                      >
+                        <FileText className="h-3 w-3 ml-1" />
+                        نمایش پاسخ
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="max-h-[90vh]">
+                      <DrawerHeader>
+                        <DrawerTitle className="text-right">پاسخ تشریحی سوال {question.public_id}</DrawerTitle>
+                      </DrawerHeader>
+                      <div className="p-4 overflow-y-auto">
+                        <SolutionContent />
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                )}
+              </>
+            )}
+          </div>
           
           {/* Status */}
           {!question.is_active && (
