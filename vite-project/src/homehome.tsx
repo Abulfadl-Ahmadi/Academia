@@ -104,7 +104,7 @@ export function HomeHome({
     }),
   };
 
-  const targetDate = useMemo(() => new Date("2025-09-23T20:00:00"), []);
+  const targetDate = useMemo(() => new Date("2025-10-07T20:00:00"), []);
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
