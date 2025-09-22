@@ -552,8 +552,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuestionCreateSerializer(serializers.ModelSerializer):
-    options = OptionSerializer(many=True, required=False)
-    images = QuestionImageSerializer(many=True, required=False)
+    options = OptionSerializer(many=True, required=False, write_only=True)
+    images = QuestionImageSerializer(many=True, required=False, write_only=True)
     correct_option_index = serializers.IntegerField(required=False, write_only=True)
 
     class Meta:
@@ -562,6 +562,11 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
             'question_text', 'folders', 'difficulty_level', 'detailed_solution',
             'is_active', 'correct_option', 'options', 'images', 'correct_option_index'
         ]
+        # حل مشکل nested fields برای update
+        extra_kwargs = {
+            'options': {'required': False},
+            'images': {'required': False},
+        }
 
     def create(self, validated_data):
         print("=== QUESTION CREATION DEBUG ===")
@@ -612,11 +617,18 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         """Update question including folders, options (replace all), images, and correct option.
         Expects optional 'correct_option_index' referring to the index in the provided options array (after filtering/ordering on client).
         """
+        print("=== QUESTION UPDATE DEBUG ===")
+        print("Raw validated_data:", validated_data)
+        
         # Pop nested write-only fields
         options_data = validated_data.pop('options', None)
         images_data = validated_data.pop('images', None)
         folders_data = validated_data.pop('folders', None)
         correct_option_index = validated_data.pop('correct_option_index', None)
+
+        print("Extracted options_data:", options_data)
+        print("Extracted folders_data:", folders_data)
+        print("correct_option_index:", correct_option_index)
 
         # Update simple fields
         for attr, value in validated_data.items():
@@ -626,14 +638,18 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         # Update folders if provided
         if folders_data is not None:
             instance.folders.set(folders_data)
+            print("Updated folders:", folders_data)
 
         created_options = []
         # Replace options if provided
         if options_data is not None:
             # Delete existing options
             Option.objects.filter(question=instance).delete()
+            print("Deleted existing options")
+            
             # Recreate options in given order
             for opt in options_data:
+                print("Creating option:", opt)
                 option = Option.objects.create(
                     question=instance,
                     option_text=opt.get('option_text', ''),
@@ -641,10 +657,12 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
                     option_image=opt.get('option_image')
                 )
                 created_options.append(option)
+                print("Created option:", option.id, option.option_text)
 
         # Replace images if provided
         if images_data is not None:
             QuestionImage.objects.filter(question=instance).delete()
+            print("Deleted existing images")
             for img in images_data:
                 QuestionImage.objects.create(
                     question=instance,
@@ -652,15 +670,30 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
                     alt_text=img.get('alt_text'),
                     order=img.get('order') or 1
                 )
+                print("Created image")
 
         # Handle correct option by index if provided and options were provided/rebuilt
         if correct_option_index is not None and created_options:
             try:
                 instance.correct_option = created_options[int(correct_option_index)]
                 instance.save(update_fields=['correct_option'])
+                print("Set correct option:", created_options[correct_option_index].id)
             except (ValueError, IndexError):
                 # Ignore invalid index
+                print("Invalid correct_option_index:", correct_option_index)
+                pass
+        elif correct_option_index is not None and options_data is None:
+            # If correct_option_index provided but no options_data, set from existing options
+            existing_options = list(Option.objects.filter(question=instance).order_by('order'))
+            try:
+                if 0 <= int(correct_option_index) < len(existing_options):
+                    instance.correct_option = existing_options[int(correct_option_index)]
+                    instance.save(update_fields=['correct_option'])
+                    print("Set correct option from existing:", existing_options[correct_option_index].id)
+            except (ValueError, IndexError):
+                print("Invalid correct_option_index for existing options:", correct_option_index)
                 pass
 
+        print("=== QUESTION UPDATE COMPLETE ===")
         return instance
 
