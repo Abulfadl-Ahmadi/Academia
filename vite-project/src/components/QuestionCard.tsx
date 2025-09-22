@@ -269,7 +269,7 @@ export function QuestionCard({
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <span className="w-4 text-center font-medium">
-                        {['۱)', '۲)', '۳)', '۴)'][index] || (index + 1)}
+                        {['۱)', '۲)', '۳)', '۴)'][index] || `${index + 1})`}
                       </span>
                       {question.correct_option === option.id && (
                         <CheckCircle className="h-3 w-3 text-green-600" />

@@ -5,6 +5,7 @@
 
 @import './assets/IranSansXPro/Webfonts/fontiran.css';
 @import './assets/RaviPro/RaviFamily/Webfonts/fontiran.css';
+@import './assets/RaviPro/Ravi FaNum/Webfonts/fontiran.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -507,6 +508,25 @@ div .katex {
 .katex .mopen,
 .katex .mclose {
   direction: ltr !important;
+}
+
+/* حفظ فونت‌های اصلی KaTeX برای همه عناصر */
+.katex .mord,
+.katex .mop,
+.katex .mbin,
+.katex .mrel,
+.katex .mpunct,
+.katex .mopen,
+.katex .mclose,
+.katex .mspace,
+.katex .mathit,
+.katex .mathrm {
+  font-family: "KaTeX_Main", "Times New Roman", serif !important;
+}
+
+/* کلاس خاص برای اعداد که با JavaScript اعمال می‌شود */
+.katex .mord.persian-number {
+  font-family: "Ravi FaNum", "KaTeX_Main", serif !important;
 }
 
 /* Responsive Table Styles */
