@@ -11,23 +11,53 @@ interface MathPreviewProps {
 export function MathPreview({ text, className = '' }: MathPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // اعمال فونت Ravi به اعداد فارسی بعد از رندر
+  // اعمال فونت Ravi به اعداد فارسی - بهتر و پایدارتر
   useEffect(() => {
-    if (!containerRef.current) return;
-    
-    const applyFontToDigits = () => {
-      const allSpans = containerRef.current!.querySelectorAll('span');
-      allSpans.forEach(span => {
-        const text = span.textContent || '';
-        if (/[۰-۹]/.test(text)) {
-          span.style.fontFamily = '"Ravi FaNum", serif';
+    const applyPersianFont = () => {
+      if (!containerRef.current) return;
+      
+      // پیدا کردن همه عناصری که حاوی اعداد فارسی هستند
+      const walker = document.createTreeWalker(
+        containerRef.current,
+        NodeFilter.SHOW_TEXT,
+        null
+      );
+
+      const textNodes = [];
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.textContent && /[۰-۹]/.test(node.textContent)) {
+          textNodes.push(node);
+        }
+      }
+
+      textNodes.forEach(textNode => {
+        const parent = textNode.parentElement;
+        if (parent && !parent.classList.contains('persian-number')) {
+          parent.classList.add('persian-number');
+          parent.style.fontFamily = '"Ravi FaNum", serif';
         }
       });
     };
 
-    // اجرای تابع با تاخیر کوتاه تا KaTeX رندر شود
-    const timer = setTimeout(applyFontToDigits, 50);
-    return () => clearTimeout(timer);
+    // اجرای فوری + اجرای با تاخیر برای اطمینان
+    applyPersianFont();
+    const timer = setTimeout(applyPersianFont, 100);
+    
+    // MutationObserver برای تغییرات DOM
+    const observer = new MutationObserver(applyPersianFont);
+    if (containerRef.current) {
+      observer.observe(containerRef.current, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    }
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [text]);
 
   // تابع برای پردازش متن و جدا کردن قسمت‌های ریاضی

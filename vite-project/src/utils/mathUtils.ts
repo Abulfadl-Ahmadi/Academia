@@ -1,5 +1,5 @@
 /**
- * تابع تبدیل اعداد انگلیسی به فارسی (روش ساده و کارآمد)
+ * تابع تبدیل اعداد انگلیسی به فارسی - روش مستقیم
  */
 export const convertNumbersToFarsi = (text: string): string => {
   const englishToPersian = {

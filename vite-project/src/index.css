@@ -512,15 +512,20 @@ div .katex {
 
 /* فونت پیش‌فرض KaTeX برای همه عناصر ریاضی */
 .katex {
-  font-family: "KaTeX_Main", "Times New Roman", serif !important;
+  font-family: "KaTeX_Main", "Ravi FaNum", serif !important;
 }
 
 .katex .mathit {
-  font-family: "KaTeX_Math", "Times New Roman", serif !important;
+  font-family: "KaTeX_Math", "Ravi FaNum", serif !important;
 }
 
 .katex .mathrm {
-  font-family: "KaTeX_Main", "Times New Roman", serif !important;
+  font-family: "KaTeX_Main", "Ravi FaNum", serif !important;
+}
+
+/* کلاس خاص برای اعداد فارسی */
+.persian-number {
+  font-family: "Ravi FaNum", serif !important;
 }
 
 /* استفاده از فونت FaNum برای متن‌های غیرریاضی */
