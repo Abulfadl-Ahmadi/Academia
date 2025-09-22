@@ -510,23 +510,17 @@ div .katex {
   direction: ltr !important;
 }
 
-/* حفظ فونت‌های اصلی KaTeX برای همه عناصر */
-.katex .mord,
-.katex .mop,
-.katex .mbin,
-.katex .mrel,
-.katex .mpunct,
-.katex .mopen,
-.katex .mclose,
-.katex .mspace,
-.katex .mathit,
-.katex .mathrm {
+/* فونت پیش‌فرض KaTeX برای همه عناصر ریاضی */
+.katex {
   font-family: "KaTeX_Main", "Times New Roman", serif !important;
 }
 
-/* کلاس خاص برای اعداد که با JavaScript اعمال می‌شود */
-.katex .mord.persian-number {
-  font-family: "Ravi FaNum", "KaTeX_Main", serif !important;
+.katex .mathit {
+  font-family: "KaTeX_Math", "Times New Roman", serif !important;
+}
+
+.katex .mathrm {
+  font-family: "KaTeX_Main", "Times New Roman", serif !important;
 }
 
 /* استفاده از فونت FaNum برای متن‌های غیرریاضی */

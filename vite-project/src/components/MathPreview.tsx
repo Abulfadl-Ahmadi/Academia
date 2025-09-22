@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { convertNumbersToFarsi } from '@/utils/mathUtils';
 
 interface MathPreviewProps {
   text: string;
@@ -10,26 +11,22 @@ interface MathPreviewProps {
 export function MathPreview({ text, className = '' }: MathPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // تابع برای اعمال فونت فارسی به اعداد
-  const applyPersianNumberFont = () => {
+  // اعمال فونت Ravi به اعداد فارسی بعد از رندر
+  useEffect(() => {
     if (!containerRef.current) return;
     
-    const mathElements = containerRef.current.querySelectorAll('.katex .mord');
-    mathElements.forEach((element) => {
-      const textContent = element.textContent || '';
-      // بررسی اینکه آیا محتوا فقط عدد است (یک یا چند رقم)
-      if (/^[0-9]+([.,][0-9]+)?$/.test(textContent.trim())) {
-        element.classList.add('persian-number');
-      } else {
-        // حذف کلاس اگر دیگر عدد نیست
-        element.classList.remove('persian-number');
-      }
-    });
-  };
+    const applyFontToDigits = () => {
+      const allSpans = containerRef.current!.querySelectorAll('span');
+      allSpans.forEach(span => {
+        const text = span.textContent || '';
+        if (/[۰-۹]/.test(text)) {
+          span.style.fontFamily = '"Ravi FaNum", serif';
+        }
+      });
+    };
 
-  // اعمال فونت بعد از رندر شدن
-  useEffect(() => {
-    const timer = setTimeout(applyPersianNumberFont, 100);
+    // اجرای تابع با تاخیر کوتاه تا KaTeX رندر شود
+    const timer = setTimeout(applyFontToDigits, 50);
     return () => clearTimeout(timer);
   }, [text]);
 
@@ -39,16 +36,22 @@ export function MathPreview({ text, className = '' }: MathPreviewProps) {
 
     return parts.map((part, index) => {
       if (part.startsWith('$$') && part.endsWith('$$')) {
-        // Block math
-        const math = part.slice(2, -2);
-        return <BlockMath key={index} math={math} />;
+        // Block math - تبدیل اعداد به فارسی
+        const math = convertNumbersToFarsi(part.slice(2, -2));
+        return <BlockMath 
+          key={index} 
+          math={math}
+        />;
       } else if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
-        // Inline math
-        const math = part.slice(1, -1);
-        return <InlineMath key={index} math={math} />;
+        // Inline math - تبدیل اعداد به فارسی
+        const math = convertNumbersToFarsi(part.slice(1, -1));
+        return <InlineMath 
+          key={index} 
+          math={math}
+        />;
       } else {
-        // Regular text - استفاده از فونت FaNum برای متن عادی
-        return <span key={index} className="text-fanum">{part}</span>;
+        // Regular text - تبدیل اعداد به فارسی
+        return <span key={index} className="text-fanum">{convertNumbersToFarsi(part)}</span>;
       }
     });
   };
