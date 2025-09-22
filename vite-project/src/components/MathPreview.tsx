@@ -47,8 +47,8 @@ export function MathPreview({ text, className = '' }: MathPreviewProps) {
         const math = part.slice(1, -1);
         return <InlineMath key={index} math={math} />;
       } else {
-        // Regular text
-        return <span key={index}>{part}</span>;
+        // Regular text - استفاده از فونت FaNum برای متن عادی
+        return <span key={index} className="text-fanum">{part}</span>;
       }
     });
   };

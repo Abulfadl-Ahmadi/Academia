@@ -529,6 +529,11 @@ div .katex {
   font-family: "Ravi FaNum", "KaTeX_Main", serif !important;
 }
 
+/* استفاده از فونت FaNum برای متن‌های غیرریاضی */
+.text-fanum {
+  font-family: "Ravi FaNum", "IRANSansX", sans-serif !important;
+}
+
 /* Responsive Table Styles */
 .responsive-table-container {
   max-width: 100%;
