@@ -335,7 +335,7 @@ export default function EditTestInCollection() {
 
     try {
       setLoading(true);
-      await axiosInstance.put(`${baseURL}/tests/${testId}/`, payload);
+      await axiosInstance.put(`${baseURL}/tests/${testId}/update`, payload);
       toast.success("آزمون با موفقیت ویرایش شد");
 
       // Redirect back to test collection detail page

@@ -140,13 +140,16 @@ class TestType(models.TextChoices):
     TOPIC_BASED = 'topic_based', 'آزمون مبحثی آزاد'
     PRACTICE = 'practice', 'آزمون تمرینی'
 
+class TestContentType(models.TextChoices):
+    PDF = 'pdf', 'فایل PDF'
+    TYPED_QUESTION = 'typed_question', 'سوال تایپ شده'
 
 class Test(models.Model):
+
     name = models.CharField(max_length=255, verbose_name="نام آزمون")
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="معلم")
     
-    # نوع آزمون
     test_type = models.CharField(
         max_length=20,
         choices=TestType.choices,
@@ -154,7 +157,6 @@ class Test(models.Model):
         verbose_name="نوع آزمون"
     )
     
-    # اتصال به مجموعه آزمون (الزامی)
     test_collection = models.ForeignKey(
         TestCollection, 
         on_delete=models.CASCADE, 
@@ -164,7 +166,6 @@ class Test(models.Model):
         blank=True
     )
     
-    # اتصال به مبحث درخت دانش (جدید)
     topic = models.ForeignKey(
         'knowledge.Topic',
         on_delete=models.SET_NULL,
@@ -174,8 +175,8 @@ class Test(models.Model):
         blank=True,
         help_text="مبحث درخت دانشی که این آزمون به آن مربوط است"
     )
-    
-    pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF", related_name='test_file')
+        
+    pdf_file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل PDF", related_name='test_file', null=True, blank=True)
     answers_file = models.ForeignKey(File, on_delete=models.SET_NULL, verbose_name="فایل پاسخنامه", related_name='test_answers_file', null=True, blank=True)
     
     # فیلدهای زمان‌بندی (فقط برای آزمون‌های زمان‌بندی شده)
@@ -201,6 +202,9 @@ class Test(models.Model):
     knowledge_path = models.JSONField(null=True, blank=True, default=list, help_text="Path nodes when no final topic exists: list of {level: str, id: int | null}")
     folders = models.ManyToManyField(Folder, blank=True, related_name='tests', verbose_name="پوشه‌ها", help_text="پوشه(های) مرتبط برای آزمون مبحثی")
 
+    questions = models.ManyToManyField('Question', blank=True, related_name='tests', verbose_name="سوالات")
+    content_type = models.CharField(max_length=20, choices=TestContentType.choices, default=TestContentType.PDF, verbose_name="نوع محتوا")
+    
     class Meta:
         verbose_name = "آزمون"
         verbose_name_plural = "آزمون‌ها"
@@ -663,5 +667,4 @@ class QuestionImage(models.Model):
 
     def __str__(self):
         return f"تصویر برای {self.question.question_text[:30]}"
-
-
+ 

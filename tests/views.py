@@ -26,7 +26,7 @@ import json
 class ListCreateTestView(generics.ListCreateAPIView):
     serializer_class = TestCreateSerializer
     permission_classes = [IsAuthenticated]  # Only teachers in practice
-    # queryset = Test.objects.all()
+    pagination_class = None  # Disable pagination for this view
 
     def get_queryset(self):
         user = self.request.user

@@ -30,6 +30,7 @@ import {
   MoreVertical,
   CheckCircle,
   FileText,
+  Plus,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -37,6 +38,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import axiosInstance from "@/lib/axios";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface Option {
   id: number;
@@ -61,6 +65,18 @@ interface Question {
   source: string;
 }
 
+interface Test {
+  id: number;
+  name: string;
+  description: string;
+  test_type: string;
+  collection?: {
+    id: number;
+    name: string;
+    created_by_name: string;
+  };
+}
+
 interface QuestionCardProps {
   question: Question;
   onEdit?: (questionId: number) => void;
@@ -78,6 +94,10 @@ export function QuestionCard({
 }: QuestionCardProps) {
   const [showSolutionDialog, setShowSolutionDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showAddToExamDrawer, setShowAddToExamDrawer] = useState(false);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [selectedTests, setSelectedTests] = useState<number[]>([]);
+  const [loadingTests, setLoadingTests] = useState(false);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -89,6 +109,85 @@ export function QuestionCard({
 
     return () => window.removeEventListener("resize", checkDevice);
   }, []);
+
+  const fetchTests = async () => {
+    try {
+      setLoadingTests(true);
+      const response = await axiosInstance.get("/tests/");
+      
+      // Handle both paginated and non-paginated responses
+      let testsData: Test[] = [];
+      if (Array.isArray(response.data)) {
+        testsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        testsData = response.data.results;
+      } else {
+        console.warn("Unexpected API response structure:", response.data);
+        testsData = [];
+      }
+      
+      setTests(testsData);
+    } catch (error) {
+      console.error("Error fetching tests:", error);
+      toast.error("خطا در بارگیری آزمون‌ها");
+      setTests([]); // Ensure tests is always an array
+    } finally {
+      setLoadingTests(false);
+    }
+  };
+
+  const addQuestionToTests = async () => {
+    if (selectedTests.length === 0) {
+      toast.error("لطفاً حداقل یک آزمون انتخاب کنید");
+      return;
+    }
+
+    try {
+      // For each selected test, get current questions and add the new one
+      const promises = selectedTests.map(async (testId) => {
+        // First get the current test data
+        const testResponse = await axiosInstance.get(`/tests/${testId}/`);
+        const currentTest = testResponse.data;
+        
+        // Get current question IDs
+        const currentQuestionIds = currentTest.questions || [];
+        
+        // Add the new question if not already present
+        if (!currentQuestionIds.includes(question.id)) {
+          const updatedQuestionIds = [...currentQuestionIds, question.id];
+          
+          // Update the test with the new questions list
+          return axiosInstance.patch(`/tests/${testId}/update`, {
+            questions: updatedQuestionIds
+          });
+        }
+        
+        return Promise.resolve(); // Question already in test
+      });
+
+      await Promise.all(promises);
+      toast.success(`سوال به ${selectedTests.length} آزمون اضافه شد`);
+      setShowAddToExamDrawer(false);
+      setSelectedTests([]);
+    } catch (error) {
+      console.error("Error adding question to tests:", error);
+      toast.error("خطا در اضافه کردن سوال به آزمون‌ها");
+    }
+  };
+
+  const handleTestSelection = (testId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedTests(prev => [...prev, testId]);
+    } else {
+      setSelectedTests(prev => prev.filter(id => id !== testId));
+    }
+  };
+
+  useEffect(() => {
+    if (showAddToExamDrawer) {
+      fetchTests();
+    }
+  }, [showAddToExamDrawer]);
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
@@ -167,7 +266,8 @@ export function QuestionCard({
   );
 
   return (
-    <Card
+    <>
+      <Card
       className={`${
         !question.is_active
           ? "opacity-60 border-dashed p-4 gap-2"
@@ -316,6 +416,10 @@ export function QuestionCard({
                     حذف
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onClick={() => setShowAddToExamDrawer(true)}>
+                  <Plus className="h-4 w-4 ml-2" />
+                  افزودن به آزمون
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -372,5 +476,82 @@ export function QuestionCard({
         </div>
       </CardContent>
     </Card>
-  );
+    <Drawer direction="left" open={showAddToExamDrawer} onOpenChange={setShowAddToExamDrawer}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>افزودن به آزمون</DrawerTitle>
+        </DrawerHeader>
+        <div className="p-4">
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-sm mb-2">سوال انتخاب شده:</h4>
+              <div className="p-3 bg-muted/50 rounded border text-sm">
+                <MathPreview text={question.question_text} />
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-sm mb-2">انتخاب آزمون‌ها:</h4>
+              {loadingTests ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-sm text-muted-foreground mt-2">در حال بارگیری آزمون‌ها...</p>
+                </div>
+              ) : !Array.isArray(tests) || tests.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {Array.isArray(tests) && tests.length === 0 ? "هیچ آزمونی یافت نشد" : "خطا در بارگیری آزمون‌ها"}
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {(tests || []).map((test) => (
+                    <div key={test.id} className="flex items-center space-x-2 space-x-reverse">
+                      <Checkbox
+                        id={`test-${test.id}`}
+                        checked={selectedTests.includes(test.id)}
+                        onCheckedChange={(checked) => handleTestSelection(test.id, checked as boolean)}
+                      />
+                      <label
+                        htmlFor={`test-${test.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
+                      >
+                        <div>
+                          <div className="font-medium">{test.name}</div>
+                          {test.description && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {test.description}
+                            </div>
+                          )}
+                          {test.collection && (
+                            <div className="text-xs text-muted-foreground">
+                              مجموعه: {test.collection.name}
+                            </div>
+                          )}
+                        </div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {selectedTests.length > 0 && (
+              <div className="pt-4 border-t">
+                <p className="text-sm text-muted-foreground mb-3">
+                  {selectedTests.length} آزمون انتخاب شده
+                </p>
+                <Button
+                  onClick={addQuestionToTests}
+                  className="w-full"
+                  disabled={loadingTests}
+                >
+                  افزودن به آزمون‌ها
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  </>
+);
 }

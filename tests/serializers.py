@@ -102,13 +102,19 @@ class TestUpdateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True
     )
+    questions = serializers.PrimaryKeyRelatedField(
+        queryset=Question.objects.all(),
+        many=True,
+        required=False
+    )
 
     class Meta:
         model = Test
-        fields = ['name', 'description', 'test_collection', 'pdf_file', 'answers_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys']
+        fields = ['name', 'description', 'test_collection', 'pdf_file', 'answers_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys', 'questions']
 
     def update(self, instance, validated_data):
         keys_data = validated_data.pop('keys', None)
+        questions_data = validated_data.pop('questions', None)
 
         # تبدیل duration از string به timedelta
         if 'duration' in validated_data:
@@ -125,6 +131,10 @@ class TestUpdateSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
+        # بروزرسانی سوالات آزمون
+        if questions_data is not None:
+            instance.questions.set(questions_data)
 
         if keys_data is not None:
             # حذف کلیدهای قبلی
@@ -152,12 +162,13 @@ class TestDetailSerializer(serializers.ModelSerializer):
     keys = serializers.SerializerMethodField()  # فقط برای معلم
     pdf_file = serializers.SerializerMethodField()  # فقط ID برای معلم
     answers_file = serializers.SerializerMethodField()  # فقط ID برای معلم
+    questions = serializers.SerializerMethodField()  # لیست سوالات آزمون
     
     class Meta:
         model = Test
         fields = ["id", 'name', 'description', 'test_collection', 'pdf_file', 'answers_file', 
                  'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'duration_formatted', 'frequency',
-                 'collection', 'questions_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys']
+                 'collection', 'questions_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys', 'questions']
         read_only_fields = ['teacher']
 
     def get_pdf_file(self, obj):
@@ -239,6 +250,10 @@ class TestDetailSerializer(serializers.ModelSerializer):
             minutes = (total_seconds % 3600) // 60
             return f"{hours:02d}:{minutes:02d}"
         return "01:00"  # پیش‌فرض 1 ساعت
+
+    def get_questions(self, obj):
+        """لیست ID سوالات آزمون را برمی‌گرداند"""
+        return list(obj.questions.values_list('id', flat=True))
 
 
 class TestCollectionSerializer(serializers.ModelSerializer):
@@ -562,7 +577,7 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         fields = [
             'question_text', 'folders', 'difficulty_level', 'detailed_solution',
             'is_active', 'correct_option', 'options', 'images', 'correct_option_index',
-            "publish_date", "source"
+            'publish_date', 'source'
         ]
         # حل مشکل nested fields برای update
         extra_kwargs = {

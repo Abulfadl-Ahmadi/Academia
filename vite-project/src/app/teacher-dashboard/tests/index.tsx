@@ -47,7 +47,17 @@ const TestsList: React.FC = () => {
     axiosInstance
       .get("/tests/")
       .then((res) => {
-        setTests(res.data);
+        // Handle both paginated and non-paginated responses
+        let testsData = [];
+        if (Array.isArray(res.data)) {
+          testsData = res.data;
+        } else if (res.data && Array.isArray(res.data.results)) {
+          testsData = res.data.results;
+        } else {
+          console.warn("Unexpected API response structure:", res.data);
+          testsData = [];
+        }
+        setTests(testsData);
       })
       .catch((err) => {
         console.error("Error fetching tests:", err);
