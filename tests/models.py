@@ -567,7 +567,8 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ آخرین بروزرسانی")
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="ایجاد شده توسط")
-    
+    publish_date = models.CharField(max_length=10, null=True, blank=True, default=None)
+    source = models.CharField(max_length=100, null=True, blank=True, default=None)
     difficulty_level = models.CharField(
         max_length=10,
         choices=DIFFICULTY_CHOICES,

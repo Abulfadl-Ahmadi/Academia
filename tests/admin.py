@@ -188,7 +188,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('اطلاعات سوال', {
-            'fields': ('question_text', 'folders')
+            'fields': ('question_text', 'folders', 'publish_date', 'source')
         }),
         ('گزینه‌ها و پاسخ', {
             'fields': ('correct_option',)

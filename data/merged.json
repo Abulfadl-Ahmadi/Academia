@@ -1,0 +1,581 @@
+[
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1399",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "جوابهای معادلۀ $\\left| \\begin{matrix} 1 & 2 & 3 \\\\ -2 & 4 & x+5 \\\\ x-1 & 6 & -1 \\\\ \\end{matrix} \\right|=0$ ، کدام است؟",
+      "options": [
+        "$4\\,,\\,-9$",
+        "$3\\,,\\,-8$",
+        "$-4\\,,\\,9$",
+        "$-3\\,,\\,8$"
+      ],
+      "answer_index": null,
+      "answer_text": null,
+      "explanation": "مقدار دترمینان را از روش ساروس یافته و برابر صفر، قرار میدهیم: $\\begin{aligned} & \\left| \\begin{matrix} 1 & 2 & 3 \\\\ -2 & 4 & x+5 \\\\ x-1 & 6 & -1 \\\\ \\end{matrix} \\right|\\begin{matrix} 1 & 2 \\\\ -2 & 4 \\\\ x-1 & 6 \\\\ \\end{matrix} \\\\ & \\left( (1)(4)(-1)+(2)(x+5)(x-1)+(3)(-2)(6) \\right)-\\left( (3)(4)(x-1)+(1)(x+5)(6)+(2)(-2)(-1) \\right)=0 \\\\ & \\Rightarrow (-4+2{{x}^{2}}+8x-10-36)-(12x-12+6x+30+4)=0 \\\\ & \\Rightarrow (2{{x}^{2}}+8x-50)-(18x+22)=0\\Rightarrow 2{{x}^{2}}-10x-72=0 \\\\ & \\xrightarrow{\\times \\frac{1}{2}}{{x}^{2}}-5x-36=0\\Rightarrow (x+4)(x-9)=0\\Rightarrow x=-4\\,\\,\\text{یا}\\,\\,x=9 \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1397",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "اگر از هر درایه واقع در سطر دوم دترمینان زیر، 2 برابر شمارۀ ستون آن کم شود، به مقدار دترمینان اولیه چقدر افزوده میشود؟ $\\left| \\begin{matrix} 5 & 4 & -3 \\\\ 2a & a+1 & a-1 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|$",
+      "options": [
+        "132",
+        "144",
+        "148",
+        "156"
+      ],
+      "answer_index": 4,
+      "answer_text": "156",
+      "explanation": "راهحل اول: مقدار دترمینان اولیه را محاسبه میکنیم: $\\begin{aligned} & \\left| \\begin{matrix} 5 & 4 & -3 \\\\ 2a & a+1 & a-1 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|=5\\left| \\begin{matrix} a+1 & a-1 \\\\ 5 & -4 \\\\ \\end{matrix} \\right|-4\\left| \\begin{matrix} 2a & a-1 \\\\ 2 & -4 \\\\ \\end{matrix} \\right|-3\\left| \\begin{matrix} 2a & a+1 \\\\ 2 & 5 \\\\ \\end{matrix} \\right| \\\\ & =5(-4a-4-5a+5)-4(-8a-2a+2)-3(10a-2a-2) \\\\ & =5(-9a+1)-4(-10a+2)-3(8a-2)=-29a+3\\,\\,\\,\\,(1) \\\\ \\end{aligned}$ دترمینان جدید برابر است با: $\\begin{aligned} & \\left| \\begin{matrix} 5 & 4 & -3 \\\\ 2a-2 & a-3 & a-7 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|=5\\left| \\begin{matrix} a-3 & a-7 \\\\ 5 & -4 \\\\ \\end{matrix} \\right|-4\\left| \\begin{matrix} 2a-2 & a-7 \\\\ 2 & -4 \\\\ \\end{matrix} \\right|-3\\left| \\begin{matrix} 2a-2 & a-3 \\\\ 2 & 5 \\\\ \\end{matrix} \\right| \\\\ & =5(-4a+12-5a+35)-4(-8a+8-2a+14)-3(10a-10-2a+6) \\\\ & =5(-9a+47)-4(-10a+22)-3(8a-4)=-29a+159\\,\\,\\,\\,(2) \\\\ \\end{aligned}$ بنابراین با مقایسۀ دو مقدار $(1)$ و $(2)$ ، مشاهده میکنیم که به دترمینان اولیه 156 واحد اضافه شده است. راهحل دوم: طبق خواص دترمینان داریم: $\\left| \\begin{matrix} 5 & 4 & -3 \\\\ 2a-2 & (a+1)-4 & (a-1)-6 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} 5 & 4 & -3 \\\\ 2a & a+1 & a-1 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|+\\left| \\begin{matrix} 5 & 4 & -3 \\\\ -2 & -4 & -6 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|$ $\\Rightarrow \\text{مقدار افزودهشده به دترمینان اولیه}=\\left| \\begin{matrix} 5 & 4 & -3 \\\\ -2 & -4 & -6 \\\\ 2 & 5 & -4 \\\\ \\end{matrix} \\right|=156$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "علوی",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "آزمون شماره 1",
+        "1401",
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1392",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر $A=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$ ، ماتریس ${{A}^{4}}$ کدام است؟",
+      "options": [
+        "$A$",
+        "$-\\dfrac{1}{2}A$",
+        "قطری غیرهمانی",
+        "همانی"
+      ],
+      "answer_index": null,
+      "answer_text": null,
+      "explanation": "$\\begin{aligned} & {{A}^{2}}=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right] \\\\ & {{A}^{4}}=\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1400",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر ماتریس $b=\\left[ \\begin{matrix} {{b}_{1}} \\\\ {{b}_{2}} \\\\ \\end{matrix} \\right]$ چنان باشد که $\\left[ \\begin{matrix} 5 & -2 \\\\ 4 & a \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} {{b}_{1}} \\\\ {{b}_{2}} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 4{{b}_{1}} \\\\ 4{{b}_{2}} \\\\ \\end{matrix} \\right]$ ، آنگاه مقدار $a$ کدام است؟ (هیچکدام از ${{b}_{1}}$ و ${{b}_{2}}$ صفر نیستند) (با تغییر)",
+      "options": [
+        "$-4$",
+        "صفر",
+        "4",
+        "12"
+      ],
+      "answer_index": 1,
+      "answer_text": "$-4$",
+      "explanation": "$\\begin{aligned} & \\left[ \\begin{matrix} 5 & -2 \\\\ 4 & a \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} {{b}_{1}} \\\\ {{b}_{2}} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 4{{b}_{1}} \\\\ 4{{b}_{2}} \\\\ \\end{matrix} \\right]\\Rightarrow \\left[ \\begin{matrix} 5{{b}_{1}}-2{{b}_{2}} \\\\ 4{{b}_{1}}+a{{b}_{2}} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 4{{b}_{1}} \\\\ 4{{b}_{2}} \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow \\left\\{ \\begin{matrix} 5{{b}_{1}}-2{{b}_{2}}=4{{b}_{1}} \\\\ 4{{b}_{1}}+a{{b}_{2}}=4{{b}_{2}} \\\\ \\end{matrix}\\xrightarrow{\\text{ معادلۀ اول }}{{b}_{1}}=2{{b}_{2}} \\right. \\\\ & \\xrightarrow{\\text{ جایگذاری معادلۀ دوم }}8{{b}_{2}}+a{{b}_{2}}=4{{b}_{2}}\\Rightarrow a{{b}_{2}}=-4{{b}_{2}}\\xrightarrow{{{b}_{2}}\\cancel{=} 0}a=-4 \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1399",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر $A=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$ باشد، درایههای سطر اول ماتریس ${{A}^{4}}$ ، کدام است؟",
+      "options": [
+        "$\\left[ \\begin{matrix} 0 & 1 & 0 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 0 & 0 & 1 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 1 & 0 & 1 \\\\ \\end{matrix} \\right]$"
+      ],
+      "answer_index": null,
+      "answer_text": null,
+      "explanation": "طبق فرض، داریم: $\\begin{aligned} & {{A}^{2}}=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right] \\\\ & {{A}^{4}}={{A}^{2}}\\times {{A}^{2}}=\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ 0 & -1 & 0 \\\\ -2 & 2 & -3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ \\ldots & \\ldots & \\ldots \\\\ \\ldots & \\ldots & \\ldots \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ دقت کنید که نیازی به یافتن سطرهای دوم و سوم ماتریس ${{A}^{4}}$ نیست."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1401",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "وارون ماتریسها"
+      ],
+      "question": "ماتریس $A=\\left[ \\begin{matrix} -1 & 2 \\\\ 4 & -3 \\\\ \\end{matrix} \\right]$ ، $I$ ماتریس همانی و $\\alpha$ و $\\beta$ دو عدد حقیقی هستند که $\\alpha A+\\beta I={{A}^{-1}}$ ، مقدار $\\dfrac{\\beta }{\\alpha }$ کدام است؟",
+      "options": [
+        "4-",
+        "4",
+        "2-",
+        "2"
+      ],
+      "answer_index": 2,
+      "answer_text": "4",
+      "explanation": "ماتریس ${{A}^{-1}}$ را یافته و در رابطۀ دادهشده، جایگذاری میکنیم: $A=\\left[ \\begin{matrix} -1 & 2 \\\\ 4 & -3 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{-1}}=\\dfrac{1}{3-8}\\left[ \\begin{matrix} -3 & -2 \\\\ -4 & -1 \\\\ \\end{matrix} \\right]$ $\\xrightarrow[\\text{در فرض سؤال }]{\\text{جایگذاری }}\\alpha \\left[ \\begin{matrix} -1 & 2 \\\\ 4 & -3 \\\\ \\end{matrix} \\right]+\\beta \\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\dfrac{3}{5} & \\dfrac{2}{5} \\\\ \\dfrac{4}{5} & \\dfrac{1}{5} \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left[ \\begin{matrix} -\\alpha +\\beta & 2\\alpha \\\\ 4\\alpha & -3\\alpha +\\beta \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\dfrac{3}{5} & \\dfrac{2}{5} \\\\ \\dfrac{4}{5} & \\dfrac{1}{5} \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & -\\alpha +\\beta =\\dfrac{3}{5} \\\\ & 2\\alpha =\\dfrac{2}{5} \\\\ \\end{aligned} \\right.$ $\\Rightarrow \\left\\{ \\begin{aligned} & \\alpha =\\dfrac{1}{5} \\\\ & \\beta =\\dfrac{4}{5} \\\\ \\end{aligned} \\right.\\Rightarrow \\dfrac{\\beta }{\\alpha }=4$ تذکر: با یافتن سطر اول ${{A}^{-1}}$ و مقایسۀ آن با سطر اول عبارت سمت چپ تساوی، مقادیر $\\alpha$ و $\\beta$ به دست میآیند و نیازی به یافتن سطر دوم آن نبود."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "نوبت دوم",
+        "خارج از کشور",
+        "1404",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر ماتریسهای $\\begin{aligned} B=\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\\\ -1 & 0 \\end{bmatrix} \\end{aligned}$ ، $\\begin{aligned} C=\\begin{bmatrix} 1 & 0 & -1 \\\\ 0 & 1 & 0 \\end{bmatrix} \\end{aligned}$ و $A=B\\times C$ باشند، درایۀ واقع در سطر سوم ستون اول ماتریس $A^5$ کدام است؟",
+      "options": [
+        "$-16$",
+        "$-32$",
+        "$-8$",
+        "$-64$"
+      ],
+      "answer_index": 1,
+      "answer_text": "$-16$",
+      "explanation": "طبق فرض، داریم: $\\begin{aligned} A= \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\\\ -1 & 0 \\end{bmatrix}\\begin{bmatrix} 1 & 0 & -1 \\\\ 0 & 1 & 0 \\end{bmatrix}=\\begin{bmatrix} 1 & 0 & -1 \\\\ 0 & 1 & 0 \\\\ -1 & 0 & 1 \\end{bmatrix} \\end{aligned}$ $\\begin{aligned} A^2=\\begin{bmatrix} 1 & 0 & -1 \\\\ 0 & 1 & 0 \\\\ -1 & 0 & 1 \\end{bmatrix}\\begin{bmatrix} 1 & 0 & -1 \\\\ 0 & 1 & 0 \\\\ -1 & 0 & 1 \\end{bmatrix}=\\begin{bmatrix} 2 & 0 & -2 \\\\ 0 & 1 & 0 \\\\ -2 & 0 & 2 \\end{bmatrix} \\end{aligned}$ با ادامۀ همین روند، نتیجه میگیریم: $\\begin{aligned} A^n=\\begin{bmatrix} 2^{n-1} & 0 & -2^{n-1} \\\\ 0 & 1 & 0 \\\\ -2^{n-1} & 0 & 2^{n-1} \\end{bmatrix} \\end{aligned}$ پس درایۀ سطر سوم و ستون اول ماتریس $A^5$ برابر است با $-2^4=-16$."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "دشوار",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1400",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "فرض کنید $A=\\left[ \\begin{matrix} 1 & a \\\\ -1 & 1 \\\\ \\end{matrix}\\,\\,\\,\\,\\,\\begin{matrix} 3 \\\\ 1 \\\\ \\end{matrix} \\right]$ و $A{{A}^{T}}B=52I$ ، اگر $\\left| B \\right|=104$ باشد، مجموع مقادیر ممکن برای $a$ ، کدام است؟ ( $A^{T}$ ماتریسی است که از جابجایی سطر و ستون ماتریس $A$ به دست میآید) (با تغییر)",
+      "options": [
+        "$-2$",
+        "صفر",
+        "1",
+        "2"
+      ],
+      "answer_index": 3,
+      "answer_text": "1",
+      "explanation": "اولاً ماتریس $A{{A}^{T}}$ از مرتبۀ $2\\times 2$ است و چون حاصل ضرب آن در ماتریس $B$ ، مضربی از $I$ است، ماتریس $B$ هم باید مرتبۀ $2\\times 2$ باشد تا این حاصل ضرب، یک ماتریس مربعی شود. حال با دترمینانگیری از طرفین رابطۀ فرض، داریم: $\\begin{aligned} & \\left| A{{A}^{T}}B \\right|=\\left| 52I \\right|\\Rightarrow \\left| A{{A}^{T}} \\right|\\left| B \\right|={{52}^{2}}\\left| I \\right| \\\\ & \\Rightarrow\\left| A{{A}^{T}} \\right|\\times 104={{52}^{2}}\\Rightarrow \\left| A{{A}^{T}} \\right|=\\dfrac{52\\times 52}{104}=26 \\\\ &\\Rightarrow \\left| \\left[ \\begin{matrix} \\begin{matrix} 1 & a & 3 \\\\ \\end{matrix} \\\\ \\begin{matrix} -1 & 1 & 1 \\\\ \\end{matrix} \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\begin{matrix} 1 \\\\ a \\\\ 3 \\\\ \\end{matrix} & \\begin{matrix} -1 \\\\ 1 \\\\ 1 \\\\ \\end{matrix} \\\\ \\end{matrix} \\right] \\right|=26\\Rightarrow \\left| \\begin{matrix} 10+{{a}^{2}} & a+2 \\\\ a+2 & 3 \\\\ \\end{matrix} \\right|=26 \\\\ & \\Rightarrow 3\\left( 10+{{a}^{2}} \\right)-{{\\left( a+2 \\right)}^{2}}=26\\Rightarrow 2{{a}^{2}}-4a+26=26 \\\\ &\\Rightarrow 2{{a}^{2}}-4a=0\\Rightarrow 2a\\left( a-2 \\right)=0 \\\\ & \\Rightarrow a=0\\,\\text{یا}\\,a=2\\Rightarrow a\\,\\text{مجموع مقادیر}=0+2=2 \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1398",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دستگاه دو معادله دو مجهول"
+      ],
+      "question": "اگر $A=\\left[ \\begin{matrix} 2 & 3 \\\\ -1 & -2 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 1 & 2 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]$ ، از رابطۀ $AX=B$ ماتریس $X$ کدام است؟",
+      "options": [
+        "$\\left[ \\begin{matrix} 2 & 13 \\\\ -1 & -8 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 2 & 11 \\\\ 1 & -6 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 1 & 13 \\\\ -1 & -6 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} -1 & -12 \\\\ 1 & 8 \\\\ \\end{matrix} \\right]$"
+      ],
+      "answer_index": 1,
+      "answer_text": "$\\left[ \\begin{matrix} 2 & 13 \\\\ -1 & -8 \\\\ \\end{matrix} \\right]$",
+      "explanation": "چون $\\left| A \\right|=-4+3=-1\\cancel{=} 0$ ، ماتریس $A$ وارونپذیر است و داریم: $AX=B\\Rightarrow {{A}^{-1}}\\left( AX \\right)={{A}^{-1}}B\\Rightarrow \\underbrace{({{A}^{-1}}A)}_{I}X={{A}^{-1}}B\\Rightarrow X={{A}^{-1}}B$ $\\Rightarrow X=\\dfrac{1}{-1}\\left[ \\begin{matrix} -2 & -3 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 2 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]=-\\left[ \\begin{matrix} -2 & -13 \\\\ 1 & 8 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 & 13 \\\\ -1 & -8 \\\\ \\end{matrix} \\right]$ تذکر: با امتحان کردن گزینهها هم میتوان ماتریس $X$ را یافت."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "نوبت دوم",
+        "خارج از کشور",
+        "1403",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "وارون ماتریسها"
+      ],
+      "question": "اگر $\\begin{aligned} B=\\begin{bmatrix}-2&-3\\\\-1&-1\\end{bmatrix} \\end{aligned}$ و $\\begin{aligned} 3I-2A^{-1}B=\\begin{bmatrix}7&5\\\\-12&-11\\end{bmatrix} \\end{aligned}$ باشد، کوچکترین درایۀ ماتریس $3B^{-1}-2A^{-1}$ کدام است؟",
+      "options": [
+        "$-11$",
+        "$-14$",
+        "1",
+        "2"
+      ],
+      "answer_index": 1,
+      "answer_text": "$-11$",
+      "explanation": "ماتریس $B^{-1}$ را از سمت راست، در طرفین تساوی دادهشده ضرب میکنیم: $\\begin{aligned} (3I-2A^{-1}B)B^{-1}=\\begin{bmatrix}7&5\\\\-12&-11\\end{bmatrix}B^{-1} \\end{aligned}$ $\\begin{aligned} \\Rightarrow 3B^{-1}-2A^{-1}=\\begin{bmatrix}7&5\\\\-12&-11\\end{bmatrix}B^{-1}\\quad(1) \\end{aligned}$ ماتریس $B^{-1}$ را مییابیم: $\\begin{aligned} B^{-1}=\\frac{1}{2-3}\\begin{bmatrix}-1&3\\\\1&-2\\end{bmatrix}=\\begin{bmatrix}1&-3\\\\-1&2\\end{bmatrix} \\end{aligned}$ حال با جایگذاری $B^{-1}$ در سمت راست رابطۀ (1)، داریم: $\\begin{aligned} 3B^{-1}-2A^{-1}=\\begin{bmatrix}7&5\\\\-12&-11\\end{bmatrix}\\begin{bmatrix}1&-3\\\\-1&2\\end{bmatrix}=\\begin{bmatrix}2&-11\\\\ -1&14\\end{bmatrix} \\end{aligned}$ پس کوچکترین درایۀ این ماتریس، $(-11)$ است."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1396",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "ماتریس $A={{[{{a}_{ij}}]}_{3\\times 3}}$ بهصورت ${{a}_{ij}}=\\left\\{ \\begin{aligned} & 1\\,\\,\\,\\,\\,\\,\\,;i=j \\\\ & 2\\,\\,\\,\\,\\,\\,;i\\cancel{=} j \\\\ \\end{aligned} \\right.$ تعریف شده است. مجموع درایههای ماتریس ${{A}^{2}}-4A$ کدام است؟",
+      "options": [
+        "12",
+        "15",
+        "18",
+        "21"
+      ],
+      "answer_index": 2,
+      "answer_text": "15",
+      "explanation": "طبق تعریف داریم: $\\begin{aligned} & A=\\left[ \\begin{matrix} 1 & 2 & 2 \\\\ 2 & 1 & 2 \\\\ 2 & 2 & 1 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{2}}=\\left[ \\begin{matrix} 9 & 8 & 8 \\\\ 8 & 9 & 8 \\\\ 8 & 8 & 9 \\\\ \\end{matrix} \\right] \\\\ & {{A}^{2}}-4A=\\left[ \\begin{matrix} 9 & 8 & 8 \\\\ 8 & 9 & 8 \\\\ 8 & 8 & 9 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 4 & 8 & 8 \\\\ 8 & 4 & 8 \\\\ 8 & 8 & 4 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 5 & 0 & 0 \\\\ 0 & 5 & 0 \\\\ 0 & 0 & 5 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ بنابراین مجموع درایههای ماتریس ${{A}^{2}}-4A$ ، برابر 15 است."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1399",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "وارون ماتریسها"
+      ],
+      "question": "فرض کنید $A=\\left[ \\begin{matrix} \\dfrac{3}{4} & \\dfrac{1}{2} \\\\ 2 & 1 \\\\ \\end{matrix} \\right]$ و ماتریس $X$ ، جواب معادلۀ $AX={{A}^{-1}}$ باشد، ماتریس $X$ ، کدام است؟",
+      "options": [
+        "$\\left[ \\begin{matrix} -32 & 14 \\\\ 48 & -25 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 32 & -14 \\\\ -56 & 25 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 16 & -7 \\\\ -28 & 21 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 16 & -7 \\\\ -25 & 14 \\\\ \\end{matrix} \\right]$"
+      ],
+      "answer_index": 2,
+      "answer_text": "$\\left[ \\begin{matrix} 32 & -14 \\\\ -56 & 25 \\\\ \\end{matrix} \\right]$",
+      "explanation": "ماتریس ${{A}^{-1}}$ را از سمت چپ در طرفین معادله ضرب میکنیم: $\\begin{aligned} & {{A}^{-1}}(AX)={{A}^{-1}}{{A}^{-1}}\\Rightarrow (\\underbrace{{{A}^{-1}}A}_{I})X={{({{A}^{-1}})^{2}}}\\Rightarrow X={{({{A}^{-1}})^{2}}}\\,\\,\\,\\,\\,(*) \\\\ & A=\\left[ \\begin{matrix} \\dfrac{3}{4} & \\dfrac{1}{2} \\\\ 2 & 1 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{-1}}=\\dfrac{1}{\\dfrac{3}{4}-1}\\left[ \\begin{matrix} 1 & -\\dfrac{1}{2} \\\\ -2 & \\dfrac{3}{4} \\\\ \\end{matrix} \\right]=-4\\left[ \\begin{matrix} 1 & -\\dfrac{1}{2} \\\\ -2 & \\dfrac{3}{4} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -4 & 2 \\\\ 8 & -3 \\\\ \\end{matrix} \\right] \\\\ & \\xrightarrow{(*)}X=\\left[ \\begin{matrix} -4 & 2 \\\\ 8 & -3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} -4 & 2 \\\\ 8 & -3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 32 & -14 \\\\ -56 & 25 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ دقت کنید که پس از یافتن درایۀ اول ماتریس $X$ (یعنی 32)، سه گزینه حذف میشوند و نیازی به یافتن بقیۀ درایهها نبود."
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "علوی",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "آزمون شماره 4",
+        "1401",
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1390",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "اگر $A=\\left[ \\begin{matrix} \\log 5 & \\log 2 \\\\ \\log 2 & \\log 5 \\\\ \\end{matrix} \\right]$ آنگاه $|A|$ کدام است؟ ( $|\\,\\,|$ ، علامت دترمینان است)",
+      "options": [
+        "$2\\log 1/25$",
+        "$\\log 2/5$",
+        "$\\log 3$",
+        "$\\log 6/25$"
+      ],
+      "answer_index": 2,
+      "answer_text": "$\\log 2/5$",
+      "explanation": "دترمینان $A$ را محاسبه میکنیم. $\\begin{aligned} & |A|=\\left| \\begin{matrix} \\log 5 & \\log 2 \\\\ \\log 2 & \\log 5 \\\\ \\end{matrix} \\right|=(\\log 5)(\\log 5)-(\\log2)(\\log2) \\\\ & ={{(\\log 5)}^{2}}-{{(\\log 2)}^{2}}=(\\log 5+\\log 2)(\\log 5-\\log 2)=\\underbrace{\\log (10)}_{1}\\log \\frac{5}{2}=\\log 2/5 \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1398",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "دترمینان ماتریس $\\left[ \\begin{matrix} 2 & -1 & 4 \\\\ 3 & 0 & 5 \\\\ -2 & 6 & 1 \\\\ \\end{matrix} \\right]$ کدام است؟",
+      "options": [
+        "12",
+        "15",
+        "22",
+        "25"
+      ],
+      "answer_index": 4,
+      "answer_text": "25",
+      "explanation": "از روش ساروس استفاده میکنیم: $\\left| \\begin{matrix} 2 & -1 & 4 \\\\ 3 & 0 & 5 \\\\ -2 & 6 & 1 \\\\ \\end{matrix}\\left| \\begin{matrix} 2 & -1 \\\\ 3 & 0 \\\\ -2 & 6 \\\\ \\end{matrix} \\right. \\right.$ $\\Rightarrow \\text{دترمینان}=\\left( 0+10+72 \\right)-\\left( 0+60-3 \\right)=25$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "علوی",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "آزمون شماره 1",
+        "1401",
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1394",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "در ماتریس $A={{\\left[ {{a}_{ij}} \\right]}_{3\\times 3}}$ اگر ${{a}_{ij}}=\\left\\{ \\begin{aligned} & 2\\,\\,\\,\\,;i\\cancel{=} j \\\\ & 1\\,\\,\\,\\,\\,;i=j \\\\ \\end{aligned} \\right.$ باشد، ماتریس ${{A}^{2}}-4A$ ، برابر کدام است؟ (با تغییر)",
+      "options": [
+        "$3{{A}}$",
+        "$5{{A}}$",
+        "$3I$",
+        "$5I$"
+      ],
+      "answer_index": 4,
+      "answer_text": "$5I$",
+      "explanation": "$A=\\left[ \\begin{matrix} 1 & 2 & 2 \\\\ 2 & 1 & 2 \\\\ 2 & 2 & 1 \\\\ \\end{matrix} \\right]$ ${{A}^{2}}-4A=A(A-4I)=\\left[ \\begin{matrix} 1 & 2 & 2 \\\\ 2 & 1 & 2 \\\\ 2 & 2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} -3 & 2 & 2 \\\\ 2 & -3 & 2 \\\\ 2 & 2 & -3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 5 & 0 & 0 \\\\ 0 & 5 & 0 \\\\ 0 & 0 & 5 \\\\ \\end{matrix} \\right]=5I$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "نوبت دوم",
+        "خارج از کشور",
+        "1404",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس دوم: وارون ماتریس و دترمینان",
+        "دترمینان و کاربردهای آن"
+      ],
+      "question": "اگر $\\begin{aligned} A=\\begin{bmatrix} -2 & 0 & 0 \\\\ 0 & -3 & 0 \\\\ 5 & 0 & -1 \\end{bmatrix} \\end{aligned}$ و $\\begin{aligned} B=\\begin{bmatrix} -\\dfrac12 & 0 & 1 \\\\ 0 & -\\dfrac13 & 0 \\\\ 0 & 0 & -5 \\end{bmatrix} \\end{aligned}$ باشد، مقدار $|(AB)^2|$ کدام است؟",
+      "options": [
+        "$\\dfrac{16}9$",
+        "$\\dfrac{25}9$",
+        "16",
+        "25"
+      ],
+      "answer_index": 4,
+      "answer_text": "25",
+      "explanation": "میدانیم دترمینان ماتریسهای قطری، بالامثلثی و پایینمثلثی، برابر است با حاصلضرب درایههای واقع بر قطر اصلی آنها. ضمناً چون $A$ و $B$ مربعیاند، $|AB|=|A|\\;|B|$. حال داریم: $\\left\\vert (AB)^2\\right\\vert =|AB|^2 =(|A|\\,|B|)^2=|A|^2|B|^2\\quad(*)$ $\\begin{aligned} \\begin{cases} |A|=(-2)(-3)(-1)=-6 \\\\ |B|=(-\\dfrac12)(-\\dfrac13)(-5)=-\\dfrac56\\end{cases} \\xrightarrow{(*)} \\left\\vert(AB)^2\\right\\vert =(36)(\\dfrac{25}{36})=25 \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1398",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "به ازای کدام مقدار $x$ و $y$ ، ماتریس $\\left[ \\begin{matrix} x & -1 & 4 \\\\ 2 & 3 & 1 \\\\ \\end{matrix} \\right]\\times \\left[ \\begin{matrix} 2 & -2 \\\\ 1 & 0 \\\\ y & 1 \\\\ \\end{matrix} \\right]$ یک ماتریس قطری است؟",
+      "options": [
+        "$x=1\\,\\,,\\,\\,y=-7$",
+        "$x=2\\,\\,,\\,\\,y=-7$",
+        "$x=2\\,\\,,\\,\\,y=-5$",
+        "$x=1\\,\\,,\\,\\,y=-5$"
+      ],
+      "answer_index": null,
+      "answer_text": null,
+      "explanation": "ابتدا ماتریس حاصلضرب را یافته، سپس درایههای غیرواقع بر قطر اصلی را برابر صفر قرار میدهیم. $\\left[ \\begin{matrix} x & -1 & 4 \\\\ 2 & 3 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\begin{matrix} 2 \\\\ 1 \\\\ y \\\\ \\end{matrix} & \\begin{matrix} -2 \\\\ 0 \\\\ 1 \\\\ \\end{matrix} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2x-1+4y & -2x+4 \\\\ 7+y & -3 \\\\ \\end{matrix} \\right]\\xrightarrow[]{\\text{قطری است}}\\left\\{ \\begin{aligned} & -2x+4=0 \\\\ & 7+y=0 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{matrix} x=2\\,\\,\\,\\, \\\\ y=-7 \\\\ \\end{matrix} \\right.$ (دقت کنید که نیازی به یافتن درایههای واقع بر قطر اصلی نبود.)"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1401",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر $A=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$ باشد، درایههای سطر اول ماتریس ${{A}^{3}}$ کدام است؟",
+      "options": [
+        "$\\left[ \\begin{matrix} 1 & -1 & 0 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 9 & 12 & 16 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 1 & 0 & -2 \\\\ \\end{matrix} \\right]$",
+        "$\\left[ \\begin{matrix} 9 & 5 & -7 \\\\ \\end{matrix} \\right]$"
+      ],
+      "answer_index": 1,
+      "answer_text": "$\\left[ \\begin{matrix} 1 & -1 & 0 \\\\ \\end{matrix} \\right]$",
+      "explanation": "طبق تعریف ضرب ماتریسها، داریم: $[{{A}^{3}}\\,\\text{سطر اول }]=[A\\,\\text{سطر اول }]{{A}^{2}}=\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$ $=\\left[ \\begin{matrix} 3 & -4 & 4 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & -3 & 4 \\\\ 2 & -3 & 4 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -1 & 0 \\\\ \\end{matrix} \\right]$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "متوسط",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "خارج از کشور",
+        "1400",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "فرض کنید $A=\\left[ \\begin{matrix} 0 & 0 & 1 \\\\ 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 7 & 8 & 4 \\\\ 3 & 2 & 5 \\\\ 6 & 9 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & 1 & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]$ ، مجموع عناصر روی قطر اصلی ماتریس $A$ ، کدام است؟",
+      "options": [
+        "12",
+        "17",
+        "19",
+        "21"
+      ],
+      "answer_index": 4,
+      "answer_text": "21",
+      "explanation": "درایههای قطر اصلی ماتریس $A$ را ${{a}_{11}}$ ، ${{a}_{22}}$ و ${{a}_{33}}$ مینامیم. حال داریم: $\\begin{aligned} & {{a}_{11}}=\\left[ \\begin{matrix} 0 & 0 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 7 & 8 & 4 \\\\ 3 & 2 & 5 \\\\ 6 & 9 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 \\\\ 1 \\\\ 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 6 & 9 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 \\\\ 1 \\\\ 0 \\\\ \\end{matrix} \\right]=9 \\\\ & {{a}_{22}}=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 7 & 8 & 4 \\\\ 3 & 2 & 5 \\\\ 6 & 9 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 \\\\ 0 \\\\ 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 7 & 8 & 4 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 \\\\ 0 \\\\ 0 \\\\ \\end{matrix} \\right]=7 \\\\ & {{a}_{33}}=\\left[ \\begin{matrix} 0 & 1 & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 7 & 8 & 4 \\\\ 3 & 2 & 5 \\\\ 6 & 9 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 \\\\ 0 \\\\ 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & 2 & 5 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 \\\\ 0 \\\\ 1 \\\\ \\end{matrix} \\right]=5 \\\\ & \\Rightarrow {{a}_{11}}+{{a}_{22}}+{{a}_{33}}=9+7+5=21 \\\\ \\end{aligned}$"
+    }
+  ],
+  [
+    {
+      "id": "question-undefined",
+      "difficulty": "ساده",
+      "topics": [
+        "کنکور سراسری",
+        "ریاضی و فیزیک",
+        "نوبت دوم",
+        "خارج از کشور",
+        "1403",
+        "ریاضی و فیزیک",
+        "دوازدهم",
+        "هندسه",
+        "فصل 1: ماتریس و کاربردها",
+        "درس اول: ماتریس و اعمال روی ماتریسها",
+        "ضرب ماتریسها و خواص عمل ضرب"
+      ],
+      "question": "اگر $\\begin{aligned} A=\\begin{bmatrix}1&1&1\\\\-1&-1&-1\\\\1&1&1\\end{bmatrix} \\end{aligned}$ باشد، حاصلضرب درایههای $A$ ، چند برابر حاصلضرب درایههای $A^2$ است؟",
+      "options": [
+        "$-3$",
+        "3",
+        "$-1$",
+        "1"
+      ],
+      "answer_index": 3,
+      "answer_text": "$-1$",
+      "explanation": "طبق فرض، داریم: $\\begin{aligned} A^{2}=\\begin{bmatrix}1&1&1\\\\-1&-1&-1\\\\1&1&1\\end{bmatrix}\\begin{bmatrix}1&1&1\\\\-1&-1&-1\\\\1&1&1\\end{bmatrix}=\\begin{bmatrix}1&1&1\\\\-1&-1&-1\\\\1&1&1\\end{bmatrix} \\end{aligned}$ $\\Rightarrow A^2 = A$ $\\Rightarrow\\frac{A\\,\\text{حاصلضرب درایههای}}{A^2\\,\\text{حاصلضرب درایههای}}=1$"
+    }
+  ]
+]

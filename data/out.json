@@ -1,0 +1,2732 @@
+[
+  {
+    "question_text": "دایره‌ای  از دو نقطه‌ی $(0,1)$  و $(3,0)$  گذشته و معادله‌ی یک قطر آن به‌صورت $x-y=2$  است. شعاع این دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "قطر دايره از مركز دايره  مي‌گذرد پس مختصات مركز به‌صورت $C\\left| \\begin{array}{ll}  \\alpha \\\\ \\alpha -2\\\\ \\end{array} \\right.$  مي‌باشد. (زیرا معادله قطر دایره به‌صورت $y=x-2$ می‌باشد.)    $\\begin{array}{ll} & R=AC=\\sqrt{{{(3-\\alpha )}^{2}}+{{(-\\alpha  +2)}^{2}}} \\;\\;,\\;\\;R=BC=\\sqrt{{{\\alpha }^{2}}+{{(\\alpha -3)}^{2}}}  \\\\ & \\Rightarrow \\sqrt{{{(3-\\alpha )}^{2}}+{{(-\\alpha  +2)}^{2}}}=\\sqrt{{{\\alpha }^{2}}+{{(-\\alpha +3)}^{2}}} \\\\ &  \\xrightarrow{2\\text{توان}} 9-6\\alpha +{{\\alpha }^{2}}+{{\\alpha  }^{2}}-4\\alpha +4={{\\alpha }^{2}}+{{\\alpha }^{2}}-6\\alpha  +9\\Rightarrow  -4\\alpha =-4\\Rightarrow \\alpha =1 \\end{array}$ $:R=AC\\xlongequal{\\alpha  =1}\\sqrt{{{(3-1)}^{2}}+{{(-1+2)}^{2}}}=\\sqrt{4+1}=\\sqrt{5}$   بنابراین",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دایره‌ای  از دو نقطه‌ی $(0,1)$  و $(3,0)$  گذشته و معادله‌ی یک قطر آن به‌صورت $x-y=2$  است. شعاع این دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دو دایره  از نقطه $\\left( 2,1 \\right)$ گذشته و بر  محورهای مختصات مماس‌اند، شعاع این دایره‌ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$1,4$"
+      },
+      {
+        "option_text": "$1,5$"
+      },
+      {
+        "option_text": "$2,4$"
+      },
+      {
+        "option_text": "$2,5$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "نقطۀ $(2,1)$ در ناحیۀ اول مختصات  واقع است، پس این دایره در ناحیۀ اول بر محورهای مختصات مماس است. اگر شعاع دایره را  $R$  بگیریم، مختصات دایره به‌صورت $(R,R)$ بوده و معادلۀ آن  به‌صورت زیر است:   ${{\\left( x-R \\right)}^{2}}+\\left( y-{{R^{2}}}  \\right)={{R}^{2}}$ ‌گذشته  ‌$(2,1)$  ‌از نقطه  ‌$:(2-R)^{2}+\\left( 1-{{R}} \\right)^{2}={{R}^{2}}$ ${\\mathop{\\Rightarrow }} R=1,5$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دو دایره  از نقطه $\\left( 2,1 \\right)$ گذشته و بر  محورهای مختصات مماس‌اند، شعاع این دایره‌ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$1,4$"
+      },
+      {
+        "option_text": "$1,5$"
+      },
+      {
+        "option_text": "$2,4$"
+      },
+      {
+        "option_text": "$2,5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "وتر مشترک  دایره به معادلۀ $x^{2}+y^{2}=17$، با دایرۀ $C$ گذرا  بر نقطۀ $(6, -1)$، بر خط به معادلۀ $2x-y=3$ منطبق است. شعاع دایرۀ  $C$، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      },
+      {
+        "option_text": "$4$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "hard",
+    "solution": "فرض کنيم معادلۀ $C$  به فرم $C:  x^{2}+y^{2}+ax+by+c=0$ باشد، چون  $x^{2}+y^{2}=17$ و $y=2x-3$. پس: $17+ax+b(2x-3)+c=0$ $\\Rightarrow  (a+2b)x+c-3b+17=0 \\Rightarrow$$\\left\\{\\begin{array}{ll} a+2b=0\\Rightarrow a=-2b \\\\ c-3b+17=0  \\Rightarrow c=3b-17 \\end{array}\\right.$$C$معادلۀ دايرۀ $:  x^{2}+y^{2}-2bx+by+3b-17=0$ نقطۀ $A(6, -1)$ در معادلۀ دايرۀ  $C$  صدق می‌کند، پس: ‌$A(6, -1)\\in  C \\xrightarrow{\\text{صدق}}36+1-12b-b+3b-17=0 \\Rightarrow  20-10b=0 \\Rightarrow \\boxed{\\;b=2\\;}$$C:  x^{2}+y^{2}-4x+2y-11=0 \\Rightarrow C\\begin{matrix}\\text{شعاع  دايره}\\end{matrix}=\\frac{1}{2}\\sqrt{4^{2}+2^{2}-4(-11)}=4$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "وتر مشترک  دایره به معادلۀ $x^{2}+y^{2}=17$، با دایرۀ $C$ گذرا  بر نقطۀ $(6, -1)$، بر خط به معادلۀ $2x-y=3$ منطبق است. شعاع دایرۀ  $C$، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      },
+      {
+        "option_text": "$4$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "در یک  بیضی به اقطار $2\\sqrt{5}$  و $2$ واحد، دایره‌ای هم‌مرکز  با بیضی و شعاع $2$ واحد، بیضی را در نقطۀ  $M$ قطع  می‌کند. مجموع مربعات فواصل $M$ از دو  کانون بیضی، کدام است؟",
+    "options": [
+      {
+        "option_text": "$12$"
+      },
+      {
+        "option_text": "$16$"
+      },
+      {
+        "option_text": "$18$"
+      },
+      {
+        "option_text": "$20$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "طبق فرض سؤال داریم: $\\begin{matrix}\\text{قطر بزرگ بیضی}\\end{matrix}=2\\sqrt{5}=2a$$\\Rightarrow  a=\\sqrt{5}$ ‌ ‌$\\begin{matrix}\\text{قطر کوچک بیضی}\\end{matrix}=2=2b$$\\Rightarrow  b=1$ ‌ ‌$\\begin{matrix}\\text{می‌دانیم}\\end{matrix}:a^{2}=b^{2}+c^{2}$$\\Rightarrow  5=1+c^{2}$$\\Rightarrow  c=2$ ‌چون شعاع دایره با مقدار $c$  برابر است، پس دایرۀ موردنظر از کانون‌های $F$  و $F'$  می‌گذرد. همچنین نقطۀ $M$  روی دایره قرار دارد پس در مثلث ${F'MF}$  زاویۀ $M$  برابر $90^{\\circ}$  می‌باشد؛ بنابراین:     ‌‌$\\overset{\\triangle}{MFF'}:FF'^{2}=MF^{2}+MF'^{2}$$\\xrightarrow{FF'=2c} (4)^{2}=MF^{2}+MF'^{2}$$\\Rightarrow  MF^{2}+MF'^{2}=16$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "در یک  بیضی به اقطار $2\\sqrt{5}$  و $2$ واحد، دایره‌ای هم‌مرکز  با بیضی و شعاع $2$ واحد، بیضی را در نقطۀ  $M$ قطع  می‌کند. مجموع مربعات فواصل $M$ از دو  کانون بیضی، کدام است؟",
+    "options": [
+      {
+        "option_text": "$12$"
+      },
+      {
+        "option_text": "$16$"
+      },
+      {
+        "option_text": "$18$"
+      },
+      {
+        "option_text": "$20$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "معادله  دایره‌ای که مرکز آن به طول $-1$  و بر دو خط به معادلات $y=x+4 , y=x$  مماس باشد، کدام است؟",
+    "options": [
+      {
+        "option_text": "$x^{2}+y^{2}+2x-2y=0$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2x-y=2$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-2x+y=1$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2x-2y=1$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "دو خط موازي هستند؛ پس مرکز دایره روی خط بین آنها یعنی  $y=x+2$ قرار دارد و فاصله  بین دو خط برابر قطر می‌باشد. $O\\in  y=x+2\\xrightarrow{x=-1}y=1 \\Rightarrow O|^{-1}_{1}\\\\  2R=\\frac{4}{\\sqrt{2}}\\Rightarrow R=\\frac{2}{\\sqrt{2}}=\\sqrt{2}\\\\  C:(x+1)^{2}+(y-1)^{2}=2\\Rightarrow x^{2}+y^{2}+2x-2y=0$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "معادله  دایره‌ای که مرکز آن به طول $-1$  و بر دو خط به معادلات $y=x+4 , y=x$  مماس باشد، کدام است؟",
+    "options": [
+      {
+        "option_text": "$x^{2}+y^{2}+2x-2y=0$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2x-y=2$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-2x+y=1$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2x-2y=1$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "وتر مشترک  دایرۀ $C$ با  دایره به معادلۀ $x^{2}+y^{2}-4x=6$ منطبق بر نیمساز ناحیۀ  اول است. اگر دایرۀ $C$ از  نقطۀ $(-1,4)$ بگذرد، معادلۀ آن کدام  است؟",
+    "options": [
+      {
+        "option_text": "$x^{2}+y^{2}-y+3x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2y-x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-2y+x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-3y-x=6$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "hard",
+    "solution": "وتر مشترک دو دایرۀ متقاطع، خطی است که از  نقاط تقاطع آن‌ها می‌گذرد.برای  محاسبۀ مختصات نقاط $A$ و  $B$  کافی است نقاط  برخورد خط $y=x$ و  دایرۀ $x^{2}+y^{2}-4x -6=0$ را بیابیم:       ‌ ‌$A\\,\\begin{matrix}\\text{و}\\end{matrix}B:$$\\left\\{\\begin{array}{ll}y=x\\\\x^{2}+y^{2}-4x-6=0\\end{array}\\right.$$\\Rightarrow  2x^{2}-4x-6=0$$\\Rightarrow  (x-3)(x+1)=0$$\\Rightarrow  \\left\\{\\begin{array}{ll}x=3\\Rightarrow y=3\\Rightarrow  A\\left|\\begin{array}{ll}3\\\\3\\end{array}\\right.\\\\x=-1\\Rightarrow  y=-1\\Rightarrow  B\\left|\\begin{array}{ll}-1\\\\-1\\end{array}\\right.\\end{array}\\right.$ ‌فرض می‌کنیم معادلۀ دایرۀ $C$  به‌فرم $x^{2}+y^{2}+ax+by+c=0$ باشد. ‌$A(3,3)\\in C$$\\xrightarrow{\\begin{matrix}\\text{.صدق  دهید}\\end{matrix}}9+9+3a+3b+c=0$$\\Rightarrow  3a+3b+c=-18\\quad(1)$ ‌$‌B(-1,-1)\\in  C$$\\xrightarrow{\\begin{matrix}\\text{.صدق  دهید}\\end{matrix}}1+1-a-b+c=0$$\\Rightarrow  -a-b+c=-2\\quad(2)$ ‌ ‌$M(-1,4)\\in C$$\\xrightarrow{\\begin{matrix}\\text{.صدق  دهید}\\end{matrix}}1+16-a+4b+c=0$$\\Rightarrow  -a+4b+c=-17\\quad(3)$ ‌ ‌$\\Rightarrow\\begin{array}{ll}(1)\\\\(2)\\\\(3)\\end{array}\\left\\{\\begin{array}{ll}3a+3b+c=-18\\\\-a-b+c=-2\\\\-a+4b+c=-17\\end{array}\\right.$ ‌ ‌$(3)-(2):$$5b=-15$$\\Rightarrow  b=-3$ ‌ ‌$(1)+3\\times(2):$$c+3c=-24$$\\Rightarrow  c=-6$ ‌ ‌$\\xrightarrow[c=-6]{b=-3}(2):-a+3-6=-2$$\\Rightarrow  -a-3=-2$$\\Rightarrow  a=-1$ ‌ ‌$C\\begin{matrix}\\text{معادلۀ دایرۀ}\\end{matrix}:$$x^{2}+y^{2}-x-3y-6=0$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "وتر مشترک  دایرۀ $C$ با  دایره به معادلۀ $x^{2}+y^{2}-4x=6$ منطبق بر نیمساز ناحیۀ  اول است. اگر دایرۀ $C$ از  نقطۀ $(-1,4)$ بگذرد، معادلۀ آن کدام  است؟",
+    "options": [
+      {
+        "option_text": "$x^{2}+y^{2}-y+3x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}+2y-x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-2y+x=6$"
+      },
+      {
+        "option_text": "$x^{2}+y^{2}-3y-x=6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "فاصله  کانون تا خط هادی یک سهمی $2$ واحد است. این سهمی محور  $y$ها را  در دو نقطه به عرض$$های $1$ و $5$- قطع می$$کند. طول رأس آن با علامت مثبت کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{9}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{5}{2}$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "با توجه به فرض، شکل سهمی  به‌صورت مقابل می$$شود. در‌ضمن این سهمی، افقی و  دهانۀ آن رو به چپ بوده و داریم $a=1$. فرض  کنیم  $S(\\alpha  ,\\beta )$ رأس سهمی  باشد در این صورت معادله$$ی سهمی به‌صورت زیر است: $\\begin{array}{ll} & {{(y-\\beta )}^{2}}=-4a(x-\\alpha  )\\xrightarrow{a=1}{{(y-\\beta )}^{2}}=-4(x-\\alpha ) \\\\ &  \\left.\\begin{matrix} \\begin{matrix}A(0,1)\\in  &\\text{سهمی}&\\Rightarrow {{(1-\\beta )}^{2}}=-4(0-\\alpha  )\\Rightarrow {{(1-\\beta )}^{2}}=4\\alpha \\end{matrix} \\\\  \\begin{matrix} \\beta (0,-5)\\in& \\text{سهمی}&\\Rightarrow  {{(-5-\\beta )}^{2}}=-4(0-\\alpha )\\Rightarrow {{(-5-\\beta  )}^{2}}=4\\alpha \\end{matrix} \\\\\\end{matrix}\\right\\}\\,\\Rightarrow  \\,\\,{{(1-\\beta )}^{2}}=(-5-\\beta )^{2} \\\\ & \\Rightarrow 1-\\beta  =\\pm (-5-\\beta )\\Rightarrow \\begin{cases} 1-\\beta =-5-\\beta  \\;\\text{غ ق ق} \\\\ 1-\\beta =5+\\beta \\Rightarrow \\beta =-2 \\\\  \\end{cases} \\\\ \\end{array}$  $\\Rightarrow  {{(1-\\beta )}^{2}}=4\\alpha \\Rightarrow {{(1+2)}^{2}}=4\\alpha  \\Rightarrow \\alpha =\\frac{9}{4}: \\begin{matrix}\\text{طول  رأس}\\end{matrix}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "فاصله  کانون تا خط هادی یک سهمی $2$ واحد است. این سهمی محور  $y$ها را  در دو نقطه به عرض$$های $1$ و $5$- قطع می$$کند. طول رأس آن با علامت مثبت کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{9}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{5}{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "به‌ازای  هر $m$ معادلۀ $(m-2)x+(m+1)y=6$، معادلۀ قطری از دایره  $C$ است.  اگر نقطۀ $A (-1 , 1)$ روی دایرۀ $C$ باشد،  محیط دایرۀ $C$ کدام  است؟",
+    "options": [
+      {
+        "option_text": "$2  \\sqrt{2}\\pi$"
+      },
+      {
+        "option_text": "$2 \\pi$"
+      },
+      {
+        "option_text": "$3 \\pi$"
+      },
+      {
+        "option_text": "$2 \\sqrt{3}  \\pi$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "$(m-2)x+(m+1)y=6 \\to \\left\\{\\begin {array}{ll} \\xrightarrow {m=2}  3y=6 \\to y=2 \\\\ \\xrightarrow{m=-1} -3x=6 \\to x=-2 \\end{array}  \\right.$$\\xrightarrow  [\\begin{matrix}{\\text{مرکز  دایره}}\\end{matrix}]{\\begin{matrix}{\\text{مختصات مرکز  دایره}}\\end{matrix}} O(-2,2)$$R=OA=\\sqrt{(1-2)^{2}+(-1-(-2))^{2}}=\\sqrt{1+1}=\\sqrt{2}$$\\begin{matrix}{\\text{محیط دایره}}\\end{matrix}=2 \\pi R=2 \\sqrt{2} \\pi$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی نقطه و دایره"
+  },
+  {
+    "question_text": "به‌ازای  هر $m$ معادلۀ $(m-2)x+(m+1)y=6$، معادلۀ قطری از دایره  $C$ است.  اگر نقطۀ $A (-1 , 1)$ روی دایرۀ $C$ باشد،  محیط دایرۀ $C$ کدام  است؟",
+    "options": [
+      {
+        "option_text": "$2  \\sqrt{2}\\pi$"
+      },
+      {
+        "option_text": "$2 \\pi$"
+      },
+      {
+        "option_text": "$3 \\pi$"
+      },
+      {
+        "option_text": "$2 \\sqrt{3}  \\pi$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی نقطه و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، زاویه‌ی بین  خط مماس بر دایره‌ی ${{x}^{2}}+{{y}^{2}}-2x+y=1$  و خط به معادله‌ی  $3x+2y=a$  در  نقطه‌ی تلاقی آن‌ها، $90$ درجه است؟",
+    "options": [
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "نکته: خطی که در نقطه‌ی تماس، بر خط مماس بر دایره عمود  شود امتداد آن  از مرکز دایره می‌گذرد.پس مختصات مرکز دایره را یافته و  مختصات آن را در خط $d:3x+2y=a$  صدق  می‌دهیم. ${{x}^{2}}+{{y}^{2}}-2x+y=1\\,\\Rightarrow \\,\\,O=(1,-\\frac{1}{2})$ $O(1,-\\frac{1}{2})\\in d\\,\\xrightarrow{\\text{صدق}}3-1=a\\Rightarrow a=2$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، زاویه‌ی بین  خط مماس بر دایره‌ی ${{x}^{2}}+{{y}^{2}}-2x+y=1$  و خط به معادله‌ی  $3x+2y=a$  در  نقطه‌ی تلاقی آن‌ها، $90$ درجه است؟",
+    "options": [
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$  کانون سهمی به معادله $2y^{2}+ay-3x=0$   بر روی محور $y$ها  است؟",
+    "options": [
+      {
+        "option_text": "$\\pm 2$"
+      },
+      {
+        "option_text": "$\\pm 3$"
+      },
+      {
+        "option_text": "$\\pm 4$"
+      },
+      {
+        "option_text": "$\\pm 6$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "ابتدا معادلۀ سهمی را استاندارد می‌کنیم: ‌$2y^{2}+ay-3x=0\\Rightarrow 2(y^{2}+\\frac{a}{2}y)=3x$$\\Rightarrow  (y+\\frac{a}{4})^{2}-\\frac{a^{2}}{16}=\\frac{3}{2}x$$\\Rightarrow  {{(y+\\frac{a}{4})^{2}}}=\\frac{3}{2}x+\\frac{a^{2}}{16}=\\frac{3}{2}(x+\\frac{a^{2}}{24})$ معادلۀ اخیر مربوط به یک سهمی افقی با مشخصات زیر است: $\\left\\{\\begin{array}{ll}\\begin{matrix}\\text{رأس}:S\\left|^{\\alpha=-\\tfrac{a^{2}}{24}}_{\\beta=-\\tfrac{a}{4}}\\right.\\end{matrix}\\\\\\begin{matrix}4a=\\tfrac{3}{2}\\Rightarrow&\\!\\!\\!  \\text{پارامتر}:&\\!\\!\\!a=\\tfrac{3}{8}\\\\ \\text{دهانه رو به  راست}\\end{matrix}\\end{array}\\right.$$\\Rightarrow  \\begin{matrix}\\text{کانون سهمی  }:&\\!\\!\\!F\\left|^{\\alpha+a=\\tfrac{-a^{2}}{24}+\\tfrac{3}{8}}_{\\beta=\\tfrac{-a}{4}}\\right.\\end{matrix}$ طبق فرض، کانون سهمی روی محور $y$ها  قرار دارد، پس: ‌$x_{F}=\\frac{-a^{2}}{24}+\\frac{3}{8}=0$$\\Rightarrow  \\frac{a^{2}}{24}=\\frac{3}{8}\\Rightarrow a^{2}=9\\Rightarrow a=\\pm 3$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$  کانون سهمی به معادله $2y^{2}+ay-3x=0$   بر روی محور $y$ها  است؟",
+    "options": [
+      {
+        "option_text": "$\\pm 2$"
+      },
+      {
+        "option_text": "$\\pm 3$"
+      },
+      {
+        "option_text": "$\\pm 4$"
+      },
+      {
+        "option_text": "$\\pm 6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "دو دایره  C و 'C در نقطه $(0,1)$ مماس برونی هم هستند.  اگر قائم$$های بر دایره C همواره از نقطه $(2,-3)$ بگذرد، مرکز دایره 'C  با شعاع  $\\sqrt{5}$  کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-1,3)$"
+      },
+      {
+        "option_text": "$(-1,2)$"
+      },
+      {
+        "option_text": "$(1,-2)$"
+      },
+      {
+        "option_text": "$(1,-1)$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "فرض کنیم $A(0,1)$ نقطه تماس دو دایره  باشد چون قائم$$های بر دایره از مرکز آن می$$گذرند، پس نقطه$$ی $O(2,-3)$ مرکز دایره$$ی C می‌باشد. از طرفی می‌دانیم  خط$$المرکزین دو دایره$$ی مماس خارج از نقطه$$ی تماس آنها می‌گذرد؛ بنابراین مرکز  دایرۀ $'C$ روی  خط $OA$ قرار  دارد.  ${{m}_{OA}}=\\frac{-3-1}{2-0}=-2\\Rightarrow  OA\\;\\text{خط}\\,\\,\\,:y-1=-2(x-0)\\Rightarrow y+2x=1$پس مرکز  دایره$$ی 'C روی خط $y+2x=1$ قرار دارد. در بین  گزینه$$ها فقط نقاط $(-1,3)$ و $(1,-1)$ در این خط صدق  می$$کند.  ولی مطابق شکل مرکز  دایره$$ی 'C در ناحیه$$ی  دوم قرار دارد پس طول مرکز دایره$$ی 'C منفی  می$$باشد؛ بنابراین $(-1,3)$ درست است.            ‌‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دو دایره  C و 'C در نقطه $(0,1)$ مماس برونی هم هستند.  اگر قائم$$های بر دایره C همواره از نقطه $(2,-3)$ بگذرد، مرکز دایره 'C  با شعاع  $\\sqrt{5}$  کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-1,3)$"
+      },
+      {
+        "option_text": "$(-1,2)$"
+      },
+      {
+        "option_text": "$(1,-2)$"
+      },
+      {
+        "option_text": "$(1,-1)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دایره‌ی  گذرا بر مبدأ مختصات، بر دو خط به معادلات $y=2x$ و $y=2x+10$، مماس است. مختصات مرکز  این دایره، کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-3,2)$"
+      },
+      {
+        "option_text": "$(-3,1)$"
+      },
+      {
+        "option_text": "$(-2,1)$"
+      },
+      {
+        "option_text": "$(-1,2)$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "خطوط $d':\\,y=2x+10\\,,\\,\\,\\,d:y=2x$ با  هم موازی هستند. مرکز دایره روی خط وسط و موازی با این دو خط به  معادله‌ی $d'':y=2x+5$  قرار  دارد. در بین گزینه‌ها، فقط مختصات نقطۀ $(-2,1)$ در معادله   $y=2x+5$  صدق می‌کند.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دایره‌ی  گذرا بر مبدأ مختصات، بر دو خط به معادلات $y=2x$ و $y=2x+10$، مماس است. مختصات مرکز  این دایره، کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-3,2)$"
+      },
+      {
+        "option_text": "$(-3,1)$"
+      },
+      {
+        "option_text": "$(-2,1)$"
+      },
+      {
+        "option_text": "$(-1,2)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "مکان  هندسی مرکز دایره‌هایی که بر دایره ثابتی مماس بوده و از مرکز آن دایره بگذرد، چه شکلی  است؟",
+    "options": [
+      {
+        "option_text": "سهمی"
+      },
+      {
+        "option_text": "دایره"
+      },
+      {
+        "option_text": "بیضی"
+      },
+      {
+        "option_text": "نامشخص"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "easy",
+    "solution": "با توجه به شکل، مکان  هندسی موردنظر، دایره‌هایی به همان مرکز $O$  با شعاع نصف شعاع دایره‌ی اصلی هستند.",
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "مکان  هندسی مرکز دایره‌هایی که بر دایره ثابتی مماس بوده و از مرکز آن دایره بگذرد، چه شکلی  است؟",
+    "options": [
+      {
+        "option_text": "سهمی"
+      },
+      {
+        "option_text": "دایره"
+      },
+      {
+        "option_text": "بیضی"
+      },
+      {
+        "option_text": "نامشخص"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "دو دایره  $x^{2}+y^{2}+2y-4x=0$ و $x^{2}+y^{2}-2y=2$، نسبت به هم کدام وضعیت  را دارند؟",
+    "options": [
+      {
+        "option_text": "مماس بیرون"
+      },
+      {
+        "option_text": "متقاطع"
+      },
+      {
+        "option_text": "متخارج"
+      },
+      {
+        "option_text": "متداخل"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "$x^{2}+ y^{2}  +2y -4x = 0 \\Rightarrow \\left\\{\\begin{array}{ll}  \\begin{matrix}\\text{مرکز}\\end{matrix}= O (2 , -1)\\\\ R=  \\frac{1}{2}\\sqrt{4 + 16 - 0}= \\sqrt{5} \\end{array}\\right.$ ‌$x^{2}+ y^{2}  -2y-2 =0  \\Rightarrow\\left\\{\\begin{array}{ll}\\begin{matrix}\\text{مرکز}\\end{matrix}  = O' (0 , 1) \\\\ R' = \\frac{1}{2} \\sqrt{0 +4-4(-2) }=  \\sqrt{3}\\end{array}\\right.$ ‌$\\Rightarrow  \\begin{matrix}\\text{خط المرکزین}\\end{matrix} = d = OO' =  \\sqrt{(2-0)^{2}+ (-1-1)^{2}}= \\sqrt{8}$ از آنجایی که $R-R'<d<R+R'$  پس دو دایره متقاطع‌اند.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "دو دایره  $x^{2}+y^{2}+2y-4x=0$ و $x^{2}+y^{2}-2y=2$، نسبت به هم کدام وضعیت  را دارند؟",
+    "options": [
+      {
+        "option_text": "مماس بیرون"
+      },
+      {
+        "option_text": "متقاطع"
+      },
+      {
+        "option_text": "متخارج"
+      },
+      {
+        "option_text": "متداخل"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "دو دایره  گذرا بر نقطه $(2,-9)$  بر هر دو محورهای  مختصات مماس است. شعاع دایره بزرگتر، کدام است؟",
+    "options": [
+      {
+        "option_text": "$14$"
+      },
+      {
+        "option_text": "$15$"
+      },
+      {
+        "option_text": "$17$"
+      },
+      {
+        "option_text": "$19$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "چون نقطه $(2,-9)$  در ناحیه چهارم  است پس دایره مورد‌نظر نیز در ناحیه چهارم بر هر دو محور مماس است. داریم:  $\\begin{matrix}\\text{مرکز دایره}\\end{matrix} : o\\left| \\begin{matrix}  R \\\\ -R \\\\ \\end{matrix} \\right.\\Rightarrow  \\,\\,c:\\underbrace{{(x-R)^{2}}+{(y+R)^{2}}={{R}^{2}}}_{\\text{معادله  دایره}}$ مختصات نقطه $(2,-9)$  را در معادله  دایره صدق می‌دهیم: ${{(2-R)}^{2}}+{{(-9+R)}^{2}}={{R}^{2}}$$\\Rightarrow  4-4R+{{R}^{2}}+81+{{R}^{2}}-18R={{R}^{2}}\\Rightarrow  \\overbrace{{{R}^{2}}-22R+85}^{(R-17)(R-5)} =0\\Rightarrow \\left\\{  \\begin{matrix} R=17 \\\\ R=5 \\\\ \\end{matrix} \\right. \\\\$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دو دایره  گذرا بر نقطه $(2,-9)$  بر هر دو محورهای  مختصات مماس است. شعاع دایره بزرگتر، کدام است؟",
+    "options": [
+      {
+        "option_text": "$14$"
+      },
+      {
+        "option_text": "$15$"
+      },
+      {
+        "option_text": "$17$"
+      },
+      {
+        "option_text": "$19$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "نقطه‌ی  $M(2\\sqrt{5},b)$ مرکز دایره‌ای است که  بر دو خط به معادلات $y=2x$ و $x=2y$ مماس  است. شعاع دایره‌ی کوچکتر کدام می‌باشد؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "مطابق فرض، نقطه‌‌ی $M=(2\\sqrt{5},b)$ مرکز دایره‌ای است که  بر هر دو خط $y-2x=0$ و $y-\\frac{x}{2}=0$ مماس  می‌باشد.فاصله‌ی $M$ از  این دو خط باهم برابر و مساوی با شعاع دایره است، داریم: $\\underbrace{R=\\frac{\\left| b-4\\sqrt{5}  \\right|}{\\sqrt{5}}}_{\\begin{matrix} \\Large{(*)} &\\!\\!\\!\\!  \\text{رابطه‌ی} \\end{matrix}}=\\frac{\\left| b-\\sqrt{5}  \\right|}{\\dfrac{\\sqrt{5}}{2}}\\Rightarrow \\left| b-4\\sqrt{5}  \\right|=\\left| 2b-2\\sqrt{5} \\right|\\Rightarrow b-4\\sqrt{5}=\\pm  (2b-2\\sqrt{5})$ $\\left\\{  \\begin{array}{ll} \\begin{array}{ll}  b-4\\sqrt{5}=2b-2\\sqrt{5}\\Rightarrow  b=-2\\sqrt{5}\\xrightarrow{\\Large{(*)} }R=\\dfrac{\\left|  -2\\sqrt{5}-4\\sqrt{5} \\right|}{\\sqrt{5}}=6 \\\\  b-4\\sqrt{5}=-2b+2\\sqrt{5}\\Rightarrow  b=2\\sqrt{5}\\xrightarrow{\\Large{(*)}}R=\\dfrac{\\left|  2\\sqrt{5}-4\\sqrt{5} \\right|}{\\sqrt{5}}=2 \\end{array} \\end{array}  \\right.$     (راه‌حل کوتاه‌تر)‌ خطوط $y=2x$ و $y=\\frac{x}{2}$  نسبت به نیمساز نواحی مختصات متقارن‌اند، یعنی $y=x$ و $y=-x$ نیمساز  زوایای بین $y=2x$ و $y=\\frac{x}{2}$  است. پس $M(2\\sqrt{5},b)$ روی یکی از دو خط  $y=x$ و $y=-x$ قرار  دارد، درنتیجه $b=\\pm  2\\sqrt{5}$.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "نقطه‌ی  $M(2\\sqrt{5},b)$ مرکز دایره‌ای است که  بر دو خط به معادلات $y=2x$ و $x=2y$ مماس  است. شعاع دایره‌ی کوچکتر کدام می‌باشد؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "مرکز دایره‌ای بر روی نیمساز ناحیه‌ی اول است. اگر این دایره از نقطه‌ی $A(6,3)$ گذشته و بر خط به  معادله‌ی $y=2x$ مماس شود،  شعاع آن کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$\\sqrt{6}$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\sqrt{10}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "$\\begin{matrix}\\text{مرکز دایره}\\end{matrix} : O\\left|  \\begin{smallmatrix}  \\alpha \\\\  \\alpha \\\\  \\end{smallmatrix} \\right. \\Rightarrow  \\begin{matrix}\\text{معادلۀ}\\end{matrix}:$‌$(x-\\alpha)^{2}+(y-\\alpha)^{2}=R^{2}$ $\\Rightarrow  {{(6-\\alpha )}^{2}}+{{(3-\\alpha  )}^{2}}={{R}^{2}}$  دایره $A\\left|_{3}^{6}\\right.\\in$  فاصله مرکز از خط مماس برابر شعاع است،  پس:  $R=\\frac{\\left| \\alpha -2\\alpha \\right|}{\\sqrt{4+1}}\\Rightarrow  R=\\frac{\\alpha }{\\sqrt{5}}\\Rightarrow$ ${{(6-\\alpha  )}^{2}}+{{(3-\\alpha )}^{2}}=\\frac{{{\\alpha }^{2}}}{5}\\Rightarrow  \\frac{9}{5}{{\\alpha }^{2}}-18\\alpha +45=0\\Rightarrow \\alpha  =5\\Rightarrow R=\\frac{\\alpha}{\\sqrt{5}}=\\sqrt{5}$‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "مرکز دایره‌ای بر روی نیمساز ناحیه‌ی اول است. اگر این دایره از نقطه‌ی $A(6,3)$ گذشته و بر خط به  معادله‌ی $y=2x$ مماس شود،  شعاع آن کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$\\sqrt{6}$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\sqrt{10}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "معادلۀ  دایره‌ای که بر دو دایره ${{x}^{2}}-8x+{{y}^{2}}+15=0$ و ${{x}^{2}}-2x+{{y}^{2}}=0$ مماس خارج است و مرکزش  روی یکی از محورها قرار دارد، کدام است؟",
+    "options": [
+      {
+        "option_text": "${{x}^{2}}+{{y}^{2}}+5x+6=0$"
+      },
+      {
+        "option_text": "${{x}^{2}}+{{y}^{2}}-5x+6=0$"
+      },
+      {
+        "option_text": "$4{{x}^{2}}+4{{y}^{2}}-20x+25=0$"
+      },
+      {
+        "option_text": "$4{{x}^{2}}+2{{y}^{7}}+20x+25=0$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "${{C}_{1}}:{{x}^{2}}+{{y}^{2}}-2x=0$  ‌$\\to  {{O}_{1}}=(1,0)\\,,\\,{{R}_{1}}$  ‌$=\\frac{1}{2}\\sqrt{{{(-2)}^{2}}}=1$ ${{C}_{2}}:{{x}^{2}}+{{y}^{2}}-8x+15=0$  ‌$\\to  {{O}_{2}}=({{4}_{\\begin{matrix}{\\text{و}}\\end{matrix}}}0),{{R}_{2}}$  ‌$=\\frac{1}{2}\\sqrt{{{(-8)}^{2}}-4(15)}=1$‌ ‌‌دایرۀ ($C_3$)  بر دو دایرۀ ($C_1$)  و ($C_2$)  مماس خارج است. مختصات مرکز و اندازۀ شعاع این دایره برابر است با: ${{O}_{3}}=(2٫5,0),{{R}_{3}}=\\frac{1}{2}\\;$ ‌$({{C}_{3}})\\begin{matrix}  \\text{معادلۀ دایره}  \\end{matrix}$ $:{{(x-2٫5)}^{2}}+{{(y-0)}^{2}}={{(\\frac{1}{2})}^{2}}$  ‌$\\to  {{x}^{2}}-5x+6٫25+{{y}^{2}}=\\frac{1}{4}\\to  {x}^{2}+{{y}^{2}}-5x+6=0$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "معادلۀ  دایره‌ای که بر دو دایره ${{x}^{2}}-8x+{{y}^{2}}+15=0$ و ${{x}^{2}}-2x+{{y}^{2}}=0$ مماس خارج است و مرکزش  روی یکی از محورها قرار دارد، کدام است؟",
+    "options": [
+      {
+        "option_text": "${{x}^{2}}+{{y}^{2}}+5x+6=0$"
+      },
+      {
+        "option_text": "${{x}^{2}}+{{y}^{2}}-5x+6=0$"
+      },
+      {
+        "option_text": "$4{{x}^{2}}+4{{y}^{2}}-20x+25=0$"
+      },
+      {
+        "option_text": "$4{{x}^{2}}+2{{y}^{7}}+20x+25=0$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله ضمنی دایره"
+  },
+  {
+    "question_text": "دایره‌های  $x^{2}+y^{2}+2y=3$ و $x^{2}+y^{2}+2x=3$ متقاطع‌اند. معادلۀ وتر  مشترک این دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$x=y$"
+      },
+      {
+        "option_text": "$x=1+y$"
+      },
+      {
+        "option_text": "$x=-y$"
+      },
+      {
+        "option_text": "$x=1-y$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "easy",
+    "solution": "برای نوشتن معادلۀ وتر مشترک دو دایرۀ متقاطع، کافی است  معادله‌های دو دایرۀ را در یک دستگاه حل کنیم. برای سادگی محاسبات حتماً ضرایب $x^{2}$  و $y^{2}$  در هر دو معادله باید یکسان باشند:  ‌$\\left.\\begin{array}{ll} x^{2}+y^{2}+2x=3 \\\\ x^{2}+y^{2}+2y=3  \\end{array}\\right\\}$ $\\xrightarrow{\\text{تفاضل}} 2x-2y=0$ $\\Rightarrow  x=y$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "دایره‌های  $x^{2}+y^{2}+2y=3$ و $x^{2}+y^{2}+2x=3$ متقاطع‌اند. معادلۀ وتر  مشترک این دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$x=y$"
+      },
+      {
+        "option_text": "$x=1+y$"
+      },
+      {
+        "option_text": "$x=-y$"
+      },
+      {
+        "option_text": "$x=1-y$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "اگر نقطۀ  $F(-0٫25,-2)$ کانون سهمی $y^{2}+ay+bx+1=0$ باشد، کوچکترین مقدار  $b$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$-4$"
+      },
+      {
+        "option_text": "$-3$"
+      },
+      {
+        "option_text": "$-2$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "معادلۀ سهمی را به حالت متعارف تبدیل می‌کنیم: ‌$y^{2}+ay+bx+1=0$$\\Rightarrow  y^{2}+ay+\\frac{a^{2}}{4}$$=  -bx-1+\\frac{a^{2}}{4}$$\\Rightarrow  (y+\\frac{a}{2})^{2}=-b(x-\\frac{a^{2}-4}{4b})$ مختصات رأس سهمی برابر $S(\\frac{a^{2}-4}{4b},\\frac{-a}{2})$ است. همچنین سهمی  افقی است، یعنی $y_{F}=y_{S}$  لذا با توجه به کانون سهمی $F(-0٫25,-2)$ داریم: ‌$\\dfrac{-a}{2}=-2$$\\rightarrow  a=4$ ‌طول کانون این سهمی برابر است با: ‌$\\dfrac{a^{2}-4}{4b}-\\frac{b}{4}=\\frac{-1}{4}$$\\xrightarrow{a=4}\\frac{3}{b}-\\frac{b}{4}=\\frac{-1}{4}$$\\rightarrow \\left\\{_{\\Large b=4}^{\\Large b=-3}\\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "اگر نقطۀ  $F(-0٫25,-2)$ کانون سهمی $y^{2}+ay+bx+1=0$ باشد، کوچکترین مقدار  $b$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$-4$"
+      },
+      {
+        "option_text": "$-3$"
+      },
+      {
+        "option_text": "$-2$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "از بین  دایره‌های گذرا از نقطۀ $A(1,-4)$ و مماس بر خط‌ $4x+3y=0$ و محور $y$ها،  بزرگترین شعاع دایره، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{17}{9}$"
+      },
+      {
+        "option_text": "$\\dfrac{7}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{22}{9}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "مطابق شکل، نقطۀ $A(1,-4)$ در ناحیۀ چهارم و زیر  خط  $4x+3y=0$ قرار دارد. با فرض  اینکه نقطۀ $O(\\alpha , \\beta)$ مرکز دایره باشد،  داریم: ‌$4x+3=0\\begin{matrix}\\text{از  خط}\\end{matrix}O\\begin{matrix}\\text{فاصلۀ}\\end{matrix}=  \\frac{|4\\alpha+3\\beta|}{5}$$\\xrightarrow{OH=\\alpha}\\frac{|4\\alpha + 3\\beta|}{5}=\\alpha  \\Rightarrow 4\\alpha+3\\beta=\\pm5\\alpha$$\\Rightarrow \\left\\{\\begin{array}{ll}3\\beta=\\alpha\\;\\;\\;\\;\\;\\;\\;  \\begin{matrix}\\text{(غ ق ق)}\\end{matrix}\\;\\;  \\begin{matrix}\\text{.غیرهم‌علامتند}\\end{matrix}\\beta,\\alpha\\\\3\\beta=-9\\alpha\\Rightarrow  \\beta=-3\\alpha\\end{array}\\right.$$\\Rightarrow  O\\left|_{-3\\alpha}^{\\alpha}\\right. , A\\left|_{-4}^{1}\\right.$$\\xrightarrow  {OA=\\alpha}(\\alpha-1)^{2}+(-3\\alpha+4)^{2}$$=\\alpha^{2}$$\\Rightarrow  \\alpha^{2}-2\\alpha+1+9\\alpha^{2}+16-24\\alpha=\\alpha^{2}$$\\Rightarrow  \\overbrace{9{{\\alpha }^{2}}-26\\alpha +17}^{(9\\alpha -17)(\\alpha  -1)}=0$$\\Rightarrow$$\\alpha=\\left\\{\\begin{array}{ll}\\frac{17}{9}\\\\ 1\\end{array}\\right.$ شعاع دایره برابر $\\alpha$ است،  در‌نتیجه بزرگترین شعاع دایره برابر $\\dfrac{17}{9}$  است.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "از بین  دایره‌های گذرا از نقطۀ $A(1,-4)$ و مماس بر خط‌ $4x+3y=0$ و محور $y$ها،  بزرگترین شعاع دایره، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{17}{9}$"
+      },
+      {
+        "option_text": "$\\dfrac{7}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{22}{9}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "مختصات  کانون سهمی به معادلۀ $2x^{2}-4x+3y=4$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$(1,  \\frac{5}{4})$"
+      },
+      {
+        "option_text": "$(1,  \\frac{13}{8})$"
+      },
+      {
+        "option_text": "$(\\frac{1}{4}, 2)$"
+      },
+      {
+        "option_text": "$(\\frac{5}{8}, 2)$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "ابتدا بايستي معادلۀ سهمي را استاندارد نماييم: ‌$2x^{2}-4x+3y=4$$2[x^{2}-2x]=-3y+4 \\Rightarrow 2[(x-1)^{2}-1]=-3y+4\\Rightarrow  2(x-1)^{2}=-3y+6$$\\Rightarrow  2(x-1)^{2}=-3(y-2)\\xrightarrow{\\div  2}(x-1)^{2}=-\\frac{3}{2}(y-2)\\leftarrow\\text{سهمي قائم با دهانه رو  به پايين}$ ‌رأس سهمي: $S=(1,  2)\\;,\\;4a=\\frac{3}{2}\\Rightarrow a=\\frac{3}{8}$ ‌کانون: $F\\left|\\begin{array}{ll} h=1 \\\\  k-a=2-\\frac{3}{8}=\\frac{13}{8}\\end{array}\\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "مختصات  کانون سهمی به معادلۀ $2x^{2}-4x+3y=4$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$(1,  \\frac{5}{4})$"
+      },
+      {
+        "option_text": "$(1,  \\frac{13}{8})$"
+      },
+      {
+        "option_text": "$(\\frac{1}{4}, 2)$"
+      },
+      {
+        "option_text": "$(\\frac{5}{8}, 2)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "معادلۀ یک  سهمی با کانون $F(2,1)$ و خط هادی به معادلۀ  $x=4$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$y^{2}-2y+4x=11$"
+      },
+      {
+        "option_text": "$y^{2}-2y+2x=5$"
+      },
+      {
+        "option_text": "$x^{2}-4x+4y=0$"
+      },
+      {
+        "option_text": "$x^{2}-6x+2y=-5$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "با توجه به موقعیت کانون و خط هادی، مطابق شکل، سهمی فوق  افقی بوده و دهانۀ آن به سمت چپ باز می‌شود، داریم: ‌ ‌معادلۀ این سهمی به‌فرم $(y-k)^{2}=-4a(x-h)$ است و داریم: ‌$\\underbrace{F\\left|\\begin{array}{ll}-a+h\\\\k\\end{array}\\right.}_{\\begin{matrix}\\text{کانون}\\end{matrix}}\\quad,\\quad$$\\underbrace{S\\left|\\begin{array}{ll}h\\\\k\\end{array}\\right.}_{\\begin{matrix}\\text{رأس}\\end{matrix}}\\quad,\\quad$$\\underbrace{\\Delta:x=a+h}_{\\begin{matrix}\\text{خط  هادی}\\end{matrix}}$ ‌$F\\left|\\begin{array}{ll}2=-a+h\\\\1=k\\end{array}\\right.\\;\\;(1)\\quad,\\quad$$\\Delta:x=4=a+h\\;\\;(2)$ ‌ ‌$(1),(2)$$\\Rightarrow  2h=6$$\\Rightarrow  h=3$$\\xrightarrow{\\,(2)\\,}a=4-3=1$ ‌‌$\\begin{matrix}\\text{معادلۀ سهمی}\\end{matrix}:$$(y-1)^{2}=-4(1)(x-3)$$\\Rightarrow  y^{2}-2y+4x=11$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "معادلۀ یک  سهمی با کانون $F(2,1)$ و خط هادی به معادلۀ  $x=4$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$y^{2}-2y+4x=11$"
+      },
+      {
+        "option_text": "$y^{2}-2y+2x=5$"
+      },
+      {
+        "option_text": "$x^{2}-4x+4y=0$"
+      },
+      {
+        "option_text": "$x^{2}-6x+2y=-5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "یک سهمی  که محور تقارن آن موازی یکی از محورهای مختصات است، محور $y$ها را  در دو نقطه به عرض‌های $1$ و $5$ قطع می‌کند و رأس آن بر  روی نیمساز ناحیه‌ی اول است. فاصلۀ کانون سهمی تا خط هادی، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{2}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{4}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "معادله محور تقارن سهمی $y=\\frac{5+1}{2}=3$ می‌باشد و با توجه به  اینکه محور تقارن از رأس سهمی می‌گذرد و اینکه رأس سهمی روی خط $y=x$ است نتیجه  می‌گیریم: $S=(3,3)$. بنابراین با توجه به  شکل، معادلۀ سهمی به‌صورت زیر است: ${{(y-3)}^{2}}=-4a(x-3)\\xrightarrow{A(0,1)}a= \\frac{1}{3}$$=2 a  =\\frac{2}{3}$  فاصله کانون تا خط هادی",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "یک سهمی  که محور تقارن آن موازی یکی از محورهای مختصات است، محور $y$ها را  در دو نقطه به عرض‌های $1$ و $5$ قطع می‌کند و رأس آن بر  روی نیمساز ناحیه‌ی اول است. فاصلۀ کانون سهمی تا خط هادی، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{2}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{4}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "دایره‌ای  به مرکز ($1,3$) بر روی خط راست $5x+12y=15$، وتری به طول $2\\sqrt{21}$،  جدا می‌کند. این دایره بر روی محور $x$ها، وتری با  کدام اندازه جدا می‌کند؟",
+    "options": [
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$2\\sqrt{15}$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "مطابق شکل زیر و با توجه به فرض داریم: $\\left\\{  \\begin{array}{ll} & OH=\\frac{|5\\times 1+12\\times  3-15|}{\\sqrt{{{5}^{2}}+{{12}^{2}}}}=\\frac{26}{13}=2 \\\\ &  AH=HB=\\sqrt{21} \\\\ \\end{array} \\right.$   ‌ ‌بنابر قضیه فیثاغورس در مثلث $BOH$  داریم: ‌$O{{H}^{2}}+H{{B}^{2}}=O{{B}^{2}}$  ‌$\\Rightarrow 4+21={{R}^{2}}\\Rightarrow R=5$ با داشتن مرکز $O(1,3)$ و شعاع دایره  $R=5$ معادلۀ دایره  را می‌نویسیم:  ‌معادلۀ  دایره ‌‌$:  {{(x-{{x}_{0}})}^{2}}+{{(y-{{y}_{0}})}^{2}}={{R}^{2}}$  ‌$\\Rightarrow {{(x-1)}^{2}}+{{(y-3)}^{2}}=25$ حال معادلۀ دایره را با محور $x$ها  ($y=0$)‌ تلاقی  می‌دهیم: ‌${{(x-1)}^{2}}+{{(y-3)}^{2}}=25$  ‌$\\xrightarrow{y=0}{{(x-1)}^{2}}=16$  ‌$\\Rightarrow x-1=\\pm 4$  ‌$\\Rightarrow \\left\\{ \\begin{matrix}  {{x}_{1}}=5 \\\\  {{x}_{2}}=-3 \\\\  \\end{matrix} \\right.$ ‌طول وتر جدا شده روی محور $x$ها  برابر است با: $‌5-(-3)=8$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دایره‌ای  به مرکز ($1,3$) بر روی خط راست $5x+12y=15$، وتری به طول $2\\sqrt{21}$،  جدا می‌کند. این دایره بر روی محور $x$ها، وتری با  کدام اندازه جدا می‌کند؟",
+    "options": [
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$2\\sqrt{15}$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "در یک  بیضی به قطرهای $8$ و $2\\sqrt{7}$  واحد و کانون‌های $F$ و  $F'$،  دایره‌ای به قطر $F'F$ بیضی  را در نقطۀ $M$، قطع  می‌کند. فاصلۀ نقطۀ $M$ تا  نزدیک‌ترین کانون، کدام است؟",
+    "options": [
+      {
+        "option_text": "$4-2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$4-\\sqrt{2}$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "پارامتری بیضی به‌صورت زیر می‌شوند:   $\\begin{matrix}\\text{قطر بزرگ}\\end{matrix}:2a=8\\Rightarrow  a=4$$\\begin{matrix}\\text{قطر  کوچک}\\end{matrix}:2b=2\\sqrt{7}\\Rightarrow b=\\sqrt{7}$ ‌$\\begin{matrix}\\text{می‌دانیم}\\end{matrix}:b^{2}+c^{2}=a^{2}$$\\Rightarrow  c^{2}=a^{2}-b^{2}$$=16-7$$\\Rightarrow  c=3$ ‌مطابق شکل داریم: ‌ ‌$\\left.\\begin{array}{ll}\\begin{matrix}\\text{تعریف  بیضی}\\end{matrix}:MF+MF'=2a  \\Rightarrow MF+MF'=8\\\\\\begin{matrix}\\text{بنابر قضیه  فیثاغورس}\\end{matrix}:MF^{2}+M^{2}F'=36\\end{array}\\right\\}$$\\Rightarrow  (\\underbrace{MF+MF'}_{64})^{2}-2MF\\times MF'=36$$\\Rightarrow  MF\\times MF'=14$ ‌بنابراین: ‌$\\left\\{\\begin{array}{ll}MF+MF'=8\\\\MF\\times  MF'=14\\end{array}\\right.$$\\Rightarrow  MF=4-\\sqrt{2}$$\\;,\\;  MF'=4+\\sqrt{2}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "در یک  بیضی به قطرهای $8$ و $2\\sqrt{7}$  واحد و کانون‌های $F$ و  $F'$،  دایره‌ای به قطر $F'F$ بیضی  را در نقطۀ $M$، قطع  می‌کند. فاصلۀ نقطۀ $M$ تا  نزدیک‌ترین کانون، کدام است؟",
+    "options": [
+      {
+        "option_text": "$4-2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$4-\\sqrt{2}$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "کوچکترین  دایرۀ گذرا بر دو نقطۀ $A(2,5)$ و $B(-4,1)$، محور $x$ها را با کدام  طول‌ها قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$1,-3$"
+      },
+      {
+        "option_text": "$0,-3$"
+      },
+      {
+        "option_text": "$2,-1$"
+      },
+      {
+        "option_text": "$3,-2$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "می‌دانیم کوچکترین دایرۀ گذرا از دو نقطۀ $A(2,5)$ و $B(-4,1)$ دایره‌ای است که  نقطه‌های $A$ و $B$ دو  سر قطری از آن بوده و مرکز این دایره نقطه وسط پاره خط $AB$  است. داریم: ‌$\\begin{matrix}\\text{مرکز دایره}\\end{matrix}:M=\\frac{A+B}{2}=$$(\\frac{2-4}{2},\\frac{5+1}{2})=(-1,3)$ $\\begin{matrix}\\text{شعاع  دایره}\\end{matrix}:R=\\frac{|AB|}{2}=\\frac{\\sqrt{(x_{B}-x_{A})^{2}+(y_{B}-y_{A})^{2}}}{2}$$=\\frac{\\sqrt{(2+4)^{2}+(5-1)^{2}}}{2}=\\sqrt{13}$ معادله دایره برابر است با: ‌$(x+1)^{2}+(y-3)^{2}=13$ $\\xrightarrow{(y=0)\\begin{matrix}\\text{ها}\\end{matrix}x\\begin{matrix}\\text{تقاطع  با محور }\\end{matrix}}(x+1)^{2}+9=13$$\\Rightarrow  (x+1)^{2}=4$$\\Rightarrow  \\left\\{_{\\Large x+1=-2\\Rightarrow x=-3}^{\\Large x+1=2\\Rightarrow  x=1}\\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "کوچکترین  دایرۀ گذرا بر دو نقطۀ $A(2,5)$ و $B(-4,1)$، محور $x$ها را با کدام  طول‌ها قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$1,-3$"
+      },
+      {
+        "option_text": "$0,-3$"
+      },
+      {
+        "option_text": "$2,-1$"
+      },
+      {
+        "option_text": "$3,-2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، خط هادی سهمی  $2{{y}^{2}}-12y+ax+8=0$، به معادلۀ $x=\\frac{21}{8}$  است؟",
+    "options": [
+      {
+        "option_text": "$12$ و $3$"
+      },
+      {
+        "option_text": "$16$ و $3$"
+      },
+      {
+        "option_text": "$12$ و $5$"
+      },
+      {
+        "option_text": "$16$ و $5$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "سهمی $2{{y}^{2}}-12y+ax+8=0$ یک سهمی افقی  است.ابتدا رأس و پارامتر آن را پیدا می‌کنیم. برای آنکه پارامتر سهمی با متغیر  $a$ در معادلۀ  داده‌شده اشتباه گرفته نشود $a$ را با $m$ نمایش  می‌دهیم یعنی معادلۀ سهمی را به شکل $2{{y}^{2}}-12y+mx+8=0$ در‌نظر می‌گیریم. ‌$2({{y}^{2}}-6y)=-mx-8\\Rightarrow 2\\left[ {{(y-3)}^{2}}-9  \\right]=-mx-8\\Rightarrow 2{{(y-3)}^{2}}=-mx+10$$\\Rightarrow  2{{(y-3)}^{2}}=-m(x-\\frac{10}{m})\\Rightarrow  {{(y-3)}^{2}}=-\\frac{m}{2}(x-\\frac{10}{m})$ این سهمی، افقی و رأس آن نقطۀ $(\\frac{10}{m},3)$ است و داریم  $a=\\left|  \\begin{matrix} -m \\\\ 8 \\\\ \\end{matrix} \\right|$.معادلۀ  خط هادی سهمی افقی به شکل $(a < 0)  x=-a+\\alpha$  یا $(a <  0)x=a+\\alpha$  است که در هر دو حالت به‌صورت زیر می‌شود:‌$\\begin{matrix}\\text{خط هادی}\\end{matrix}:  x=\\frac{m}{8}+\\frac{10}{m}\\xrightarrow{x=\\tfrac{21}{8}}\\frac{21}{8}=\\frac{m}{8}+\\frac{10}{m}$$\\Rightarrow  {{m}^{2}}-21m+80=0\\Rightarrow (m-16)(m-5)=0\\Rightarrow m=16,5$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، خط هادی سهمی  $2{{y}^{2}}-12y+ax+8=0$، به معادلۀ $x=\\frac{21}{8}$  است؟",
+    "options": [
+      {
+        "option_text": "$12$ و $3$"
+      },
+      {
+        "option_text": "$16$ و $3$"
+      },
+      {
+        "option_text": "$12$ و $5$"
+      },
+      {
+        "option_text": "$16$ و $5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نقطه  $M(x,y)$ طوری حرکت می$$کند، که همواره فاصله آن از نقطه $(2,-1)$ برابر، $\\dfrac{2}{3}$   فاصله آن از خط $y=4$ است. کوتاه‌ترین فاصله  نقاط $M$ تا خط  $y=4$ ، کدام است؟",
+    "options": [
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$3٫5$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "نکته: اگر خط  $\\Delta$ و نقطه $A$ خارج از آن  داده شده باشد، مکان هندسی نقاطی از صفحه که نسبت فاصله آنها از نقطه $A$ به  فاصله$$شان از خط $\\Delta$ برابر مقدار $m < 1$ باشد، یک «بیضی»  است.  مطابق شکل در این بیضی با  رسم محور کانونی بیضی، دو نقطه M و N (که همان  رئوس کانونی بیضی هستند) به‌دست می‌آیند که به‌ترتیب  نزدیک‌ترین و دورترین نقاط بیضی به خط  $\\Delta$ هستند.    با توجه به نکته فوق، کافی است که مختصات نقطه $M$ را  به‌دست آوریم. با توجه به شکل مقابل داریم:  $\\frac{MA}{MH}=\\frac{2}{3}\\Rightarrow \\frac{\\left| y-(-1)  \\right|}{\\left|  y-4  \\right|}=\\frac{2}{3}\\xrightarrow{-1<y<4}\\frac{y+1}{4-y}=\\frac{2}{3}\\\\\\Rightarrow  3y+3=8-2y\\Rightarrow 5y=5\\Rightarrow y=1$   پس کوتاه‌ترین فاصله نقطه $M$ از  خط $y=4$ برابر $4-1=3$ است.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | تعریف و معادلۀ بیضی‌‎"
+  },
+  {
+    "question_text": "نقطه  $M(x,y)$ طوری حرکت می$$کند، که همواره فاصله آن از نقطه $(2,-1)$ برابر، $\\dfrac{2}{3}$   فاصله آن از خط $y=4$ است. کوتاه‌ترین فاصله  نقاط $M$ تا خط  $y=4$ ، کدام است؟",
+    "options": [
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$3٫5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | تعریف و معادلۀ بیضی‌‎"
+  },
+  {
+    "question_text": "نقطه‌ی  $S(2,1)$ رأس یک سهمی است که  محور تقارن آن موازی محور $y$ها  است. این سهمی از نقطه‌ی $(0,5)$ می‌گذرد. معادله‌ی خط  هادی آن، کدام است؟",
+    "options": [
+      {
+        "option_text": "$y=\\frac{1}{4}$"
+      },
+      {
+        "option_text": "$y=\\frac{1}{2}$"
+      },
+      {
+        "option_text": "$y=\\frac{3}{4}$"
+      },
+      {
+        "option_text": "$y=\\frac{3}{2}$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "چون محور تقارن سهمی قائم است پس سهمی نیز قائم است. از  طرفی این سهمی از نقطۀ $(0,5)$ که بالاتر از رأس  $S(2,1)$ قرار دارد می‌گذرد،  پس دهانۀ سهمی رو به بالا بوده و داریم:  $\\small{{(x-2)}^{2}}=4a(y-1)\\,\\,\\,\\xrightarrow{(0,5)\\in\\,\\text{سهمی}}\\,\\,\\,4=4a  \\times 4\\Rightarrow a=\\frac{1}{4}\\Rightarrow \\begin{matrix}\\text{خط  هادی}\\end{matrix} : \\Delta  :y=\\beta-a\\,\\Rightarrow\\,\\,y=1-\\frac{1}{4}\\Rightarrow y=\\frac{3}{4}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نقطه‌ی  $S(2,1)$ رأس یک سهمی است که  محور تقارن آن موازی محور $y$ها  است. این سهمی از نقطه‌ی $(0,5)$ می‌گذرد. معادله‌ی خط  هادی آن، کدام است؟",
+    "options": [
+      {
+        "option_text": "$y=\\frac{1}{4}$"
+      },
+      {
+        "option_text": "$y=\\frac{1}{2}$"
+      },
+      {
+        "option_text": "$y=\\frac{3}{4}$"
+      },
+      {
+        "option_text": "$y=\\frac{3}{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "سهمی به  کانون  $(1,2)$ و خط هادی به معادله‌ی  $x=-3$ محور $x$‌ها را با کدام  طول قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{4}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{4}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "خط هادی سهمی، قائم است، پس سهمی افقی است. از طرفی  کانون سمت راست خط هادی قرار دارد، پس دهانۀ سهمی رو به راست است. داریم: $F\\left|\\begin{array}{ll}&{1=h+a}\\\\&{2=k}\\end{array}\\right.\\;\\;\\;,\\;\\;\\;\\Delta:  x=-3=h-a \\Rightarrow \\begin{cases}h+a=1\\\\  h-a=-3\\end{cases}\\Rightarrow h=-1\\;,\\;a=2$ $(y-2)^{2}=8(x+1)$ :معادله  سهمی$\\xrightarrow{\\text{قرار می‌دهیم}\\;y=0\\;\\text{در معادله سهمی}}  4=8(x+1)\\Rightarrow x+1=\\frac{1}{2}\\Rightarrow x=\\frac{-1}{2}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "سهمی به  کانون  $(1,2)$ و خط هادی به معادله‌ی  $x=-3$ محور $x$‌ها را با کدام  طول قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{4}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{4}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، دو دایره به  معادلات $x^{2}+y^{2}-2x+8y+a=0,x^{2}+y^{2}+4x=0$، مماس خارج یکدیگرند؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "$x^{2}+y^{2}+4x=0\\Rightarrow \\begin{cases}  O(-\\frac{a}{2},\\frac{b}{2}) =(-2,0)\\\\  R^{2}=\\frac{a^{2}+b^{2}-4c}{4}=\\frac{16+0-0}{4}=4\\to R=2\\end{cases}$$x^{2}+y^{2}-2x+8y+a=0\\Rightarrow \\begin{cases}O'  (-\\frac{a}{2},\\frac{b}{2}) =(1,-4) \\\\  R'^{2}=\\frac{a^{2}+b^{2}-4c}{4}=\\frac{4+64-4a}{4}=17-a\\to  R'=\\sqrt{17-a}\\end{cases}$$O\\left|_{0}^{-2}\\right.\\;\\;\\;O'\\left|_{-4}^{1}\\right.\\Rightarrow  OO'=5$ شرط آنکه دو دایره مماس خارج باشند آن است که $OO'=R+R'$،  پس: $5=2+\\sqrt{17-a}\\Rightarrow 9=17-a\\Rightarrow a=8$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $a$، دو دایره به  معادلات $x^{2}+y^{2}-2x+8y+a=0,x^{2}+y^{2}+4x=0$، مماس خارج یکدیگرند؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "فرض کنید  خطوط $x+y=1$ و $x-y=3$ قطرهای یک دایره و خط  $4x+3y+5=0$ مماس بر آن باشد.  نزدیکترین فاصله نقطه $M(4,-2)$ از دایره، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{3}-1$"
+      },
+      {
+        "option_text": "$\\sqrt{3}-\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{\\sqrt{2}}{2}$"
+      },
+      {
+        "option_text": "$\\sqrt{5}-2$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "مرکز دایره را از تلاقی قطرهای آن به‌دست می‌آوریم:   $\\left.\\begin{array}{ll}x+y=1\\\\x-y=3\\end{array}\\right\\}$  ‌$\\to  x=2 , y=-1$ ‌$\\to\\begin {matrix}\\text{مختصات مرکز  دایره}:O(2,-1)\\end{matrix}$     فاصلۀ مرکز دایره از خط مماس برابر شعاع دایره است، پس:   $OH=R=\\frac{|4(2)+3(-1)+5|}{\\sqrt{4^2+3^2}}=\\frac{10}{5}=2$  مطابق شکل، نزدیکترین فاصلۀ نقطۀ $M(4,-2)$ از دایره به‌صورت زیر  به‌دست می‌آید:   $OM=\\sqrt{(4-2)^{2}+(-2+1)^{2}}=\\sqrt{5}$$\\begin {matrix}\\text{از دایره}\\end{matrix} \\begin  {matrix}\\text{M}\\end{matrix} \\begin  {matrix}\\text{نزدیکترین فاصله  نقطه}\\end{matrix}=MN=OM-R=\\sqrt{5}-2$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "فرض کنید  خطوط $x+y=1$ و $x-y=3$ قطرهای یک دایره و خط  $4x+3y+5=0$ مماس بر آن باشد.  نزدیکترین فاصله نقطه $M(4,-2)$ از دایره، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{3}-1$"
+      },
+      {
+        "option_text": "$\\sqrt{3}-\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{\\sqrt{2}}{2}$"
+      },
+      {
+        "option_text": "$\\sqrt{5}-2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "از میان  دایره‌های گذرا از نقطۀ $A(3,2)$ و مماس بر خطوط $3x-4y=0$ و $y=0$، کوچکترین شعاع دایره  کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\frac{3}{2}$"
+      },
+      {
+        "option_text": "$\\frac{4}{3}$"
+      },
+      {
+        "option_text": "$\\frac{13}{9}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "فرض کنید مرکز دایره $O(\\alpha , \\beta)$ باشد؛ شکل زیر را  درنظر بگیرید. با توجه به شکل، مرکز دایره در ناحیۀ اول و زیر خط $3x-4y=0$ قرار دارد و $\\alpha ,\\beta  >0$. داریم: $‌OH=OA=OB=R=\\beta$ ‌حال داریم: ‌$\\dfrac{|3\\alpha -4\\beta |}{\\sqrt{{{3}^{2}}+{{(-4)}^{2}}}}=\\beta$  ‌$\\Rightarrow  |3\\alpha -4\\beta |=5\\beta$  ‌$\\Rightarrow  \\left\\{ \\begin{array}{ll}  & 3\\alpha -4\\beta =5\\beta \\Rightarrow 3\\alpha =9\\beta  \\Rightarrow \\alpha =3\\beta \\,\\, \\\\  & 3\\alpha -4\\beta =-5\\beta \\Rightarrow 3\\alpha =-\\beta  \\,\\,\\begin{matrix}\\text{غ‌ق‌ق}\\end{matrix} \\\\  \\end{array} \\right.$ $\\alpha =3\\beta$ و  $OA=OB$  است؛ پس:  شعاع دایره  ‌$: \\beta  =\\sqrt{{{(xo-x_{A})}^{2}}+{{(yo-y_{A})}^{2}}}$  ‌$=\\sqrt{{{(\\alpha -3)}^{2}}+{{(\\beta -2)}^{2}}}$  ‌$\\xrightarrow{\\alpha =3\\beta }$  ‌$\\beta  =\\sqrt{{{(3\\beta -3)}^{2}}+{{(\\beta -2)}^{2}}}$  ‌$\\xrightarrow{{{}}}$  ‌${{\\beta  }^{2}}=9{{\\beta }^{2}}-18\\beta +9+{{\\beta }^{2}}-4\\beta +4$  ‌$\\Rightarrow  9{{\\beta }^{2}}-22\\beta +13=0$  ‌$\\Rightarrow  (9\\beta -13)(\\beta -1)=0$  ‌$\\Rightarrow  \\left\\{ \\begin{array}{ll}  \\beta =\\dfrac{13}{9} \\\\  \\beta =1 \\\\  \\end{array} \\right.$ ‌کوچکترین شعاع دایره برابر $1$ است.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "از میان  دایره‌های گذرا از نقطۀ $A(3,2)$ و مماس بر خطوط $3x-4y=0$ و $y=0$، کوچکترین شعاع دایره  کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\frac{3}{2}$"
+      },
+      {
+        "option_text": "$\\frac{4}{3}$"
+      },
+      {
+        "option_text": "$\\frac{13}{9}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "در یک  بیضی با خروج از مرکز $\\sqrt{\\frac{2}{3}}$،  دو سر قطر بزرگ از انتهای قطر کوچک، با کدام زاویه رؤیت می‌شود؟",
+    "options": [
+      {
+        "option_text": "$150^{\\circ}$"
+      },
+      {
+        "option_text": "$135^{\\circ}$"
+      },
+      {
+        "option_text": "$120^{\\circ}$"
+      },
+      {
+        "option_text": "$105^{\\circ}$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "مطابق شکل، زاویۀ ‌$\\hat{A'BA}=\\alpha$  مدّنظر سؤال است. داریم:  $e=\\sqrt{\\frac{2}{3}}=\\frac{c}{a}\\xrightarrow{2\\begin{matrix}\\text{به  توان}\\end{matrix}}\\frac{2}{3}=\\frac{c^{2}}{a^{2}}\\xrightarrow{c^{2}=a^{2}-b^{2}}\\frac{2}{3}=\\frac{a^{2}-b^{2}}{a^{2}}$ $\\Rightarrow  2a^{2}=3a^{2}-3b^{2}\\Rightarrow a^{2}=3b^{2} \\Rightarrow  \\frac{a}{b}=\\sqrt{3}$‌     در مثلث قائم‌الزاویۀ $OBA$ داریم: ‌$\\tan(\\frac{\\alpha}{2})=\\frac{a}{b}=\\sqrt{3}\\Rightarrow  \\frac{\\alpha}{2}=60^{\\circ}\\Rightarrow \\alpha=120^{\\circ}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | خروج از مرکز بیضی"
+  },
+  {
+    "question_text": "در یک  بیضی با خروج از مرکز $\\sqrt{\\frac{2}{3}}$،  دو سر قطر بزرگ از انتهای قطر کوچک، با کدام زاویه رؤیت می‌شود؟",
+    "options": [
+      {
+        "option_text": "$150^{\\circ}$"
+      },
+      {
+        "option_text": "$135^{\\circ}$"
+      },
+      {
+        "option_text": "$120^{\\circ}$"
+      },
+      {
+        "option_text": "$105^{\\circ}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | خروج از مرکز بیضی"
+  },
+  {
+    "question_text": "دایره‌ای  بر دو نقطه‌ی  $(\\circ \\,,\\,2)$ و $(4\\,,\\,\\circ )$  گذشته و بر محور  $x$‌ها مماس است.  این دایره محور $y$‌ها را  در نقطه‌ی دیگر، با کدام عرض قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "با توجه به فرض و مطابق شکل واضح است مرکز دایره نقطه  $O'(4,\\beta)$  می$$باشد. از طرفی چون دایره بر محور  $x$ها مماس است  پس $R=|\\beta|$. ‌${O}'A={O}'B=R\\Rightarrow |\\beta| =\\sqrt{16+{{(\\beta -2)}^{2}}}$$\\Rightarrow  {{\\beta }^{2}}=16+{{\\beta }^{2}}-4\\beta +4\\Rightarrow \\beta  =5\\Rightarrow O'(4,5)\\\\\\Rightarrow O'B=R=5$      $\\text{معادله  دایره}:(x-4)^{2}+(y-5)^{2}=25\\\\ x=0\\Rightarrow  16+(y-5)^{2}=25\\Rightarrow (y-5)^{2}=9 \\Rightarrow y-5=\\pm  3\\Rightarrow \\begin{cases}y=8\\\\y=2 \\end{cases}\\Rightarrow  C\\left|_{8}^{0}\\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دایره‌ای  بر دو نقطه‌ی  $(\\circ \\,,\\,2)$ و $(4\\,,\\,\\circ )$  گذشته و بر محور  $x$‌ها مماس است.  این دایره محور $y$‌ها را  در نقطه‌ی دیگر، با کدام عرض قطع می‌کند؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "طول قطعه  مماسی که از نقطه $A\\left( 4,1 \\right)$ بر دایره‌ای  به معادله‌ی ${{x}^{2}}+{{y}^{2}}-2x+4y+3=0$ رسم شود برابر کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "نکته: طول قطعه مماسی که از نقطۀ $A(x_{1},y_{2})$ بر دایرۀ $C$  به معادلۀ $C(x,y):{{x}^{2}}+{{y}^{2}}+ax+by+c=0$ می‌توان رسم کرد  برابر است با $AT=\\sqrt{C({{x}_{1}},{{y}_{1}})}$.  پس داریم:$:  AT=\\sqrt{C(x_{1},y_{1})}=\\sqrt{16+1-8+4+3}=4$   طول مماس",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی نقطه و دایره"
+  },
+  {
+    "question_text": "طول قطعه  مماسی که از نقطه $A\\left( 4,1 \\right)$ بر دایره‌ای  به معادله‌ی ${{x}^{2}}+{{y}^{2}}-2x+4y+3=0$ رسم شود برابر کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی نقطه و دایره"
+  },
+  {
+    "question_text": "دایره‌ای  بر خط به معادله $y=2x-1$ مماس است و تمام  قائم$$های این دایره از نقطه $(-1 , 2)$ می$$گذرند. بیشترین فاصله نقاط این دایره از  محور $x$ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$2+\\sqrt{5}$"
+      },
+      {
+        "option_text": "$3+\\sqrt{2}$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "تمام قائم$$های بر دایره از مرکز آن  می$$گذرند، بنابراین طبق گفته  سؤال نقطه $(-1,2)$ مرکز دایره  است و از آنجا که دایره بر خط مماس شده است پس فاصله مرکز دایره تا آن خط  برابر با طول شعاع دایره است. داریم: $\\begin{array}{ll}  & OH=\\frac{\\left| 2-2(-1)+1  \\right|}{\\sqrt{1+4}}=\\frac{5}{\\sqrt{5}}=\\sqrt{5} \\\\ &  \\xrightarrow{\\text{معادله دایره}}(x+1)^{2}+(y-2)^{2}=5 \\\\  \\end{array}$‌ ‌مطابق شکل داریم: ‌$\\begin{matrix}\\text{ها}\\end{matrix} x  \\begin{matrix}\\text{بیشترین فاصله نقاط دایره از  محور}\\end{matrix}:AH=R+OH=\\sqrt{5}+2$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دایره‌ای  بر خط به معادله $y=2x-1$ مماس است و تمام  قائم$$های این دایره از نقطه $(-1 , 2)$ می$$گذرند. بیشترین فاصله نقاط این دایره از  محور $x$ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$2+\\sqrt{5}$"
+      },
+      {
+        "option_text": "$3+\\sqrt{2}$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دایره‌ای  بر محور $x$ها و خط به  معادله $3x+4y=0$ مماس است. اگر مرکز این  دایره در ناحیه اول و شعاع آن $3$ واحد باشد، نقطه مشترک آن  با محور $x$ها با کدام طول  است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "دایره بر محور $x$‌ها  مماس و شعاع آن برابر $3$ می$$باشد و چون مرکز دایره در  ناحیۀ اول است، پس $O(\\alpha  ,3)$ مرکز دایره  است. مسلماً  فاصله$$ی $O$  از خط  $3x+4y=0$ برابر شعاع  است.    $OH=\\frac{\\left|  3\\alpha +12 \\right|}{\\sqrt{9+16}}=3\\Rightarrow \\left| 3\\alpha +12  \\right|=15\\Rightarrow \\left\\{ \\begin{array}{ll} & 3\\alpha  +12=15\\Rightarrow \\alpha =1 \\\\ & 3\\alpha +12=-15\\Rightarrow  \\alpha =-9 \\\\ \\end{array} \\right.$ چون مرکز O در ناحیه اول قرار دارد پس  $\\alpha =1$ قابل قبول است،  بنابراین مرکز دایره $O(1,3)$ می$$باشد. بنابراین طول نقطه تماس دایره  با محور $x$ها برابر  $1$ است.",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "دایره‌ای  بر محور $x$ها و خط به  معادله $3x+4y=0$ مماس است. اگر مرکز این  دایره در ناحیه اول و شعاع آن $3$ واحد باشد، نقطه مشترک آن  با محور $x$ها با کدام طول  است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$2$"
+      },
+      {
+        "option_text": "$2٫5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "سهمی به  کانون $F(3,2)$ و خط هادی به معادله  $x=-1$، محور $x$ها را در نقطه  $A$ قطع می$$کند. فاصله نقطه $A$ تا کانون سهمی  کدام است؟",
+    "options": [
+      {
+        "option_text": "$2٫25$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$2٫75$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "با توجه به تعریف سهمی، معادلۀ سهمی را می‌یابیم:$\\small  \\Rightarrow  \\underbrace{\\sqrt{{{(x-3)}^{2}}+{{(y-2)}^{2}}}=|x+1|}_{\\text{معادله  سهمی}}$  فاصله $\\small M$  تا خط هادی = فاصله $\\small M$  تا کانون  $\\small  M({{x}},y)\\in \\text{سهمی}\\Rightarrow \\,$ $\\xrightarrow[y=0]{\\text{ها}\\,x\\,\\text{برخورد با محور}}$  ‌${{(x-3)}^{2}}+4={{(x+1)}^{2}}\\Rightarrow$  ‌${{x}^{2}}-6x+9+4={{x}^{2}}+2x+1$  ‌$\\Rightarrow  8x=12\\Rightarrow$  ‌$x=  \\frac{3}{2}\\Rightarrow A(\\frac{3}{2},0)$ بنابراین:‌$AF=\\sqrt{{{(\\frac{3}{2}-3)}^{2}}+{{(0-2)}^{2}}}=\\sqrt{\\frac{9}{4}+4}=\\sqrt{\\frac{25}{4}}=\\frac{5}{2}=2٫5$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "سهمی به  کانون $F(3,2)$ و خط هادی به معادله  $x=-1$، محور $x$ها را در نقطه  $A$ قطع می$$کند. فاصله نقطه $A$ تا کانون سهمی  کدام است؟",
+    "options": [
+      {
+        "option_text": "$2٫25$"
+      },
+      {
+        "option_text": "$2٫5$"
+      },
+      {
+        "option_text": "$2٫75$"
+      },
+      {
+        "option_text": "$3$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "یک سهمی  که محور تقارن آن موازی یکی از محورهای مختصات است، محور $y$ها را  در دو نقطه به عرض‌های $1$  و $5$  قطع می‌کند و رأس آن بر روی نیمساز ناحیۀ اول است. فاصلۀ کانون سهمی تا خط هادی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{2}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{4}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "رأس سهمی روی نیمساز ناحیۀ اول است، پس مختصات آن را  می‌توان به‌صورت $S(\\alpha,\\alpha)$ در‌نظر گرفت. سهمی  محور $y$ها  را در دو نقطه قطع می‌کند، پس قطعاً افقی بوده و با توجه به اینکه رأس سهمی در ناحیۀ  اول است، بنابراین دهانۀ سهمی رو به چپ باز می‌شود. از طرفی چون سهمی محور $y$ها  را در دو نقطه به عرض‌های $1$ و $5$ قطع می‌کند، پس $y=3$ محور تقارن سهمی است و  در‌نتیجه $S(3,3)$ رأس سهمی است و  داریم: ‌$\\begin{matrix}\\text{معادلۀ  سهمی}\\end{matrix}:(y-3)^{2}=-4a(x-3)\\xrightarrow{(0,1)}(-2)^{2}=-4a(-3)$$\\Rightarrow  12a=4\\Rightarrow a=\\frac{1}{3}$$\\Rightarrow  \\begin{matrix}\\text{فاصلۀ کانون تا خط  هادی}\\end{matrix}=2a=\\frac{2}{3}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "یک سهمی  که محور تقارن آن موازی یکی از محورهای مختصات است، محور $y$ها را  در دو نقطه به عرض‌های $1$  و $5$  قطع می‌کند و رأس آن بر روی نیمساز ناحیۀ اول است. فاصلۀ کانون سهمی تا خط هادی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{2}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{4}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نقطه$$ی $A(3,6)$  روی دایره‌ای است که بر هر دو محور مختصات مماس است. شعاع این دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$2,12$"
+      },
+      {
+        "option_text": "$2,15$"
+      },
+      {
+        "option_text": "$3,9$"
+      },
+      {
+        "option_text": "$3,15$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "چون نقطۀ $A$  در ربع اول است، پس مرکز دایره روی خط $y=x$  قرار دارد، یعنی $O\\left( \\alpha  ,\\alpha \\right)$ و شعاع  دایره نیز $R=\\alpha$ است  (به شکل نگاه کنید)، بنابراین:    $C:{{\\left( x-\\alpha \\right)}^{2}}+{{\\left( y-\\alpha  \\right)}^{2}}={{\\alpha }^{2}}\\overset{A\\in  C}{\\mathop{\\Rightarrow }}\\,{{\\left( 3-\\alpha  \\right)}^{2}}+{{\\left( 6-\\alpha \\right)}^{2}}={{\\alpha  }^{2}}\\\\ \\Rightarrow {{\\alpha }^{2}}-18\\alpha +45=0\\Rightarrow  \\left( \\alpha -15 \\right)\\left( \\alpha -3 \\right)=0\\Rightarrow  \\left\\{\\begin{array}{ll} &\\alpha =3\\Rightarrow R=3\\\\  &\\alpha =15\\Rightarrow R=15 \\end{array}\\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "نقطه$$ی $A(3,6)$  روی دایره‌ای است که بر هر دو محور مختصات مماس است. شعاع این دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$2,12$"
+      },
+      {
+        "option_text": "$2,15$"
+      },
+      {
+        "option_text": "$3,9$"
+      },
+      {
+        "option_text": "$3,15$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | معادله دایره"
+  },
+  {
+    "question_text": "در سهمی  به معادلۀ $3x^{2}+4y-6x+11=0$، معادلۀ خط هادی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$y=-\\frac{5}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{4}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{2}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{1}{3}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "ابتدا معادلۀ سهمی را استاندارد می‌کنیم، سپس رأس سهمی  را به‌دست می‌آوریم: $\\small  :3(x-1)^{2}=-4y-11+3=-4y-8\\Rightarrow  (x-1)^{2}= \\cfrac{-4}{3}(y+2) \\Rightarrow  S(1,-2),a= \\cfrac{1}{3}$  معادله استانداردسهمی داده شده، قائم و دهانۀ آن رو به پایین است. بنابراین  معادلۀ خط هادی آن به‌صورت $y=\\beta+a$   است، داریم:  $y=-2+\\frac{1}{3} =-\\frac{5}{3}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "در سهمی  به معادلۀ $3x^{2}+4y-6x+11=0$، معادلۀ خط هادی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$y=-\\frac{5}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{4}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{2}{3}$"
+      },
+      {
+        "option_text": "$y=-\\frac{1}{3}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "خط $d$ به معادله  $y-x=0$، عمودمنصف خط‌المرکزین دو  دایره است که شعاع یکی $2$ برابر دیگری است. اگر  خط $d$ بر دایرۀ  کوچک‌تر به معادلۀ $x^2+y^2+6x-2y=r$ مماس  باشد، حاصل‌ضرب طول نقاط برخورد دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{5}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{65}{32}$"
+      },
+      {
+        "option_text": "$\\dfrac{65}{64}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "$x^2+y^2+6x-2y=r \\to \\begin{matrix}\\text{مختصات مرکز دایرۀ  کوچک‌تر}\\end{matrix}O_1=(-3,1)$$\\left.\\begin{array}{ll} \\begin{matrix}\\text{شعاع دایرۀ  کوچک‌تر}\\end{matrix}\\,r_1=\\dfrac{|-(-3)+1|}{\\sqrt{(-1)^2+1^2}}=\\dfrac{4}{\\sqrt{2}}=2\\sqrt{2}\\\\  \\begin{matrix}\\text{با استفاده از معادلۀ دایرۀ  کوچک‌تر}\\end{matrix}\\,r_1=\\dfrac{1}{2}\\sqrt{6^2+(-2)^2-4(-r)}=\\dfrac{1}{2}\\sqrt{40+4r}=\\sqrt{10+r}\\end{array}\\right\\}$ ‌$\\to  \\sqrt{10+r}=2\\sqrt{2}\\to 10+r=8\\to r=-2$    قرینۀ $O_1(-3,1)$ نسبت به  محور $y=x$ مرکز دایرۀ  بزرگ‌تر به مختصات $O_2(1,-3)$ می‌باشد و شعاع دایرۀ  بزرگ‌تر دو برابر شعاع دایرۀ کوچک‌تر یعنی $4\\sqrt{2}$  است. ‌$\\left.\\begin{array}{ll} \\begin{matrix}\\text{معادلۀ دایرۀ  بزرگ‌تر}\\end{matrix}:(x-1)^2+(y+3)^2=(4\\sqrt 2)^2=32 \\\\  \\begin{matrix}\\text{معادلۀ دایرۀ  کوچک‌تر}\\end{matrix}:x^2+y^2+6x-2y+2=0 \\end{array}\\right\\}\\\\\\to  \\begin{matrix}\\text{معادلۀ وتر  مشترک}\\end{matrix}\\Delta:8x-8y+24=0\\to y=x+3$$\\to  (x-1)^2+(x+3+3)^2=32\\to x^2-2x+1+x^2+12x+36=32$$\\to  2x^2+10x+5=0\\to p=x_1\\cdot x_2=\\frac{5}{2}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "خط $d$ به معادله  $y-x=0$، عمودمنصف خط‌المرکزین دو  دایره است که شعاع یکی $2$ برابر دیگری است. اگر  خط $d$ بر دایرۀ  کوچک‌تر به معادلۀ $x^2+y^2+6x-2y=r$ مماس  باشد، حاصل‌ضرب طول نقاط برخورد دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{5}{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{5}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{65}{32}$"
+      },
+      {
+        "option_text": "$\\dfrac{65}{64}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "از کانون  سهمی $y^{2}-x-4y+2=0$ خطی عمود بر محور تقارن  آن رسم می‌شود تا سهمی را در نقاط $A$ و $B$ قطع  کند. مساحت مثلثی با رئوس $A$ ، $B$ و رأس  سهمی، چقدر است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{8}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{12}$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "‌ $y^{2}-x-4y+2=0\\rightarrow y^{2}-4y=x-2\\rightarrow(y-2)^{2}-4=x-2  \\rightarrow(y-2)^{2}=x+2$‌سهمی افقی و  دهانه آن رو به راست است.  $\\;\\;\\;\\;\\;\\;\\;\\;\\;\\; \\begin{matrix}\\text{مختصات  رأس}\\end{matrix}S(-2\\;,\\;2)$ $‌\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;  4a=1\\rightarrow\\begin{matrix}\\text{فاصله  کانونی}\\end{matrix}a=\\dfrac{1}{4}$    ‌$\\;\\;\\;\\;\\;\\;\\;\\;\\;\\; \\begin{matrix}\\text{وتر  کانونی}\\end{matrix}AB=4a\\quad\\quad\\begin{matrix}\\text{فاصله  کانونی}\\end{matrix}SF=a$ ‌‌\\displaystyle \\;\\;\\;\\;\\;\\;\\;\\;\\;\\;  S_\\overset{\\triangle}{ABS}=\\dfrac{1}{2}SF\\cdot AB=\\dfrac{1}{2}\\times  a\\times  4a=2a^{2}=2\\times\\dfrac{1}{4}\\times\\dfrac{1}{4}=\\dfrac{1}{8}",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "از کانون  سهمی $y^{2}-x-4y+2=0$ خطی عمود بر محور تقارن  آن رسم می‌شود تا سهمی را در نقاط $A$ و $B$ قطع  کند. مساحت مثلثی با رئوس $A$ ، $B$ و رأس  سهمی، چقدر است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{4}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{8}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{12}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "کدام  عبارت زیر درست است؟",
+    "options": [
+      {
+        "option_text": "مجموعۀ خطوط عمود بر یک خط در فضا، بی‌نهایت صفحه  در فضا تشکیل می‌دهند."
+      },
+      {
+        "option_text": "مجموعۀ نقاطی که از یک خط مفروض در فضا،  متساوی‌الفاصله‌اند، روی سطح یک کره قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعۀ نقاطی که مجموع فواصل آن‌ها از دو نقطۀ  ثابت در فضا، به یک اندازه باشند، روی محیط یک بیضی قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعۀ خطوط گذرا از یک نقطه که با محور گذرا از  آن نقطه، زاویۀ یکسان می‌سازند، روی سطح یک مخروط قرار می‌گیرند."
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "بیان درست گزینۀ $2$: مجموعۀ نقاطی که از یک  خط مفروض در فضا، متساوی‌الفاصله‌اند، روی سطح جانبی یک استوانه قرار  می‌گیرند.بیان درست گزینۀ $3$: مجموعۀ نقاطی که مجموع  فواصل آن‌ها از دو نقطۀ ثابت در فضا، به یک اندازه باشند، روی سطح یک بیضی‌گون  قرار می‌گیرند.بیان درست گزینۀ $4$: مجموعۀ خطوط گذرا از  یک نقطه در فضا که با محور گذرا از آن نقطه، زاویۀ یکسان می‌سازند، روی سطح یک زاویۀ  مخروطی (در مخروط) قرار می‌گیرند. ‌",
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "کدام  عبارت زیر درست است؟",
+    "options": [
+      {
+        "option_text": "مجموعۀ خطوط عمود بر یک خط در فضا، بی‌نهایت صفحه  در فضا تشکیل می‌دهند."
+      },
+      {
+        "option_text": "مجموعۀ نقاطی که از یک خط مفروض در فضا،  متساوی‌الفاصله‌اند، روی سطح یک کره قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعۀ نقاطی که مجموع فواصل آن‌ها از دو نقطۀ  ثابت در فضا، به یک اندازه باشند، روی محیط یک بیضی قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعۀ خطوط گذرا از یک نقطه که با محور گذرا از  آن نقطه، زاویۀ یکسان می‌سازند، روی سطح یک مخروط قرار می‌گیرند."
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "کدام  عبارت درست است؟",
+    "options": [
+      {
+        "option_text": "مجموعه نقاطی از فضا که از دو خط موازی به یک  فاصله باشند، در تعداد نامتناهی صفحه قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که از دو خط موازی به یک  فاصله باشند، در صفحه‌ای عمود بر صفحه شامل آن دو خط قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که از یک نقطه و یک خط که از  آن نقطه نمی‌گذرند، به یک فاصله باشند، روی منحنی سهمی شکل قرار دارند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که مجموع فاصله‌های هر نقطه  آن از دو نقطه ثابت در فضا، به یک اندازه باشند، روی محیط یک بیضی قرار  می‌گیرند."
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "دو خط موازی را $d_{1}$  و $d_{2}$  و صفحۀ شامل این دو خط را $P$  می‌گیریم. اگر $d_{3}$  خط موازی $d_{1}$  و $d_{2}$  و در بین آن‌ها و به فاصلۀ یکسان از آن دو باشد، آنگاه صفحۀ $Q$  که شامل $d_{3}$  بوده و بر صفحۀ $P$  عمود است، مکان هندسی مجموعۀ نقاطی از فضا است که از دو خط $d_{1}$  و $d_{2}$  به یک فاصله قرار دارند.",
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "کدام  عبارت درست است؟",
+    "options": [
+      {
+        "option_text": "مجموعه نقاطی از فضا که از دو خط موازی به یک  فاصله باشند، در تعداد نامتناهی صفحه قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که از دو خط موازی به یک  فاصله باشند، در صفحه‌ای عمود بر صفحه شامل آن دو خط قرار می‌گیرند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که از یک نقطه و یک خط که از  آن نقطه نمی‌گذرند، به یک فاصله باشند، روی منحنی سهمی شکل قرار دارند."
+      },
+      {
+        "option_text": "مجموعه نقاطی از فضا که مجموع فاصله‌های هر نقطه  آن از دو نقطه ثابت در فضا، به یک اندازه باشند، روی محیط یک بیضی قرار  می‌گیرند."
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | مکان هندسی و کاربرد"
+  },
+  {
+    "question_text": "دایره‌ی  $C$ بر  دایره به معادله‌ی ${{x}^{2}}+{{y}^{2}}-4x+2y=4$  مماس خارج است. هر  خط قائم بر دایره‌ی $C$ از  نقطه‌ی $(8,7)$ می‌گذرد. شعاع دایره‌ی  $C$ کدام  است؟",
+    "options": [
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "نکته: تمام قائم‌های بر دایره از مرکز آن دایره  می‌گذرد.نکته: شرط آنکه دو دایره‌ی $C$ و  $C'$   مماس خارج باشند آن است که: $O{O}'=R+{R}'$ابتدا  از روی معادلۀ دایرۀ داده شده، مرکز و شعاع را می‌یابیم:   ${C}':{{x}^{2}}+{{y}^{2}}-4x+2y-4=0\\Rightarrow \\left\\{  \\begin{array}{ll}O'=(2,-1) \\\\ {R}'=\\frac{1}{2}\\sqrt{16+4+16}=3 \\\\  \\end{array} \\right.$ مرکز دایره‌ی $C$ نیز  نقطه‌ی $O=(8,7)$  است. برای دو  دایرۀ مماس خارج داریم: $\\left.  \\begin{array}{ll}  O{O}'=\\sqrt{{{(8-2)}^{2}}+{{(7+1)}^{2}}}=\\sqrt{36+64}=10 \\\\  R+{R}'=R+3 \\\\  \\end{array} \\right\\}$  ‌$\\Rightarrow  \\begin{matrix}\\text{مماس خارجند}&\\!\\!\\!  C^{'}\\!\\!\\!&\\!\\!\\!\\!\\text{و}&\\!\\!\\!\\!{C}\\end{matrix}$  ‌$:  O{O}'=R+{R}'$$\\Rightarrow  10=R+3\\Rightarrow R=7$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "دایره‌ی  $C$ بر  دایره به معادله‌ی ${{x}^{2}}+{{y}^{2}}-4x+2y=4$  مماس خارج است. هر  خط قائم بر دایره‌ی $C$ از  نقطه‌ی $(8,7)$ می‌گذرد. شعاع دایره‌ی  $C$ کدام  است؟",
+    "options": [
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "فاصله  نزدیکترین نقاط دایره به معادله‌ی $x^{2}+y^{2}-2x+4y=4$  از خط به معادله‌ی $3x+4y=15$  ، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "ابتدا مرکز و شعاع دایره را یافته و سپس فاصلۀ مرکز  دایره از خط موردنظر را می‌یابیم:‌$x^{2}+y^{2}-2x+4y=4\\Rightarrow (x-1)^{2}+(y+2)^{2}=9\\\\\\Rightarrow  \\left\\{\\begin{matrix} O(1,-2)\\\\ R=3\\end{matrix}\\right.\\Rightarrow  OH=|\\dfrac{3(1)+4(-2)-15}{\\sqrt{9+16}}|=4\\\\ x=OH-R=4-3=1$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "فاصله  نزدیکترین نقاط دایره به معادله‌ی $x^{2}+y^{2}-2x+4y=4$  از خط به معادله‌ی $3x+4y=15$  ، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{2}$"
+      },
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{2}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "سهمی با  کانون $F(1,1)$ و خط هادی به معادله  $x=3$ محور $y$ها را  در دو نقطه $A$ و $B$ قطع  می‌کند، فاصله $AB$ چقدر  است؟",
+    "options": [
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$4\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "با توجه به آنکه خط هادی سهمی، خطی  قائم است پس سهمی افقی است و چون کانون سمت چپ خط هادی قرار دارد پس دهانه آن رو به  چپ است. داریم: $\\begin{matrix}  \\text{خط هادی} \\\\\\end{matrix}(\\Delta ):x=3\\,,\\,\\begin{matrix}  \\text{کانون} \\\\\\end{matrix}:F(1,1)$ ‌فاصلۀ کانون تا خط  هادی ‌$=2a=3-1\\Rightarrow a=1$ ‌رأس سهمی  ‌$:A(\\frac{{{x}_{F}}+{{x}_{\\Delta }}}{2},{{y}_{F}})=(2,1)$ $\\Rightarrow  \\begin{matrix}\\text{معادله سهمی افقی}\\end{matrix}: (y-1)^{2}=4\\times  (-1)(x-2)\\Rightarrow (y-1)^{2}=-4(x-2)$ $x=0\\Rightarrow  y=1\\pm 2\\sqrt{2}\\Rightarrow\\;\\;\\;\\; A\\left|^{0}_{1+2\\sqrt{2}}\\right.  \\;\\;\\;,\\;\\; B\\left|^{0}_{1-2\\sqrt{2}}\\right. \\Rightarrow  AB=4\\sqrt{2}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "سهمی با  کانون $F(1,1)$ و خط هادی به معادله  $x=3$ محور $y$ها را  در دو نقطه $A$ و $B$ قطع  می‌کند، فاصله $AB$ چقدر  است؟",
+    "options": [
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$4\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "کانون‌های  یک بیضی نقاطی با طول $x=3$ و $x=-3$ روی محور $x$ها هستند. اگر  خروج از مرکز بیضی $\\dfrac{1}{3}$  باشد، طول قطر کوچک این بیضی کدام است؟",
+    "options": [
+      {
+        "option_text": "$15\\sqrt{2}$"
+      },
+      {
+        "option_text": "$12\\sqrt{2}$"
+      },
+      {
+        "option_text": "$8\\sqrt{2}$"
+      },
+      {
+        "option_text": "$6\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "$FF^{\\prime} =  2C\\rightarrow \\Delta x= 2C\\rightarrow 3-(-3) = 2C\\rightarrow C=3 \\\\  e=\\dfrac{1}{3}\\rightarrow \\dfrac{c}{a} = \\dfrac{1}{3} \\rightarrow  \\dfrac{3}{a} = \\dfrac{1}{3} \\rightarrow a = 9 \\\\ a^2 = b^2 + c^2  \\rightarrow 9^2 = b^2 + 3^2 \\rightarrow b^2 = 81-9 = 72 \\rightarrow  b = 6\\sqrt{2} \\rightarrow \\begin{matrix}\\text{طول قطر  کوچک}\\end{matrix} 2b = 2 \\times 6\\sqrt{2} = 12\\sqrt{2}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | خروج از مرکز بیضی"
+  },
+  {
+    "question_text": "کانون‌های  یک بیضی نقاطی با طول $x=3$ و $x=-3$ روی محور $x$ها هستند. اگر  خروج از مرکز بیضی $\\dfrac{1}{3}$  باشد، طول قطر کوچک این بیضی کدام است؟",
+    "options": [
+      {
+        "option_text": "$15\\sqrt{2}$"
+      },
+      {
+        "option_text": "$12\\sqrt{2}$"
+      },
+      {
+        "option_text": "$8\\sqrt{2}$"
+      },
+      {
+        "option_text": "$6\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | بیضی | خروج از مرکز بیضی"
+  },
+  {
+    "question_text": "خطی به  معادلۀ $y+2x=0$، عمودمنصف خط‌المرکزین دو  دایره است که شعاع یکی نصف شعاع دیگری است. اگر معادلۀ دایرۀ بزرگ‌تر به‌صورت $x^{2}+y^{2}+6x-2y=a$ و خط مفروض بر  دایرۀ کوچک‌تر مماس باشد، مجموع طول نقاط برخورد دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{\\sqrt{15}}{2}$"
+      },
+      {
+        "option_text": "$-\\dfrac{\\sqrt{15}}{2}$"
+      },
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$-1$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "$x^{2}+y^{2}+6x-2y-a=0\\to\\begin{matrix}\\text{مختصات مرکز دایرۀ  بزرگ‌تر}\\end{matrix}O_{1}(-3,1)\\\\\\begin{matrix}\\text{شعاع  دایرۀ  کوچک‌تر}\\end{matrix}=r_{2}=\\dfrac{|2(-3)+1|}{\\sqrt{2^{2}+12}}=\\dfrac{5}{\\sqrt{5}}=\\sqrt{5}$     $\\left.\\begin{array}{ll}\\begin{matrix}\\text{شعاع  دایرۀ  بزرگ‌تر}\\end{matrix}r_{1}=2r_{2}=2\\sqrt{5}\\\\\\begin{matrix}\\text{با  استفاده از معادله دایرۀ  بزرگ‌تر}\\end{matrix}r_{1}=\\dfrac{1}{2}\\sqrt{6^{2}+(-2)^{2}-4(-a)}=\\dfrac{1}{2}\\sqrt{40+4a}=\\sqrt{10+a}\\end{array}\\right\\}\\\\\\to\\sqrt{10+a}=2\\sqrt{5}\\to10+a=20\\to  a=10$‌نکته:  برای تعیین قرینۀ نقطۀ $A(x_{1},y_{1})$ نسبت به خطی به  معادلۀ $ax+by+c=0$ اول از رابطۀ $k=\\frac{ax_{1}+by_{1}+c}{a^{2}+b^{2}}$  مقدار $k$ را  یافته و سپس خواهیم داشت: $A'(x_{1}-2ak,Y_{1}-2bk)$‌با استفاده  از نکتۀ فوق برای تعیین مختصات مرکز دایرۀ کوچک‌تر $(O_{2})$، قرینۀ $O_{1}$  را نسبت به خط $2x+y=0$ به دست می‌آوریم:  ‌$k=\\frac{2(-3)+|x|}{2^{2}+1^{2}}=-1\\\\\\begin{matrix}\\text{مختصات مرکز  دایرۀ کوچک‌تر}\\end{matrix}O_{2}(-3-2\\times2\\times  (-1)\\begin{matrix}\\text{و}\\end{matrix}1-2\\times1\\times(-1))\\to  O_{2}(1,3)$$\\left.\\begin{array}{ll}\\begin{matrix}\\text{معادله دایرۀ  بزرگ‌تر}\\end{matrix}\\!\\!:x^{2}+y^{2}+6x-2y-10=0\\\\\\begin{matrix}\\text{معادله  دایرۀ  کوچک‌تر}\\end{matrix}\\!\\!:(x-1)^{2}+(y-3)^{2}=5\\end{array}\\right\\}\\xrightarrow[\\begin{matrix}\\text{وتر  مشترک}\\end{matrix}]{\\begin{matrix}\\text{معادله}\\end{matrix}}\\Delta\\!\\!:8x+4y-15=0\\\\\\xrightarrow{\\div4}2x+y-\\dfrac{15}{4}=0\\to  y=-2x+\\dfrac{15}{4}\\\\(x-1)^{2}+(-2x+\\dfrac{15}{4}-3)^{2}=5\\to(x-1)^{2}+(-2x+\\dfrac{3}{4})^{2}=5\\\\\\to  x^{2}-2x+1+4x^{2}-3x+\\dfrac{9}{16}=5\\\\\\to5x^{2}-5x-\\dfrac{55}{16}=0\\to  x^{2}-x-\\dfrac{11}{16}=0\\\\\\to\\begin{matrix}\\text{مجموع طول نقاط  برخورد دو دایره}\\end{matrix}=x_{1}+x_{2}=-\\dfrac{-1}{1}=1$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "خطی به  معادلۀ $y+2x=0$، عمودمنصف خط‌المرکزین دو  دایره است که شعاع یکی نصف شعاع دیگری است. اگر معادلۀ دایرۀ بزرگ‌تر به‌صورت $x^{2}+y^{2}+6x-2y=a$ و خط مفروض بر  دایرۀ کوچک‌تر مماس باشد، مجموع طول نقاط برخورد دو دایره کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{\\sqrt{15}}{2}$"
+      },
+      {
+        "option_text": "$-\\dfrac{\\sqrt{15}}{2}$"
+      },
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$-1$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "در سهمی  $2y^{2}-2ay+8x+b=0$ نقطۀ ($-1 , 1$) رأس سهمی است. مقدار  $\\dfrac{a}{b}$  چقدر است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{3}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "$2y^{2}-2ay+8x+b=0$$\\to  2y^{2}-2ay=-8x-b \\xrightarrow {\\div 2}$$y^{2}-ay=-4x-\\frac{b}{2}$$\\to (y-  \\frac{a}{2})^{2}-\\frac{a^{2}}{4}=-4x-\\frac{b}{2} \\to (y-  \\frac{a}{2})^{2}=-4x-\\frac{b}{2}+\\frac{a^{2}}{4} \\to  (y-\\frac{a}{2})^{2}=-4(x+\\frac{b}{8}-\\frac{a^{2}}{16})$$\\begin{matrix}{\\text{مختصات  رأس}}\\end{matrix}S=(\\frac{a^{2}}{16}-\\frac{b}{8} , \\frac{a}{2})$$\\left\\{\\begin  {array}{ll} \\frac{a}{2}=1 \\to a=2 \\\\ \\frac{a^{2}}{16}-\\frac{b}{8}=-1  \\xrightarrow {a=2} \\frac{4}{16}-\\frac{b}{8}=-1 \\to  -\\frac{b}{8}=-\\frac{5}{4} \\to b=10 \\end{array} \\right.$$\\dfrac{a}{b}=\\frac{2}{10}=\\frac{1}{5}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "در سهمی  $2y^{2}-2ay+8x+b=0$ نقطۀ ($-1 , 1$) رأس سهمی است. مقدار  $\\dfrac{a}{b}$  چقدر است؟",
+    "options": [
+      {
+        "option_text": "$\\dfrac{1}{3}$"
+      },
+      {
+        "option_text": "$\\dfrac{1}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{1}{3}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $b$  دو دایره به معادلات $x^{2}+y^{2}+2x-2y=0$  و $x^{2}+y^{2}-4y+b=0$  مماس داخل‌اند؟",
+    "options": [
+      {
+        "option_text": "$-5$"
+      },
+      {
+        "option_text": "$-4$"
+      },
+      {
+        "option_text": "$-3$"
+      },
+      {
+        "option_text": "$-2$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "$C:  x^{2}+y^{2}-4y+b=0\\to  \\begin{cases}O=(0,2)\\\\R^{2}=\\frac{a^{2}+b^{2}-4c}{4}=\\frac{0+16-4b}{4}=4-b\\Rightarrow  R=\\sqrt{4-b}\\end{cases}$$C':x^{2}+y^{2}+2x-2y=0\\Rightarrow  \\begin{cases}O'\\left|_{1}^{-1}\\right.\\\\R'^{2}=\\frac{a^{2}+b^{2}-4c}{4}=\\frac{4+4-0}{4}=2\\Rightarrow  R'=\\sqrt{2}\\end{cases}$ شرط آنکه دو دایرۀ مماس داخل باشند آن است که $OO'=|R-R'|$، پس: ‌$OO'=\\sqrt{2}=|R-R'|=|\\sqrt{-b+4}-\\sqrt{2}|$  ‌$\\Rightarrow  \\left\\{ \\begin{array}{ll}  & b=4\\begin{matrix}  \\text{غ‌ق‌ق}  \\end{matrix} \\\\  & b=-4\\begin{matrix}  \\text{ق‌ق}  ‌\\end{matrix} \\\\  \\end{array} \\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $b$  دو دایره به معادلات $x^{2}+y^{2}+2x-2y=0$  و $x^{2}+y^{2}-4y+b=0$  مماس داخل‌اند؟",
+    "options": [
+      {
+        "option_text": "$-5$"
+      },
+      {
+        "option_text": "$-4$"
+      },
+      {
+        "option_text": "$-3$"
+      },
+      {
+        "option_text": "$-2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "خط $x=-\\frac{5}{4}$  خط هادی سهمی به معادلۀ $3y^{2}-3x-ay=0$ است. اختلاف مقادیر $a$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$12$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$4$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "‌ $3y^2 - 3x -ay =  0 \\to 3y^2 - ay = 3x \\xrightarrow {\\div 3} y^2 - \\dfrac{a}{3}y = x  \\\\ \\to (y-\\dfrac{a}{6})^2 - \\dfrac{a^2}{36} = x \\to  (y-\\dfrac{a}{6})^2 = x+ \\dfrac{a^2}{36}$ ‌سهمی افقی و دهانۀ آن رو به راست بوده و با توجه به ضریب $x$ فاصلۀ  کانونی برابر با $\\dfrac{1}{4}$  است.                       $x  _{\\begin{matrix}\\text{خط هادی}\\end{matrix}} = x_S -  \\dfrac{1}{4} \\\\ -\\dfrac{5}{4} = -\\dfrac{a^2}{36}- \\dfrac{1}{4}  \\to a^2 = 36 \\to \\left\\{\\begin{array}{ll} a_1=6 \\\\ a_2=-6  \\end{array} \\right. \\\\ \\Delta a= |a_2-a_1| = |-6-6| = 12$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "خط $x=-\\frac{5}{4}$  خط هادی سهمی به معادلۀ $3y^{2}-3x-ay=0$ است. اختلاف مقادیر $a$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$12$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$4$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نمودار  سهمی با مختصات رأس $(2,-2)$، از نقطه $(-1,1)$ می‌گذرد. طول وتری که  از کانون بر محور سهمی عمود رسم می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "‌فرض کنیم سهمی افقی و دهانه آن رو به چپ است.  داریم:  ‌$\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,(y-(-2))^{2}=-4a(x-2)$ ‌‌‌نقطه $A(-1,1)$ روی  سهمی قرار دارد پس مختصات آن در معادله سهمی صدق می‌کند:  ‌$\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,(1+2)^{2}=-4a(-1-2)\\to  a=\\frac{3}{4}$‌‌$MN=4a=4\\times\\frac{3}{4}=3$ ‌وتر  کانونی سهمی",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نمودار  سهمی با مختصات رأس $(2,-2)$، از نقطه $(-1,1)$ می‌گذرد. طول وتری که  از کانون بر محور سهمی عمود رسم می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نمودار  سهمی با مختصات رأس $(-1,-1)$ از نقطۀ $(1,1)$ می‌گذرد. اگر از دو سر  وتری که از کانون بر محور سهمی عمود است، دو خط موازی با محور سهمی بر خط هادی عمود  کنیم، یک مستطیل رسم می‌شود. قطر مستطیل حاصل کدام است؟",
+    "options": [
+      {
+        "option_text": "$5\\sqrt 2$"
+      },
+      {
+        "option_text": "$\\sqrt 5$"
+      },
+      {
+        "option_text": "$3 \\sqrt 2$"
+      },
+      {
+        "option_text": "$\\sqrt 3$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "فرض کنیم سهمی افقی و دهانۀ آن رو به راست است.  داریم:  ‌$\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;(y+1)^2=4a(x+1)$ ‌نقطۀ $A(1,1)$ روی سهمی  قرار دارد، پس مختصات آن در معادلۀ سهمی صدق می‌کند: ‌$\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;(1+1)^2=4a(1+1)\\to a=\\frac{1}{2}$ ‌$\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;\\;\\; d=\\sqrt{2^2+1^2}=\\sqrt{5}$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "نمودار  سهمی با مختصات رأس $(-1,-1)$ از نقطۀ $(1,1)$ می‌گذرد. اگر از دو سر  وتری که از کانون بر محور سهمی عمود است، دو خط موازی با محور سهمی بر خط هادی عمود  کنیم، یک مستطیل رسم می‌شود. قطر مستطیل حاصل کدام است؟",
+    "options": [
+      {
+        "option_text": "$5\\sqrt 2$"
+      },
+      {
+        "option_text": "$\\sqrt 5$"
+      },
+      {
+        "option_text": "$3 \\sqrt 2$"
+      },
+      {
+        "option_text": "$\\sqrt 3$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "دو دایره  با شعاع یکسان در نقاط $(1 , 4)$ و $(3 , 2)$ همدیگر را قطع می‌کنند.  اگر فاصله بین مراکز دو دایره دو برابر فاصله بین نقاط تقاطع باشد، فاصله بین نقاط  برخورد یکی از دایره‌ها با محور $x$ها کدام  است؟",
+    "options": [
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$4\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "می‌دانیم خط‌المرکزین $(d)$ دو دایره  متقاطع $(C^{'} ,C)$ عمودمنصف وتر  مشترک $(AB)$ آنهاست. بنابراین  $H$ وسط  پاره‌خط $AB$ است  و داریم:  ‌$H=(\\frac{x_{A}+x_{B}}{2}\\;  ,\\;\\frac{y_{A}+y_{B}}{2})=(\\frac{1+3}{2}\\; ,\\;\\frac{4+2}{2})=(2 , 3)$‌در ادامه  معادله خط‌المرکزین ($d$) را به دست  می‌آوریم:  ‌$m_{AB}=\\frac{\\Delta y}{\\Delta x}=\\frac{2-4}{3-1}=-1\\rightarrow  m_{d}=-\\frac{1}{m_{AB}}=-\\frac{1}{-1}=1\\\\y-3=1(x-2)\\rightarrow  d\\begin{matrix}\\text{معادله  خط}\\end{matrix}:y=x+1\\rightarrow\\begin{matrix}\\text{مختصات  مرکز}\\end{matrix}O=(\\alpha\\; ,\\;\\alpha  +1)\\\\AB=\\sqrt{(3-1)^{2}+(4-4)^{2}}=\\sqrt{4+4}=2\\sqrt{2}\\rightarrow  AH=BH=\\dfrac{AB}{2}=\\dfrac{2\\sqrt{2}}{2}=\\sqrt{2}\\\\\\begin{matrix}\\text{فاصله  بین مراکز دو دایره دو برابر فاصله بین نقاط تقاطع  است}\\end{matrix}\\rightarrow  OO^{'}=2AB=2(2\\sqrt{2})=4\\sqrt{2}\\\\\\rightarrow  OH=O^{'}H=\\dfrac{1}{2}OO^{'}=\\dfrac{1}{2}(2AB)=AB=2\\sqrt{2}$ $\\overset{\\triangle}{AOH}:OA^{2}=AH^{2}+OH^{2}=(\\sqrt{2})^{2}+(2\\sqrt{2})^{2}=2+8=10\\\\\\rightarrow(\\alpha  -1)^{2}+(\\alpha +1-4)^{2}=10\\rightarrow \\alpha^{2}-2\\alpha  +1+\\alpha^{2}-6\\alpha +9=10\\\\\\rightarrow 2\\alpha  ^{2}-8\\alpha=0\\rightarrow\\alpha^{2}-4\\alpha=0\\rightarrow\\alpha(\\alpha  -4)=0\\rightarrow  \\alpha=0\\begin{matrix}\\text{یا}\\end{matrix}\\alpha=4\\\\\\rightarrow\\left\\{\\begin{array}{ll}O(0  ,1)\\\\O^{'}(4 ,5)\\end{array}\\right.‌$  دایره $(C)$ محور $x$ها را قطع  می‌کند. ابتدا معادله دایره $(C)$ را تشکیل می‌دهیم،  سپس در معادله دایره $y=0$ را جای‌گذاری می‌کنیم  تا طول نقاط برخورد دایره با محور $x$ها به دست  آید.  ‌$(C)\\begin{matrix}\\text{معادله  دایره}\\end{matrix}:\\;x^{2}+(y-1)^{2}=10\\xrightarrow{y=0}x^{2}+1=10\\rightarrow  x^{2}=9\\rightarrow x=\\pm  3\\\\\\begin{matrix}\\text{ها}\\end{matrix}\\!x\\begin{matrix}\\text{فاصله  بین نقاط برخورد دایره با محور }\\end{matrix}=x_{2}-x_{1}=3-(-3)=6$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "دو دایره  با شعاع یکسان در نقاط $(1 , 4)$ و $(3 , 2)$ همدیگر را قطع می‌کنند.  اگر فاصله بین مراکز دو دایره دو برابر فاصله بین نقاط تقاطع باشد، فاصله بین نقاط  برخورد یکی از دایره‌ها با محور $x$ها کدام  است؟",
+    "options": [
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$4\\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی دو دایره"
+  },
+  {
+    "question_text": "بیضی با  معادلۀ $25{{(x-1)}^{2}}+16{{(y+1)}^{2}}=100$ با کانون‌های $F$ و  $F'$  مفروض است. اگر طول پاره‌خط $OF$  کوتاه‌تر از $OF'$  باشد، معادلۀ سهمی با رأس $F$ و  کانون $F'$،  کدام است؟ (راهنمایی: معادلۀ بیضی قائم به مرکز با مختصات $(\\alpha,\\beta)$، طول قطر بزرگ $2a$ و طول قطر  کوچک $2b$، به‌صورت  $\\dfrac{(x-\\alpha)^{2}}{b^{2}} + \\frac{(y-\\beta)^{2}}{a^{2}}=1$ می‌باشد.)",
+    "options": [
+      {
+        "option_text": "${{(x-1)}^{2}}=12y+6$"
+      },
+      {
+        "option_text": "${{(y+1)}^{2}}=12x+6$"
+      },
+      {
+        "option_text": "${{(x-1)}^{2}}=-12y+6$"
+      },
+      {
+        "option_text": "${{(y+1)}^{2}}=-12x+6$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "معادلۀ بیضی داده شده را براساس راهنمایی صورت سؤال،  استاندارد می‌کنیم: $25{{(x-1)}^{2}}+16{{(y+1)}^{2}}=100$  ‌$\\xrightarrow{\\div  100}\\frac{{{(x-1)}^{2}}}{4}+\\frac{{{(y+1)}^{2}}}{\\frac{25}{4}}=1$  ‌$\\to  b=2\\,,\\,a=\\frac{5}{2}$ ‌$\\begin{matrix}\\text{در  بیضی}\\end{matrix}:{{a}^{2}}={{b}^{2}}+{{c}^{2}}$  ‌$\\to  {\\frac{25}{4}}=4+{{c}^{2}}$$\\to  {{c}^{2}}=\\frac{9}{4}\\to {{c}}=\\frac{3}{2}$  ‌$\\to  \\begin{matrix}\\text{فاصلۀ کانونی بیضی}\\end{matrix}:FF'=2c=2 \\times  \\frac{3}{2}=3$ مختصات مرکز  بیضی $‌:O=(x_{0},y_{0})=(1,-1)‌$ ‌مختصات کانون‌های  بیضی  ‌$:({{x}_{0}},{{y}_{0}}\\pm c)=\\left\\{ \\begin{array}{ll} &  (1,-1+\\frac{3}{2})=(1,\\frac{1}{2}) \\\\ &  (1,-1-\\frac{3}{2})=(1,\\frac{-5}{2}) \\\\ \\end{array} \\right.$ $\\xrightarrow{OF < OF'}\\left\\{ \\begin{array}{ll} &  F=(1,\\frac{1}{2}):\\begin{matrix} \\text{رأس سهمی} \\\\ \\end{matrix}  \\\\ & F'=(1,\\frac{-5}{2}):\\begin{matrix} \\text{کانون سهمی} \\\\  \\end{matrix} \\\\ \\end{array} \\right.$ ‌سهمی قائم و دهانۀ آن رو به پایین بوده و فاصلۀ کانونی آن  برابر $FF'=3$ است. بنابراین  معادلۀ سهمی قائم به‌صورت زیر می‌باشد:   ${{(x-1)}^{2}}=-4\\times 3(y-\\frac{1}{2})$  ‌$\\to {{(x-1)}^{2}}$  ‌$=-12y+6$ ‌‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "بیضی با  معادلۀ $25{{(x-1)}^{2}}+16{{(y+1)}^{2}}=100$ با کانون‌های $F$ و  $F'$  مفروض است. اگر طول پاره‌خط $OF$  کوتاه‌تر از $OF'$  باشد، معادلۀ سهمی با رأس $F$ و  کانون $F'$،  کدام است؟ (راهنمایی: معادلۀ بیضی قائم به مرکز با مختصات $(\\alpha,\\beta)$، طول قطر بزرگ $2a$ و طول قطر  کوچک $2b$، به‌صورت  $\\dfrac{(x-\\alpha)^{2}}{b^{2}} + \\frac{(y-\\beta)^{2}}{a^{2}}=1$ می‌باشد.)",
+    "options": [
+      {
+        "option_text": "${{(x-1)}^{2}}=12y+6$"
+      },
+      {
+        "option_text": "${{(y+1)}^{2}}=12x+6$"
+      },
+      {
+        "option_text": "${{(x-1)}^{2}}=-12y+6$"
+      },
+      {
+        "option_text": "${{(y+1)}^{2}}=-12x+6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "سهمی  $(x-1)^{2}-12y=6$ با رأس $F$ و  کانون $F'$  مفروض است. یک بیضی با کانون‌های $F$و $F'$  می‌سازیم. فاصلۀ مرکز بیضی از مبدأ مختصات، کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\sqrt {2}$"
+      },
+      {
+        "option_text": "$\\sqrt {3}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "معادلۀ سهمی را به‌صورت متعارف تبدیل می‌کنیم:‌$(x-1)^{2}-12y=6  \\to (x-1)^2=12y+6 \\to (x-1)^{2}=12(y+\\frac {1}{2})$ ‌   $4a=12 \\to a=3  \\;\\; , \\;\\; \\begin {matrix}\\text{رأس سهمی}\\end {matrix}:F(1,  -\\frac{1}{2})$ ‌سهمی قائم است و دهانه آن رو به بالا باز می‌شود و مختصات کانون آن برابر است  با: $F'(1,-\\frac{1}{2}+3)=(1,\\frac{5}{2})$ ‌‌$\\begin  {matrix}\\text{مختصات مرکز بیضی}\\end {matrix}:  O'=\\frac{F+F'}{2}=(\\frac{1+1}{2},\\frac{-\\tfrac{1}{2}+\\tfrac{5}{2}}{2})=(1,1)$ $\\begin  {matrix}\\text{فاصله مرکز بیضی از مبدأ مختصات}\\end {matrix}=\\sqrt  {(1-0)^2+(1-0)^2}=\\sqrt{2}$‌   ‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "سهمی  $(x-1)^{2}-12y=6$ با رأس $F$ و  کانون $F'$  مفروض است. یک بیضی با کانون‌های $F$و $F'$  می‌سازیم. فاصلۀ مرکز بیضی از مبدأ مختصات، کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$\\sqrt {2}$"
+      },
+      {
+        "option_text": "$\\sqrt {3}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "در سهمی  به معادلۀ $y^{2}+ay+bx-9=0$، معادلۀ خط هادی، $x=\\frac{13}{4}$  و محور تقارن آن $y=1$ است. مقادیر قابل قبول  $b$، کدام‌اند؟",
+    "options": [
+      {
+        "option_text": "$5,8$"
+      },
+      {
+        "option_text": "$5,7$"
+      },
+      {
+        "option_text": "$4,8$"
+      },
+      {
+        "option_text": "$3,7$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "ابتدا سهمی را به فرم استاندارد تبدیل می‌کنیم: ‌${{y}^{2}}+ay+bx-9=0$ $\\Rightarrow{{y}^{2}}+ay+\\frac{{{a}^{2}}}{4}$  ‌$=-bx+9+\\frac{{{a}^{2}}}{4}$  ‌$\\Rightarrow  {{(y+\\frac{a}{2})}^{2}}$  ‌$=-b(x-\\frac{9}{b}-\\frac{{{a}^{2}}}{4b})$  ‌$=-b(x-\\frac{36+{{a}^{2}}}{4b})$ سهمی افقی و رأس سهمی برابر $S(\\frac{{{a}^{2}}+36}{4b}\\,,\\,-\\frac{a}{2})$ است پس $y=-\\frac{a}{2}$  محور تقارن سهمی است که طبق فرض داریم: ‌‌‌$-\\dfrac{a}{2}=1\\Rightarrow a=-2$ ‌پس رأس سهمی به‌صورت $S(\\frac{10}{b}\\,,\\,1)$ و معادلۀ خط  هادی به‌صورت زیر می‌شود: ‌خط  هادی  ‌$:x=\\frac{10}{b}+\\frac{b}{4}\\xrightarrow{\\text{طبق  فرض}}\\frac{10}{b}+\\frac{b}{4}=\\frac{13}{4}$  ‌$\\Rightarrow \\frac{40+{{b}^{2}}}{4b}=\\frac{13}{4}$  ‌$\\Rightarrow {{b}^{2}}+40=13b$  ‌$\\Rightarrow (b-8)(b-5)=0$  ‌$\\Rightarrow \\left\\{ \\begin{matrix}  b=8 \\\\  b=5 \\\\  \\end{matrix} \\right.$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "در سهمی  به معادلۀ $y^{2}+ay+bx-9=0$، معادلۀ خط هادی، $x=\\frac{13}{4}$  و محور تقارن آن $y=1$ است. مقادیر قابل قبول  $b$، کدام‌اند؟",
+    "options": [
+      {
+        "option_text": "$5,8$"
+      },
+      {
+        "option_text": "$5,7$"
+      },
+      {
+        "option_text": "$4,8$"
+      },
+      {
+        "option_text": "$3,7$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "به یک  بیضی به قطرهای $AA'=14$ و $BB'=4\\sqrt{6}$  و کانون $F$ نزدیک  به نقطۀ $A$، مفروض است.  خط عمود بر قطر $AA'$  از نقطۀ $F$،  دایره به قطر $AA'$  را در نقطۀ $M$ قطع  می‌کند. اندازۀ پاره‌خط $AM$، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$2\\sqrt{7}$"
+      },
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "hard",
+    "solution": "شکل زیر را در‌نظر بگیرید: ‌ پارامتری بیضی به صورت زیر خواهند بود:‌$\\left\\{  \\begin{array}{ll} & \\begin{matrix} \\text{طول قطر کوچک}  \\\\\\end{matrix}:B{B}'=2b=4\\sqrt{6}\\Rightarrow b=2\\sqrt{6} \\\\  & \\begin{matrix} \\text{طول قطر بزرگ}  \\\\\\end{matrix}:A{A}'=2a=14\\Rightarrow a=7 \\\\ \\end{array} \\right.$ ‌$\\begin{matrix}\\text{می‌دانیم}\\end{matrix}:{{a}^{2}}={{b}^{2}}+{{c}^{2}}$$\\Rightarrow {{a}^{2}}-{{b}^{2}}={{c}^{2}}$  ‌$\\Rightarrow 49-24={{c}^{2}}\\Rightarrow c=5$ از طرفی با توجه به شکل، $OM$  برابر شعاع دایره و نصف قطر بزرگ $(\\frac{AA'}{2})$  است.‌بنابر قضیه فیثاغورس در مثلث $MOF$  داریم: ‌${{7}^{2}}={{5}^{2}}+M{{F}^{2}}$  ‌$\\Rightarrow M{{F}^{2}}=24$ حال دوباره با نوشتن قضیه فیثاغورس در مثلث $AMF$  داریم: ‌$M{{F}^{2}}+A{{F}^{2}}=A{{M}^{2}}$  ‌$\\Rightarrow 24+(7-5)^{2}=A{{M}^{2}}$  ‌$\\Rightarrow AM=\\sqrt{28}=2\\sqrt{7}$‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "به یک  بیضی به قطرهای $AA'=14$ و $BB'=4\\sqrt{6}$  و کانون $F$ نزدیک  به نقطۀ $A$، مفروض است.  خط عمود بر قطر $AA'$  از نقطۀ $F$،  دایره به قطر $AA'$  را در نقطۀ $M$ قطع  می‌کند. اندازۀ پاره‌خط $AM$، کدام  است؟",
+    "options": [
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$2\\sqrt{7}$"
+      },
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سوال‌های ترکیبی مقاطع مخروطی"
+  },
+  {
+    "question_text": "اگر خط به  معادلۀ $x=-1$ خط هادی سهمی $2{{y}^{2}}-4y=ax$ باشد، فاصلۀ  نقطۀ $A(3,4)$ از کانون سهمی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$3\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "معادلۀ سهمی را به فرم متعارف تبدیل می‌کنیم: ‌$2{{y}^{2}}-4y=ax$  ‌$\\Rightarrow  {{(y-1)}^{2}}=\\frac{a}{2}(x+\\frac{2}{a})$ ‌در این سهمی افقی (چه دهانه به راست یا به چپ باشد)، معادلۀ خط هادی و مختصات  کانون و رأس به‌صورت زیر هستند: ‌$\\left\\{  \\begin{array}{ll}  & \\begin{matrix}  \\text{رأس} \\\\  \\end{matrix}:S(-\\frac{2}{a},1) \\\\  & \\begin{matrix}  \\text{خط هادی} \\\\  \\end{matrix}:x=\\frac{-2}{a}-\\frac{a}{8} \\\\  & \\begin{matrix}  \\text{کانون} \\\\  \\end{matrix}:F(\\frac{-2}{a}+\\frac{a}{8},1) \\\\  \\end{array} \\right.$ $$  ‌   $\\xrightarrow{  \\text{طبق فرض}}\\begin{matrix} \\text{خط هادی}  \\end{matrix}x=-1=\\frac{-2}{a}-\\frac{a}{8}\\Rightarrow{{a}^{2}}+16=8a\\Rightarrow  {{(a-4)}^{2}}=0\\Rightarrow a=4$‌‌پس مختصات  کانون برابر می‌شود با: $F=(  \\frac{-1}{2}+\\frac{1}{2},1)=(0,1)$‌‌فاصلۀ نقطۀ  $A(3,4)$ از کانون $F(0,1)$ برابر است با: $AF=\\sqrt{{{(3-0)}^{2}}+{{(4-1)}^{2}}}=3\\sqrt{2}$‌",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "اگر خط به  معادلۀ $x=-1$ خط هادی سهمی $2{{y}^{2}}-4y=ax$ باشد، فاصلۀ  نقطۀ $A(3,4)$ از کانون سهمی کدام  است؟",
+    "options": [
+      {
+        "option_text": "$3\\sqrt{2}$"
+      },
+      {
+        "option_text": "$2\\sqrt{6}$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $b$  ، دو دایره به معادلات ${{x}^{2}}+{{y}^{2}}+4\\sqrt{6}y+b=\\circ$ و ${{x}^{2}}+{{y}^{2}}-2x=3$ مماس خارج‌اند؟",
+    "options": [
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$13$"
+      },
+      {
+        "option_text": "$15$"
+      },
+      {
+        "option_text": "$20$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "مرکز و شعاع دایره‌ها را از روی معادلۀ آن‌ها  می‌یابیم:  $\\begin{array}{ll} &  {{C}_{1}}:{{(x-1)}^{2}}+{{y}^{2}}=4\\Rightarrow  {{R}_{1}}=2\\,\\,\\,,\\,\\,\\,{{O}_{1}}(1,0) \\\\ &  {{C}_{2}}:{{x}^{2}}+{{(y+2\\sqrt{6})}^{2}}=24-b\\Rightarrow  {{R}_{2}}=\\sqrt{24-b}\\,\\,\\,,\\,\\,\\,{{O}_{2}}(0,-2\\sqrt{6}) \\\\  \\end{array}$ برای آنکه دو دایره مماس خارج باشند، باید: ${{O}_{1}}{{O}_{2}}={{R}_{1}}+{{R}_{2}}\\Rightarrow  \\sqrt{{{1}^{2}}+{{(2\\sqrt{6})}^{2}}}=2+\\sqrt{24-b}\\Rightarrow  \\sqrt{24-b}=3\\Rightarrow b=15$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "به‌ازای  کدام مقدار $b$  ، دو دایره به معادلات ${{x}^{2}}+{{y}^{2}}+4\\sqrt{6}y+b=\\circ$ و ${{x}^{2}}+{{y}^{2}}-2x=3$ مماس خارج‌اند؟",
+    "options": [
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$13$"
+      },
+      {
+        "option_text": "$15$"
+      },
+      {
+        "option_text": "$20$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | دایره | اوضاع نسبی خط و دایره"
+  },
+  {
+    "question_text": "اگر $x=3$ معادلۀ خط هادی سهمی به  معادله $y^2-2y+4x=a$ باشد،  مقدار $a$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "‌ $y^2-2y+4x=a\\Rightarrow y^2-2y=-4x+a\\Rightarrow (y-1)^2-1 = -4x+a  \\\\\\Rightarrow (y-1)^2 = -4x+a+1\\Rightarrow (y-1)^2 =  -4(x-\\dfrac{a+1}{4})$‌سهمی افقی و  دهانۀ آن رو به چپ است.       ${\\begin{matrix}\\text{خط هادی}\\end{matrix}}{x} =  x_s+1\\Rightarrow 3= \\dfrac{a+1}{4}+1 \\\\\\Rightarrow 3=  \\dfrac{a+5}{4}\\Rightarrow a=7$",
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  },
+  {
+    "question_text": "اگر $x=3$ معادلۀ خط هادی سهمی به  معادله $y^2-2y+4x=a$ باشد،  مقدار $a$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      },
+      {
+        "option_text": "$9$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل دوم : مقاطع مخروطی | انواع مقاطع | سهمی | معادله سهمی"
+  }
+]

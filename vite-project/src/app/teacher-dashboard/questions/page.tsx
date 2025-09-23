@@ -30,6 +30,8 @@ interface Question {
   }>;
   correct_option?: number;
   created_at: string;
+  publish_date: string;
+  source: string;
   updated_at: string;
   is_active: boolean;
 }

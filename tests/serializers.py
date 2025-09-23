@@ -533,11 +533,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = [
-            'id', 'public_id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
-            'created_by', 'created_by_name', 'difficulty_level', 'detailed_solution',
-            'is_active', 'correct_option', 'options', 'images'
-        ]
+        # fields = [
+        #     'id', 'public_id', 'question_text', 'folders', 'folders_names', 'created_at', 'updated_at',
+        #     'created_by', 'created_by_name', 'difficulty_level', 'detailed_solution',
+        #     'is_active', 'correct_option', 'options', 'images', 'publish_date', ' source'
+        # ]
+        fields = '__all__'
         read_only_fields = ['created_by', 'created_at', 'updated_at', 'public_id']
 
     def get_folders_names(self, obj):
@@ -560,7 +561,8 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         model = Question
         fields = [
             'question_text', 'folders', 'difficulty_level', 'detailed_solution',
-            'is_active', 'correct_option', 'options', 'images', 'correct_option_index'
+            'is_active', 'correct_option', 'options', 'images', 'correct_option_index',
+            "publish_date", "source"
         ]
         # حل مشکل nested fields برای update
         extra_kwargs = {
