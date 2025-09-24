@@ -26,6 +26,8 @@ const questionSchema = z.object({
   difficulty_level: z.enum(["easy", "medium", "hard"]),
   detailed_solution: z.string().optional(),
   correct_option_index: z.number().optional(),
+  publish_date: z.string().optional(),
+  source: z.string().optional(),
   options: z
     .array(
       z.object({
@@ -128,6 +130,8 @@ export default function EditQuestionPage() {
             question_text: data.question_text,
             difficulty_level: data.difficulty_level,
             detailed_solution: data.detailed_solution,
+            publish_date: data.publish_date,
+            source: data.source,
             correct_option_index: data.correct_option ? Math.max(0, (data.options || []).findIndex((o: ApiOption) => o.id === data.correct_option)) : undefined,
             options: mappedOptions.length > 0 ? mappedOptions : [
               { option_text: "", order: 1 },
@@ -194,6 +198,8 @@ export default function EditQuestionPage() {
         options: filteredOptions,
         folders: selectedFolderIds,
         correct_option_index: data.correct_option_index,
+        ...(data.publish_date && { publish_date: data.publish_date }),
+        ...(data.source && { source: data.source }),
       };
 
       console.log("Sending data to API:", formData);
@@ -261,6 +267,7 @@ export default function EditQuestionPage() {
             <div>
               <Label htmlFor="question_text">متن سوال</Label>
               <Textarea
+                dir="auto"
                 id="question_text"
                 placeholder="متن سوال خود را وارد کنید..."
                 {...register("question_text")}
@@ -341,46 +348,76 @@ export default function EditQuestionPage() {
             <CardTitle>تنظیمات</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="difficulty_level">سطح دشواری</Label>
-              <Select 
-                onValueChange={(value) => setValue("difficulty_level", value as "easy" | "medium" | "hard")}
-                defaultValue={getValues("difficulty_level")}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="انتخاب سطح دشواری" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">ساده</SelectItem>
-                  <SelectItem value="medium">متوسط</SelectItem>
-                  <SelectItem value="hard">دشوار</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {watchedOptions && watchedOptions.length > 0 && (
+            {/* Settings Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="correct_option_index">پاسخ صحیح</Label>
-                <Select onValueChange={(value) => setValue("correct_option_index", parseInt(value))}>
+                <Label htmlFor="difficulty_level">سطح دشواری</Label>
+                <Select 
+                  onValueChange={(value) => setValue("difficulty_level", value as "easy" | "medium" | "hard")}
+                  defaultValue={getValues("difficulty_level")}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="انتخاب پاسخ صحیح" />
+                    <SelectValue placeholder="انتخاب سطح دشواری" />
                   </SelectTrigger>
                   <SelectContent>
-                    {watchedOptions.map((option, index) => (
-                      option.option_text && (
-                        <SelectItem key={index} value={index.toString()}>
-                          گزینه {index + 1}: {option.option_text.substring(0, 50)}
-                        </SelectItem>
-                      )
-                    ))}
+                    <SelectItem value="easy">ساده</SelectItem>
+                    <SelectItem value="medium">متوسط</SelectItem>
+                    <SelectItem value="hard">دشوار</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            )}
+
+              <div>
+                <Label htmlFor="publish_date">تاریخ انتشار (اختیاری)</Label>
+                <Input
+                  dir="ltr"
+                  id="publish_date"
+                  type="number"
+                  placeholder="1403"
+                  min="1300"
+                  max="1500"
+                  {...register("publish_date")}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="source">منبع (اختیاری)</Label>
+                <Input
+                  dir="auto"
+                  id="source"
+                  placeholder="منبع سوال را وارد کنید"
+                  {...register("source")}
+                />
+              </div>
+
+              {watchedOptions && watchedOptions.length > 0 && (
+                <div>
+                  <Label htmlFor="correct_option_index">پاسخ صحیح</Label>
+                  <Select 
+                    value={watch("correct_option_index")?.toString() || ""}
+                    onValueChange={(value) => setValue("correct_option_index", parseInt(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="انتخاب پاسخ صحیح" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {watchedOptions.map((option, index) => (
+                        option.option_text && (
+                          <SelectItem key={index} value={index.toString()}>
+                            گزینه {index + 1}: <MathPreview text={option.option_text.substring(0, 50)} />
+                          </SelectItem>
+                        )
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
 
             <div>
               <Label htmlFor="detailed_solution">پاسخ تشریحی (اختیاری)</Label>
               <Textarea
+                dir="auto"
                 id="detailed_solution"
                 placeholder="پاسخ تشریحی سوال..."
                 {...register("detailed_solution")}
@@ -401,14 +438,14 @@ export default function EditQuestionPage() {
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             onClick={handleUpdateAndContinue}
             disabled={isSubmitting}
           >
             {isSubmitting ? "در حال بروزرسانی..." : "بروزرسانی و ادامه ویرایش"}
-          </Button>
+          </Button> */}
           <Button
             type="button"
             disabled={isSubmitting}

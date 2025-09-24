@@ -25,6 +25,8 @@ const questionSchema = z.object({
   difficulty_level: z.enum(["easy", "medium", "hard"]),
   detailed_solution: z.string().optional(),
   correct_option_index: z.number().optional(),
+  publish_date: z.string().optional(),
+  source: z.string().optional(),
   options: z
     .array(
       z.object({
@@ -159,6 +161,8 @@ export default function CreateQuestionPage() {
         options: filteredOptions,
         folders: selectedFolderIds,
         correct_option_index: data.correct_option_index,
+        ...(data.publish_date && { publish_date: data.publish_date }),
+        ...(data.source && { source: data.source }),
       };
 
       console.log("Sending data to API:", formData);
@@ -316,35 +320,58 @@ export default function CreateQuestionPage() {
           </CardContent>
         </Card>
 
-        {/* Settings */}
+        {/* Settings */}  
         <Card>
           <CardHeader>
             <CardTitle>تنظیمات</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Settings Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="difficulty_level">سطح دشواری</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setValue(
+                      "difficulty_level",
+                      value as "easy" | "medium" | "hard"
+                    )
+                  }
+                  defaultValue="medium"
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="انتخاب سطح دشواری" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="easy">ساده</SelectItem>
+                    <SelectItem value="medium">متوسط</SelectItem>
+                    <SelectItem value="hard">دشوار</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
             <div>
-              <Label htmlFor="difficulty_level">سطح دشواری</Label>
-              <Select
-                onValueChange={(value) =>
-                  setValue(
-                    "difficulty_level",
-                    value as "easy" | "medium" | "hard"
-                  )
-                }
-                defaultValue="medium"
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="انتخاب سطح دشواری" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">ساده</SelectItem>
-                  <SelectItem value="medium">متوسط</SelectItem>
-                  <SelectItem value="hard">دشوار</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="publish_date">تاریخ انتشار (اختیاری)</Label>
+              <Input
+                dir="ltr"
+                id="publish_date"
+                type="number"
+                placeholder="1403"
+                min="1300"
+                max="1500"
+                {...register("publish_date")}
+              />
             </div>
 
-            {watchedOptions && watchedOptions.length > 0 && (
+            <div>
+              <Label htmlFor="source">منبع (اختیاری)</Label>
+              <Input
+                dir="auto"
+                id="source"
+                placeholder="منبع سوال را وارد کنید"
+                {...register("source")}
+              />
+            </div>            {watchedOptions && watchedOptions.length > 0 && (
               <div>
                 <Label htmlFor="correct_option_index">پاسخ صحیح</Label>
                 <Select
@@ -361,7 +388,7 @@ export default function CreateQuestionPage() {
                         option.option_text && (
                           <SelectItem key={index} value={index.toString()}>
                             گزینه {index + 1}:{" "}
-                            {option.option_text.substring(0, 50)}
+                            <MathPreview text={option.option_text.substring(0, 50)} />
                           </SelectItem>
                         )
                     )}
@@ -369,6 +396,8 @@ export default function CreateQuestionPage() {
                 </Select>
               </div>
             )}
+
+            </div>
 
             <div>
               <Label htmlFor="detailed_solution">پاسخ تشریحی (اختیاری)</Label>
