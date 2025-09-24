@@ -540,7 +540,7 @@ export function QuestionCard({
         <div className="mb-4">
           <MathPreview text={question.question_text} />
         </div>
-
+          <div className="flex flex-row justify-between w-full">
         {/* Question images */}
         {question.images && question.images.length > 0 && (
           <div className="mb-4" dir="ltr">
@@ -567,6 +567,7 @@ export function QuestionCard({
 
         {/* Options */}
         {question.options && question.options.length > 0 && (
+          <div className="order-first grow">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {question.options
               .sort((a, b) => a.order - b.order)
@@ -595,7 +596,9 @@ export function QuestionCard({
                 </div>
               ))}
           </div>
+          </div>
         )}
+        </div>
 
         {/* Footer with timestamps */}
         <div className="flex justify-between items-center mt-4 pt-3 border-t text-xs text-muted-foreground">
