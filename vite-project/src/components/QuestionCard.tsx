@@ -33,6 +33,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import * as React from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -41,6 +42,77 @@ import {
 import axiosInstance from "@/lib/axios";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+
+// Component for rendering images (handles both regular images and SVG)
+const ImageRenderer: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) => {
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [isSvg, setIsSvg] = useState(false);
+
+  useEffect(() => {
+    // Check if the URL ends with .svg (ignoring query parameters)
+    const urlWithoutParams = src.split('?')[0].toLowerCase();
+    const isSvgFile = urlWithoutParams.endsWith('.svg');
+
+    if (isSvgFile) {
+      setIsSvg(true);
+      // Fetch SVG content
+      fetch(src)
+        .then(response => response.text())
+        .then(content => {
+          // Basic validation that it's actually SVG
+          if (content.includes('<svg')) {
+            // Modify SVG to be theme-aware by adding CSS classes
+            const modifiedContent = content
+              // Add class to SVG element for theme styling
+              .replace('<svg', '<svg class="theme-aware-svg"')
+              // Replace black strokes with theme-aware colors
+              .replace(/stroke="black"/g, 'stroke="currentColor"')
+              .replace(/stroke="#000"/g, 'stroke="currentColor"')
+              .replace(/stroke="#000000"/g, 'stroke="currentColor"')
+              // Replace black fills with theme-aware colors
+              .replace(/fill="black"/g, 'fill="currentColor"')
+              .replace(/fill="#000"/g, 'fill="currentColor"')
+              .replace(/fill="#000000"/g, 'fill="currentColor"')
+              // Replace black colors in CSS styles
+              .replace(/stroke:black/g, 'stroke:currentColor')
+              .replace(/fill:black/g, 'fill:currentColor')
+              .replace(/stroke:#000/g, 'stroke:currentColor')
+              .replace(/stroke:#000000/g, 'stroke:currentColor')
+              .replace(/fill:#000/g, 'fill:currentColor')
+              .replace(/fill:#000000/g, 'fill:currentColor');
+
+            setSvgContent(modifiedContent);
+          } else {
+            // Fallback to img tag if not valid SVG
+            setIsSvg(false);
+          }
+        })
+        .catch(() => {
+          // Fallback to img tag on error
+          setIsSvg(false);
+        });
+    } else {
+      setIsSvg(false);
+    }
+  }, [src]);
+
+  if (isSvg && svgContent) {
+    return (
+      <div
+        className={`${className} flex items-center justify-center text-foreground`}
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+    />
+  );
+};
 
 interface Option {
   id: number;
@@ -58,6 +130,18 @@ interface Question {
   options: Option[];
   correct_option?: number;
   detailed_solution?: string; // پاسخ تشریحی
+  images?: Array<{
+    id: number;
+    image: string;
+    alt_text?: string;
+    order: number;
+  }>;
+  detailed_solution_images?: Array<{
+    id: number;
+    image: string;
+    alt_text?: string;
+    order: number;
+  }>;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -261,6 +345,33 @@ export function QuestionCard({
         <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
           <MathPreview text={question.detailed_solution || ""} />
         </div>
+        
+        {/* Detailed solution images */}
+        {question.detailed_solution_images && question.detailed_solution_images.length > 0 && (
+          <div className="mt-4">
+            <h5 className="font-medium text-sm text-muted-foreground mb-2">
+              تصاویر پاسخ تشریحی:
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {question.detailed_solution_images
+                .sort((a, b) => a.order - b.order)
+                .map((image) => (
+                  <div key={image.id} className="border rounded p-2">
+                    <ImageRenderer
+                      src={image.image}
+                      alt={image.alt_text || `تصویر پاسخ ${image.order}`}
+                      className="w-full h-auto max-h-64 object-contain rounded"
+                    />
+                    {image.alt_text && (
+                      <p className="text-xs text-muted-foreground mt-1 text-center">
+                        {image.alt_text}
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -429,6 +540,30 @@ export function QuestionCard({
         <div className="mb-4">
           <MathPreview text={question.question_text} />
         </div>
+
+        {/* Question images */}
+        {question.images && question.images.length > 0 && (
+          <div className="mb-4" dir="ltr">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {question.images
+                .sort((a, b) => a.order - b.order)
+                .map((image) => (
+                  <div key={image.id} className="p-2">
+                    <ImageRenderer
+                      src={image.image}
+                      alt={image.alt_text || `تصویر سوال ${image.order}`}
+                      className="w-full h-auto max-h-64 object-contain rounded"
+                    />
+                    {image.alt_text && (
+                      <p className="text-xs text-muted-foreground mt-1 text-center">
+                        {image.alt_text}
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* Options */}
         {question.options && question.options.length > 0 && (

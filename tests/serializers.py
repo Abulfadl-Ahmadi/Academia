@@ -1,16 +1,68 @@
 from rest_framework import serializers
 from datetime import timedelta
+import base64
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import models
+from io import BytesIO
+from PIL import Image
 
 from contents.models import File
 from .models import (
     Test, PrimaryKey, StudentTestSession, StudentAnswer,
-    TestCollection, StudentProgress, Question, Option, QuestionImage
+    TestCollection, StudentProgress, Question, Option, QuestionImage, DetailedSolutionImage
 )
 from courses.models import Course
 from accounts.models import User
 from knowledge.models import Folder
 
 
+class Base64ImageField(serializers.ImageField):
+    """
+    A Django REST framework field for handling base64 encoded images, including SVG.
+    """
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            # Handle base64 encoded image
+            try:
+                # Extract the base64 part
+                header, base64_data = data.split(',', 1)
+                # Get the format from the header
+                content_type = header.split(';')[0]  # e.g., "data:image/svg+xml"
+                format_part = content_type.split('/')[1]  # e.g., "svg+xml"
+
+                # Check if it's SVG (could be svg or svg+xml)
+                is_svg = 'svg' in format_part.lower()
+
+                # Decode base64
+                image_data = base64.b64decode(base64_data)
+
+                # Create ContentFile with proper positioning
+                # Clean up format_part for filename (svg+xml -> svg)
+                clean_format = format_part.split('+')[0] if '+' in format_part else format_part
+                file_name = f"upload.{clean_format}"
+                file_obj = ContentFile(image_data, name=file_name)
+
+                # Ensure file pointer is at the beginning
+                file_obj.seek(0)
+
+                # For SVG files, bypass PIL validation since PIL doesn't support SVG
+                if is_svg:
+                    # Create a SimpleUploadedFile for SVG
+                    svg_file = SimpleUploadedFile(
+                        name=file_name,
+                        content=image_data,
+                        content_type=content_type
+                    )
+                    return svg_file
+                else:
+                    # Use normal ImageField validation for other formats
+                    return super().to_internal_value(file_obj)
+            except (ValueError, IndexError) as e:
+                raise serializers.ValidationError(f"Invalid base64 image data: {str(e)}")
+        else:
+            # Handle regular file upload or existing data
+            return super().to_internal_value(data)
 class PrimaryKeySerializer(serializers.ModelSerializer):
     class Meta:
         model = PrimaryKey
@@ -527,7 +579,7 @@ class StartTopicTestSerializer(serializers.Serializer):
 
 
 class OptionSerializer(serializers.ModelSerializer):
-    option_image = serializers.ImageField(required=False, allow_null=True)
+    option_image = Base64ImageField(required=False, allow_null=True)
     
     class Meta:
         model = Option
@@ -535,14 +587,25 @@ class OptionSerializer(serializers.ModelSerializer):
 
 
 class QuestionImageSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(required=False)
+    
     class Meta:
         model = QuestionImage
+        fields = ['id', 'image', 'alt_text', 'order']
+
+
+class DetailedSolutionImageSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(required=False)
+    
+    class Meta:
+        model = DetailedSolutionImage
         fields = ['id', 'image', 'alt_text', 'order']
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, read_only=True)
     images = QuestionImageSerializer(many=True, read_only=True)
+    detailed_solution_images = DetailedSolutionImageSerializer(many=True, read_only=True)
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
     folders_names = serializers.SerializerMethodField()
 
@@ -570,23 +633,40 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QuestionCreateSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, required=False, write_only=True)
     images = QuestionImageSerializer(many=True, required=False, write_only=True)
+    detailed_solution_images = DetailedSolutionImageSerializer(many=True, required=False, write_only=True)
     correct_option_index = serializers.IntegerField(required=False, write_only=True)
+    keep_image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        write_only=True,
+        help_text="List of image IDs to keep. Others will be deleted."
+    )
+    keep_detailed_solution_image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        write_only=True,
+        help_text="List of detailed solution image IDs to keep. Others will be deleted."
+    )
 
     class Meta:
         model = Question
         fields = [
             'question_text', 'folders', 'difficulty_level', 'detailed_solution',
-            'is_active', 'correct_option', 'options', 'images', 'correct_option_index',
-            'publish_date', 'source'
+            'is_active', 'correct_option', 'options', 'images', 'detailed_solution_images', 'correct_option_index',
+            'publish_date', 'source', 'keep_image_ids', 'keep_detailed_solution_image_ids'
         ]
         # حل مشکل nested fields برای update
         extra_kwargs = {
             'options': {'required': False},
             'images': {'required': False},
+            'detailed_solution_images': {'required': False},
+            'keep_image_ids': {'required': False},
+            'keep_detailed_solution_image_ids': {'required': False},
         }
 
     def create(self, validated_data):
         print("=== QUESTION CREATION DEBUG ===")
+        print("Raw validated_data keys:", list(validated_data.keys()))
         print("Raw validated_data:", validated_data)
         
         request = self.context.get('request')
@@ -595,10 +675,13 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
 
         options_data = validated_data.pop('options', [])
         images_data = validated_data.pop('images', [])
+        detailed_solution_images_data = validated_data.pop('detailed_solution_images', [])
         folders_data = validated_data.pop('folders', [])
         correct_option_index = validated_data.pop('correct_option_index', None)
 
         print("Extracted options_data:", options_data)
+        print("Extracted images_data:", images_data)
+        print("Extracted detailed_solution_images_data:", detailed_solution_images_data)
         print("Extracted folders_data:", folders_data)
         print("correct_option_index:", correct_option_index)
 
@@ -627,6 +710,10 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         for image_data in images_data:
             QuestionImage.objects.create(question=question, **image_data)
 
+        # Create detailed solution images
+        for ds_image_data in detailed_solution_images_data:
+            DetailedSolutionImage.objects.create(question=question, **ds_image_data)
+
         print("=== QUESTION CREATION COMPLETE ===")
         return question
 
@@ -640,12 +727,19 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         # Pop nested write-only fields
         options_data = validated_data.pop('options', None)
         images_data = validated_data.pop('images', None)
+        detailed_solution_images_data = validated_data.pop('detailed_solution_images', None)
         folders_data = validated_data.pop('folders', None)
         correct_option_index = validated_data.pop('correct_option_index', None)
+        keep_image_ids = validated_data.pop('keep_image_ids', None)
+        keep_detailed_solution_image_ids = validated_data.pop('keep_detailed_solution_image_ids', None)
 
         print("Extracted options_data:", options_data)
+        print("Extracted images_data:", images_data)
+        print("Extracted detailed_solution_images_data:", detailed_solution_images_data)
         print("Extracted folders_data:", folders_data)
         print("correct_option_index:", correct_option_index)
+        print("keep_image_ids:", keep_image_ids)
+        print("keep_detailed_solution_image_ids:", keep_detailed_solution_image_ids)
 
         # Update simple fields
         for attr, value in validated_data.items():
@@ -665,29 +759,119 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
             print("Deleted existing options")
             
             # Recreate options in given order
-            for opt in options_data:
+            for opt_idx, opt in enumerate(options_data):
+                option_image = opt.get('option_image')
+                # Modify filename for option images
+                if option_image and hasattr(option_image, 'name') and option_image.name:
+                    name_parts = option_image.name.split('.')
+                    if len(name_parts) > 1:
+                        ext = name_parts[-1]
+                        new_name = f"{instance.public_id}_option_{opt_idx + 1}.{ext}"
+                        # Create new file object with the new name
+                        from django.core.files.uploadedfile import SimpleUploadedFile
+                        new_file = SimpleUploadedFile(
+                            name=new_name,
+                            content=option_image.read(),
+                            content_type=getattr(option_image, 'content_type', None)
+                        )
+                        option_image = new_file
+                
                 print("Creating option:", opt)
                 option = Option.objects.create(
                     question=instance,
                     option_text=opt.get('option_text', ''),
                     order=opt.get('order') or (len(created_options) + 1),
-                    option_image=opt.get('option_image')
+                    option_image=option_image
                 )
                 created_options.append(option)
                 print("Created option:", option.id, option.option_text)
 
-        # Replace images if provided
-        if images_data is not None:
-            QuestionImage.objects.filter(question=instance).delete()
-            print("Deleted existing images")
-            for img in images_data:
-                QuestionImage.objects.create(
-                    question=instance,
-                    image=img.get('image'),
-                    alt_text=img.get('alt_text'),
-                    order=img.get('order') or 1
-                )
-                print("Created image")
+        # Handle images: keep specified IDs, replace/add new ones
+        if keep_image_ids is not None or images_data is not None:
+            # Delete images not in keep_image_ids
+            if keep_image_ids is not None:
+                QuestionImage.objects.filter(question=instance).exclude(id__in=keep_image_ids).delete()
+                print(f"Deleted images not in keep_image_ids: {keep_image_ids}")
+            else:
+                # If no keep_image_ids specified, delete all existing images
+                QuestionImage.objects.filter(question=instance).delete()
+                print("Deleted all existing images")
+            
+            # Add new images if provided
+            if images_data and len(images_data) > 0:
+                print("Adding new images")
+                # Get the current max order for existing images
+                existing_max_order = QuestionImage.objects.filter(question=instance).aggregate(max_order=models.Max('order'))['max_order'] or 0
+                for idx, img in enumerate(images_data):
+                    image_file = img.get('image')
+                    # Modify filename to include question public_id and index
+                    if hasattr(image_file, 'name') and image_file.name:
+                        # Extract file extension
+                        name_parts = image_file.name.split('.')
+                        if len(name_parts) > 1:
+                            ext = name_parts[-1]
+                            # Generate new filename: question_public_id_index.ext
+                            new_name = f"{instance.public_id}_{existing_max_order + idx + 1}.{ext}"
+                            # Create new file object with the new name
+                            from django.core.files.uploadedfile import SimpleUploadedFile
+                            new_file = SimpleUploadedFile(
+                                name=new_name,
+                                content=image_file.read(),
+                                content_type=getattr(image_file, 'content_type', None)
+                            )
+                            image_file = new_file
+                    
+                    QuestionImage.objects.create(
+                        question=instance,
+                        image=image_file,
+                        alt_text=img.get('alt_text'),
+                        order=existing_max_order + idx + 1
+                    )
+                    print("Created image")
+
+        # Handle detailed solution images: keep specified IDs, replace/add new ones
+        if keep_detailed_solution_image_ids is not None or detailed_solution_images_data is not None:
+            # Delete images not in keep_detailed_solution_image_ids
+            if keep_detailed_solution_image_ids is not None:
+                DetailedSolutionImage.objects.filter(question=instance).exclude(id__in=keep_detailed_solution_image_ids).delete()
+                print(f"Deleted detailed solution images not in keep_detailed_solution_image_ids: {keep_detailed_solution_image_ids}")
+            else:
+                # If no keep_detailed_solution_image_ids specified, delete all existing images
+                DetailedSolutionImage.objects.filter(question=instance).delete()
+                print("Deleted all existing detailed solution images")
+            
+            # Add new detailed solution images if provided
+            if detailed_solution_images_data and len(detailed_solution_images_data) > 0:
+                print("Adding new detailed solution images")
+                # Get the current max order for existing images
+                existing_max_order = DetailedSolutionImage.objects.filter(question=instance).aggregate(max_order=models.Max('order'))['max_order'] or 0
+                for idx, img in enumerate(detailed_solution_images_data):
+                    image_file = img.get('image')
+                    
+                    # Modify filename to include question public_id and index
+                    if hasattr(image_file, 'name') and image_file.name:
+                        # Extract file extension
+                        name_parts = image_file.name.split('.')
+                        if len(name_parts) > 1:
+                            ext = name_parts[-1]
+                            # Generate new filename: question_public_id_ds_index.ext
+                            new_name = f"{instance.public_id}_ds_{existing_max_order + idx + 1}.{ext}"
+                            # Create new file object with the new name
+                            from django.core.files.uploadedfile import SimpleUploadedFile
+                            new_file = SimpleUploadedFile(
+                                name=new_name,
+                                content=image_file.read(),
+                                content_type=getattr(image_file, 'content_type', None)
+                            )
+                            image_file = new_file
+                    
+                    DetailedSolutionImage.objects.create(
+                        question=instance,
+                        image=image_file,
+                        alt_text=img.get('alt_text'),
+                        order=existing_max_order + idx + 1
+                    )
+                    print("Created detailed solution image")
 
         # Handle correct option by index if provided and options were provided/rebuilt
         if correct_option_index is not None and created_options:

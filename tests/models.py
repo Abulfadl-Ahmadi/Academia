@@ -639,7 +639,13 @@ class Option(models.Model):
     )
     option_text = models.CharField(max_length=500, verbose_name="متن گزینه")
     order = models.PositiveIntegerField(default=1, verbose_name="ترتیب گزینه")  # برای مرتب‌سازی گزینه‌ها
-    option_image = models.ImageField(upload_to='options/', null=True, blank=True, verbose_name="تصویر گزینه")
+    option_image = models.ImageField(
+        upload_to='options/', 
+        null=True, 
+        blank=True, 
+        verbose_name="تصویر گزینه",
+        validators=[]  # Remove default PIL validators to allow SVG
+    )
     class Meta:
         verbose_name = "گزینه"
         verbose_name_plural = "گزینه‌ها"
@@ -656,7 +662,11 @@ class QuestionImage(models.Model):
         related_name='images',
         verbose_name="سوال مرتبط"
     )
-    image = models.ImageField(upload_to='question_images/', verbose_name="تصویر")
+    image = models.ImageField(
+        upload_to='question_images/', 
+        verbose_name="تصویر",
+        validators=[]  # Remove default PIL validators to allow SVG
+    )
     alt_text = models.CharField(max_length=255, blank=True, null=True, verbose_name="متن جایگزین")
     order = models.PositiveIntegerField(default=1, verbose_name="ترتیب تصویر")
 
@@ -667,4 +677,28 @@ class QuestionImage(models.Model):
 
     def __str__(self):
         return f"تصویر برای {self.question.question_text[:30]}"
+
+
+class DetailedSolutionImage(models.Model):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='detailed_solution_images',
+        verbose_name="سوال مرتبط"
+    )
+    image = models.ImageField(
+        upload_to='detailed_solution_images/',
+        verbose_name="تصویر پاسخ تشریحی",
+        validators=[]  # Remove default PIL validators to allow SVG
+    )
+    alt_text = models.CharField(max_length=255, blank=True, null=True, verbose_name="متن جایگزین")
+    order = models.PositiveIntegerField(default=1, verbose_name="ترتیب تصویر")
+
+    class Meta:
+        verbose_name = "تصویر پاسخ تشریحی"
+        verbose_name_plural = "تصاویر پاسخ تشریحی"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"تصویر پاسخ تشریحی برای {self.question.question_text[:30]}"
  

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,9 +17,80 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MathPreview } from "@/components/MathPreview";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Upload } from "lucide-react";
 import { FolderSelector } from "@/components/FolderSelector";
 import { toast } from "sonner";
+
+// Component for rendering images (handles both regular images and SVG)
+const ImageRenderer: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) => {
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [isSvg, setIsSvg] = useState(false);
+
+  useEffect(() => {
+    // Check if the URL ends with .svg (ignoring query parameters)
+    const urlWithoutParams = src.split('?')[0].toLowerCase();
+    const isSvgFile = urlWithoutParams.endsWith('.svg');
+
+    if (isSvgFile) {
+      setIsSvg(true);
+      // Fetch SVG content
+      fetch(src)
+        .then(response => response.text())
+        .then(content => {
+          // Basic validation that it's actually SVG
+          if (content.includes('<svg')) {
+            // Modify SVG to be theme-aware by adding CSS classes
+            const modifiedContent = content
+              // Add class to SVG element for theme styling
+              .replace('<svg', '<svg class="theme-aware-svg"')
+              // Replace black strokes with theme-aware colors
+              .replace(/stroke="black"/g, 'stroke="currentColor"')
+              .replace(/stroke="#000"/g, 'stroke="currentColor"')
+              .replace(/stroke="#000000"/g, 'stroke="currentColor"')
+              // Replace black fills with theme-aware colors
+              .replace(/fill="black"/g, 'fill="currentColor"')
+              .replace(/fill="#000"/g, 'fill="currentColor"')
+              .replace(/fill="#000000"/g, 'fill="currentColor"')
+              // Replace black colors in CSS styles
+              .replace(/stroke:black/g, 'stroke:currentColor')
+              .replace(/fill:black/g, 'fill:currentColor')
+              .replace(/stroke:#000/g, 'stroke:currentColor')
+              .replace(/stroke:#000000/g, 'stroke:currentColor')
+              .replace(/fill:#000/g, 'fill:currentColor')
+              .replace(/fill:#000000/g, 'fill:currentColor');
+
+            setSvgContent(modifiedContent);
+          } else {
+            // Fallback to img tag if not valid SVG
+            setIsSvg(false);
+          }
+        })
+        .catch(() => {
+          // Fallback to img tag on error
+          setIsSvg(false);
+        });
+    } else {
+      setIsSvg(false);
+    }
+  }, [src]);
+
+  if (isSvg && svgContent) {
+    return (
+      <div
+        className={`${className} flex items-center justify-center text-foreground`}
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+    />
+  );
+};
 
 const questionSchema = z.object({
   question_text: z.string().min(1, "متن سوال الزامی است"),
@@ -56,6 +127,16 @@ export default function EditQuestionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [questionImages, setQuestionImages] = useState<File[]>([]);
+  const [optionImages, setOptionImages] = useState<{ [key: number]: File }>({});
+  const [detailedSolutionImages, setDetailedSolutionImages] = useState<File[]>([]);
+  const [originalQuestionImages, setOriginalQuestionImages] = useState<Array<{id: number, image: string, alt_text: string, order: number}>>([]);
+  const [questionImagePreviews, setQuestionImagePreviews] = useState<string[]>([]);
+  const [optionImagePreviews, setOptionImagePreviews] = useState<{ [key: number]: string }>({});
+  const [detailedSolutionImagePreviews, setDetailedSolutionImagePreviews] = useState<string[]>([]);
+  const [originalDetailedSolutionImages, setOriginalDetailedSolutionImages] = useState<Array<{id: number, image: string, alt_text: string, order: number}>>([]);
+  const [newQuestionImages, setNewQuestionImages] = useState<Array<{image: string, alt_text: string, order: number}>>([]);
+  const [newDetailedSolutionImages, setNewDetailedSolutionImages] = useState<Array<{image: string, alt_text: string, order: number}>>([]);
 
   const {
     register,
@@ -97,11 +178,6 @@ export default function EditQuestionPage() {
     onSubmit(formData, false);
   };
 
-  const handleUpdateAndContinue = () => {
-    const formData = getValues();
-    onSubmit(formData, true);
-  };
-
   const watchedQuestionText = watch("question_text");
   const watchedOptions = watch("options");
   const watchedDetailedSolution = watch("detailed_solution");
@@ -119,11 +195,38 @@ export default function EditQuestionPage() {
           // Set folders
           setSelectedFolderIds(data.folders || []);
           
+          // Load existing question images as previews
+          if (data.images && data.images.length > 0) {
+            const existingImagePreviews = data.images.map((img: { id: number; image: string; alt_text?: string; order: number }) => img.image);
+            setQuestionImagePreviews(existingImagePreviews);
+            setOriginalQuestionImages(data.images); // Store original images with IDs
+          }
+          
+          // Load existing option images as previews
+          const existingOptionPreviews: { [key: number]: string } = {};
+          if (data.options && data.options.length > 0) {
+            data.options.forEach((option: { id: number; option_text: string; order?: number; option_image?: string }, index: number) => {
+              if (option.option_image) {
+                existingOptionPreviews[index] = option.option_image;
+                setValue(`options.${index}.option_image`, option.option_image);
+              }
+            });
+            setOptionImagePreviews(existingOptionPreviews);
+          }
+
+          // Load existing detailed solution images as previews
+          if (data.detailed_solution_images && data.detailed_solution_images.length > 0) {
+            const existingDsImagePreviews = data.detailed_solution_images.map((img: { id: number; image: string; alt_text?: string; order: number }) => img.image);
+            setDetailedSolutionImagePreviews(existingDsImagePreviews);
+            setOriginalDetailedSolutionImages(data.detailed_solution_images); // Store original images with IDs
+          }
+          
           // Map options to shape used in form
-          type ApiOption = { id: number; option_text: string; order?: number };
+          type ApiOption = { id: number; option_text: string; order?: number; option_image?: string };
           const mappedOptions = (data.options || []).map((o: ApiOption, idx: number) => ({
             option_text: o.option_text || '',
             order: o.order ?? (idx + 1),
+            option_image: o.option_image || '',
           }));
           
           reset({
@@ -156,7 +259,7 @@ export default function EditQuestionPage() {
           setLoading(false);
         });
     }
-  }, [id, reset]);
+  }, [id, reset, setValue]);
 
   const onSubmit = async (data: QuestionFormData, resetForm: boolean = false) => {
     console.log("=== FORM SUBMISSION DEBUG ===");
@@ -198,6 +301,14 @@ export default function EditQuestionPage() {
         options: filteredOptions,
         folders: selectedFolderIds,
         correct_option_index: data.correct_option_index,
+        keep_image_ids: originalQuestionImages
+          .filter(origImg => questionImagePreviews.includes(origImg.image))
+          .map(origImg => origImg.id),
+        keep_detailed_solution_image_ids: originalDetailedSolutionImages
+          .filter(origImg => detailedSolutionImagePreviews.includes(origImg.image))
+          .map(origImg => origImg.id),
+        images: newQuestionImages,
+        detailed_solution_images: newDetailedSolutionImages,
         ...(data.publish_date && { publish_date: data.publish_date }),
         ...(data.source && { source: data.source }),
       };
@@ -229,6 +340,75 @@ export default function EditQuestionPage() {
   const removeLastOption = () => {
     if (optionFields.length > 0) {
       removeOption(optionFields.length - 1);
+    }
+  };
+
+  const handleQuestionImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImages = Array.from(files);
+      setQuestionImages(prev => [...prev, ...newImages]);
+      
+      // Create previews
+      const newPreviews: string[] = [];
+      newImages.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target?.result as string;
+          newPreviews.push(base64);
+          setQuestionImagePreviews(prev => [...prev, base64]);
+          
+          // Add to new images array
+          setNewQuestionImages(prev => [...prev, {
+            image: base64,
+            alt_text: file.name,
+            order: prev.length + 1
+          }]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const handleOptionImageUpload = (optionIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setOptionImages(prev => ({ ...prev, [optionIndex]: file }));
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        setOptionImagePreviews(prev => ({ ...prev, [optionIndex]: base64 }));
+        setValue(`options.${optionIndex}.option_image`, base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDetailedSolutionImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImages = Array.from(files);
+      setDetailedSolutionImages(prev => [...prev, ...newImages]);
+      
+      // Create previews
+      const newPreviews: string[] = [];
+      newImages.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target?.result as string;
+          newPreviews.push(base64);
+          setDetailedSolutionImagePreviews(prev => [...prev, base64]);
+          
+          // Add to new images array
+          setNewDetailedSolutionImages(prev => [...prev, {
+            image: base64,
+            alt_text: file.name,
+            order: prev.length + 1
+          }]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
@@ -265,7 +445,28 @@ export default function EditQuestionPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="question_text">متن سوال</Label>
+              <div className="flex justify-between items-center mb-2">
+                <Label htmlFor="question_text">متن سوال</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('question-image-upload')?.click()}
+                  >
+                    <Upload className="h-4 w-4 ml-1" />
+                    آپلود تصویر
+                  </Button>
+                  <input
+                    id="question-image-upload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleQuestionImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
               <Textarea
                 dir="auto"
                 id="question_text"
@@ -283,6 +484,33 @@ export default function EditQuestionPage() {
                 <Label>پیش‌نمایش:</Label>
                 <div className="border rounded p-3">
                   <MathPreview text={watchedQuestionText} />
+                </div>
+              </div>
+            )}
+
+            {questionImagePreviews.length > 0 && (
+              <div>
+                <Label>تصاویر سوال:</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                  {questionImagePreviews.map((preview, index) => (
+                    <div key={index} className="border rounded p-2 relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuestionImagePreviews(prev => prev.filter((_, i) => i !== index));
+                        }}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                        title="حذف تصویر"
+                      >
+                        ×
+                      </button>
+                      <ImageRenderer
+                        src={preview}
+                        alt={`تصویر سوال ${index + 1}`}
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -322,7 +550,25 @@ export default function EditQuestionPage() {
           <CardContent className="space-y-4">
             {optionFields.map((field, index) => (
               <div key={field.id} className="space-y-2">
-                <Label htmlFor={`option_${index}`}>گزینه {index + 1}</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor={`option_${index}`}>گزینه {index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById(`option-image-upload-${index}`)?.click()}
+                  >
+                    <Upload className="h-4 w-4 ml-1" />
+                    تصویر
+                  </Button>
+                  <input
+                    id={`option-image-upload-${index}`}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleOptionImageUpload(index, e)}
+                    className="hidden"
+                  />
+                </div>
                 <div className="flex gap-2">
                   <Input
                     id={`option_${index}`}
@@ -335,6 +581,32 @@ export default function EditQuestionPage() {
                 {watchedOptions?.[index]?.option_text && (
                   <div className="border rounded p-2">
                     <MathPreview text={watchedOptions[index].option_text || ""} />
+                  </div>
+                )}
+
+                {optionImagePreviews[index] && (
+                  <div className="border rounded p-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOptionImagePreviews(prev => {
+                          const newPreviews = { ...prev };
+                          delete newPreviews[index];
+                          return newPreviews;
+                        });
+                        setValue(`options.${index}.option_image`, '');
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                      title="حذف تصویر"
+                    >
+                      ×
+                    </button>
+                    <Label className="text-sm text-gray-600">تصویر گزینه:</Label>
+                    <ImageRenderer
+                      src={optionImagePreviews[index]}
+                      alt={`تصویر گزینه ${index + 1}`}
+                      className="w-full h-32 object-cover rounded mt-1"
+                    />
                   </div>
                 )}
               </div>
@@ -415,7 +687,28 @@ export default function EditQuestionPage() {
             </div>
 
             <div>
-              <Label htmlFor="detailed_solution">پاسخ تشریحی (اختیاری)</Label>
+              <div className="flex justify-between items-center mb-2">
+                <Label htmlFor="detailed_solution">پاسخ تشریحی (اختیاری)</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('detailed-solution-image-upload')?.click()}
+                  >
+                    <Upload className="h-4 w-4 ml-1" />
+                    آپلود تصویر پاسخ
+                  </Button>
+                  <input
+                    id="detailed-solution-image-upload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleDetailedSolutionImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
               <Textarea
                 dir="auto"
                 id="detailed_solution"
@@ -429,6 +722,35 @@ export default function EditQuestionPage() {
                   <Label>پیش‌نمایش پاسخ تشریحی:</Label>
                   <div className="border rounded p-3">
                     <MathPreview text={watchedDetailedSolution} />
+                  </div>
+                </div>
+              )}
+
+              {detailedSolutionImagePreviews.length > 0 && (
+                <div className="mt-4">
+                  <Label>تصاویر پاسخ تشریحی:</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                    {detailedSolutionImagePreviews.map((preview, index) => (
+                      <div key={index} className="border rounded p-2 relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDetailedSolutionImagePreviews(prev => prev.filter((_, i) => i !== index));
+                            setDetailedSolutionImages(prev => prev.filter((_, i) => i !== index));
+                            setNewDetailedSolutionImages(prev => prev.filter((_, i) => i !== index));
+                          }}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                          title="حذف تصویر"
+                        >
+                          ×
+                        </button>
+                        <ImageRenderer
+                          src={preview}
+                          alt={`تصویر پاسخ ${index + 1}`}
+                          className="w-full h-32 object-cover rounded"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

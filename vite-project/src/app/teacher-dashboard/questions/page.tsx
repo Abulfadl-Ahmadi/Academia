@@ -19,6 +19,7 @@ interface FilterOptions {
 
 interface Question {
   id: number;
+  public_id: string;
   question_text: string;
   difficulty_level: 'easy' | 'medium' | 'hard';
   folders: number[]; // Array of folder IDs
@@ -29,10 +30,23 @@ interface Question {
     order: number;
   }>;
   correct_option?: number;
+  detailed_solution?: string;
+  images?: Array<{
+    id: number;
+    image: string;
+    alt_text?: string;
+    order: number;
+  }>;
+  detailed_solution_images?: Array<{
+    id: number;
+    image: string;
+    alt_text?: string;
+    order: number;
+  }>;
   created_at: string;
+  updated_at: string;
   publish_date: string;
   source: string;
-  updated_at: string;
   is_active: boolean;
 }
 
