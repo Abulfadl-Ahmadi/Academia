@@ -12,7 +12,7 @@ from tests.models import Question, Option, Folder  # اگر اپ‌تان tests 
 
 User = get_user_model()
 
-OUT_FILE = "data/biroon.json"
+OUT_FILE = "data/khorooji.json"
 DEFAULT_USER_ID = 5  # آیدی کاربری که می‌خواهید created_by روی او ست شود
 
 
