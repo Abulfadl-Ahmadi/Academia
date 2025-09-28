@@ -1,4 +1,5 @@
 [
+  {
     "question_text": "اگر دو بردار ناصفر $\\dfrac{\\vec{a}}{|\\vec{a}|}-\\frac{3\\vec{b}}{|\\vec{b}|}$ و $\\dfrac{9\\vec{a}}{|\\vec{a}|}+\\frac{7\\vec{b}}{|\\vec{b}|}$ بر هم عمود باشند، مساحت متوازی الاضلاعی را که توسط بردارهای ناصفر $\\dfrac{\\vec{a}}{|\\vec{b}|}-\\frac{2\\vec{b}}{|\\vec{a}|}$ و $\\dfrac{3\\vec{a}}{|\\vec{b}|}+\\frac{2\\vec{b}}{|\\vec{a}|}$ ساخته می‌شود، کدام است؟",
     "options": [
       {
