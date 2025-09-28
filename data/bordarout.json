@@ -1,0 +1,1261 @@
+[
+    "question_text": "اگر دو بردار ناصفر $\\dfrac{\\vec{a}}{|\\vec{a}|}-\\frac{3\\vec{b}}{|\\vec{b}|}$ و $\\dfrac{9\\vec{a}}{|\\vec{a}|}+\\frac{7\\vec{b}}{|\\vec{b}|}$ بر هم عمود باشند، مساحت متوازی الاضلاعی را که توسط بردارهای ناصفر $\\dfrac{\\vec{a}}{|\\vec{b}|}-\\frac{2\\vec{b}}{|\\vec{a}|}$ و $\\dfrac{3\\vec{a}}{|\\vec{b}|}+\\frac{2\\vec{b}}{|\\vec{a}|}$ ساخته می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$1٫6$"
+      },
+      {
+        "option_text": "$3٫2$"
+      },
+      {
+        "option_text": "$4٫8$"
+      },
+      {
+        "option_text": "$6٫4$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "hard",
+    "solution": "با فرض $\\vec{t}=\\frac{\\vec{a}}{|\\vec{a}|}$ و $\\vec{s}=\\frac{\\vec{b}}{|\\vec{b}|}$ داریم:‌$|\\vec{t}|=\\left|\\begin{array}{cc}\\dfrac{\\vec{a}}{|\\vec{a}|}\\end{array}\\right|=\\frac{|\\vec{a}|}{|\\vec{a}|}=1\\begin{matrix}\\text{و}\\end{matrix}|\\vec{s}|=1$‌می‌دانیم حاصل‌ضرب داخلی دو بردار عمود بر هم صفر است. بنابراین:‌$(9\\vec{t}+7\\vec{s})\\cdot (\\vec{t}-3\\vec{s})=9|\\vec{t}|^{2}-27\\vec{t}\\cdot\\vec{s}+7\\vec{s}\\cdot\\vec{t}-21|\\vec{s}|^{2}\\\\=9-20\\vec{t}\\cdot\\vec{s}-21=-12-20\\vec{t}\\cdot\\vec{s}=0\\to\\vec{t}\\cdot\\vec{s}=-\\dfrac{12}{20}=-\\dfrac{3}{5}\\\\\\to|\\vec{t}||\\vec{s}|\\cos\\theta=-\\dfrac{3}{5}\\to1\\times1\\times\\cos\\theta=-\\dfrac{3}{5}\\to\\cos\\theta=-\\dfrac{3}{5}\\\\\\sin\\theta=\\sqrt{1-\\cos^{2}\\theta}=\\sqrt{1-(-\\dfrac{3}{5})^{2}}=\\sqrt{1-\\dfrac{9}{25}}=\\dfrac{\\sqrt{25-9}}{25}=\\dfrac{4}{5}$‌مساحت متوازی‌الاضلاعی را که توسط بردارهای $\\dfrac{\\vec{a}}{|\\vec{b}|}-\\frac{2\\vec{b}}{|\\vec{a}|}$ و $\\dfrac{3\\vec{a}}{|\\vec{b}|}+\\frac{2\\vec{b}}{|\\vec{a}|}$ ساخته می‌شود. برابر است با: ‌$\\left|\\begin{array}{ll}(\\dfrac{3\\vec{a}}{|\\vec{b}|}+\\dfrac{2\\vec{b}}{|\\vec{a}|})\\times(\\dfrac{\\vec{a}}{|\\vec{b}|}-\\dfrac{2\\vec{b}}{|\\vec{a}|})\\end{array}\\right|\\\\=3\\underbrace{\\dfrac{\\vec{a}\\times\\vec{a}}{|\\vec{b}|^{2}}}_{\\begin{matrix}\\text{صفر}\\end{matrix}}-6\\dfrac{\\vec{a}\\times\\vec{b}}{|\\vec{b}||\\vec{a}|}+\\dfrac{2\\vec{b}\\times\\vec{a}}{|\\vec{a}||\\vec{b}|}-4\\underbrace{\\dfrac{\\vec{b}\\times\\vec{b}}{|\\vec{a}|^{2}}}_{\\begin{matrix}\\text{صفر}\\end{matrix}}=8\\dfrac{\\vec{b}\\times\\vec{a}}{|\\vec{b}||\\vec{a}|}=\\dfrac{8|\\vec{b}||\\vec{a}|\\sin\\theta}{|\\vec{b}||\\vec{a}|}\\\\=8\\sin\\theta=8\\times\\dfrac{4}{5}=6٫4$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "اگر دو بردار ناصفر $\\dfrac{\\vec{a}}{|\\vec{a}|}-\\frac{3\\vec{b}}{|\\vec{b}|}$ و $\\dfrac{9\\vec{a}}{|\\vec{a}|}+\\frac{7\\vec{b}}{|\\vec{b}|}$ بر هم عمود باشند، مساحت متوازی الاضلاعی را که توسط بردارهای ناصفر $\\dfrac{\\vec{a}}{|\\vec{b}|}-\\frac{2\\vec{b}}{|\\vec{a}|}$ و $\\dfrac{3\\vec{a}}{|\\vec{b}|}+\\frac{2\\vec{b}}{|\\vec{a}|}$ ساخته می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$1٫6$"
+      },
+      {
+        "option_text": "$3٫2$"
+      },
+      {
+        "option_text": "$4٫8$"
+      },
+      {
+        "option_text": "$6٫4$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "فرض کنید $\\vec{a}$ و $\\vec{b}$ بردارهای ناصفری هستند که ضرب داخلی آنها، $-\\dfrac{3}{5}$ حاصل‌ضرب اندازه‌های دو بردار است. مساحت مثلثی را که توسط بردارهای $(\\frac{\\vec{a}}{|\\vec{a}|}-\\frac{2\\vec{b}}{|\\vec{b}|})$ و $(\\frac{3\\vec{a}}{|\\vec{a}|}+\\frac{2\\vec b}{|\\vec{b}|})$ ساخته می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$6٫4$"
+      },
+      {
+        "option_text": "$4٫8$"
+      },
+      {
+        "option_text": "$3٫2$"
+      },
+      {
+        "option_text": "$1٫6$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "$\\vec{a}\\cdot \\vec{b}=-\\frac{3}{5}|\\vec{a}||\\vec{b}|\\to |\\vec{a}||\\vec{b}|\\cos \\theta =-\\frac{3}{5}|\\vec{a}||\\vec{b}|\\rightarrow \\cos \\theta =-\\frac{3}{5}$$\\to \\sin \\theta =\\sqrt{1-\\cos ^2 \\theta}=\\sqrt{1-(-\\frac{3}{5})^2}=\\sqrt{1-\\frac{9}{25}}=\\sqrt{\\frac{25-9}{25}}=\\sqrt{\\frac{16}{25}}=\\frac{4}{5}$‌با فرض $\\vec{t}=\\frac{\\vec a}{|\\vec{a}|}$ و $\\vec s=\\frac{\\vec{b}}{|\\vec b|}$ داریم:‌$|\\vec{t}|=|\\frac{\\vec{a}}{|\\vec{a}|}|=\\frac{|\\vec{a}|}{|\\vec{a}|}=1 \\begin{matrix}\\text{و}\\end{matrix}\\,|\\vec{s}|=1$‌مساحت مثلثی که توسط بردارهای $\\vec{t}-2\\vec{s}$ و $3\\vec{t}+2\\vec{s}$ ساخته می‌شود برابر است با:‌$\\dfrac{1}{2}|(3\\vec{t}+2\\vec{s})\\times (\\vec{t}-2\\vec{s})|=\\frac{1}{2}|\\underbrace{3\\vec{t}\\times \\vec{t}}_{\\text{صفر}}-3\\vec{t}\\times 2\\vec{s}+2\\vec{s}\\times \\vec{t}-\\underbrace{2\\vec{s}\\times 2\\vec{s}}_{\\text{صفر}}|$$‌=\\frac{1}{2}|6\\vec{s}\\times \\vec{t}+2\\vec{s}\\times \\vec{t}|=4|\\vec{s}\\times \\vec{t}|=4|\\vec{s}||\\vec{t}|\\sin \\theta =4\\times 1\\times 1\\times \\frac{4}{5}=3٫2$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "فرض کنید $\\vec{a}$ و $\\vec{b}$ بردارهای ناصفری هستند که ضرب داخلی آنها، $-\\dfrac{3}{5}$ حاصل‌ضرب اندازه‌های دو بردار است. مساحت مثلثی را که توسط بردارهای $(\\frac{\\vec{a}}{|\\vec{a}|}-\\frac{2\\vec{b}}{|\\vec{b}|})$ و $(\\frac{3\\vec{a}}{|\\vec{a}|}+\\frac{2\\vec b}{|\\vec{b}|})$ ساخته می‌شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$6٫4$"
+      },
+      {
+        "option_text": "$4٫8$"
+      },
+      {
+        "option_text": "$3٫2$"
+      },
+      {
+        "option_text": "$1٫6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "سه بردار $\\vec{a}$ ، $\\vec{b}$  و $\\vec{c}$  با اندازه‌ها‌ی $3$ ، $4$  و $7$  واحد، در رابطۀ $\\vec{a}+\\vec{b}+\\vec{c}=\\vec{O}$ صدق می‌کنند. مقدار $\\vec{a}\\cdot \\vec{b}+\\vec{b}\\cdot \\vec{c}+\\vec{c}\\cdot \\vec{a}$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$-37$"
+      },
+      {
+        "option_text": "$-19$"
+      },
+      {
+        "option_text": "$19$"
+      },
+      {
+        "option_text": "$37$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "روش اول: بردار $\\vec{a} + \\vec{b} + \\vec{c}$ را در خودش ضرب داخلی می‌کنیم: $(\\vec{a}+\\vec{b}+\\vec{c})\\cdot (\\vec{a}+\\vec{b}+\\vec{c})={{\\left| {\\vec{a}} \\right|}^{2}}+{{\\left| {\\vec{b}} \\right|}^{2}}+{{\\left| {\\vec{c}} \\right|}^{2}}+2(\\overbrace{\\vec{a}\\cdot \\vec{b}+\\vec{b}\\cdot \\vec{c}+\\vec{c}\\cdot \\vec{a}}^{x})\\\\ \\Rightarrow 0={{3}^{2}}+{{4}^{2}}+{{7}^{2}}+2x\\Rightarrow x=-37$ روش دوم: از آنجا که  $3+4=7$، بنابراین این سه بردار به شکل زیر، هم‌راستا هستند و داریم: $\\vec{a}\\cdot \\vec{b}+\\vec{b}\\cdot \\vec{c}+\\vec{c}\\cdot \\vec{a}=3\\times 4\\times \\cos 0{}^\\circ +4\\times 7\\times \\cos 180{}^\\circ +7\\times 3\\times \\cos 180{}^\\circ\\\\ =12-28-21=-37$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "سه بردار $\\vec{a}$ ، $\\vec{b}$  و $\\vec{c}$  با اندازه‌ها‌ی $3$ ، $4$  و $7$  واحد، در رابطۀ $\\vec{a}+\\vec{b}+\\vec{c}=\\vec{O}$ صدق می‌کنند. مقدار $\\vec{a}\\cdot \\vec{b}+\\vec{b}\\cdot \\vec{c}+\\vec{c}\\cdot \\vec{a}$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$-37$"
+      },
+      {
+        "option_text": "$-19$"
+      },
+      {
+        "option_text": "$19$"
+      },
+      {
+        "option_text": "$37$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "دو بردار با تصاویر $\\vec{b}=(2,4,m),\\vec{a}=(1,2,-1)$ مفروض‌اند. به‌ازای کدام مقادیر $m$، حاصل عبارت $(\\vec{a}+\\vec{b})\\cdot(\\vec{a}\\times \\vec{b})$ برابر صفر است؟",
+    "options": [
+      {
+        "option_text": "فقط $m=\\pm2$"
+      },
+      {
+        "option_text": "فقط $m=-2$"
+      },
+      {
+        "option_text": "هيچ مقدار $m$"
+      },
+      {
+        "option_text": "هر عدد حقيقي $m$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "easy",
+    "solution": "$\\vec{a}×\\vec{b}$ برداري است عمودبر صفحۀ دو بردار $\\vec{a},\\vec{b}$ ، پس بر $\\vec{a}+\\vec{b}$  نيز عمود است، پس حاصل $(\\vec{a}+\\vec{b})\\cdot(\\vec{a}\\times \\vec{b})$ همواره برابر صفر است و به مقدار $m$  بستگي ندارد.",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "دو بردار با تصاویر $\\vec{b}=(2,4,m),\\vec{a}=(1,2,-1)$ مفروض‌اند. به‌ازای کدام مقادیر $m$، حاصل عبارت $(\\vec{a}+\\vec{b})\\cdot(\\vec{a}\\times \\vec{b})$ برابر صفر است؟",
+    "options": [
+      {
+        "option_text": "فقط $m=\\pm2$"
+      },
+      {
+        "option_text": "فقط $m=-2$"
+      },
+      {
+        "option_text": "هيچ مقدار $m$"
+      },
+      {
+        "option_text": "هر عدد حقيقي $m$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "مساحت مثلثی برابر $64$ و مختصات وسط اضلاع آن نقاط $B(-1,-a,b) , A(3,a,b)$ و $C(5,-4,b)$ هستند. طول پاره‌خط $AB$ کدام می‌تواند باشد؟",
+    "options": [
+      {
+        "option_text": "$2 \\sqrt{10}$"
+      },
+      {
+        "option_text": "$2 \\sqrt{2}$"
+      },
+      {
+        "option_text": "$4 \\sqrt{2}$"
+      },
+      {
+        "option_text": "$10 \\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "‌‌ $\\overrightarrow{AB} = B-A = (-1 , -a , b) - (3,a,b) = (-4,-2a,0) \\\\ \\overrightarrow{AC} = C-A = (5 , -4, b) - (3,a,b) = (2,-4-a,0) \\\\ \\; \\\\ \\overrightarrow{AB} \\times \\overrightarrow{AC} = \\left|\\begin {matrix} \\overrightarrow{i} & \\overrightarrow{j} & \\overrightarrow{k}\\\\ -4 & -2a & 0 \\\\ 2 & -4-a & 0 \\end{matrix} \\right | = (0,0,8a+16) \\to |\\overrightarrow{AB} \\times\\overrightarrow{AC}| = |8a+16| \\\\ S_{A\\overset{\\Delta}{B}C} = \\dfrac{1}{4}S_{M\\overset{\\Delta}{N}F} = \\dfrac{1}{4} \\times 64=16 \\\\ S_{A\\overset{\\Delta}{B}C} = \\dfrac{1}{2} |\\overrightarrow{AB} \\times \\overrightarrow{AC}| \\to 16= \\dfrac{1}{2} |8a+16| \\to |8a+16| = 32 \\\\ \\Rightarrow \\left\\{\\begin{array}{ll} 8a+16=32 \\to 8a = 16 \\to a=2 \\to \\overrightarrow{AB} = (-4,-4,0) \\to |\\overrightarrow{AB}| = \\sqrt{(-4)^2+(-4)^2+0^2} = 4\\sqrt{2}\\\\ 8a+16=-32 \\to 8a = -48 \\to a=-6 \\to \\overrightarrow{AB} = (-4,12,0) \\to |\\overrightarrow{AB}| = \\sqrt{(-4)^2+12^2+0^2} = 4\\sqrt{10} \\end{array} \\right.$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "مساحت مثلثی برابر $64$ و مختصات وسط اضلاع آن نقاط $B(-1,-a,b) , A(3,a,b)$ و $C(5,-4,b)$ هستند. طول پاره‌خط $AB$ کدام می‌تواند باشد؟",
+    "options": [
+      {
+        "option_text": "$2 \\sqrt{10}$"
+      },
+      {
+        "option_text": "$2 \\sqrt{2}$"
+      },
+      {
+        "option_text": "$4 \\sqrt{2}$"
+      },
+      {
+        "option_text": "$10 \\sqrt{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "یک متوازی‌السطوح توسط بردارهای $\\vec{a}=(2\\;,-3\\;, 4)$، $\\vec{b}=(-1\\;,2\\;, 3)$ و $\\vec{c}=(3\\;,-2\\;, 1)$ تولید شده و صفحه $P$ شامل بردارهای $b$ و $c$ است. اندازۀ ارتفاع متوازی‌السطوح عمود بر صفحه $P$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$5\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{\\sqrt{5}}{5}$"
+      },
+      {
+        "option_text": "$\\dfrac{5\\sqrt{2}}{2}$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "$\\overrightarrow{b}\\times \\overrightarrow{c} = \\left|\\begin{matrix}\\overrightarrow{i} & \\overrightarrow{j} & \\overrightarrow{k} \\\\ -1 & 2 & 3 \\\\ 3 & -2 & 1 \\end{matrix}\\right| = 8\\overrightarrow{i} + 10\\overrightarrow{j} - 4\\overrightarrow{k} \\\\ \\begin{matrix}\\text{مساحت قاعده}\\end{matrix} = | \\overrightarrow{b} \\times \\overrightarrow{c}| =\\sqrt{8^2+10^2+(-4)^2}= \\sqrt{64+100+16} =\\sqrt{180} = 6\\sqrt{5} \\\\ \\begin{matrix}\\text{حجم متوازی السطوح}\\end{matrix} = | \\overrightarrow{a}\\cdot (\\overrightarrow{b}\\times\\overrightarrow{c})| = |(2 , -3 , 4) , (8 , 10 , -4)| \\\\ \\begin{matrix}\\text{حجم متوازی السطوح}\\end{matrix} = |16-30-16| = 30 \\\\ \\begin{matrix}\\text{حجم متوازی السطوح}\\end{matrix} = \\begin{matrix}\\text{مساحت قاعده}\\end{matrix} \\times \\begin{matrix}\\text{اندازه ارتفاع }\\end{matrix} \\\\ 30= 6\\sqrt{5} \\times h \\rightarrow h = \\dfrac{30}{6\\sqrt{5}} = \\dfrac{5}{\\sqrt{5}} = \\sqrt{5}$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "یک متوازی‌السطوح توسط بردارهای $\\vec{a}=(2\\;,-3\\;, 4)$، $\\vec{b}=(-1\\;,2\\;, 3)$ و $\\vec{c}=(3\\;,-2\\;, 1)$ تولید شده و صفحه $P$ شامل بردارهای $b$ و $c$ است. اندازۀ ارتفاع متوازی‌السطوح عمود بر صفحه $P$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$5\\sqrt{2}$"
+      },
+      {
+        "option_text": "$\\dfrac{\\sqrt{5}}{5}$"
+      },
+      {
+        "option_text": "$\\dfrac{5\\sqrt{2}}{2}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "اگر $\\overrightarrow{a}=2\\overrightarrow{i}-\\overrightarrow{j}+\\overrightarrow{k}$ و $\\overrightarrow{b}=\\overrightarrow{j}-\\overrightarrow{k}$ باشند، مساحت مثلثی که بر روی دو بردار $\\overrightarrow{a}\\times \\overrightarrow{b}$ و $\\overrightarrow{a}+2\\overrightarrow{b}$ ساخته شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "ابتدا بردارهای $\\overrightarrow{a}\\times \\overrightarrow{b}$ و $\\overrightarrow{a}+2\\overrightarrow{b}$ را می‌سازیم:\\displaystyle \\left \\{ \\begin{array} \\overrightarrow{\\vec{a}}=(2,-1,1) \\\\ \\overrightarrow{b}=(0,1,-1) \\\\\\end{array} \\right. \\Rightarrow \\left \\{ \\begin{array}&\\overrightarrow{a}\\times \\overrightarrow{b}=\\left( \\begin{matrix} 2 & -1 & 1 \\\\ 0 & 1 & -1 \\\\\\end{matrix} \\right)=(0,2,2) \\\\ \\overrightarrow{a}+ 2\\overrightarrow{b}=(2,-1,1)+(0,2,-2)=(2,1,-1) \\\\\\end{array} \\right.‌مساحت مثلث موردنظر برابر نصف اندازه حاصل‌ضرب خارجی دو بردار است، پس:‌ $\\Rightarrow (\\overrightarrow{a}\\times \\overrightarrow{b})\\times \\vec{a}+2\\vec{b}=\\left( \\begin{matrix}  0 & 2 & 2 \\\\  2 & 1 & -1 \\\\ \\end{matrix} \\right)=(-4,4,-4) \\\\ \\Rightarrow {{S}_{ \\vartriangle }}=\\frac{1}{2}|(\\overrightarrow{a}\\times \\overrightarrow{b})\\times (\\overrightarrow{a}+2\\overrightarrow{b})|=\\frac{1}{2}\\sqrt{16+16+16}=2\\sqrt{3}$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "اگر $\\overrightarrow{a}=2\\overrightarrow{i}-\\overrightarrow{j}+\\overrightarrow{k}$ و $\\overrightarrow{b}=\\overrightarrow{j}-\\overrightarrow{k}$ باشند، مساحت مثلثی که بر روی دو بردار $\\overrightarrow{a}\\times \\overrightarrow{b}$ و $\\overrightarrow{a}+2\\overrightarrow{b}$ ساخته شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{5}$"
+      },
+      {
+        "option_text": "$2\\sqrt{2}$"
+      },
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$2\\sqrt{3}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "دو بردار $\\vec{a}$ و $\\vec{b}$ با معلومات  $\\left| \\vec{a} \\right|=5$  و  $\\left| \\vec{b} \\right|=7$  و  $\\vec{a}-\\vec{b}=2\\vec{i}+\\vec{j}-3\\vec{k}$  مفروض‌اند. تصویر قائم بردار $\\vec{b}$ بر روی بردار $\\vec{a}$، چند برابر $\\vec{a}$ است؟",
+    "options": [
+      {
+        "option_text": "$0٫7$"
+      },
+      {
+        "option_text": "$0٫8$"
+      },
+      {
+        "option_text": "$1٫2$"
+      },
+      {
+        "option_text": "$1٫4$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "با توجه به فرض داریم:${{\\left| \\vec{a}-\\vec{b} \\right|}^{2}}={{\\left| \\vec{a} \\right|}^{2}}+{{\\left| \\vec{b} \\right|}^{2}}-2\\vec{a}\\cdot \\vec{b}\\Rightarrow {{(\\sqrt{4+1+9})}^{2}}=25+49-2\\vec{a}\\cdot \\vec{b}$$\\Rightarrow 14=74-2\\vec{a}\\cdot \\vec{b}\\Rightarrow \\vec{a}\\cdot \\vec{b}=30$‌ئر نتیجه،اندازۀ تصویر قائم $\\vec{b}$ روی $\\vec{a}$  برابر می‌شود: $\\Rightarrow \\left|\\overrightarrow{b'} \\right| =\\frac{\\left| \\vec{a}\\cdot \\vec{b} \\right|}{\\left| \\vec{a} \\right|}=\\frac{\\left| 30 \\right|}{5}=6\\Rightarrow \\frac{|\\vec{b'}|}{|\\vec{a}|}=\\frac{6}{5}=1٫2$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "دو بردار $\\vec{a}$ و $\\vec{b}$ با معلومات  $\\left| \\vec{a} \\right|=5$  و  $\\left| \\vec{b} \\right|=7$  و  $\\vec{a}-\\vec{b}=2\\vec{i}+\\vec{j}-3\\vec{k}$  مفروض‌اند. تصویر قائم بردار $\\vec{b}$ بر روی بردار $\\vec{a}$، چند برابر $\\vec{a}$ است؟",
+    "options": [
+      {
+        "option_text": "$0٫7$"
+      },
+      {
+        "option_text": "$0٫8$"
+      },
+      {
+        "option_text": "$1٫2$"
+      },
+      {
+        "option_text": "$1٫4$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "سه بردار $\\vec{V_{2}}=(2,b,1)\\,\\,,\\,\\, \\vec{V_{1}}=(1,-1,a)$ و  $\\vec{V_{3}}=(c,3,2)$ ، دوبه‌دو عمود برهم هستند. مقدار $a + b + c$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "hard",
+    "solution": "راه$$حل اول: چون سه بردار مذکور دوبه$$دو برهم عمودند، پس حاصل‌ضرب داخلی دوبه$$دوی آنها برابر صفر است، لذا داریم: $\\begin{array}{ll} & \\vec{V_{1}}\\cdot \\vec{{V}_{2}}=0\\Rightarrow (1,-1,a)\\cdot(2,b,1)=0\\Rightarrow 2-b+a=0\\Rightarrow a-b=-2\\,\\,\\,\\,\\,\\,\\,\\,(1) \\\\ & \\vec{{V}_{1}}\\cdot \\vec{{V}_{3}}=0\\Rightarrow (1,-1,a)\\cdot(c,3,2)=0\\Rightarrow c-3+2a=0\\Rightarrow 2a+c=3\\,\\,\\,\\,\\,\\,(2) \\\\ & \\vec{{V}_{2}}\\cdot \\vec{{V}_{3}}=0\\Rightarrow(2,b,1)\\cdot(c,3,2)=0\\Rightarrow 2c+3b+2=0\\Rightarrow 3b+2c=-2\\,\\,\\,\\,\\,\\,(3) \\\\ \\end{array}$با حل این سه معادله، مقادیر $a=14$، $b=16$ و $c=-25$ به‌دست می$$آید که در آن صورت: $a+b+c=5$راه‌حل دوم: چون  $\\vec{{V}_{1}}$ بر هر دو بردار  $\\vec{{V}_{2}}$ و  $\\vec{{V}_{3}}$ عمود است، بر مجموع یا تفاضل آن دو نیز عمود است، پس: $\\vec{{V}_{1}}\\cdot( \\vec{{V}_{2}}- \\vec{{V}_{3}})=0\\Rightarrow (1,-1,a)\\cdot(2-c,b-3,-1)=0\\Rightarrow 2-c-b+3-a=0\\Rightarrow a+b+c=5$توجه: عملی که در راه$$حل دوم انجام دادیم، معادل با این است که در راه$$حل اول، معادله ($2$) را از معادله ($1$) کم کنیم.",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "سه بردار $\\vec{V_{2}}=(2,b,1)\\,\\,,\\,\\, \\vec{V_{1}}=(1,-1,a)$ و  $\\vec{V_{3}}=(c,3,2)$ ، دوبه‌دو عمود برهم هستند. مقدار $a + b + c$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      },
+      {
+        "option_text": "$8$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "بر روی سه بردار  $\\vec{b}=\\vec{j}+3\\vec{k}\\,\\,,\\,\\,\\vec{a}=2\\vec{i}-\\vec{j}$ و $\\vec{c}=4\\vec{i}-\\vec{k}$  یک متوازی‌السطوح ساخته شده است. اگر قاعده این متوازی‌السطوح را بردارهای $\\vec{a}$ و $\\vec{b}$ تشکیل دهند، ارتفاع متوازی‌السطوح کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$\\sqrt{3}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "بردار $\\vec{a} \\times \\vec{b}$  را تشکیل می‌دهیم:$\\left( \\vec{a}\\times \\vec{b} \\right)=\\left| \\begin{matrix} \\vec{i} & \\vec{j} & \\vec{k} \\\\ 2 & -1 & 0 \\\\ 0 & 1 & 3 \\\\\\end{matrix} \\right|=(-3,-6,2)$‌مساحت قاعده و حجم متوازی‌السطوح برابر می‌شوند با:$\\left \\{ \\begin{array}{ll} &\\begin{matrix}\\text{مساحت قاعده متوازی‌السطوح}\\end{matrix} :S=\\left| \\vec{a}\\times \\vec{b} \\right|=\\sqrt{9+36+4}=\\sqrt{49}=7 \\\\\\begin{matrix}\\text{حجم متوازی‌السطوح}\\end{matrix}:V=\\left| \\vec{c}\\cdot \\left( \\vec{a}\\times \\vec{b} \\right) \\right|=\\left| (4,0,-1)\\cdot (-3,-6,2) \\right|=\\left| -12-2 \\right|=14 \\end{array} \\right.$  $V=S\\cdot h\\Rightarrow h=\\frac{V}{S}=\\frac{\\left| \\vec{c}\\cdot \\left( \\vec{a}\\times \\vec{b} \\right) \\right|}{\\left| \\vec{a}\\times \\vec{b} \\right|}=\\frac{14}{7}=2$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "بر روی سه بردار  $\\vec{b}=\\vec{j}+3\\vec{k}\\,\\,,\\,\\,\\vec{a}=2\\vec{i}-\\vec{j}$ و $\\vec{c}=4\\vec{i}-\\vec{k}$  یک متوازی‌السطوح ساخته شده است. اگر قاعده این متوازی‌السطوح را بردارهای $\\vec{a}$ و $\\vec{b}$ تشکیل دهند، ارتفاع متوازی‌السطوح کدام است؟",
+    "options": [
+      {
+        "option_text": "$1$"
+      },
+      {
+        "option_text": "$1٫5$"
+      },
+      {
+        "option_text": "$\\sqrt{3}$"
+      },
+      {
+        "option_text": "$2$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "بردار$\\overrightarrow{a}=\\overrightarrow{i}+2\\overrightarrow{j}-4\\overrightarrow{k}$  به‌صورت ترکیبی از بردارهای واحد محورهای مختصات داده شده است. مساحت متوازی‌الاضلاعی که بر روی دو بردار $\\overrightarrow{a}$ و $\\overrightarrow{a}\\times \\overrightarrow{k}$ ساخته شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{84}$"
+      },
+      {
+        "option_text": "$\\sqrt{96}$"
+      },
+      {
+        "option_text": "$\\sqrt{102}$"
+      },
+      {
+        "option_text": "$\\sqrt{105}$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "ابتدا بردار $\\overrightarrow{a} \\times \\overrightarrow{k}$  را می‌سازیم:$\\left\\{ \\begin{array}{ll} & \\overrightarrow{a}=\\left( 1,2,-4 \\right) \\\\ & \\overrightarrow{k}=\\left( 0,0,1 \\right) \\\\ \\end{array} \\right.\\Rightarrow \\overrightarrow{a}\\times \\overrightarrow{k}=\\left( 2,-1,0 \\right)$می‌دانیم مساحت متوازی‌الاضلاعی که روی دو بردار $\\overrightarrow{a}$ و $\\overrightarrow{a}\\times \\overrightarrow{k}$ ساخته می‌شود برابر است با اندازۀ حاصل‌ضرب خارجی این دو بردار:$\\left\\{ \\begin{array}{ll} & \\overrightarrow{a}=\\left( 1,2,-4 \\right) \\\\ & \\overrightarrow{a}\\times \\overrightarrow{k}=\\left( 2,-1,0 \\right) \\\\ \\end{array} \\right.\\Rightarrow \\overrightarrow{a}\\times \\left( \\overrightarrow{a}\\times \\overrightarrow{k} \\right)=\\left( -4,-8,-5 \\right)\\\\\\Rightarrow S=\\left| \\overrightarrow{a}\\times \\left( \\overrightarrow{a}\\times \\overrightarrow{k} \\right) \\right|=\\sqrt{16+64+25}=\\sqrt{105}$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "بردار$\\overrightarrow{a}=\\overrightarrow{i}+2\\overrightarrow{j}-4\\overrightarrow{k}$  به‌صورت ترکیبی از بردارهای واحد محورهای مختصات داده شده است. مساحت متوازی‌الاضلاعی که بر روی دو بردار $\\overrightarrow{a}$ و $\\overrightarrow{a}\\times \\overrightarrow{k}$ ساخته شود، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{84}$"
+      },
+      {
+        "option_text": "$\\sqrt{96}$"
+      },
+      {
+        "option_text": "$\\sqrt{102}$"
+      },
+      {
+        "option_text": "$\\sqrt{105}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "دو بردار $\\overrightarrow{b},\\overrightarrow{a}$ به طول‌های $4,3$ واحد با یکدیگر زاویۀ  $30$ درجه می‌سازند. مساحت مثلثی که بر روی دو بردار $3\\overrightarrow{a}+2\\overrightarrow{b},\\overrightarrow{a}-2\\overrightarrow{b}$ تولید شود کدام است؟",
+    "options": [
+      {
+        "option_text": "$24$"
+      },
+      {
+        "option_text": "$36$"
+      },
+      {
+        "option_text": "$42$"
+      },
+      {
+        "option_text": "$48$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "مساحت مثلث موردنظر برابر است با نصف اندازۀ حاصل‌ضرب خارجی دو بردار داده شده، پس:$S_{\\triangle}=\\frac{1}{2}\\left| \\left( \\overrightarrow{a}-2\\overrightarrow{b} \\right)\\times \\left( 3\\overrightarrow{a}+2\\overrightarrow{b} \\right) \\right|=\\frac{1}{2}\\left| (2\\overrightarrow{a}\\times \\overrightarrow{b})-({6\\overrightarrow{b}\\times \\overrightarrow{a}}) \\right|=4\\left| \\overrightarrow{a}\\times \\overrightarrow{b} \\right|\\\\=4\\left| \\overrightarrow{a} \\right|\\left| \\overrightarrow{b} \\right|\\sin 30^{\\circ}=4\\times 3\\times 4\\times \\dfrac{1}{2}=24$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "دو بردار $\\overrightarrow{b},\\overrightarrow{a}$ به طول‌های $4,3$ واحد با یکدیگر زاویۀ  $30$ درجه می‌سازند. مساحت مثلثی که بر روی دو بردار $3\\overrightarrow{a}+2\\overrightarrow{b},\\overrightarrow{a}-2\\overrightarrow{b}$ تولید شود کدام است؟",
+    "options": [
+      {
+        "option_text": "$24$"
+      },
+      {
+        "option_text": "$36$"
+      },
+      {
+        "option_text": "$42$"
+      },
+      {
+        "option_text": "$48$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "زاویه بین دو بردار $\\vec{b},\\vec{a}$  کمتر از $90$  درجه است و $|\\vec{a}\\times(\\vec{a}+\\vec{b})|=18,|\\vec{b}|=5,|\\vec{a}|=6$ ، حاصل $\\vec{a}\\cdot(\\vec{a}+\\vec{b})$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$54$"
+      },
+      {
+        "option_text": "$56$"
+      },
+      {
+        "option_text": "$60$"
+      },
+      {
+        "option_text": "$64$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "طبق فرض داریم:$|\\vec{a}\\times (\\vec{a}+\\vec{b})|=18\\Rightarrow |\\vec{a}\\times \\vec{b}|=18\\\\ |\\vec{a}\\times \\vec{b}|^{2}=|\\vec{a}|^{2}|\\vec{b}|^{2}-(\\vec{a}\\cdot \\vec{b})^{2}\\Rightarrow 324=25\\times 36-(a\\cdot b)^{2} \\Rightarrow (a \\cdot b)^{2}=576\\\\ \\Rightarrow \\vec{a}\\cdot \\vec{b}=\\pm 24\\;\\xrightarrow{\\large{\\theta<90^{\\circ}}}\\;\\vec{a}\\cdot \\vec{b}=24\\Rightarrow \\vec{a}\\cdot(\\vec{a}+\\vec{b})=|\\vec{a}|^{2}+\\vec{a}\\cdot \\vec{b}=36+24=60$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "زاویه بین دو بردار $\\vec{b},\\vec{a}$  کمتر از $90$  درجه است و $|\\vec{a}\\times(\\vec{a}+\\vec{b})|=18,|\\vec{b}|=5,|\\vec{a}|=6$ ، حاصل $\\vec{a}\\cdot(\\vec{a}+\\vec{b})$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$54$"
+      },
+      {
+        "option_text": "$56$"
+      },
+      {
+        "option_text": "$60$"
+      },
+      {
+        "option_text": "$64$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "مساحت مثلث $ABC$، با سه رأس $C(-3,2,1)$ , $B(2,0,1)$ , $A(1,-2,3)$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{35}$"
+      },
+      {
+        "option_text": "$\\sqrt{65}$"
+      },
+      {
+        "option_text": "$\\sqrt{54}$"
+      },
+      {
+        "option_text": "$\\sqrt{42}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "برای یافتن مساحت $A\\overset{\\triangle}{B}C$  کافیست نصف اندازۀ حاصل‌ضرب خارجی دو بردار ضلع این مثلث را بیابیم:$\\vec{AB}×\\vec{AC}=\\begin{vmatrix} \\vec{i} &\\vec{j} &\\vec{k} \\\\1   &2 &-2 \\\\-4   &4 &-2  \\end{vmatrix}=(4,10,12)\\\\ S_{ABC}=\\frac{1}{2}|\\vec{AB}×\\vec{AC}|=\\frac{1}{2}\\sqrt{16+100+144}=\\sqrt{65}$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "مساحت مثلث $ABC$، با سه رأس $C(-3,2,1)$ , $B(2,0,1)$ , $A(1,-2,3)$، کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\sqrt{35}$"
+      },
+      {
+        "option_text": "$\\sqrt{65}$"
+      },
+      {
+        "option_text": "$\\sqrt{54}$"
+      },
+      {
+        "option_text": "$\\sqrt{42}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "دو بردار $\\vec{a}$  و $\\vec{b}$  با تصویرهای $(2,0,-1) , (1,\\alpha +1 , 2\\alpha)$ مفروض‌اند. به‌ازای کدام مقادیر $\\alpha$ بردارهای $\\vec{a}+\\vec{b}$  و $\\vec{a}-\\vec{b}$  عمود برهم‌اند؟",
+    "options": [
+      {
+        "option_text": "$0٫4$ و $-1$"
+      },
+      {
+        "option_text": "$0٫6$ و $1$"
+      },
+      {
+        "option_text": "$0٫4$ و $1$"
+      },
+      {
+        "option_text": "$0٫6$ و $-1$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "طبق فرض داریم:$(\\overrightarrow{a}+\\overrightarrow{b}) \\perp (\\overrightarrow{a}-\\overrightarrow{b}) \\Rightarrow (\\overrightarrow{a}+\\overrightarrow{b})\\cdot(\\overrightarrow{a}-\\overrightarrow{b})=0\\Rightarrow |\\overrightarrow{a}|^{2}-|\\overrightarrow{b}|^{2}=0\\Rightarrow |\\overrightarrow{a}|^{2}=|\\overrightarrow{b}|^{2}\\\\ 1+(\\alpha +1)^{2}+4\\alpha ^{2}=4+0+1\\Rightarrow 5\\alpha ^{2}+2\\alpha -3=0\\Rightarrow \\alpha =-1 , 0٫6$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "دو بردار $\\vec{a}$  و $\\vec{b}$  با تصویرهای $(2,0,-1) , (1,\\alpha +1 , 2\\alpha)$ مفروض‌اند. به‌ازای کدام مقادیر $\\alpha$ بردارهای $\\vec{a}+\\vec{b}$  و $\\vec{a}-\\vec{b}$  عمود برهم‌اند؟",
+    "options": [
+      {
+        "option_text": "$0٫4$ و $-1$"
+      },
+      {
+        "option_text": "$0٫6$ و $1$"
+      },
+      {
+        "option_text": "$0٫4$ و $1$"
+      },
+      {
+        "option_text": "$0٫6$ و $-1$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "اگر $\\vec{c} , \\vec{b} , \\vec{a}$  سه بردار غیرصفر باشند خلاصه شده $(2\\vec{a}-\\vec{b})\\cdot((\\vec{b}+\\vec{c})\\times(\\vec{c}-\\vec{a}))$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$2\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$3\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$0$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "ابتدا ضرب خارجی را ساده کرده و سپس از ویژگی‌های ضرب مختلط بردارها کمک می‌گیریم:$\\small(2\\vec{a}-\\vec{b})\\cdot\\left((\\vec{b}+\\vec{c})\\times (\\vec{c}-\\vec{a})\\right)=(2\\vec{a}-\\vec{b})\\cdot(\\vec{b}\\times \\vec{c}+\\overbrace{\\vec{c}\\times \\vec{c}}^{0}-\\vec{b}\\times \\vec{a}-\\vec{c}\\times \\vec{a}) =(2\\vec{a}-\\vec{b})\\cdot(\\vec{b}\\times \\vec{c}-\\vec{b}\\times \\vec{a}-\\vec{c}\\times \\vec{a})\\\\ \\small=2\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})-\\overbrace{2\\vec{a}\\cdot(\\vec{b}\\times \\vec{a})}^{0}-\\overbrace{2\\vec{a}\\cdot (\\vec{c}\\times \\vec{a})}^{0}-\\overbrace{\\vec{b}\\cdot(\\vec{b}\\times \\vec{c})}^{0}+ \\overbrace{\\vec{b}\\cdot(\\vec{b}\\times \\vec{a})}^{0}+\\vec{b}\\cdot(\\vec{c}\\times \\vec{a})=2\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})+\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})=3\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$ تذکر: با توجه به خاصیت دوری در ضرب مختلط $3$ بردار داریم: $\\vec{b}\\cdot (\\vec{c}\\times \\vec{a})=\\vec{a}\\cdot (\\vec{b}\\times \\vec{c})$.",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "اگر $\\vec{c} , \\vec{b} , \\vec{a}$  سه بردار غیرصفر باشند خلاصه شده $(2\\vec{a}-\\vec{b})\\cdot((\\vec{b}+\\vec{c})\\times(\\vec{c}-\\vec{a}))$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$2\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$3\\vec{a}\\cdot(\\vec{b}\\times \\vec{c})$"
+      },
+      {
+        "option_text": "$0$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "مساحت مثلثی برابر $16$ و مختصات وسط اضلاع آن نقاط $(a,9,b)\\;\\begin{matrix}\\text{و}\\end{matrix}\\; (a,b,3)\\;,\\; (a,4,1)$ هستند. مجموع مقادیر ممکن برای $b$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$-5$"
+      },
+      {
+        "option_text": "$10$"
+      },
+      {
+        "option_text": "$-10$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "hard",
+    "solution": "‌‌ $\\overrightarrow{AB} = B-A = (a,b,3)-(a,9,b)=(0,b-9,3-b) \\\\ \\overrightarrow{AC} = C-A =(a,4,1)-(a,9,b)=(0,-5,1-b) \\\\ \\;\\\\ \\overrightarrow{AB} \\times \\overrightarrow{AC} = \\left |\\begin {matrix} \\overrightarrow{i} & \\overrightarrow{j} & \\overrightarrow{k} \\\\ 0 & b-9 & 3-b \\\\ 0 & -5 & 1-b \\end {matrix} \\right| = (-b^2+5b+6,0,0) \\\\\\Rightarrow |\\overrightarrow{AB}\\times \\overrightarrow{AC}| = |-b^2+5b+6|\\\\ S_{\\overset{\\Delta}{ABC}} = \\dfrac{1}{4}S_{\\overset{\\Delta}{MNF}} = \\dfrac{1}{4} \\times 16=4 \\\\ S_{\\overset{\\Delta}{ABC}} = \\dfrac{1}{2}|\\overrightarrow{AB}\\times \\overrightarrow{AC}|\\Rightarrow 4 =\\dfrac{1}{2}|-b^2+5b+6|\\Rightarrow |-b^2+5b+6|=8 \\\\\\Rightarrow \\left\\{\\begin{array}{ll} -b^2+5b+6=8\\Rightarrow b^2-5b+2=0\\Rightarrow S= -\\dfrac{-5}{1}=5 \\\\ -b^2+5b+6=-8 \\Rightarrow b^2-5b-14=0\\Rightarrow S= -\\dfrac{-5}{1}=5 \\end{array} \\right.$‌مجموع تمامی مقادیر ممکن برای $b$ از هر دو معادله : $5+5=10$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "مساحت مثلثی برابر $16$ و مختصات وسط اضلاع آن نقاط $(a,9,b)\\;\\begin{matrix}\\text{و}\\end{matrix}\\; (a,b,3)\\;,\\; (a,4,1)$ هستند. مجموع مقادیر ممکن برای $b$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$-5$"
+      },
+      {
+        "option_text": "$10$"
+      },
+      {
+        "option_text": "$-10$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "اگر $\\vec{b}=(1,2,-4),\\vec{a}=(2,-3,1)$ باشند، حجم متوازی‌السطوحی که بر روی سه بردار $\\vec{a}$ و $\\vec{b}$ و $\\vec{a}\\times \\vec{b}$ ساخته شود کدام است؟",
+    "options": [
+      {
+        "option_text": "$225$"
+      },
+      {
+        "option_text": "$230$"
+      },
+      {
+        "option_text": "$245$"
+      },
+      {
+        "option_text": "$250$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "حجم متوازی‌السطوح ساخته روی بردارهای $\\vec{a}$ و $\\vec{b}$ و $\\vec{a}\\times \\vec{b}$ برابر $(\\vec{a}\\times \\vec{b})\\cdot (\\vec{a}\\times \\vec{b})$ یعنی ${{\\left| \\vec{a}\\times \\vec{b} \\right|}^{2}}$ است. داریم:‌$\\vec{a}\\times \\vec{b}=\\left| \\begin{matrix} {i} & {j} & {k} \\\\ 2 & -3 & 1 \\\\ 1 & 2 & -4 \\\\\\end{matrix} \\right|=10i+9j+7k$‌بنابراین: $={{\\left| \\vec{a}\\times \\vec{b} \\right|}^{2}}={{10}^{2}}+{{9}^{2}}+{{7}^{2}}=100+81+49=230$ ‌حجم متوازی‌السطوح‌پس گزینۀ $2$ درست است.",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "اگر $\\vec{b}=(1,2,-4),\\vec{a}=(2,-3,1)$ باشند، حجم متوازی‌السطوحی که بر روی سه بردار $\\vec{a}$ و $\\vec{b}$ و $\\vec{a}\\times \\vec{b}$ ساخته شود کدام است؟",
+    "options": [
+      {
+        "option_text": "$225$"
+      },
+      {
+        "option_text": "$230$"
+      },
+      {
+        "option_text": "$245$"
+      },
+      {
+        "option_text": "$250$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه حجم اشکال"
+  },
+  {
+    "question_text": "با فرض  $\\vec{a}=(3,m,5)$ و $\\vec{b}=(3-m,7,0)$ ، به‌ازای یک مقدار $m$ دو بردار  $\\vec{a}+\\vec{b}$ و  $\\vec{a}-\\vec{b}$ عمود برهم هستند. زاویه بین دو بردار $\\vec{a}$ و $\\vec{b}$ در این حالت، چند درجه است؟",
+    "options": [
+      {
+        "option_text": "$30$"
+      },
+      {
+        "option_text": "$45$"
+      },
+      {
+        "option_text": "$60$"
+      },
+      {
+        "option_text": "$90$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "با توجه به فرض داریم:$\\begin{array}{ll}& \\vec{a}=(3,m,5)\\,\\,\\,,\\;\\,\\,\\vec{b}=(3-m,7,0) \\\\ & (\\vec{a}+\\vec{b})\\perp(\\vec{a}-\\vec{b})\\Rightarrow (\\vec{a} + \\vec{b}) \\cdot (\\vec{a} - \\vec{b}) =0 \\Rightarrow |\\vec{a}|^{2} - \\vec{a} \\cdot \\vec{b} + \\vec{b} \\cdot \\vec{a} -|\\vec{b}| =0 \\Rightarrow |\\vec{a}| =|\\vec{b}|\\\\ & \\Rightarrow \\sqrt{9+{{m}^{2}}+25}=\\sqrt{{{(3-m)}^{2}}+49}\\rightarrow {{m}^{2}}+34=9-6m+{{m}^{2}}+49 \\\\ & \\Rightarrow 6m=24\\Rightarrow m=4\\Rightarrow \\left\\{ \\begin{array}{ll}\\vec{a}=(3,4,5) \\\\ \\vec{b}=(-1,7,0) \\\\ \\end{array} \\right. \\\\ \\end{array}$کسینوس زاویۀ بین دو بردار $\\vec{a}$ و $\\vec{b}$ برابر می‌شود با: $\\cos \\alpha =\\frac{\\vec{a}\\cdot \\vec{b}}{\\left| \\vec{a} \\right|\\left| \\vec{b} \\right|}=\\frac{-3+28+0}{\\sqrt{9+16+25}\\times \\sqrt{1+49}}=\\frac{25}{50}=\\frac{1}{2}\\Rightarrow \\alpha ={{60}^{\\circ }}$[if gte mso 9]><xml>  <o:OfficeDocumentSettings>  <o:RelyOnVML/>  <o:AllowPNG/>  </o:OfficeDocumentSettings> </xml><![endif][if gte mso 9]><xml>  <w:WordDocument>  <w:View>Normal</w:View>  <w:Zoom>0</w:Zoom>  <w:TrackMoves/>  <w:TrackFormatting/>  <w:PunctuationKerning/>  <w:ValidateAgainstSchemas/>  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>  <w:DoNotPromoteQF/>  <w:LidThemeOther>EN-US</w:LidThemeOther>  <w:LidThemeAsian>X-NONE</w:LidThemeAsian>  <w:LidThemeComplexScript>FA</w:LidThemeComplexScript>  <w:Compatibility>  <w:BreakWrappedTables/>  <w:SnapToGridInCell/>  <w:WrapTextWithPunct/>  <w:UseAsianBreakRules/>  <w:DontGrowAutofit/>  <w:SplitPgBreakAndParaMark/>  <w:EnableOpenTypeKerning/>  <w:DontFlipMirrorIndents/>  <w:OverrideTableStyleHps/>  </w:Compatibility>  <m:mathPr>  <m:mathFont m:val=\"Cambria Math\"/>  <m:brkBin m:val=\"before\"/>  <m:brkBinSub m:val=\"&#45;-\"/>  <m:smallFrac m:val=\"off\"/>  <m:dispDef/>  <m:lMargin m:val=\"0\"/>  <m:rMargin m:val=\"0\"/>  <m:defJc m:val=\"centerGroup\"/>  <m:wrapIndent m:val=\"1440\"/>  <m:intLim m:val=\"subSup\"/>  <m:naryLim m:val=\"undOvr\"/>  </m:mathPr></w:WordDocument> </xml><![endif][if gte mso 9]><xml>  <w:LatentStyles DefLockedState=\"false\" DefUnhideWhenUsed=\"false\"  DefSemiHidden=\"false\" DefQFormat=\"false\" DefPriority=\"99\"  LatentStyleCount=\"371\">  <w:LsdException Locked=\"false\" Priority=\"0\" QFormat=\"true\" Name=\"Normal\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" QFormat=\"true\" Name=\"heading 1\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 2\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 3\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 4\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 5\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 6\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 7\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 8\"/>  <w:LsdException Locked=\"false\" Priority=\"9\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"heading 9\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 6\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 7\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 8\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index 9\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 1\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 2\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 3\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 4\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 5\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 6\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 7\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 8\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"toc 9\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Normal Indent\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"footnote text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"annotation text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"header\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"footer\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"index heading\"/>  <w:LsdException Locked=\"false\" Priority=\"35\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"caption\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"table of figures\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"envelope address\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"envelope return\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"footnote reference\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"annotation reference\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"line number\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"page number\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"endnote reference\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"endnote text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"table of authorities\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"macro\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"toa heading\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Bullet\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Number\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Bullet 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Bullet 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Bullet 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Bullet 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Number 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Number 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Number 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Number 5\"/>  <w:LsdException Locked=\"false\" Priority=\"10\" QFormat=\"true\" Name=\"Title\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Closing\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Signature\"/>  <w:LsdException Locked=\"false\" Priority=\"1\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"Default Paragraph Font\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text Indent\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Continue\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Continue 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Continue 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Continue 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"List Continue 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Message Header\"/>  <w:LsdException Locked=\"false\" Priority=\"11\" QFormat=\"true\" Name=\"Subtitle\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Salutation\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Date\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text First Indent\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text First Indent 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Note Heading\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text Indent 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Body Text Indent 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Block Text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Hyperlink\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"FollowedHyperlink\"/>  <w:LsdException Locked=\"false\" Priority=\"22\" QFormat=\"true\" Name=\"Strong\"/>  <w:LsdException Locked=\"false\" Priority=\"20\" QFormat=\"true\" Name=\"Emphasis\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Document Map\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Plain Text\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"E-mail Signature\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Top of Form\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Bottom of Form\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Normal (Web)\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Acronym\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Address\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Cite\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Code\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Definition\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Keyboard\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Preformatted\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Sample\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Typewriter\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"HTML Variable\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Normal Table\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"annotation subject\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"No List\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Outline List 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Outline List 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Outline List 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Simple 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Simple 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Simple 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Classic 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Classic 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Classic 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Classic 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Colorful 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Colorful 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Colorful 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Columns 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Columns 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Columns 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Columns 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Columns 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 6\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 7\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Grid 8\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 4\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 5\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 6\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 7\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table List 8\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table 3D effects 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table 3D effects 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table 3D effects 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Contemporary\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Elegant\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Professional\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Subtle 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Subtle 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Web 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Web 2\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Web 3\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Balloon Text\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" Name=\"Table Grid\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" UnhideWhenUsed=\"true\"  Name=\"Table Theme\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" Name=\"Placeholder Text\"/>  <w:LsdException Locked=\"false\" Priority=\"1\" QFormat=\"true\" Name=\"No Spacing\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 1\"/>  <w:LsdException Locked=\"false\" SemiHidden=\"true\" Name=\"Revision\"/>  <w:LsdException Locked=\"false\" Priority=\"34\" QFormat=\"true\"  Name=\"List Paragraph\"/>  <w:LsdException Locked=\"false\" Priority=\"29\" QFormat=\"true\" Name=\"Quote\"/>  <w:LsdException Locked=\"false\" Priority=\"30\" QFormat=\"true\"  Name=\"Intense Quote\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"60\" Name=\"Light Shading Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"61\" Name=\"Light List Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"62\" Name=\"Light Grid Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"63\" Name=\"Medium Shading 1 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"64\" Name=\"Medium Shading 2 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"65\" Name=\"Medium List 1 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"66\" Name=\"Medium List 2 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"67\" Name=\"Medium Grid 1 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"68\" Name=\"Medium Grid 2 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"69\" Name=\"Medium Grid 3 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"70\" Name=\"Dark List Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"71\" Name=\"Colorful Shading Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"72\" Name=\"Colorful List Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"73\" Name=\"Colorful Grid Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"19\" QFormat=\"true\"  Name=\"Subtle Emphasis\"/>  <w:LsdException Locked=\"false\" Priority=\"21\" QFormat=\"true\"  Name=\"Intense Emphasis\"/>  <w:LsdException Locked=\"false\" Priority=\"31\" QFormat=\"true\"  Name=\"Subtle Reference\"/>  <w:LsdException Locked=\"false\" Priority=\"32\" QFormat=\"true\"  Name=\"Intense Reference\"/>  <w:LsdException Locked=\"false\" Priority=\"33\" QFormat=\"true\" Name=\"Book Title\"/>  <w:LsdException Locked=\"false\" Priority=\"37\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" Name=\"Bibliography\"/>  <w:LsdException Locked=\"false\" Priority=\"39\" SemiHidden=\"true\"  UnhideWhenUsed=\"true\" QFormat=\"true\" Name=\"TOC Heading\"/>  <w:LsdException Locked=\"false\" Priority=\"41\" Name=\"Plain Table 1\"/>  <w:LsdException Locked=\"false\" Priority=\"42\" Name=\"Plain Table 2\"/>  <w:LsdException Locked=\"false\" Priority=\"43\" Name=\"Plain Table 3\"/>  <w:LsdException Locked=\"false\" Priority=\"44\" Name=\"Plain Table 4\"/>  <w:LsdException Locked=\"false\" Priority=\"45\" Name=\"Plain Table 5\"/>  <w:LsdException Locked=\"false\" Priority=\"40\" Name=\"Grid Table Light\"/>  <w:LsdException Locked=\"false\" Priority=\"46\" Name=\"Grid Table 1 Light\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark\"/>  <w:LsdException Locked=\"false\" Priority=\"51\" Name=\"Grid Table 6 Colorful\"/>  <w:LsdException Locked=\"false\" Priority=\"52\" Name=\"Grid Table 7 Colorful\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"Grid Table 1 Light Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"Grid Table 2 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"Grid Table 3 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"Grid Table 4 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"Grid Table 5 Dark Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"Grid Table 6 Colorful Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"Grid Table 7 Colorful Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"46\" Name=\"List Table 1 Light\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark\"/>  <w:LsdException Locked=\"false\" Priority=\"51\" Name=\"List Table 6 Colorful\"/>  <w:LsdException Locked=\"false\" Priority=\"52\" Name=\"List Table 7 Colorful\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 1\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 2\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 3\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 4\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 5\"/>  <w:LsdException Locked=\"false\" Priority=\"46\"  Name=\"List Table 1 Light Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"47\" Name=\"List Table 2 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"48\" Name=\"List Table 3 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"49\" Name=\"List Table 4 Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"50\" Name=\"List Table 5 Dark Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"51\"  Name=\"List Table 6 Colorful Accent 6\"/>  <w:LsdException Locked=\"false\" Priority=\"52\"  Name=\"List Table 7 Colorful Accent 6\"/>  </w:LatentStyles> </xml><![endif][if gte mso 10]> <style>  /* Style Definitions */  table.MsoNormalTable  {mso-style-name:\"Table Normal\";  mso-tstyle-rowband-size:0;  mso-tstyle-colband-size:0;  mso-style-noshow:yes;  mso-style-priority:99;  mso-style-parent:\"\";  mso-padding-alt:0cm 5.4pt 0cm 5.4pt;  mso-para-margin:0cm;  mso-para-margin-bottom:.0001pt;  text-align:justify;  line-height:150%;  mso-pagination:widow-orphan;  font-size:14.0pt;  font-family:\"Calibri\",sans-serif;  mso-ascii-font-family:Calibri;  mso-ascii-theme-font:minor-latin;  mso-hansi-font-family:Calibri;  mso-hansi-theme-font:minor-latin;  mso-bidi-language:FA;} </style> <![endif]",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "با فرض  $\\vec{a}=(3,m,5)$ و $\\vec{b}=(3-m,7,0)$ ، به‌ازای یک مقدار $m$ دو بردار  $\\vec{a}+\\vec{b}$ و  $\\vec{a}-\\vec{b}$ عمود برهم هستند. زاویه بین دو بردار $\\vec{a}$ و $\\vec{b}$ در این حالت، چند درجه است؟",
+    "options": [
+      {
+        "option_text": "$30$"
+      },
+      {
+        "option_text": "$45$"
+      },
+      {
+        "option_text": "$60$"
+      },
+      {
+        "option_text": "$90$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "اگر $\\vec{c},\\vec{b},\\vec{a}$ و $\\vec{d}$ چهار بردار دلخواه باشند، آنگاه سه بردار $\\vec{a}\\times \\vec{d}$ ، $\\vec{b}\\times \\vec{d}$ و $\\vec{c} \\times \\vec{d}$ نسبت به هم چگونه‌اند؟",
+    "options": [
+      {
+        "option_text": "موازي يك صفحه‌اند."
+      },
+      {
+        "option_text": "موازي هم‌اند."
+      },
+      {
+        "option_text": "دوبه‌دو عمود برهم‌اند."
+      },
+      {
+        "option_text": "مجموع‌ آن‌ها بردار صفر است."
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "هر سه بردار $\\vec{a}\\times \\vec{d}$ ،  $\\vec{b}\\times \\vec{d}$ و  $\\vec{c}\\times \\vec{d}$ بر بردار $\\vec{d}$ عمودند، پس هر $3$ بردار منطبق یا موازي صفحه‌اي‌اند كه بر $\\vec{d}$ عمود می‌باشد.",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "اگر $\\vec{c},\\vec{b},\\vec{a}$ و $\\vec{d}$ چهار بردار دلخواه باشند، آنگاه سه بردار $\\vec{a}\\times \\vec{d}$ ، $\\vec{b}\\times \\vec{d}$ و $\\vec{c} \\times \\vec{d}$ نسبت به هم چگونه‌اند؟",
+    "options": [
+      {
+        "option_text": "موازي يك صفحه‌اند."
+      },
+      {
+        "option_text": "موازي هم‌اند."
+      },
+      {
+        "option_text": "دوبه‌دو عمود برهم‌اند."
+      },
+      {
+        "option_text": "مجموع‌ آن‌ها بردار صفر است."
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب خارجی"
+  },
+  {
+    "question_text": "قرینه بردار $\\overrightarrow{a}$ نسبت به امتداد بردار  $2\\overrightarrow{i}-\\overrightarrow{j}+\\overrightarrow{k}$ برداری به تصاویر $(1,-2,5)$ است. بردار $\\overrightarrow{a}$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-1,5,2)$"
+      },
+      {
+        "option_text": "$(2,5,-1)$"
+      },
+      {
+        "option_text": "$(5,-1,-2)$"
+      },
+      {
+        "option_text": "$(5,-2,1)$"
+      }
+    ],
+    "correct_option_index": 2,
+    "difficulty": "medium",
+    "solution": "طبق فرض، قرینه بردار $\\overrightarrow{a}$ نسبت به بردار  $\\overrightarrow{b}=2\\overrightarrow{i}-\\overrightarrow{j}+\\overrightarrow{k}$ بردار $\\overrightarrow{c}=(1,-2,5)$ می$$باشد لذا کافیست قرینه بردار $\\overrightarrow{c}$ نسبت به بردار $\\overrightarrow{b}$ را به‌دست آوریم: $\\begin{array}{ll} &\\overrightarrow{b} \\begin{matrix}\\text{روی}\\end{matrix} \\overrightarrow{c} \\begin{matrix}\\text{تصویر قائم}\\end{matrix}: \\overrightarrow{c'}=\\frac{\\overrightarrow{b}\\cdot \\overrightarrow{c}}{|\\overrightarrow{b}|^{2}}\\overrightarrow{b}=\\frac{2+2+5}{4+1+1}(2,-1,1)=\\frac{3}{2}(2,-1,1) \\\\ & \\overrightarrow{b} \\begin{matrix}\\text{نسبت به}\\end{matrix} \\overrightarrow{c} \\begin{matrix}\\text{قرینۀ}\\end{matrix}: \\overrightarrow{c''}=2\\overrightarrow{c'}-\\overrightarrow{c}=3(2,-1,1)-(1,-2,5)=(5,-1,-2)=\\overrightarrow{a} \\\\ \\end{array}$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "قرینه بردار $\\overrightarrow{a}$ نسبت به امتداد بردار  $2\\overrightarrow{i}-\\overrightarrow{j}+\\overrightarrow{k}$ برداری به تصاویر $(1,-2,5)$ است. بردار $\\overrightarrow{a}$ کدام است؟",
+    "options": [
+      {
+        "option_text": "$(-1,5,2)$"
+      },
+      {
+        "option_text": "$(2,5,-1)$"
+      },
+      {
+        "option_text": "$(5,-1,-2)$"
+      },
+      {
+        "option_text": "$(5,-2,1)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "نقطه $O$ مبداء مختصات و  $\\overrightarrow{OA}=3\\overrightarrow{i}+\\overrightarrow{j}$ و $\\overrightarrow{OB}=-\\overrightarrow{i}+5\\overrightarrow{j}+4\\overrightarrow{k}$ مفروض هستند. اگر  $\\overrightarrow{AM}=-\\frac{3}{4}\\overrightarrow{AB}$ باشد، کسینوس زاویه بردار $\\overrightarrow{OM}$  با جهت مثبت محور $y$ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$-\\dfrac{2}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{2}{7}$"
+      },
+      {
+        "option_text": "$\\dfrac{2}{5}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{7}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "با توجه به رابطه  $\\overrightarrow{AM}=\\overrightarrow{OM}-\\overrightarrow{OA}$ و  $AB=\\overrightarrow{OB}-\\overrightarrow{OA}$ داریم: $\\overrightarrow{AM}=-\\frac{3}{4}\\overrightarrow{AB}\\Rightarrow 4(\\overrightarrow{OM}-\\overrightarrow{OA})=-3(\\overrightarrow{OB}-\\overrightarrow{OA}) \\\\ \\Rightarrow 4\\overrightarrow{OM}-4\\overrightarrow{OA}=-3\\overrightarrow{OB}+3\\overrightarrow{OA}\\Rightarrow 4\\overrightarrow{OM}=-3\\overrightarrow{OB}+7\\overrightarrow{OA} \\\\ \\Rightarrow 4\\overrightarrow{OM}=-3(-\\overrightarrow{i}+5\\overrightarrow{j}+4\\overrightarrow{k})+7(3\\overrightarrow{i}+\\overrightarrow{j})=24\\overrightarrow{i}-8\\overrightarrow{j}-12\\overrightarrow{k}\\Rightarrow \\overrightarrow{OM}=6\\overrightarrow{i}-2\\overrightarrow{j}-3\\overrightarrow{k}$‌بردار $\\overrightarrow{j}$ در راستای محور $y$هاست. اگر $\\theta$ زاویۀ بین بردار $\\overrightarrow{OM}$  با جهت مثبت محور $y$ها باشد، آنگاه: $\\operatorname{\\cos}\\theta =\\frac{\\overrightarrow{OM}\\cdot\\overrightarrow{j}}{\\left| \\overrightarrow{OM} \\right|\\left| \\overrightarrow{j} \\right|}=\\frac{-2}{\\sqrt{36+4+9}}=-\\frac{2}{7}$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "نقطه $O$ مبداء مختصات و  $\\overrightarrow{OA}=3\\overrightarrow{i}+\\overrightarrow{j}$ و $\\overrightarrow{OB}=-\\overrightarrow{i}+5\\overrightarrow{j}+4\\overrightarrow{k}$ مفروض هستند. اگر  $\\overrightarrow{AM}=-\\frac{3}{4}\\overrightarrow{AB}$ باشد، کسینوس زاویه بردار $\\overrightarrow{OM}$  با جهت مثبت محور $y$ها کدام است؟",
+    "options": [
+      {
+        "option_text": "$-\\dfrac{2}{5}$"
+      },
+      {
+        "option_text": "$-\\dfrac{2}{7}$"
+      },
+      {
+        "option_text": "$\\dfrac{2}{5}$"
+      },
+      {
+        "option_text": "$\\dfrac{3}{7}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "قرینۀ $$ی بردار $(1,-3,2)$ نسبت به امتداد بردار $(1,2,0)$، کدام بردار است؟",
+    "options": [
+      {
+        "option_text": "$(-3,-1,-2)$"
+      },
+      {
+        "option_text": "$(-1,-2,2)$"
+      },
+      {
+        "option_text": "$(0,5,-2)$"
+      },
+      {
+        "option_text": "$(1,7,-2)$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "روش اول: می‌دانیم قرینۀ بردار $\\vec{a}$  نسبت به امتداد بردار غیرصفر $\\vec{b}$، از رابطۀ $\\vec{a''}=\\frac{2\\vec{a}\\cdot\\vec{b}}{|\\vec{b}|^{2}}\\vec{b}-\\vec{a}$ به‌دست می‌آید، پس: $\\vec{a}=(1,-3,2)\\;\\;,\\;\\;\\vec{b}=(1,2,0)$$\\vec{a''}=\\frac{2(1,-3,2)\\cdot (1,2,0)}{(\\sqrt{1^{2}+2^{2}+0^{2}})^{2}}(1,2,0)-(1,-3,2) =\\frac{2(1-6+0)}{5}(1,2,0)-(1,-3,2)\\\\ =(-2,-4,0)-(1,-3,2)=(-3,-1,-2)$ روش دوم: اگر $\\vec{a}$  و$\\vec{a''}$  قرینۀ هم نسبت به بردار غیرصفر $\\vec{b}$ باشند، در این صورت $|\\vec{a}|=|\\vec{a''}|$ . داریم: $|\\vec{a}|=\\sqrt{1^{2}+(-3)^{2}+2^{2}}=\\sqrt{14}$ فقط بردار گزینۀ $(1)$  دارای طول $\\sqrt{14}$ است.",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "قرینۀ $$ی بردار $(1,-3,2)$ نسبت به امتداد بردار $(1,2,0)$، کدام بردار است؟",
+    "options": [
+      {
+        "option_text": "$(-3,-1,-2)$"
+      },
+      {
+        "option_text": "$(-1,-2,2)$"
+      },
+      {
+        "option_text": "$(0,5,-2)$"
+      },
+      {
+        "option_text": "$(1,7,-2)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "بردارهای $\\vec{c} , \\vec{b} , \\vec{a}$  با شرط  $(\\vec{a}-\\vec{c})\\times \\vec{b}=\\vec{a}\\times \\vec{c}$ مفروض‌اند. الزاماً کدام نتیجه حاصل می‌شود؟",
+    "options": [
+      {
+        "option_text": "$\\vec{a}\\cdot (\\vec{b}\\cdot \\vec{c})=0$"
+      },
+      {
+        "option_text": "$\\vec{a}\\cdot (\\vec{b}\\times \\vec{c})=0$"
+      },
+      {
+        "option_text": "$\\vec{a}\\times (\\vec{b}\\times \\vec{c})=\\vec{O}$"
+      },
+      {
+        "option_text": "هر سه بردار موازی‌اند."
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "طبق فرض داریم:$(\\vec{a}-\\vec{c})\\times \\vec{b}=\\vec{a}\\times \\vec{c}\\Rightarrow \\vec{a}\\times \\vec{b}-\\vec{c}\\times \\vec{b}=\\vec{a}\\times \\vec{c}$بردارهای $\\vec{c},\\vec{b},\\vec{a}$ در یک صفحه‌اند. $\\xrightarrow[\\text{ضرب داخلی می‌کنیم}\\; a]{\\text{طرفین را در}}\\underset{0}{\\underbrace{\\vec{a}\\cdot (\\vec{a}\\times \\vec{b})}}-\\vec{a}\\cdot (\\vec{c}\\times \\vec{b})=\\underset{0}{\\underbrace{\\vec{a}\\cdot (\\vec{a}\\times \\vec{c})}} \\Rightarrow \\vec{a}\\cdot (\\vec{c}\\times \\vec{b})=0\\Rightarrow$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "بردارهای $\\vec{c} , \\vec{b} , \\vec{a}$  با شرط  $(\\vec{a}-\\vec{c})\\times \\vec{b}=\\vec{a}\\times \\vec{c}$ مفروض‌اند. الزاماً کدام نتیجه حاصل می‌شود؟",
+    "options": [
+      {
+        "option_text": "$\\vec{a}\\cdot (\\vec{b}\\cdot \\vec{c})=0$"
+      },
+      {
+        "option_text": "$\\vec{a}\\cdot (\\vec{b}\\times \\vec{c})=0$"
+      },
+      {
+        "option_text": "$\\vec{a}\\times (\\vec{b}\\times \\vec{c})=\\vec{O}$"
+      },
+      {
+        "option_text": "هر سه بردار موازی‌اند."
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "دو بردار $\\overrightarrow{a}$ و $\\overrightarrow{b}$ به طول‌های $5$ و $8$ واحد مفروض‌اند و مساحت مثلث تولیدشده توسط این دو بردار $12$ واحد مربع است. اگر زاویه بین دو بردار کمتر از قائمه باشد، اندازه تفاضل دو بردار کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$6٫5$"
+      },
+      {
+        "option_text": "$7٫5$"
+      }
+    ],
+    "correct_option_index": 0,
+    "difficulty": "medium",
+    "solution": "طبق فرض داریم:$:S=\\frac{1}{2}|\\overrightarrow{a}\\times \\overrightarrow{b}|\\Rightarrow 12=\\frac{1}{2}\\times 5\\times 8\\times\\sin\\theta \\Rightarrow \\sin\\theta =\\frac{3}{5}\\xrightarrow{0 < \\theta <90^{\\circ}} \\cos \\theta =\\frac{4}{5}$ مساحت مثلث $|\\overrightarrow{a}-\\overrightarrow{b}|^{2}=|\\overrightarrow{a}|^{2}+|\\overrightarrow{b}|^{2}-2\\overrightarrow{a}\\cdot \\overrightarrow{b}=25+64-2×5×8×\\frac{4}{5}\\\\ \\Rightarrow |\\overrightarrow{a}-\\overrightarrow{b}|^{2}=25\\Rightarrow |\\overrightarrow{a}-\\overrightarrow{b}|=5$",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "دو بردار $\\overrightarrow{a}$ و $\\overrightarrow{b}$ به طول‌های $5$ و $8$ واحد مفروض‌اند و مساحت مثلث تولیدشده توسط این دو بردار $12$ واحد مربع است. اگر زاویه بین دو بردار کمتر از قائمه باشد، اندازه تفاضل دو بردار کدام است؟",
+    "options": [
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$6٫5$"
+      },
+      {
+        "option_text": "$7٫5$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | محاسبه مساحت اشکال هندسی"
+  },
+  {
+    "question_text": "تصویر قائم بردار $(0,-3,6)$  روی امتداد بردار $(2,-1,-2)$   کدام بردار است؟",
+    "options": [
+      {
+        "option_text": "$(2,-1,-2)$"
+      },
+      {
+        "option_text": "$(-2,1,2)$"
+      },
+      {
+        "option_text": "$(4,-2,-4)$"
+      },
+      {
+        "option_text": "$(2,3,-1)$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "easy",
+    "solution": "نکته: تصویر قائم بردار $\\overrightarrow{a}$ روی بردار $\\overrightarrow{b}$ از دستور $\\overrightarrow{a'}=\\frac{\\overrightarrow{a}\\cdot \\overrightarrow{b}}{|\\overrightarrow{b}|^{2}}\\overrightarrow{b}$ حاصل می‌شود. پس:$\\overrightarrow{ a'}=\\frac{\\overrightarrow{a}\\cdot \\overrightarrow{b}}{|\\overrightarrow{b}|^{2}}\\overrightarrow{b}=\\frac{-9}{9}(2,-1,-2)=(-2,1,2)$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "تصویر قائم بردار $(0,-3,6)$  روی امتداد بردار $(2,-1,-2)$   کدام بردار است؟",
+    "options": [
+      {
+        "option_text": "$(2,-1,-2)$"
+      },
+      {
+        "option_text": "$(-2,1,2)$"
+      },
+      {
+        "option_text": "$(4,-2,-4)$"
+      },
+      {
+        "option_text": "$(2,3,-1)$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | تصویر قائم یک بردار نسبت به بردار دیگر"
+  },
+  {
+    "question_text": "اگر $|\\vec{a}|=2\\sqrt{6}$ و $|\\vec{b}|=5$   و $\\vec{a}\\cdot \\vec{b}=0$ ، اندازه بردار $\\vec{a}-\\vec{b}$   کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "easy",
+    "solution": "چون $\\vec{a} \\cdot \\vec{b}=0$، پس دو بردار $\\vec{a}$  و $\\vec{b}$  برهم عمودند و طبق شکل و رابطۀ فیثاغورس داریم:$|\\vec{a} - \\vec{b}|=\\sqrt{|\\vec{a}|^{2}+|\\vec{b}|^{2}-2\\vec{a}\\cdot \\vec{b}}=\\sqrt{24+25}=7$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "اگر $|\\vec{a}|=2\\sqrt{6}$ و $|\\vec{b}|=5$   و $\\vec{a}\\cdot \\vec{b}=0$ ، اندازه بردار $\\vec{a}-\\vec{b}$   کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$6$"
+      },
+      {
+        "option_text": "$7$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | ویژگی‌های ضرب داخلی"
+  },
+  {
+    "question_text": "اگر $\\overrightarrow{c},\\overrightarrow{b},\\overrightarrow{a}$ سه بردارغیرصفر وغیرواقع در یک صفحه باشند، مقدار کدام گزینه با سایرین متفاوت است؟",
+    "options": [
+      {
+        "option_text": "$\\overrightarrow{a}\\cdot\\left( \\overrightarrow{c}\\times \\overrightarrow{b} \\right)$"
+      },
+      {
+        "option_text": "$\\overrightarrow{a}\\cdot\\left( \\overrightarrow{b}\\times \\overrightarrow{c} \\right)$"
+      },
+      {
+        "option_text": "$\\overrightarrow{b}\\cdot\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)$"
+      },
+      {
+        "option_text": "$\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)\\cdot\\overrightarrow{b}$"
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "easy",
+    "solution": "همانطور که دیده می‌شود گزینه‌های $1$ و $3$ و $4$ مساوی یکدیگرند.$\\overrightarrow{a}\\cdot\\left( \\overrightarrow{c}\\times \\overrightarrow{b} \\right)=\\overrightarrow{b}\\cdot\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)$   و  $\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)\\cdot\\overrightarrow{b}=\\overrightarrow{b}\\cdot\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)$و فقط گزينه $2$ با ساير گزينه‌ها متفاوت است زیرا گزینه $2$ قرینۀ بقیه می‌باشد.",
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "اگر $\\overrightarrow{c},\\overrightarrow{b},\\overrightarrow{a}$ سه بردارغیرصفر وغیرواقع در یک صفحه باشند، مقدار کدام گزینه با سایرین متفاوت است؟",
+    "options": [
+      {
+        "option_text": "$\\overrightarrow{a}\\cdot\\left( \\overrightarrow{c}\\times \\overrightarrow{b} \\right)$"
+      },
+      {
+        "option_text": "$\\overrightarrow{a}\\cdot\\left( \\overrightarrow{b}\\times \\overrightarrow{c} \\right)$"
+      },
+      {
+        "option_text": "$\\overrightarrow{b}\\cdot\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)$"
+      },
+      {
+        "option_text": "$\\left( \\overrightarrow{a}\\times \\overrightarrow{c} \\right)\\cdot\\overrightarrow{b}$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب خارجی | ویژگی‌های ضرب مختلط بردارها"
+  },
+  {
+    "question_text": "اگر بردار $|\\vec{b}|=\\sqrt{41},\\vec{a}=(m,2,-1)$ و دو بردار $\\vec{a}-\\vec{b},\\vec{a}+\\vec{b}$  عمود برهم باشند، مقدار مثبت $m$  کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": 3,
+    "difficulty": "medium",
+    "solution": "مطابق فرض داریم:$(\\vec{a}+\\vec{b}) \\perp (\\vec{a}-\\vec{b}) \\Rightarrow (\\vec{a}+\\vec{b})\\cdot(\\vec{a}-\\vec{b})=0\\Rightarrow |\\vec{a}|^{2}-|\\vec{b}|^{2}=0\\Rightarrow |\\overrightarrow{a}|=|\\overrightarrow{b}|\\\\\\Rightarrow \\sqrt{m^{2}+4+1}=\\sqrt{41}\\Rightarrow m^{2}=36\\Rightarrow m=\\pm6$",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "اگر بردار $|\\vec{b}|=\\sqrt{41},\\vec{a}=(m,2,-1)$ و دو بردار $\\vec{a}-\\vec{b},\\vec{a}+\\vec{b}$  عمود برهم باشند، مقدار مثبت $m$  کدام است؟",
+    "options": [
+      {
+        "option_text": "$3$"
+      },
+      {
+        "option_text": "$4$"
+      },
+      {
+        "option_text": "$5$"
+      },
+      {
+        "option_text": "$6$"
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "در کدام حالت حاصل‌ضرب نقطه‌ای بردار غیرصفر $\\overrightarrow{a}$ در مجموع دو بردار غیرصفر $\\overrightarrow{X}$ و $\\overrightarrow{Y}$ صفر نمی‌باشد؟",
+    "options": [
+      {
+        "option_text": "بردار $\\overrightarrow{X}$ قرينه بردار $\\overrightarrow{Y}$"
+      },
+      {
+        "option_text": "بردار $\\overrightarrow{a}$ فقط بر يکي از دو بردار $\\overrightarrow{X}$ يا $\\overrightarrow{Y}$عمود."
+      },
+      {
+        "option_text": "سه بردار دوبه‌دو عمود برهم."
+      },
+      {
+        "option_text": "بردار $\\overrightarrow{a}$ بر صفحه دو بردار $\\overrightarrow{X}$ و $\\overrightarrow{Y}$ عمود."
+      }
+    ],
+    "correct_option_index": 1,
+    "difficulty": "medium",
+    "solution": "در حالتی که بردار $\\vec{a}$  فقط بر یکی از دو بردار $\\vec{X}$  یا $\\vec{Y}$  عمود است، داریم:$\\left.\\begin{matrix} \\vec{a}\\perp \\vec{X}\\\\  \\vec{a}\\cancel{\\perp } \\vec{Y} \\end{matrix}\\right\\}\\Rightarrow \\vec{a}\\cdot (\\vec{X}+\\vec{Y})=\\vec{a}\\cdot \\vec{X}+\\vec{a}\\cdot \\vec{Y}=0+\\vec{a}\\cdot \\vec{Y}\\neq 0$ در سایر حالات ضرب داخلی $\\vec{a}$ در بردار $\\vec{X}+\\vec{Y}$ صفر می‌باشد.",
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  },
+  {
+    "question_text": "در کدام حالت حاصل‌ضرب نقطه‌ای بردار غیرصفر $\\overrightarrow{a}$ در مجموع دو بردار غیرصفر $\\overrightarrow{X}$ و $\\overrightarrow{Y}$ صفر نمی‌باشد؟",
+    "options": [
+      {
+        "option_text": "بردار $\\overrightarrow{X}$ قرينه بردار $\\overrightarrow{Y}$"
+      },
+      {
+        "option_text": "بردار $\\overrightarrow{a}$ فقط بر يکي از دو بردار $\\overrightarrow{X}$ يا $\\overrightarrow{Y}$عمود."
+      },
+      {
+        "option_text": "سه بردار دوبه‌دو عمود برهم."
+      },
+      {
+        "option_text": "بردار $\\overrightarrow{a}$ بر صفحه دو بردار $\\overrightarrow{X}$ و $\\overrightarrow{Y}$ عمود."
+      }
+    ],
+    "correct_option_index": null,
+    "difficulty": null,
+    "solution": null,
+    "topic": "فصل سوم : بردارها | ضرب داخلی | زاویه بین دو بردار"
+  }
+]
