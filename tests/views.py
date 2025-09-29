@@ -1149,7 +1149,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
                 def import_questions():
                     nonlocal imported_count
-                    print(f"Processing {len(data)} items from JSON")
                     # صاف کردن لیست‌های تو در تو
                     all_data = []
                     for block in data:
@@ -1158,14 +1157,9 @@ class QuestionViewSet(viewsets.ModelViewSet):
                         else:
                             all_data.append(block)
 
-                    print(f"Flattened to {len(all_data)} items")
                     for item in all_data:
-                        print(f"Processing item: {item.get('question', 'No question')[:50]}...")
-                        source, publish_date, folder_parts = split_topics(item.get("topics", []))
-                        print(f"Parsed topics - source: {source}, folders: {folder_parts}")
                         source, publish_date, folder_parts = split_topics(item.get("topics", []))
 
-                        # ایجاد یا بروزرسانی سوال
                         question, created = Question.objects.get_or_create(
                             question_text=item.get("question", ""),
                             defaults={
@@ -1176,7 +1170,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
                                 "publish_date": publish_date,
                             },
                         )
-                        print(f"Question {'created' if created else 'updated'}: {question.question_text[:50]}...")
 
                         if not created:
                             question.difficulty_level = difficulty_map.get(item.get("difficulty", "").strip(), "medium")
@@ -1223,7 +1216,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
                             question.folders.add(folder)
 
                         imported_count += 1
-                        print(f"Imported question {imported_count} (engine-1)")
 
                 import_questions()
 
@@ -1319,7 +1311,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
                             question.folders.add(f)
 
                         imported_count += 1
-                        print(f"Imported question {imported_count} (engine-2)")
                         print(f"Imported question {imported_count}")
 
                 import_from_out()

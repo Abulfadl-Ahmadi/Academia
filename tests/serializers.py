@@ -423,7 +423,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
                         'images': [{'id': img.id, 'image': img.image.url if img.image else '', 'alt_text': img.alt_text, 'order': img.order} for img in question.images.all()],
                         'created_at': question.created_at.isoformat(),
                         'updated_at': question.updated_at.isoformat(),
-                        'publish_date': question.publish_date.isoformat() if question.publish_date else None,
+                        'publish_date': question.publish_date,
                         'source': question.source,
                         'is_active': question.is_active,
                     }
