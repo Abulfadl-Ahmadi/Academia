@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,6 +123,7 @@ type QuestionFormData = z.infer<typeof questionSchema>;
 
 export default function EditQuestionPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [selectedFolderIds, setSelectedFolderIds] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -176,6 +177,80 @@ export default function EditQuestionPage() {
     const formData = getValues();
     console.log("Manual submit with form data:", formData);
     onSubmit(formData, false);
+  };
+
+  const handleUpdateAndNext = async () => {
+    const formData = getValues();
+    console.log("Update and next with form data:", formData);
+
+    // First update the current question
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData, false);
+
+      // Then try to get the next question
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = parseInt(urlParams.get('page') || '1');
+      const pageSize = parseInt(urlParams.get('page_size') || '20');
+
+      // Build API URL with current filters to get next question
+      const apiParams = new URLSearchParams();
+
+      // Add filter parameters
+      if (urlParams.get('search')) apiParams.append('search', urlParams.get('search')!);
+      if (urlParams.get('difficulty')) apiParams.append('difficulty', urlParams.get('difficulty')!);
+      if (urlParams.getAll('folders').length > 0) {
+        urlParams.getAll('folders').forEach(folder => apiParams.append('folders', folder));
+      }
+      if (urlParams.get('is_active')) apiParams.append('is_active', urlParams.get('is_active')!);
+      if (urlParams.get('source')) apiParams.append('source', urlParams.get('source')!);
+      if (urlParams.get('has_solution')) apiParams.append('has_solution', urlParams.get('has_solution')!);
+      if (urlParams.get('has_images')) apiParams.append('has_images', urlParams.get('has_images')!);
+      if (urlParams.get('date_from')) apiParams.append('date_from', urlParams.get('date_from')!);
+      if (urlParams.get('date_to')) apiParams.append('date_to', urlParams.get('date_to')!);
+      if (urlParams.get('ordering')) apiParams.append('ordering', urlParams.get('ordering')!);
+
+      // Get current page with larger page size to find current position
+      apiParams.append('page', currentPage.toString());
+      apiParams.append('page_size', pageSize.toString());
+
+      const response = await axiosInstance.get(`/questions/?${apiParams.toString()}`);
+      const questions: Array<{id: number}> = response.data.results;
+      const currentIndex = questions.findIndex((q) => q.id.toString() === id);
+
+      if (currentIndex !== -1 && currentIndex < questions.length - 1) {
+        // Found next question on current page
+        const nextQuestion = questions[currentIndex + 1];
+        navigate(`/panel/questions/edit/${nextQuestion.id}?${urlParams.toString()}`);
+      } else {
+        // Need to check next page
+        const nextPage = currentPage + 1;
+        if (nextPage <= response.data.total_pages) {
+          apiParams.set('page', nextPage.toString());
+          const nextPageResponse = await axiosInstance.get(`/questions/?${apiParams.toString()}`);
+          const nextPageQuestions: Array<{id: number}> = nextPageResponse.data.results;
+
+          if (nextPageQuestions.length > 0) {
+            const nextQuestion = nextPageQuestions[0];
+            urlParams.set('page', nextPage.toString());
+            navigate(`/teacher-dashboard/questions/edit/${nextQuestion.id}?${urlParams.toString()}`);
+          } else {
+            // No more questions
+            toast.info("این آخرین سوال است");
+            navigate(`/teacher-dashboard/questions?${urlParams.toString()}`);
+          }
+        } else {
+          // No more questions
+          toast.info("این آخرین سوال است");
+          navigate(`/teacher-dashboard/questions?${urlParams.toString()}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating and going to next:", error);
+      toast.error("خطا در بروزرسانی و رفتن به سوال بعدی");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const watchedQuestionText = watch("question_text");
@@ -760,14 +835,14 @@ export default function EditQuestionPage() {
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          {/* <Button
+          <Button
             type="button"
             variant="outline"
-            onClick={handleUpdateAndContinue}
             disabled={isSubmitting}
+            onClick={handleUpdateAndNext}
           >
-            {isSubmitting ? "در حال بروزرسانی..." : "بروزرسانی و ادامه ویرایش"}
-          </Button> */}
+            {isSubmitting ? "در حال بروزرسانی..." : "بروزرسانی و رفتن به سوال بعدی"}
+          </Button>
           <Button
             type="button"
             disabled={isSubmitting}

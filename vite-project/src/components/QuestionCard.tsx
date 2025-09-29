@@ -167,6 +167,9 @@ interface QuestionCardProps {
   onDelete?: (questionId: number) => void;
   onToggleStatus?: (questionId: number, isActive: boolean) => void;
   showActions?: boolean;
+  selectable?: boolean;
+  isSelected?: boolean;
+  onSelectionChange?: (selected: boolean) => void;
 }
 
 export function QuestionCard({
@@ -175,6 +178,9 @@ export function QuestionCard({
   onDelete,
   onToggleStatus,
   showActions = true,
+  selectable = false,
+  isSelected = false,
+  onSelectionChange,
 }: QuestionCardProps) {
   const [showSolutionDialog, setShowSolutionDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -388,6 +394,15 @@ export function QuestionCard({
       <CardContent className="p-0">
         {/* Header with metadata */}
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center mb-4">
+          {/* Selection checkbox */}
+          {selectable && (
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelectionChange}
+              className="mt-1"
+            />
+          )}
+
           {/* Question ID - نمایش شناسه امن */}
           <Badge variant="outline" className="font-mono text-xs">
             {question.public_id || "N/A"}

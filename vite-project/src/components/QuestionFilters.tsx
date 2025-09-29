@@ -6,13 +6,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { FolderTreeSelector } from '@/components/FolderTreeSelector';
 
 interface FilterOptions {
   search: string;
   difficulty: string;
-  folder: string;
+  folders: number[];
   sortBy: string;
   sortOrder: 'asc' | 'desc';
+  isActive: string;
+  source: string;
+  hasSolution: string;
+  hasImages: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
 interface QuestionFiltersProps {
@@ -24,6 +31,16 @@ interface QuestionFiltersProps {
       medium: number;
       hard: number;
     };
+    by_status: {
+      active: number;
+      inactive: number;
+    };
+    by_content: {
+      with_solution: number;
+      without_solution: number;
+      with_images: number;
+      without_images: number;
+    };
     folders: Array<{id: string; name: string; parent__name?: string}>;
   };
 }
@@ -32,9 +49,15 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
     difficulty: '',
-    folder: '',
+    folders: [],
     sortBy: 'created_at',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    isActive: '',
+    source: '',
+    hasSolution: '',
+    hasImages: '',
+    dateFrom: '',
+    dateTo: '',
   });
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -54,7 +77,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     onFiltersChange(filters);
   }, [filters, onFiltersChange]);
 
-  const handleFilterChange = (key: keyof FilterOptions, value: string) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: string | number[]) => {
     // Convert "all" to empty string for API compatibility
     const actualValue = value === 'all' ? '' : value;
     setFilters(prev => ({ ...prev, [key]: actualValue }));
@@ -64,9 +87,15 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     setFilters({
       search: '',
       difficulty: '',
-      folder: '',
+      folders: [],
       sortBy: 'created_at',
-      sortOrder: 'desc'
+      sortOrder: 'desc',
+      isActive: '',
+      source: '',
+      hasSolution: '',
+      hasImages: '',
+      dateFrom: '',
+      dateTo: '',
     });
     setSearchDebounce('');
   };
@@ -75,7 +104,13 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     let count = 0;
     if (filters.search) count++;
     if (filters.difficulty) count++;
-    if (filters.folder) count++;
+    if (filters.folders.length > 0) count++;
+    if (filters.isActive) count++;
+    if (filters.source) count++;
+    if (filters.hasSolution) count++;
+    if (filters.hasImages) count++;
+    if (filters.dateFrom) count++;
+    if (filters.dateTo) count++;
     return count;
   };
 
@@ -88,10 +123,11 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     return labels[level as keyof typeof labels] || level;
   };
 
-  const getSelectedFolderName = () => {
-    if (!filters.folder || !stats?.folders) return '';
-    const folder = stats.folders.find(f => f.id === filters.folder);
-    return folder ? (folder.parent__name ? `${folder.parent__name} > ${folder.name}` : folder.name) : '';
+  const getSelectedFolderNames = () => {
+    if (filters.folders.length === 0) return '';
+    // Since FolderTreeSelector handles its own folder tree, we'll just return the folder IDs for now
+    // The component will display the proper names
+    return `${filters.folders.length} پوشه انتخاب شده`;
   };
 
   return (
@@ -124,7 +160,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
               </CollapsibleTrigger>
               
               <CollapsibleContent className="mt-3">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-muted/30">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 border rounded-lg bg-muted/30">
                   {/* Difficulty Filter */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">سطح دشواری</label>
@@ -151,24 +187,109 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
                   </div>
 
                   {/* Folder Filter */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 col-span-1 md:col-span-2 lg:col-span-3">
                     <label className="text-sm font-medium">پوشه</label>
+                    <FolderTreeSelector
+                      selectedFolderIds={filters.folders}
+                      onSelectionChange={(folderIds) => setFilters(prev => ({ ...prev, folders: folderIds }))}
+                      placeholder="همه پوشه‌ها"
+                      maxHeight="max-h-64"
+                      showSelectedCount={false}
+                    />
+                  </div>
+
+                  {/* Active Status Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">وضعیت</label>
                     <Select 
-                      value={filters.folder || 'all'} 
-                      onValueChange={(value) => handleFilterChange('folder', value)}
+                      value={filters.isActive || 'all'} 
+                      onValueChange={(value) => handleFilterChange('isActive', value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="همه پوشه‌ها" />
+                        <SelectValue placeholder="همه وضعیت‌ها" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">همه پوشه‌ها</SelectItem>
-                        {stats?.folders.map((folder) => (
-                          <SelectItem key={folder.id} value={folder.id.toString()}>
-                            {folder.parent__name ? `${folder.parent__name} > ${folder.name}` : folder.name}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="all">همه وضعیت‌ها</SelectItem>
+                        <SelectItem value="true">
+                          فعال {stats?.by_status && `(${stats.by_status.active})`}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          غیرفعال {stats?.by_status && `(${stats.by_status.inactive})`}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>                  {/* Source Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">منبع</label>
+                    <Input
+                      placeholder="منبع سوال..."
+                      value={filters.source}
+                      onChange={(e) => handleFilterChange('source', e.target.value)}
+                    />
+                  </div>
+
+                  {/* Has Solution Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">راه‌حل</label>
+                    <Select
+                      value={filters.hasSolution || 'all'}
+                      onValueChange={(value) => handleFilterChange('hasSolution', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="همه سوالات" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">همه سوالات</SelectItem>
+                        <SelectItem value="true">
+                          دارای راه‌حل {stats?.by_content && `(${stats.by_content.with_solution})`}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          بدون راه‌حل {stats?.by_content && `(${stats.by_content.without_solution})`}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Has Images Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">تصاویر</label>
+                    <Select
+                      value={filters.hasImages || 'all'}
+                      onValueChange={(value) => handleFilterChange('hasImages', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="همه سوالات" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">همه سوالات</SelectItem>
+                        <SelectItem value="true">
+                          دارای تصویر {stats?.by_content && `(${stats.by_content.with_images})`}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          بدون تصویر {stats?.by_content && `(${stats.by_content.without_images})`}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Date From */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">از تاریخ</label>
+                    <Input
+                      type="date"
+                      value={filters.dateFrom}
+                      onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                    />
+                  </div>
+
+                  {/* Date To */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">تا تاریخ</label>
+                    <Input
+                      type="date"
+                      value={filters.dateTo}
+                      onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                    />
                   </div>
 
                   {/* Sort Options */}
@@ -247,12 +368,72 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
               </Badge>
             )}
             
-            {filters.folder && (
+            {filters.folders.length > 0 && (
               <Badge variant="secondary" className="gap-1">
-                پوشه: {getSelectedFolderName()}
-                <X 
-                  className="h-3 w-3 cursor-pointer" 
-                  onClick={() => handleFilterChange('folder', '')}
+                پوشه: {getSelectedFolderNames()}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('folders', [])}
+                />
+              </Badge>
+            )}
+
+            {filters.isActive && (
+              <Badge variant="secondary" className="gap-1">
+                وضعیت: {filters.isActive === 'true' ? 'فعال' : 'غیرفعال'}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('isActive', '')}
+                />
+              </Badge>
+            )}
+
+            {filters.source && (
+              <Badge variant="secondary" className="gap-1">
+                منبع: {filters.source}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('source', '')}
+                />
+              </Badge>
+            )}
+
+            {filters.hasSolution && (
+              <Badge variant="secondary" className="gap-1">
+                راه‌حل: {filters.hasSolution === 'true' ? 'دارد' : 'ندارد'}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('hasSolution', '')}
+                />
+              </Badge>
+            )}
+
+            {filters.hasImages && (
+              <Badge variant="secondary" className="gap-1">
+                تصویر: {filters.hasImages === 'true' ? 'دارد' : 'ندارد'}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('hasImages', '')}
+                />
+              </Badge>
+            )}
+
+            {filters.dateFrom && (
+              <Badge variant="secondary" className="gap-1">
+                از تاریخ: {filters.dateFrom}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('dateFrom', '')}
+                />
+              </Badge>
+            )}
+
+            {filters.dateTo && (
+              <Badge variant="secondary" className="gap-1">
+                تا تاریخ: {filters.dateTo}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('dateTo', '')}
                 />
               </Badge>
             )}

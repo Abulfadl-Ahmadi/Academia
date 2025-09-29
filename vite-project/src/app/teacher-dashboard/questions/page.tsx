@@ -5,16 +5,27 @@ import { Pagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, RefreshCw } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus, RefreshCw, Upload, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 
 interface FilterOptions {
   search: string;
   difficulty: string;
-  folder: string;
+  folders: number[];
   sortBy: string;
   sortOrder: 'asc' | 'desc';
+  isActive: string;
+  source: string;
+  hasSolution: string;
+  hasImages: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
 interface Question {
@@ -76,6 +87,16 @@ interface StatsResponse {
     medium: number;
     hard: number;
   };
+  by_status: {
+    active: number;
+    inactive: number;
+  };
+  by_content: {
+    with_solution: number;
+    without_solution: number;
+    with_images: number;
+    without_images: number;
+  };
   folders: Array<{id: string; name: string; parent__name?: string}>;
 }
 
@@ -92,12 +113,37 @@ export default function QuestionsListPage() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
+  const [bulkImportLoading, setBulkImportLoading] = useState(false);
+  const [selectedEngine, setSelectedEngine] = useState<string>("");
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+    }
+    // Reset the input value so the same file can be selected again
+    e.target.value = '';
+  };
+
+  // Remove a file from selection
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
     difficulty: '',
-    folder: '',
+    folders: [],
     sortBy: 'created_at',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    isActive: '',
+    source: '',
+    hasSolution: '',
+    hasImages: '',
+    dateFrom: '',
+    dateTo: '',
   });
 
   // Build API URL with filters
@@ -113,10 +159,30 @@ export default function QuestionsListPage() {
     if (filters.difficulty) {
       params.append('difficulty', filters.difficulty);
     }
-    if (filters.folder) {
-      params.append('folder', filters.folder);
+    if (filters.folders.length > 0) {
+      filters.folders.forEach(folderId => {
+        params.append('folders', folderId.toString());
+      });
     }
-    
+    if (filters.isActive) {
+      params.append('is_active', filters.isActive);
+    }
+    if (filters.source) {
+      params.append('source', filters.source);
+    }
+    if (filters.hasSolution) {
+      params.append('has_solution', filters.hasSolution);
+    }
+    if (filters.hasImages) {
+      params.append('has_images', filters.hasImages);
+    }
+    if (filters.dateFrom) {
+      params.append('date_from', filters.dateFrom);
+    }
+    if (filters.dateTo) {
+      params.append('date_to', filters.dateTo);
+    }
+
     const ordering = filters.sortOrder === 'asc' ? filters.sortBy : `-${filters.sortBy}`;
     params.append('ordering', ordering);
 
@@ -163,15 +229,17 @@ export default function QuestionsListPage() {
   // Fetch stats
   const fetchStats = useCallback(async () => {
     try {
-      console.log('Fetching stats from: /questions/stats/');
-      const response = await axiosInstance.get<StatsResponse>('/questions/stats/');
+      // Build the same URL parameters as questions API
+      const statsUrl = buildApiUrl(1, 1000).replace('/questions/', '/questions/stats/');
+      console.log('Fetching stats from:', statsUrl);
+      const response = await axiosInstance.get<StatsResponse>(statsUrl);
       console.log('Stats API response:', response.data);
       setStats(response.data);
     } catch (err) {
       console.error('Error fetching stats (non-critical):', err);
       // Stats are not critical, so we don't set error state
     }
-  }, []);
+  }, [buildApiUrl]);
 
   // Initial load
   useEffect(() => {
@@ -182,7 +250,8 @@ export default function QuestionsListPage() {
   // Reload when filters change
   useEffect(() => {
     fetchQuestions(1, paginationInfo.page_size);
-  }, [filters, fetchQuestions, paginationInfo.page_size]);
+    fetchStats();
+  }, [filters, fetchQuestions, fetchStats, paginationInfo.page_size]);
 
   // Handle filter changes
   const handleFiltersChange = useCallback((newFilters: FilterOptions) => {
@@ -230,6 +299,41 @@ export default function QuestionsListPage() {
     }
   };
 
+  const handleBulkImport = async () => {
+    if (selectedFiles.length === 0 || !selectedEngine) {
+      toast.error("لطفا فایل ها و انجین را انتخاب کنید");
+      return;
+    }
+
+    setBulkImportLoading(true);
+    try {
+      const formData = new FormData();
+      
+      // Add all selected files
+      selectedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+      
+      formData.append('engine', selectedEngine);
+
+      const response = await axiosInstance.post('/questions/import_questions/', formData);
+
+      toast.success(`سوالات با موفقیت وارد شدند. ${response.data.imported_count} سوال وارد شد.`);
+      setBulkImportOpen(false);
+      setSelectedFiles([]);
+
+      // Refresh the questions list
+      await fetchQuestions(paginationInfo.current_page, paginationInfo.page_size);
+      await fetchStats();
+    } catch (err) {
+      console.error('Bulk import error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'خطا در وارد کردن سوالات';
+      toast.error(errorMessage);
+    } finally {
+      setBulkImportLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -253,6 +357,89 @@ export default function QuestionsListPage() {
             <RefreshCw className={`h-4 w-4 ml-2 ${loading ? 'animate-spin' : ''}`} />
             بروزرسانی
           </Button>
+
+          <Dialog open={bulkImportOpen} onOpenChange={setBulkImportOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Upload className="h-4 w-4 ml-2" />
+                ایجاد گروهی
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>وارد کردن سوالات گروهی</DialogTitle>
+                <DialogDescription>
+                  فایل های JSON را انتخاب کنید (برای انتخاب چندین فایل، Ctrl را نگه دارید و فایل ها را انتخاب کنید) و انجین مناسب را برای وارد کردن سوالات انتخاب کنید.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="engine-select">انجین وارد کننده</Label>
+                  <Select value={selectedEngine} onValueChange={setSelectedEngine}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="انجین را انتخاب کنید" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="engine-1">موتور ۱</SelectItem>
+                      <SelectItem value="engine-2">موتور ۲</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="file-input">فایل های JSON</Label>
+                  <input
+                    id="file-input"
+                    type="file"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                  />
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                      <p className="text-sm text-gray-600">{selectedFiles.length} فایل انتخاب شده:</p>
+                      <ScrollArea className="h-32 w-full rounded-md border p-2">
+                        <div className="">
+                          {selectedFiles.map((file, index) => (
+                            <div key={`${file.name}-${index}`} className="first:border-0 border-t flex items-center justify-between p-2">
+                              <span className="text-sm truncate flex-1 mr-2">{file.name}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(index)}
+                                className="h-6 w-6 p-0 hover:bg-red-100  hover:text-red-600"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setBulkImportOpen(false);
+                      setSelectedFiles([]);
+                      setSelectedEngine("");
+                    }}
+                  >
+                    انصراف
+                  </Button>
+                  <Button
+                    onClick={handleBulkImport}
+                    disabled={bulkImportLoading || selectedFiles.length === 0 || !selectedEngine}
+                  >
+                    {bulkImportLoading ? "در حال وارد کردن..." : "وارد کردن"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
           
           <Button asChild>
             <Link to="/panel/questions/create">

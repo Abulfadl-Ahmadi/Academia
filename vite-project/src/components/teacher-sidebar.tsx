@@ -150,6 +150,22 @@ export function TeacherSidebar({
         ],
       },
       {
+        title: "آزمون‌های سوالی",
+        url: "/panel/question-tests",
+        icon: Target,
+        items: [
+          {
+            title: "لیست آزمون‌های سوالی",
+            url: "/panel/question-tests",
+          },
+          {
+            title: "ایجاد آزمون سوالی",
+            url: "/panel/question-tests/create",
+            description: "آزمون با سوالات تایپ شده انتخابی"
+          },
+        ],
+      },
+      {
         title: "سوالات",
         url: "/panel/questions",
         icon: Target, // یا آیکون مناسب دیگر

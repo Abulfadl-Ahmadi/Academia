@@ -24,6 +24,7 @@ import CompletedCoursesPage from "@/app/dashboard/courses/completed/page"
 import ActiveTestsPage from "@/app/dashboard/tests/active/page"
 import TestHistoryPage from "@/app/dashboard/tests/history/page"
 import TestResult from "@/app/dashboard/tests/result/[id]"
+import StudentTestTakingPage from "@/pages/student/StudentTestTakingPage"
 import MyProducts from "@/app/dashboard/MyProducts"
 import TeacherProducts from "@/app/teacher-dashboard/products/page"
 import CourseDetailPage from "@/app/teacher-dashboard/courses/[courseId]/page"
@@ -38,6 +39,13 @@ import VideoPage from "@/app/dashboard/video/page"
 import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
 import CreateTopicTestPage from "@/pages/teacher/CreateTopicTestPage"
 import FolderManagerPage from "@/pages/teacher/FolderManagerPage"
+
+// Question Test Components
+import CreateQuestionTestPage from "@/pages/teacher/CreateQuestionTestPage"
+import QuestionTestsPage from "@/pages/teacher/QuestionTestsPage"
+import QuestionTestDetailPage from "@/pages/teacher/QuestionTestDetailPage"
+import TestReport from "@/app/teacher-dashboard/tests/report/[id]"
+import TopPerformersLeaderboard from "@/app/teacher-dashboard/tests/report/leaderboard"
 
 // Question Components
 import CreateQuestionPage from "@/app/teacher-dashboard/questions/create"
@@ -59,6 +67,7 @@ import { TeacherLayout } from "@/components/layouts/TeacherLayout"
 import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page"
 import { TeacherKnowledgePanel } from "@/features/knowledge"
 import QuestionsListPage from "@/app/teacher-dashboard/questions/page"
+import LiveStream from "./livestream"
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -99,6 +108,7 @@ export default function PanelRoute() {
         <Route path="/tests/active" element={<ActiveTestsPage />} />
         <Route path="/tests/history" element={<TestHistoryPage />} />
         <Route path="/tests/result/:id" element={<TestResult />} />
+        <Route path="/tests/:testId/detail" element={<StudentTestTakingPage />} />
         {/* Support Tickets routes for students */}
         <Route path="/support" element={<TicketsList />} />
         <Route path="/support/new" element={<NewTicket />} />
@@ -112,7 +122,8 @@ export default function PanelRoute() {
   if (user.role === "teacher") return (
     <Routes>
       <Route path="/" element={<TeacherLayout />}>
-        <Route index element={<div>پنل معلم</div>} />
+        {/* <Route index element={<div>پنل معلم</div>} /> */}
+        <Route index element={<LiveStream />} />
         <Route path="students" element={<StudentList />} />
         <Route path="courses" element={<CoursesList />} />
         <Route path="courses/create" element={<CreateCoursePage />} />
@@ -144,6 +155,13 @@ export default function PanelRoute() {
   <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
   <Route path="/topic-tests/:testId/edit" element={<CreateTopicTestPage />} />
   <Route path="/folders" element={<FolderManagerPage />} />
+        {/* Question Tests Routes */}
+        <Route path="/question-tests" element={<QuestionTestsPage />} />
+        <Route path="/question-tests/create" element={<CreateQuestionTestPage />} />
+        <Route path="/question-tests/:id" element={<QuestionTestDetailPage />} />
+        <Route path="/question-tests/:id/edit" element={<CreateQuestionTestPage />} />
+        <Route path="/question-tests/:id/results" element={<TestReport />} />
+        <Route path="/question-tests/:id/leaderboard" element={<TopPerformersLeaderboard />} />
         {/* Question Routes */}
         <Route path="/questions" element={<QuestionsListPage />} />
         <Route path="/questions/create" element={<CreateQuestionPage />} />

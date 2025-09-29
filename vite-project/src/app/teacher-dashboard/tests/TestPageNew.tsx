@@ -23,11 +23,15 @@ import {
   Clock,
   FileText,
   Send,
-  Pause
+  Pause,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,6 +49,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useFullscreen } from "../../../hooks/useFullscreen";
+import { MathPreview } from "@/components/MathPreview";
 
 interface Test {
   id: number;
@@ -57,6 +62,35 @@ interface Test {
     id: number;
     name: string;
   };
+  content_type?: string;
+  questions?: Array<{
+    id: number;
+    public_id: string;
+    question_text: string;
+    difficulty_level: 'easy' | 'medium' | 'hard';
+    folders: number[];
+    folders_names: string[];
+    options: Array<{
+      id: number;
+      option_text: string;
+      order: number;
+    }>;
+    correct_option?: number;
+    detailed_solution?: string;
+    images?: Array<{
+      id: number;
+      image: string;
+      alt_text?: string;
+      order: number;
+    }>;
+    detailed_solution_images?: Array<{
+      id: number;
+      image: string;
+      alt_text?: string;
+      order: number;
+    }>;
+    created_at: string;
+  }>;
 }
 
 interface TestSession {
@@ -88,6 +122,7 @@ const TestPageRedesigned: React.FC = () => {
   const [confirmExit, setConfirmExit] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sessionId, setSessionId] = useState<number | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   // Fullscreen
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -195,7 +230,13 @@ const TestPageRedesigned: React.FC = () => {
       
       // تنظیم تعداد سوالات
       console.log("Test total_questions:", testData.total_questions);
-      if (testData.total_questions && testData.total_questions > 0) {
+      console.log("Test content_type:", testData.content_type);
+      
+      if (testData.content_type === 'typed_question' && testData.questions) {
+        // برای آزمون‌های سوال‌محور، تعداد سوالات را از آرایه سوالات بگیر
+        setMaxQuestions(testData.questions.length);
+        console.log("Set maxQuestions for question test to:", testData.questions.length);
+      } else if (testData.total_questions && testData.total_questions > 0) {
         setMaxQuestions(testData.total_questions);
         console.log("Set maxQuestions to:", testData.total_questions);
       } else {
@@ -361,6 +402,25 @@ const TestPageRedesigned: React.FC = () => {
     return "text-green-500";
   };
 
+  // Navigation functions
+  const goToNextQuestion = () => {
+    if (test?.questions && currentQuestionIndex < test.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const goToPreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const goToQuestion = (index: number) => {
+    if (test?.questions && index >= 0 && index < test.questions.length) {
+      setCurrentQuestionIndex(index);
+    }
+  };
+
   const handleGoToPage = () => {
     const pageNum = parseInt(gotoPage);
     if (pageNum >= 1 && pageNum <= totalPages) {
@@ -396,6 +456,227 @@ const TestPageRedesigned: React.FC = () => {
             بازگشت به لیست آزمون‌ها
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // Question-based test interface
+  if (test?.content_type === 'typed_question') {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Header */}
+        <div className="bg-white dark:bg-gray-800 border-b sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfirmExit(true)}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  خروج
+                </Button>
+                <div>
+                  <h1 className="text-lg font-bold">{test.name}</h1>
+                  {test.description && (
+                    <p className="text-sm text-muted-foreground">{test.description}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className={`flex items-center gap-2 text-lg font-mono ${getTimeColor()}`}>
+                  <Clock className="w-5 h-5" />
+                  {formatTime(timeLeft)}
+                </div>
+                <Button
+                  onClick={() => setConfirmFinish(true)}
+                  className="bg-green-600 hover:bg-green-700"
+                  size="sm"
+                >
+                  پایان آزمون
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="max-w-4xl mx-auto px-4 pb-4">
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+              <span>سوال {currentQuestionIndex + 1} از {test.questions?.length || 0}</span>
+              <span>{Math.round(((currentQuestionIndex + 1) / (test.questions?.length || 1)) * 100)}% تکمیل شده</span>
+            </div>
+            <Progress value={((currentQuestionIndex + 1) / (test.questions?.length || 1)) * 100} className="h-2" />
+          </div>
+        </div>
+
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-1">
+          {/* Sidebar - Question Navigator */}
+          <div className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-gray-50 dark:bg-gray-800 border-l overflow-hidden`}>
+            <div className="p-4">
+              <h3 className="font-semibold mb-4">سوالات آزمون</h3>
+              <div className="grid grid-cols-5 gap-2">
+                {test.questions?.map((question, index) => {
+                  const selectedAnswer = answers[index + 1];
+                  const selectedOptionIndex = selectedAnswer ? 
+                    question.options.findIndex(opt => opt.id.toString() === selectedAnswer) : -1;
+                  
+                  return (
+                    <div key={question.id} className="relative">
+                      <button
+                        onClick={() => goToQuestion(index)}
+                        className={`p-2 text-sm font-medium rounded border transition-colors w-full ${
+                          index === currentQuestionIndex
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : answers[index + 1]
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-300'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        {index + 1}
+                      </button>
+                      {selectedAnswer && selectedOptionIndex >= 0 && (
+                        <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                          {selectedOptionIndex + 1}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Question Content */}
+          <div className="flex-1 p-6">
+            {test.questions && test.questions[currentQuestionIndex] && (
+              <Card className="max-w-4xl mx-auto">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded text-sm font-mono">
+                      سوال {currentQuestionIndex + 1}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      className="flex items-center gap-2"
+                    >
+                      <Menu className="w-4 h-4" />
+                      {sidebarOpen ? 'بستن' : 'باز کردن'} ناوبری
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Question Text */}
+                  <div className="text-lg">
+                    <MathPreview text={test.questions[currentQuestionIndex].question_text} />
+                  </div>
+
+                  {/* Question Options */}
+                  <RadioGroup.Root
+                    value={answers[currentQuestionIndex + 1] || ""}
+                    onValueChange={(value) => handleAnswer(currentQuestionIndex + 1, value)}
+                    className="space-y-4"
+                  >
+                    {test.questions[currentQuestionIndex].options.map((option, optionIndex) => (
+                      <div key={option.id} className="flex items-start space-x-3 space-x-reverse">
+                        <RadioGroup.Item
+                          value={option.id.toString()}
+                          id={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
+                          className="w-5 h-5 mt-0.5"
+                        />
+                        <Label
+                          htmlFor={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
+                          className={`flex-1 cursor-pointer text-base leading-relaxed p-3 rounded-lg border transition-all ${
+                            answers[currentQuestionIndex + 1] === option.id.toString()
+                              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 shadow-sm'
+                              : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          <span className="font-medium text-gray-600 dark:text-gray-400 mr-2">
+                            {['۱)', '۲)', '۳)', '۴)'][optionIndex] || `${optionIndex + 1})`}
+                          </span>
+                          <MathPreview text={option.option_text} />
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup.Root>
+
+                  {/* Navigation Buttons */}
+                  <div className="flex justify-between items-center pt-6 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={goToPreviousQuestion}
+                      disabled={currentQuestionIndex === 0}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                      سوال قبلی
+                    </Button>
+
+                    <div className="text-sm text-muted-foreground">
+                      {currentQuestionIndex + 1} از {test.questions.length}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      onClick={goToNextQuestion}
+                      disabled={currentQuestionIndex === (test.questions.length - 1)}
+                      className="flex items-center gap-2"
+                    >
+                      سوال بعدی
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* Exit Confirmation Dialog */}
+        <Dialog open={confirmExit} onOpenChange={setConfirmExit}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>خروج از آزمون</DialogTitle>
+              <DialogDescription>
+                آیا مطمئن هستید که می‌خواهید از آزمون خارج شوید؟ پاسخ‌های شما ذخیره شده است.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmExit(false)}>
+                ماندن در آزمون
+              </Button>
+              <Button variant="destructive" onClick={() => navigate('/panel/tests')}>
+                خروج
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Finish Confirmation Dialog */}
+        <Dialog open={confirmFinish} onOpenChange={setConfirmFinish}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>اتمام آزمون</DialogTitle>
+              <DialogDescription>
+                آیا از اتمام آزمون و ثبت پاسخ‌های خود اطمینان دارید؟
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmFinish(false)}>
+                بازگشت
+              </Button>
+              <Button onClick={handleFinishTest}>
+                تأیید و پایان آزمون
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }

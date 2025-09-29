@@ -4,18 +4,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.http import HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
+import re
+import json
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
-    StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage
+    StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage,
+    TestContentType
 )
 from knowledge.models import Folder
 from .serializers import (
     TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
     TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer,
-    QuestionSerializer, QuestionCreateSerializer, OptionSerializer, QuestionImageSerializer
+    QuestionSerializer, QuestionCreateSerializer, OptionSerializer, QuestionImageSerializer,
+    QuestionTestCreateSerializer, QuestionTestUpdateSerializer, QuestionTestListSerializer
 )
 from rest_framework.exceptions import ValidationError
 import pytz
@@ -45,6 +49,33 @@ class ListCreateTestView(generics.ListCreateAPIView):
 
         # fallback (e.g. admin)
         return Test.objects.all()
+
+
+
+class ListCreateQuestionTestView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = None  # Disable pagination for this view
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return QuestionTestCreateSerializer
+        return QuestionTestListSerializer  # Use list serializer for GET requests
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == "teacher":
+            # teacher should only see question tests they created
+            return Test.objects.filter(
+                teacher=user,
+                content_type=TestContentType.TYPED_QUESTION
+            )
+
+        # fallback (e.g. admin)
+        return Test.objects.filter(content_type=TestContentType.TYPED_QUESTION)
+
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
 
 
 
@@ -94,6 +125,47 @@ class UpdateDeleteTestView(generics.RetrieveUpdateDestroyAPIView):
         if user.role == "teacher" and instance.teacher != user:
             raise PermissionDenied("شما فقط می‌توانید آزمون‌های خود را حذف کنید")
         instance.delete()
+
+
+class ListCreateQuestionTestView(generics.ListCreateAPIView):
+    """View for creating and listing question-based tests"""
+    serializer_class = QuestionTestCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "teacher":
+            return Test.objects.filter(
+                teacher=user,
+                content_type=TestContentType.TYPED_QUESTION
+            )
+        return Test.objects.none()
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return QuestionTestCreateSerializer
+        return TestDetailSerializer
+
+
+class QuestionTestDetailView(generics.RetrieveUpdateAPIView):
+    """View for retrieving and updating question-based tests"""
+    serializer_class = QuestionTestUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "teacher":
+            return Test.objects.filter(
+                teacher=user,
+                content_type=TestContentType.TYPED_QUESTION
+            )
+        return Test.objects.none()
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return QuestionTestUpdateSerializer
+        return TestDetailSerializer
+
 
 class EnterTestView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -309,15 +381,44 @@ class FinishTestView(views.APIView):
 
     def post(self, request):
         session_id = request.data.get("session_id")
-        try:
-            session = StudentTestSession.objects.get(id=session_id, user=request.user)
-        except StudentTestSession.DoesNotExist:
-            raise ValidationError("Session not found.")
+        test_id = request.data.get("test_id")
+        answers = request.data.get("answers")
+        
+        if session_id:
+            try:
+                session = StudentTestSession.objects.get(id=session_id, user=request.user)
+            except StudentTestSession.DoesNotExist:
+                raise ValidationError("Session not found.")
+        elif test_id:
+            try:
+                session = StudentTestSession.objects.get(test_id=test_id, user=request.user, status='active')
+            except StudentTestSession.DoesNotExist:
+                raise ValidationError("Active session not found for this test.")
+        else:
+            raise ValidationError("Either session_id or test_id must be provided.")
+
+        # Store answers if provided
+        if answers:
+            if isinstance(answers, str):
+                try:
+                    answers = json.loads(answers)
+                except json.JSONDecodeError:
+                    return Response({"error": "Invalid JSON in answers"}, status=status.HTTP_400_BAD_REQUEST)
+
+            for answer_data in answers:
+                question_number = answer_data.get('question_number')
+                answer_value = answer_data.get('answer')
+                
+                if question_number is not None:
+                    StudentAnswer.objects.update_or_create(
+                        session=session,
+                        question_number=question_number,
+                        defaults={"answer": answer_value}
+                    )
 
         session.exit_time = timezone.now()
         session.status = 'completed'
         session.save()
-        print(session.status)
         return Response({"message": "Test finished."})
 
 class ExitTestView(views.APIView):
@@ -381,42 +482,91 @@ class CreateReport(views.APIView):
 
         for session in sessions:
             answers = StudentAnswer.objects.filter(session=session)
-            correct_answers = 0
-            wrong_answers = 0
-            total_questions = len(test.primary_keys.all())
             
-            # Calculate score
-            answer_details = []
-            answer_map = {a.question_number: a for a in answers}
-            for q_num in range(1, total_questions + 1):
-                answer = answer_map.get(q_num)
-                try:
-                    correct_key = test.primary_keys.get(question_number=q_num)
+            if test.content_type == TestContentType.TYPED_QUESTION:
+                # For typed question tests, use questions and their correct_option
+                questions = sorted(test.questions.all(), key=lambda q: q.id)
+                total_questions = len(questions)
+                correct_answers = 0
+                wrong_answers = 0
+                
+                answer_details = []
+                answer_map = {a.question_number: a for a in answers}
+                
+                for idx, question in enumerate(questions, 1):
+                    answer = answer_map.get(idx)  # Use sequential number as key
+                    
+                    # Find the correct option's order
+                    correct_option_order = None
+                    student_answer_order = None
+                    
+                    if question.correct_option:
+                        correct_option_order = question.correct_option.order
+                    
+                    if answer and answer.answer:
+                        # Find the selected option's order
+                        try:
+                            selected_option = question.options.get(id=answer.answer)
+                            student_answer_order = selected_option.order
+                        except Option.DoesNotExist:
+                            student_answer_order = None
+                    
                     if answer:
-                        is_correct = answer.answer == correct_key.answer
+                        is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
                         else:
                             wrong_answers += 1
-                        student_ans = answer.answer
+                        student_ans = student_answer_order  # Use option order instead of ID
                     else:
-                        # دانش‌آموز پاسخی نداده
+                        # Student didn't answer
                         is_correct = False
                         student_ans = None
 
                     answer_details.append({
-                        "question_number": q_num,
-                        "student_answer": student_ans,
-                        "correct_answer": correct_key.answer,
+                        "question_number": idx,
+                        "student_answer": student_ans,  # Option order (1, 2, 3, 4)
+                        "correct_answer": correct_option_order,  # Option order (1, 2, 3, 4)
                         "is_correct": is_correct
                     })
-                except:
-                    answer_details.append({
-                        "question_number": q_num,
-                        "student_answer": student_ans if answer else None,
-                        "correct_answer": None,
-                        "is_correct": False
-                    })
+            else:
+                # For PDF tests, use primary_keys
+                correct_answers = 0
+                wrong_answers = 0
+                total_questions = len(test.primary_keys.all())
+                
+                # Calculate score
+                answer_details = []
+                answer_map = {a.question_number: a for a in answers}
+                for q_num in range(1, total_questions + 1):
+                    answer = answer_map.get(q_num)
+                    try:
+                        correct_key = test.primary_keys.get(question_number=q_num)
+                        if answer:
+                            is_correct = answer.answer == correct_key.answer
+                            if is_correct:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
+                            student_ans = answer.answer
+                        else:
+                            # دانش‌آموز پاسخی نداده
+                            is_correct = False
+                            student_ans = None
+
+                        answer_details.append({
+                            "question_number": q_num,
+                            "student_answer": student_ans,
+                            "correct_answer": correct_key.answer,
+                            "is_correct": is_correct
+                        })
+                    except:
+                        answer_details.append({
+                            "question_number": q_num,
+                            "student_answer": student_ans if answer else None,
+                            "correct_answer": None,
+                            "is_correct": False
+                        })
 
             # Calculate score percentage
             score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
@@ -790,6 +940,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_queryset(self):
+        from django.db.models import Q
         user = self.request.user
         queryset = Question.objects.select_related('created_by', 'correct_option').prefetch_related('folders', 'options')
         
@@ -804,9 +955,9 @@ class QuestionViewSet(viewsets.ModelViewSet):
         print(f"DEBUG: Total questions in queryset: {queryset.count()}")
         
         # فیلتر بر اساس پوشه
-        folder_id = self.request.query_params.get('folder', None)
-        if folder_id:
-            queryset = queryset.filter(folders__id=folder_id)
+        folder_ids = self.request.query_params.getlist('folders', [])
+        if folder_ids:
+            queryset = queryset.filter(folders__id__in=folder_ids)
         
         # فیلتر بر اساس سطح دشواری
         difficulty = self.request.query_params.get('difficulty', None)
@@ -816,13 +967,62 @@ class QuestionViewSet(viewsets.ModelViewSet):
         # جستجوی متنی
         search = self.request.query_params.get('search', None)
         if search:
-            from django.db.models import Q
             queryset = queryset.filter(
                 Q(question_text__icontains=search) |
                 Q(detailed_solution__icontains=search) |
                 Q(options__option_text__icontains=search)
             ).distinct()
-        
+
+        # فیلتر بر اساس وضعیت فعال بودن
+        is_active = self.request.query_params.get('is_active', None)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+
+        # فیلتر بر اساس منبع
+        source = self.request.query_params.get('source', None)
+        if source:
+            queryset = queryset.filter(source__icontains=source)
+
+        # فیلتر بر اساس داشتن راه‌حل
+        has_solution = self.request.query_params.get('has_solution', None)
+        if has_solution is not None:
+            if has_solution.lower() == 'true':
+                queryset = queryset.exclude(detailed_solution__isnull=True).exclude(detailed_solution='')
+            else:
+                queryset = queryset.filter(Q(detailed_solution__isnull=True) | Q(detailed_solution=''))
+
+        # فیلتر بر اساس داشتن تصویر
+        has_images = self.request.query_params.get('has_images', None)
+        if has_images is not None:
+            if has_images.lower() == 'true':
+                queryset = queryset.filter(
+                    Q(images__isnull=False) |
+                    Q(detailed_solution_images__isnull=False)
+                ).distinct()
+            else:
+                queryset = queryset.exclude(
+                    Q(images__isnull=False) |
+                    Q(detailed_solution_images__isnull=False)
+                ).distinct()
+
+        # فیلتر بر اساس تاریخ
+        date_from = self.request.query_params.get('date_from', None)
+        if date_from:
+            queryset = queryset.filter(created_at__date__gte=date_from)
+
+        date_to = self.request.query_params.get('date_to', None)
+        if date_to:
+            queryset = queryset.filter(created_at__date__lte=date_to)
+
+        # Handle ordering
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            # Validate ordering field is allowed
+            allowed_fields = ['created_at', 'updated_at', 'difficulty_level']
+            field_name = ordering.lstrip('-')  # Remove leading '-' for descending
+            if field_name in allowed_fields:
+                queryset = queryset.order_by(ordering)
+
         return queryset
 
     def perform_create(self, serializer):
@@ -847,21 +1047,287 @@ class QuestionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def stats(self, request):
         """آمار کلی سوالات برای نمایش در فیلترها"""
-        user = request.user
-        base_queryset = Question.objects.filter(created_by=user) if user.role == 'teacher' else Question.objects.filter(is_active=True)
+        from django.db.models import Q
+        
+        # Use the same filtered queryset as get_queryset() to respect all filters
+        filtered_queryset = self.get_queryset()
         
         stats = {
-            'total_questions': base_queryset.count(),
+            'total_questions': filtered_queryset.count(),
             'by_difficulty': {
-                'easy': base_queryset.filter(difficulty_level='easy').count(),
-                'medium': base_queryset.filter(difficulty_level='medium').count(),
-                'hard': base_queryset.filter(difficulty_level='hard').count(),
+                'easy': filtered_queryset.filter(difficulty_level='easy').count(),
+                'medium': filtered_queryset.filter(difficulty_level='medium').count(),
+                'hard': filtered_queryset.filter(difficulty_level='hard').count(),
             },
-            'folders': list(Folder.objects.filter(questions__in=base_queryset).distinct().values('id', 'name', 'parent__name')),
+            'by_status': {
+                'active': filtered_queryset.filter(is_active=True).count(),
+                'inactive': filtered_queryset.filter(is_active=False).count(),
+            },
+            'by_content': {
+                'with_solution': filtered_queryset.exclude(detailed_solution__isnull=True).exclude(detailed_solution='').count(),
+                'without_solution': filtered_queryset.filter(
+                    Q(detailed_solution__isnull=True) | Q(detailed_solution='')
+                ).count(),
+                'with_images': filtered_queryset.filter(
+                    Q(images__isnull=False) | Q(detailed_solution_images__isnull=False)
+                ).distinct().count(),
+                'without_images': filtered_queryset.exclude(
+                    Q(images__isnull=False) | Q(detailed_solution_images__isnull=False)
+                ).distinct().count(),
+            },
+            'folders': list(Folder.objects.filter(questions__in=filtered_queryset).distinct().values('id', 'name', 'parent__name')),
         }
         return Response(stats)
 
+    @action(detail=False, methods=['POST'])
+    def import_questions(self, request):
+        """Bulk import questions from JSON files"""
+        import os
+        import json
+        import django
+        from django.contrib.auth import get_user_model
+        from .models import Question, Option, Folder
 
+        # Setup Django
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")
+        django.setup()
+
+        User = get_user_model()
+
+        # Get uploaded files and engine
+        uploaded_files = request.FILES.getlist('files')
+        engine = request.data.get('engine')
+
+        if not uploaded_files:
+            return Response({'error': 'فایل ها مورد نیاز هستند'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not engine or engine not in ['engine-1', 'engine-2']:
+            return Response({'error': 'انجین نامعتبر'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Use the current user instead of hardcoded user
+        current_user = request.user
+
+        imported_count = 0
+
+        # Process each file
+        for uploaded_file in uploaded_files:
+            try:
+                # Read and parse JSON file
+                file_content = uploaded_file.read().decode('utf-8')
+                data = json.loads(file_content)
+            except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                return Response({'error': f'فایل JSON نامعتبر {uploaded_file.name}: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Import based on engine
+            if engine == 'engine-1':
+                # Engine 1: tmp.py logic
+                # نگاشت سطح دشواری
+                difficulty_map = {
+                    "ساده": "easy",
+                    "آسان": "easy",
+                    "medium": "medium",
+                    "متوسط": "medium",
+                    "دشوار": "hard",
+                    "سخت": "hard",
+                }
+
+                def split_topics(topics):
+                    """تجزیه topics به source, publish_date, folders"""
+                    source_parts, folder_parts = [], []
+                    publish_date = None
+
+                    for t in topics:
+                        if t.isdigit() and len(t) == 4:  # سال
+                            publish_date = t
+                        elif any(kw in t for kw in ["کنکور", "خارج", "نوبت", "علوی", "آزمون"]):
+                            source_parts.append(t)
+                        else:
+                            folder_parts.append(t)
+
+                    source = " / ".join(source_parts) if source_parts else None
+                    return source, publish_date, folder_parts
+
+                def import_questions():
+                    nonlocal imported_count
+                    print(f"Processing {len(data)} items from JSON")
+                    # صاف کردن لیست‌های تو در تو
+                    all_data = []
+                    for block in data:
+                        if isinstance(block, list):
+                            all_data.extend(block)
+                        else:
+                            all_data.append(block)
+
+                    print(f"Flattened to {len(all_data)} items")
+                    for item in all_data:
+                        print(f"Processing item: {item.get('question', 'No question')[:50]}...")
+                        source, publish_date, folder_parts = split_topics(item.get("topics", []))
+                        print(f"Parsed topics - source: {source}, folders: {folder_parts}")
+                        source, publish_date, folder_parts = split_topics(item.get("topics", []))
+
+                        # ایجاد یا بروزرسانی سوال
+                        question, created = Question.objects.get_or_create(
+                            question_text=item.get("question", ""),
+                            defaults={
+                                "created_by": current_user,
+                                "difficulty_level": difficulty_map.get(item.get("difficulty", "").strip(), "medium"),
+                                "detailed_solution": item.get("explanation", "") + ("\n\nپاسخ صحیح: " + str(item.get("answer_text", "")) if item.get("answer_text") else ""),
+                                "source": source,
+                                "publish_date": publish_date,
+                            },
+                        )
+                        print(f"Question {'created' if created else 'updated'}: {question.question_text[:50]}...")
+
+                        if not created:
+                            question.difficulty_level = difficulty_map.get(item.get("difficulty", "").strip(), "medium")
+                            question.detailed_solution = item.get("explanation", "") + ("\n\nپاسخ صحیح: " + str(item.get("answer_text", "")) if item.get("answer_text") else "")
+                            question.source = source
+                            question.publish_date = publish_date
+                            question.save()
+                            question.options.all().delete()
+
+                        # گزینه‌ها
+                        options = item.get("options", [])
+                        correct_index = item.get("answer_index", None)
+                        correct_option_obj = None
+
+                        for idx, opt_text in enumerate(options, start=1):
+                            option = Option.objects.create(
+                                question=question,
+                                option_text=opt_text,
+                                order=idx
+                            )
+                            if correct_index is not None and idx - 1 == correct_index:
+                                correct_option_obj = option
+
+                        if correct_option_obj:
+                            question.correct_option = correct_option_obj
+                            question.save()
+
+                        # پوشه‌ها (ساخت سلسله مراتبی بدون تکرار)
+                        parent = None
+                        attached_folders = []
+                        for folder_name in folder_parts:
+                            if Folder.objects.filter(name=folder_name).exists():
+                                folder = Folder.objects.get(name=folder_name)
+                                if folder not in attached_folders:
+                                    attached_folders.append(folder)
+                                parent = folder
+                                continue
+                            folder = Folder.objects.create(name=folder_name, parent=parent)
+                            parent = folder
+                            attached_folders.append(folder)
+
+                        # اتصال همه پوشه‌ها به سوال
+                        for folder in attached_folders:
+                            question.folders.add(folder)
+
+                        imported_count += 1
+                        print(f"Imported question {imported_count} (engine-1)")
+
+                import_questions()
+
+            elif engine == 'engine-2':
+                # Engine 2: tmp2.py logic
+                # نگاشت دشواری
+                DIFFICULTY_MAP = {
+                    "easy": "easy", "ساده": "easy", "آسان": "easy",
+                    "medium": "medium", "متوسط": "medium",
+                    "hard": "hard", "دشوار": "hard", "سخت": "hard",
+                }
+
+                def map_difficulty(val: str) -> str:
+                    if not val:
+                        return "medium"
+                    return DIFFICULTY_MAP.get(val.strip(), "medium")
+
+                # نرمال‌سازی نام پوشه
+                ZWNJ = "\u200c"
+                def normalize_name(name: str) -> str:
+                    if not name:
+                        return ""
+                    name = name.replace("ي", "ی").replace("ك", "ک").replace(ZWNJ, "")
+                    name = name.strip()
+                    name = re.sub(r"\s+", " ", name)
+                    return name
+
+                def split_topic_to_chain(topic_str: str) -> list[str]:
+                    if not topic_str:
+                        return []
+                    parts = [normalize_name(p) for p in topic_str.split("|")]
+                    parts = [p for p in parts if p]
+                    return parts
+
+                def import_from_out():
+                    nonlocal imported_count
+
+                    for item in data:
+                        q_text = item.get("question_text", "") or ""
+                        difficulty = map_difficulty(item.get("difficulty"))
+                        solution = (item.get("solution") or "").strip()
+                        if not solution:
+                            continue
+                        topic_str = item.get("topic") or ""
+
+                        # ایجاد/بروزرسانی سوال بر اساس question_text
+                        question, created = Question.objects.get_or_create(
+                            question_text=q_text,
+                            defaults={
+                                "created_by": current_user,
+                                "difficulty_level": difficulty,
+                                "detailed_solution": solution,
+                            },
+                        )
+
+                        if not created:
+                            question.difficulty_level = difficulty
+                            question.detailed_solution = solution
+                            question.save()
+                            question.options.all().delete()
+
+                        # ساخت گزینه‌ها و ست‌کردن correct_option
+                        options = item.get("options", []) or []
+                        correct_index = item.get("correct_option_index", None)
+                        correct_option_obj = None
+
+                        for idx, opt in enumerate(options, start=1):
+                            opt_text = (opt or {}).get("option_text", "") or ""
+                            opt_obj = Option.objects.create(
+                                question=question,
+                                option_text=opt_text,
+                                order=idx
+                            )
+                            if correct_index is not None and (idx - 1) == correct_index:
+                                correct_option_obj = opt_obj
+
+                        if correct_option_obj:
+                            question.correct_option = correct_option_obj
+                            question.save()
+
+                        # ساخت و اتصال زنجیره پوشه‌ها
+                        chain = split_topic_to_chain(topic_str)
+                        parent = None
+                        attached = []
+                        for raw_name in chain:
+                            name = normalize_name(raw_name)
+                            folder, _ = Folder.objects.get_or_create(name=name, parent=parent)
+                            attached.append(folder)
+                            parent = folder
+
+                        # اتصال همه سطوح پوشه به سوال
+                        for f in attached:
+                            question.folders.add(f)
+
+                        imported_count += 1
+                        print(f"Imported question {imported_count} (engine-2)")
+                        print(f"Imported question {imported_count}")
+
+                import_from_out()
+
+        return Response({
+            'message': f'سوالات با موفقیت وارد شدند',
+            'imported_count': imported_count
+        })
 class OptionViewSet(viewsets.ModelViewSet):
     queryset = Option.objects.all()
     serializer_class = OptionSerializer

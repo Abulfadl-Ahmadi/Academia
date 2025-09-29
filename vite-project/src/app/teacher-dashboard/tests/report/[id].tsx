@@ -20,9 +20,17 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search, ArrowLeft, Download } from 'lucide-react';
+import { Loader2, Search, ArrowLeft, Download, Eye, Share } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 // @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali';
 
@@ -79,6 +87,7 @@ const TestReport = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -131,6 +140,10 @@ const TestReport = () => {
     alert('این قابلیت در نسخه بعدی اضافه خواهد شد');
   };
 
+  const shareTopPerformers = () => {
+    navigate(`/panel/question-tests/${id}/leaderboard`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -179,7 +192,7 @@ const TestReport = () => {
       <Button
         variant="outline"
         className="mb-4"
-        onClick={() => navigate('/panel/tests')}
+        onClick={() => navigate('/panel/question-tests')}
       >
         <ArrowLeft className="ml-2 h-4 w-4" />
         بازگشت به لیست آزمون‌ها
@@ -226,7 +239,15 @@ const TestReport = () => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-end">
+        <CardFooter className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={shareTopPerformers}
+            className="flex items-center"
+          >
+            <Share className="ml-2 h-4 w-4" />
+            اشتراک لیست نفرات برتر
+          </Button>
           <Button
             variant="outline"
             onClick={exportToExcel}
@@ -292,18 +313,60 @@ const TestReport = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // Implementation for viewing detailed results
-                          alert(
-                            'مشاهده جزئیات پاسخ‌های دانش‌آموز در نسخه بعدی اضافه خواهد شد'
-                          );
-                        }}
-                      >
-                        مشاهده جزئیات
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedSession(session)}
+                          >
+                            <Eye className="ml-2 h-4 w-4" />
+                            مشاهده جزئیات
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>
+                              جزئیات پاسخ‌های {session.user.first_name} {session.user.last_name}
+                            </DialogTitle>
+                            <DialogDescription>
+                              نمره: {session.score.correct} از {session.score.total} ({session.score.percentage.toFixed(1)}%)
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {selectedSession?.answers && selectedSession.answers.length > 0 ? (
+                              selectedSession.answers.map((answer) => (
+                                <Card key={answer.question_number} className={answer.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+                                  <CardHeader className="pb-3">
+                                    <CardTitle className="text-lg flex items-center justify-between">
+                                      <span>سوال {answer.question_number}</span>
+                                      <Badge variant={answer.is_correct ? 'default' : 'destructive'}>
+                                        {answer.is_correct ? 'صحیح' : 'غلط'}
+                                      </Badge>
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="space-y-2">
+                                      <div>
+                                        <span className="font-medium">پاسخ دانش‌آموز: </span>
+                                        <span className={answer.is_correct ? 'text-green-700' : 'text-red-700'}>
+                                          {answer.student_answer ? `گزینه ${answer.student_answer}` : 'بدون پاسخ'}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">پاسخ صحیح: </span>
+                                        <span className="text-blue-700">گزینه {answer.correct_answer}</span>
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))
+                            ) : (
+                              <p className="text-center text-muted-foreground">هیچ پاسخی ثبت نشده است.</p>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))

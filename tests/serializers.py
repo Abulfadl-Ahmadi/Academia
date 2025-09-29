@@ -10,7 +10,8 @@ from PIL import Image
 from contents.models import File
 from .models import (
     Test, PrimaryKey, StudentTestSession, StudentAnswer,
-    TestCollection, StudentProgress, Question, Option, QuestionImage, DetailedSolutionImage
+    TestCollection, StudentProgress, Question, Option, QuestionImage, DetailedSolutionImage,
+    TestType, TestContentType
 )
 from courses.models import Course
 from accounts.models import User
@@ -202,11 +203,98 @@ class TestUpdateSerializer(serializers.ModelSerializer):
 
         return instance
 
+class QuestionTestCreateSerializer(serializers.ModelSerializer):
+    """سریالایزر برای ایجاد آزمون سوالی"""
+    questions = serializers.PrimaryKeyRelatedField(
+        queryset=Question.objects.all(),
+        many=True,
+        required=True
+    )
+    folders = serializers.PrimaryKeyRelatedField(
+        queryset=Folder.objects.all(),
+        many=True,
+        required=True
+    )
+
+    class Meta:
+        model = Test
+        fields = [
+            'id', 'name', 'description', 'folders', 'questions',
+            'duration', 'start_time', 'end_time', 'frequency', 'is_active', 'content_type', 'test_collection'
+        ]
+        read_only_fields = ['teacher']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request else None
+        
+        # Extract many-to-many fields
+        folders = validated_data.pop('folders', [])
+        questions = validated_data.pop('questions', [])
+        
+        # Set the teacher
+        validated_data['teacher'] = user
+        validated_data['test_type'] = TestType.PRACTICE  # آزمون تمرینی
+        validated_data['content_type'] = TestContentType.TYPED_QUESTION  # سوال تایپ شده
+        
+        # Create the test instance
+        test = Test.objects.create(**validated_data)
+        
+        # Set many-to-many relationships
+        if folders:
+            test.folders.set(folders)
+        if questions:
+            test.questions.set(questions)
+        
+        return test
+
+
+class QuestionTestUpdateSerializer(serializers.ModelSerializer):
+    """سریالایزر برای ویرایش آزمون سوالی"""
+    questions = serializers.PrimaryKeyRelatedField(
+        queryset=Question.objects.all(),
+        many=True,
+        required=True
+    )
+    folders = serializers.PrimaryKeyRelatedField(
+        queryset=Folder.objects.all(),
+        many=True,
+        required=True
+    )
+
+    class Meta:
+        model = Test
+        fields = [
+            'id', 'name', 'description', 'folders', 'questions',
+            'duration', 'start_time', 'end_time', 'frequency', 'is_active', 'content_type', 'test_collection'
+        ]
+        read_only_fields = ['teacher']
+
+    def update(self, instance, validated_data):
+        # Extract many-to-many fields
+        folders = validated_data.pop('folders', None)
+        questions = validated_data.pop('questions', None)
+        
+        # Update the instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Update many-to-many relationships
+        if folders is not None:
+            instance.folders.set(folders)
+        if questions is not None:
+            instance.questions.set(questions)
+        
+        return instance
+
+
 class TestDetailSerializer(serializers.ModelSerializer):
     pdf_file_url = serializers.SerializerMethodField()
     answers_file_url = serializers.SerializerMethodField()
     collection = serializers.SerializerMethodField()
     questions_count = serializers.SerializerMethodField()
+    folders_count = serializers.SerializerMethodField()
     total_questions = serializers.SerializerMethodField()
     time_limit = serializers.SerializerMethodField()
     duration_formatted = serializers.SerializerMethodField()
@@ -215,12 +303,13 @@ class TestDetailSerializer(serializers.ModelSerializer):
     pdf_file = serializers.SerializerMethodField()  # فقط ID برای معلم
     answers_file = serializers.SerializerMethodField()  # فقط ID برای معلم
     questions = serializers.SerializerMethodField()  # لیست سوالات آزمون
+    folders = serializers.SerializerMethodField()  # لیست پوشه‌های آزمون
     
     class Meta:
         model = Test
         fields = ["id", 'name', 'description', 'test_collection', 'pdf_file', 'answers_file', 
-                 'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'duration_formatted', 'frequency',
-                 'collection', 'questions_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys', 'questions']
+                 'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'duration_formatted', 'frequency', 'content_type',
+                 'collection', 'questions_count', 'folders_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys', 'questions', 'folders']
         read_only_fields = ['teacher']
 
     def get_pdf_file(self, obj):
@@ -281,8 +370,12 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return None
 
     def get_questions_count(self, obj):
-        # برای حالا یک عدد ثابت برمی‌گردانیم، بعداً می‌توان از PDF استخراج کرد
-        return 20
+        """تعداد سوالات آزمون را برمی‌گرداند"""
+        return obj.questions.count()
+
+    def get_folders_count(self, obj):
+        """تعداد پوشه‌های آزمون را برمی‌گرداند"""
+        return obj.folders.count()
 
     def get_total_questions(self, obj):
         """محاسبه تعداد کل سوالات"""
@@ -304,7 +397,61 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return "01:00"  # پیش‌فرض 1 ساعت
 
     def get_questions(self, obj):
-        """لیست ID سوالات آزمون را برمی‌گرداند"""
+        """لیست ID سوالات آزمون را برمی‌گرداند برای آزمون‌های PDF، و جزئیات کامل برای آزمون‌های سوالی در detail view"""
+        if obj.content_type == TestContentType.TYPED_QUESTION:
+            # برای detail view، جزئیات کامل سوالات را برمی‌گردان
+            # اما برای list view، فقط IDها را برمی‌گردان تا از serialization error جلوگیری شود
+            request = self.context.get('request')
+            if request and request.method == 'GET' and not request.parser_context.get('kwargs', {}).get('pk'):
+                # This is a list view, return only IDs
+                return list(obj.questions.values_list('id', flat=True))
+            else:
+                # This is a detail view, return full details
+                questions_data = []
+                is_teacher = request and request.user.role == 'teacher'
+                
+                questions = sorted(obj.questions.all(), key=lambda q: q.id)
+                for question in questions:
+                    question_data = {
+                        'id': question.id,
+                        'public_id': question.public_id,
+                        'question_text': question.question_text,
+                        'difficulty_level': question.difficulty_level,
+                        'folders': list(question.folders.values_list('id', flat=True)),
+                        'folders_names': list(question.folders.values_list('name', flat=True)),
+                        'options': [{'id': opt.id, 'option_text': opt.option_text, 'order': opt.order} for opt in question.options.all()],
+                        'images': [{'id': img.id, 'image': img.image.url if img.image else '', 'alt_text': img.alt_text, 'order': img.order} for img in question.images.all()],
+                        'created_at': question.created_at.isoformat(),
+                        'updated_at': question.updated_at.isoformat(),
+                        'publish_date': question.publish_date.isoformat() if question.publish_date else None,
+                        'source': question.source,
+                        'is_active': question.is_active,
+                    }
+                    
+                    # فقط برای معلم‌ها اطلاعات حساس را اضافه کن
+                    if is_teacher:
+                        question_data.update({
+                            'correct_option': question.correct_option.id if question.correct_option else None,
+                            'detailed_solution': question.detailed_solution,
+                            'detailed_solution_images': [{'id': img.id, 'image': img.image.url if img.image else '', 'alt_text': img.alt_text, 'order': img.order} for img in question.detailed_solution_images.all()],
+                        })
+                    
+                    questions_data.append(question_data)
+                return questions_data
+        else:
+            # برای آزمون‌های PDF، فقط IDها را برمی‌گردان
+            return list(obj.questions.values_list('id', flat=True))
+
+    def get_folders(self, obj):
+        """لیست ID پوشه‌های آزمون را برمی‌گرداند"""
+        return list(obj.folders.values_list('id', flat=True))
+
+
+class QuestionTestListSerializer(TestDetailSerializer):
+    """سریالایزر مخصوص لیست آزمون‌های سوالی - فقط ID سوالات را برمی‌گرداند"""
+    
+    def get_questions(self, obj):
+        """برای لیست view، فقط ID سوالات را برمی‌گرداند"""
         return list(obj.questions.values_list('id', flat=True))
 
 

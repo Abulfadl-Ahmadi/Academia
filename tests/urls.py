@@ -15,6 +15,8 @@ from .views import (
     QuestionViewSet,
     OptionViewSet,
     QuestionImageViewSet,
+    ListCreateQuestionTestView,
+    QuestionTestDetailView,
 )
 from .topic_tests_views import (
     TopicTestViewSet,
@@ -36,6 +38,9 @@ urlpatterns = [
     path('tests/<int:pk>/', TestDetailView.as_view(), name='test-detail'),
     path('tests/<int:test_id>/file/<str:file_type>/', SecureTestFileView.as_view(), name='secure-test-file'),
 
+    path('question-tests/', ListCreateQuestionTestView.as_view(), name='create-question-test'),
+    path('question-tests/<int:pk>/', QuestionTestDetailView.as_view(), name='question-test-detail'),
+
     path('enter-test/', EnterTestView.as_view(), name='enter-test'),
     path('submit-answer/', SubmitAnswerView.as_view(), name='submit-answer'),
     path('get-answer/', GetAnswersView.as_view(), name='get-answer'),
@@ -43,7 +48,7 @@ urlpatterns = [
     path('finish-test/', FinishTestView.as_view(), name='finish-test'),
 
     path('tests/report/<int:test_id>/', CreateReport.as_view(), name='create-report'),
-    
+
     # URLs جدید برای آزمون‌های مبحثی
     path('topic-tests/random/', RandomTopicTestView.as_view(), name='random-topic-test'),
     path('topic-tests/my-history/', StudentTopicTestHistoryView.as_view(), name='student-topic-test-history'),
