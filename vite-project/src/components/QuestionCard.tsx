@@ -239,8 +239,10 @@ export function QuestionCard({
         const testResponse = await axiosInstance.get(`/tests/${testId}/`);
         const currentTest = testResponse.data;
         
-        // Get current question IDs
-        const currentQuestionIds = currentTest.questions || [];
+        // Get current question IDs - handle both array of IDs and array of objects
+        const currentQuestionIds = (currentTest.questions || []).map(q => 
+          typeof q === 'object' && q !== null ? q.id : q
+        );
         
         // Add the new question if not already present
         if (!currentQuestionIds.includes(question.id)) {
