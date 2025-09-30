@@ -58,6 +58,9 @@ ZARINPAL_VERIFY_URL = 'https://sandbox.zarinpal.com/pg/v4/payment/verify.json' i
 ZARINPAL_STARTPAY_URL = 'https://sandbox.zarinpal.com/pg/StartPay/' if ZARINPAL_SANDBOX else 'https://www.zarinpal.com/pg/StartPay/'
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+# Allow Django test client default host when debugging
+if DEBUG and 'testserver' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('testserver')
 
 # CORS Settings - More restrictive for production
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool, default=False)
@@ -150,6 +153,7 @@ INSTALLED_APPS = [
     'finance',
     'tickets',
     'knowledge',
+    'blog',
 ]
 
 MIDDLEWARE = [

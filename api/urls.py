@@ -39,6 +39,7 @@ urlpatterns = [
     path("api/finance/", include("finance.urls")),
     path("api/support/", include("tickets.urls")),
     path("api/knowledge/", include("knowledge.urls")),
+    path("api/", include("blog.urls")),
     path('admin/', admin.site.urls),
 ]
 
