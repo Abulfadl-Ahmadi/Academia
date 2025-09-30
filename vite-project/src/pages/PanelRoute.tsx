@@ -68,6 +68,11 @@ import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page
 import { TeacherKnowledgePanel } from "@/features/knowledge"
 import QuestionsListPage from "@/app/teacher-dashboard/questions/page"
 import LiveStream from "./livestream"
+// Blog pages
+import TeacherBlogListPage from '@/app/teacher-dashboard/blog/page'
+import TeacherBlogCreatePage from '@/app/teacher-dashboard/blog/create/page'
+import TeacherBlogDetailPage from '@/app/teacher-dashboard/blog/[slug]/page'
+import TeacherBlogEditPage from '@/app/teacher-dashboard/blog/[slug]/edit/page'
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -175,6 +180,11 @@ export default function PanelRoute() {
         <Route path="/support/:id" element={<TicketDetail />} />
         {/* <Route path="/videos" element={<VideoPage />} */}
         <Route path="/knowledge" element={<TeacherKnowledgePanel />} />
+        {/* Blog Management */}
+        <Route path="/blog" element={<TeacherBlogListPage />} />
+        <Route path="/blog/create" element={<TeacherBlogCreatePage />} />
+        <Route path="/blog/:slug" element={<TeacherBlogDetailPage />} />
+        <Route path="/blog/:slug/edit" element={<TeacherBlogEditPage />} />
       </Route>
     </Routes>
   )

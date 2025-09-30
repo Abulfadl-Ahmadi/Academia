@@ -31,7 +31,8 @@ export const TeacherLayout = () => {
     tests: 'آزمون‌ها',
     'topic-tests': 'آزمون‌های مبحثی',
     transactions: 'تراکنش‌ها',
-    knowledge: 'درخت دانش'
+    knowledge: 'درخت دانش',
+    blog: 'وبلاگ'
   };
   
   // Generate dynamic breadcrumb based on current path
@@ -82,7 +83,10 @@ export const TeacherLayout = () => {
                   {segment === 'create' && 'ایجاد آزمون'}
                   {segment === 'transactions' && 'تراکنش‌ها'}
                   {segment === 'sessions' && 'جلسات'}
+                  {segment === 'blog' && 'وبلاگ'}
                   {segment === 'create' && pathSegments[pathSegments.length - 2] === 'courses' && 'ایجاد دوره جدید'}
+                  {segment === 'create' && pathSegments[pathSegments.length - 2] === 'blog' && 'نوشته جدید'}
+                  {segment === 'edit' && pathSegments[pathSegments.length - 3] === 'blog' && 'ویرایش نوشته'}
                   {isDynamicSegment && courseTitle ? courseTitle : ''}
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -96,9 +100,7 @@ export const TeacherLayout = () => {
           return (
             <React.Fragment key={index}>
               <BreadcrumbItem>
-                <BreadcrumbLink href={href}>
-                  <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
-                </BreadcrumbLink>
+                <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
             </React.Fragment>

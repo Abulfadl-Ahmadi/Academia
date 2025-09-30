@@ -50,6 +50,7 @@ export default function Navbar({
   homeUrl = "#",
   mobileLinks = [
     { text: "فروشگاه", href: "/shop" },
+    { text: "وبلاگ", href: "/blog" },
     { text: "کلاس‌ها", href: "#" },
     { text: "آزمون‌‌ها", href: "#" },
     { text: "محاسبه‌گر درصد", href: "/grade-calculator" },

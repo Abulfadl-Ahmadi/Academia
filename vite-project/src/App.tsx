@@ -29,6 +29,8 @@ import MathTestPage from '@/pages/MathTestPage'
 import { PaymentInitiate } from '@/components/PaymentInitiate'
 import { PaymentSuccess } from '@/components/PaymentSuccess'
 import { PaymentFailed } from '@/components/PaymentFailed'
+import PublicBlogPage from './app/blog/page'
+import PublicBlogDetailPage from './app/blog/[slug]/page'
 
 function PreApp() {
   return (
@@ -94,6 +96,23 @@ function App() {
         <Route path="/payment/initiate" element={<PaymentInitiate />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/failed" element={<PaymentFailed />} />
+        
+        {/* Public Blog Routes */}
+        <Route path="/blog" element={
+          <>
+            <Navbar />
+            <PublicBlogPage />
+            <Footer />
+          </>
+        } />
+        <Route path="/blog/:slug" element={
+          <>
+            <Navbar />
+            <PublicBlogDetailPage />
+            <Footer />
+          </>
+        } />
+        
         <Route
           path="/"
           element={

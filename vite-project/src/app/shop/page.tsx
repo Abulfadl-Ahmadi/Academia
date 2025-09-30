@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { ShoppingCart, Search, Filter, Clock, FileText, BookOpen, FileCheck } from "lucide-react"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer"
+import { ShoppingCart, Search, Filter, Clock, FileText, BookOpen, FileCheck, X } from "lucide-react"
 import { toast } from "sonner"
 import { useCart } from "@/context/CartContext"
 import axiosInstance from "@/lib/axios"
@@ -41,45 +42,13 @@ export default function ShopPage() {
   const [selectedType, setSelectedType] = useState<string>('all')
   const [sortBy, setSortBy] = useState<string>('newest')
   const [loading, setLoading] = useState(true)
-  const [cartOpen, setCartOpen] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [appliedDiscount, setAppliedDiscount] = useState<Discount | null>(null)
   const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart()
 
   const TAX_RATE = 0.099 // 9.9%
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  useEffect(() => {
-    filterAndSortProducts()
-  }, [products, searchTerm, selectedType, sortBy])
-
-  const fetchProducts = async () => {
-    try {
-      const response = await axiosInstance.get('/shop/products/')
-      
-      // Handle both array and pagination format
-      let productsData = [];
-      if (Array.isArray(response.data)) {
-        productsData = response.data;
-      } else if (response.data && Array.isArray(response.data.results)) {
-        productsData = response.data.results;
-      } else {
-        console.warn("Products data is not an array:", response.data);
-        productsData = [];
-      }
-      
-      setProducts(productsData)
-    } catch (error) {
-      toast.error("خطا در بارگذاری محصولات")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filterAndSortProducts = () => {
+  const filterAndSortProducts = useCallback(() => {
     let filtered = products
 
     // Filter by search term
@@ -112,6 +81,37 @@ export default function ShopPage() {
     }
 
     setFilteredProducts(filtered)
+  }, [products, searchTerm, selectedType, sortBy])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    filterAndSortProducts()
+  }, [products, searchTerm, selectedType, sortBy, filterAndSortProducts])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get('/shop/products/')
+      
+      // Handle both array and pagination format
+      let productsData = [];
+      if (Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        productsData = response.data.results;
+      } else {
+        console.warn("Products data is not an array:", response.data);
+        productsData = [];
+      }
+      
+      setProducts(productsData)
+    } catch {
+      toast.error("خطا در بارگذاری محصولات")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAddToCart = (product: Product) => {
@@ -144,7 +144,7 @@ export default function ShopPage() {
         setAppliedDiscount(response.data.discount)
         toast.success(`${response.data.discount.percentage}% تخفیف اعمال شد`)
       }
-    } catch (error) {
+    } catch {
       toast.error("کد تخفیف نامعتبر است")
     }
   }
@@ -194,12 +194,11 @@ export default function ShopPage() {
       clearCart()
       setAppliedDiscount(null)
       setDiscountCode('')
-      setCartOpen(false)
 
       // Redirect to payment page with order ID
       window.location.href = `/payment/initiate?orderId=${orderId}&amount=${calculateTotal()}`
 
-    } catch (error) {
+    } catch {
       toast.error("خطا در ایجاد سفارش")
     }
   }
@@ -253,24 +252,149 @@ export default function ShopPage() {
           <p className="text-muted-foreground mt-2">محصولات آموزشی با کیفیت</p>
         </div>
 
-        <Button
-          onClick={() => setCartOpen(!cartOpen)}
-          className="relative"
-          variant="outline"
-        >
-          <ShoppingCart className="w-5 h-5 mr-2" />
-          سبد خرید
-          {getCartCount() > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center">
-              {getCartCount()}
-            </Badge>
-          )}
-        </Button>
+        <Drawer direction="left">
+          <DrawerTrigger asChild>
+            <Button
+              className="relative"
+              variant="outline"
+            >
+              <ShoppingCart className="w-5 h-5 mr-2" />
+              سبد خرید
+              {getCartCount() > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center">
+                  {getCartCount()}
+                </Badge>
+              )}
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="max-w-md h-full">
+            <DrawerHeader className="text-right">
+              <div className="flex items-center justify-between">
+                <DrawerTitle className="flex items-center">
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  سبد خرید
+                </DrawerTitle>
+                <DrawerClose asChild>
+                  <Button variant="ghost" size="sm">
+                    <X className="w-4 h-4" />
+                  </Button>
+                </DrawerClose>
+              </div>
+            </DrawerHeader>
+            <div className="flex-1 overflow-y-auto p-6">
+              {cart.length === 0 ? (
+                <div className="text-center py-8">
+                  <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">سبد خرید خالی است</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {cart.map((item) => (
+                      <div key={item.product.id} className="flex items-center gap-3 p-3 rounded-lg border">
+                        {/* Product Image */}
+                        <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+                          {item.product.image ? (
+                            <img
+                              src={item.product.image}
+                              alt={item.product.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                              {getProductIcon(item.product.product_type)}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
+                          <p className="text-sm text-muted-foreground">{formatPrice(item.product.current_price)} تومان</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                          >
+                            -
+                          </Button>
+                          <span className="w-8 text-center text-sm">{item.quantity}</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator className="my-4" />
+
+                  {/* Discount Code */}
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="کد تخفیف"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button size="sm" onClick={validateDiscountCode}>
+                        اعمال
+                      </Button>
+                    </div>
+                    {appliedDiscount && (
+                      <Badge variant="secondary" className="w-fit">
+                        {appliedDiscount.percentage}% تخفیف اعمال شد
+                      </Badge>
+                    )}
+                  </div>
+
+                  <Separator className="my-4" />
+
+                  {/* Price Summary */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>جمع کل:</span>
+                      <span>{formatPrice(calculateSubtotal())} تومان</span>
+                    </div>
+                    {appliedDiscount && (
+                      <div className="flex justify-between text-emerald-600">
+                        <span>تخفیف:</span>
+                        <span>-{formatPrice(calculateDiscount())} تومان</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>مالیات (9.9%):</span>
+                      <span>{formatPrice(calculateTax())} تومان</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between font-bold text-lg">
+                      <span>مبلغ نهایی:</span>
+                      <span className="text-primary">{formatPrice(calculateTotal())} تومان</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleCheckout}
+                    className="w-full mt-4"
+                  >
+                    تکمیل خرید
+                  </Button>
+                </>
+              )}
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-3">
+        <div>
           {/* Filters */}
           <div className=" rounded-lg shadow-sm border p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -364,7 +488,7 @@ export default function ShopPage() {
                           {formatPrice(product.price)} تومان
                         </span>
                       )}
-                      <span className="text-xl font-bold text-blue-600">
+                      <span className="text-xl font-bold text-primary">
                         {formatPrice(product.current_price)} تومان
                       </span>
                     </div>
@@ -410,127 +534,6 @@ export default function ShopPage() {
             </div>
           )}
         </div>
-
-        {/* Shopping Cart Sidebar */}
-        {cartOpen && (
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  سبد خرید
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {cart.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ShoppingCart className="w-12 h-12 text-muted-foreground  mx-auto mb-4" />
-                    <p className="text-muted-foreground">سبد خرید خالی است</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {cart.map((item) => (
-                        <div key={item.product.id} className="flex items-center gap-3 p-3 rounded-lg">
-                          {/* Product Image */}
-                          <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
-                            {item.product.image ? (
-                              <img
-                                src={item.product.image}
-                                alt={item.product.title}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                                {getProductIcon(item.product.product_type)}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
-                            <p className="text-sm text-muted-foreground">{formatPrice(item.product.current_price)} تومان</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
-                            >
-                              -
-                            </Button>
-                            <span className="w-8 text-center text-sm">{item.quantity}</span>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
-                            >
-                              +
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    {/* Discount Code */}
-                    <div className="space-y-2">
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="کد تخفیف"
-                          value={discountCode}
-                          onChange={(e) => setDiscountCode(e.target.value)}
-                          className="flex-1"
-                        />
-                        <Button size="sm" onClick={validateDiscountCode}>
-                          اعمال
-                        </Button>
-                      </div>
-                      {appliedDiscount && (
-                        <Badge variant="secondary" className="w-fit">
-                          {appliedDiscount.percentage}% تخفیف اعمال شد
-                        </Badge>
-                      )}
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    {/* Price Summary */}
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>جمع کل:</span>
-                        <span>{formatPrice(calculateSubtotal())} تومان</span>
-                      </div>
-                      {appliedDiscount && (
-                        <div className="flex justify-between text-green-600">
-                          <span>تخفیف:</span>
-                          <span>-{formatPrice(calculateDiscount())} تومان</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>مالیات (9.9%):</span>
-                        <span>{formatPrice(calculateTax())} تومان</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between font-bold text-lg">
-                        <span>مبلغ نهایی:</span>
-                        <span className="text-blue-600">{formatPrice(calculateTotal())} تومان</span>
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handleCheckout}
-                      className="w-full mt-4"
-                    >
-                      تکمیل خرید
-                    </Button>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </div>
     </div>
   )

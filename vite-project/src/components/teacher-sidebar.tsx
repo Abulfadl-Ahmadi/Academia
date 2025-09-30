@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   Target,
   TreePine,
+  PenTool,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -178,6 +179,22 @@ export function TeacherSidebar({
             title: "ایجاد سوال",
             url: "/panel/questions/create",
             description: "ایجاد سوال جدید با پشتیبانی ریاضی"
+          },
+        ],
+      },
+      {
+        title: "مدیریت وبلاگ",
+        url: "/panel/blog",
+        icon: PenTool,
+        items: [
+          {
+            title: "لیست نوشته‌ها",
+            url: "/panel/blog",
+          },
+          {
+            title: "نوشته جدید",
+            url: "/panel/blog/create",
+            description: "ایجاد مقاله و نوشته جدید"
           },
         ],
       },

@@ -48,22 +48,27 @@ interface NavigationProps {
 export default function Navigation({
   menuItems = [
     {
-      title: "کلاس‌ها و آزمون‌‌ها",
-      isLink: true,
-      // content: "default  ",
+      title: "مواد آموزشی",
+      content: "default",
     },
     {
       title: "فروشگاه",
-      isLink: true,
       href: "/shop",
+      isLink: true,
+    },
+    {
+      title: "وبلاگ",
+      href: "/blog",
+      isLink: true,
     },
     {
       title: "محاسبه‌گر درصد",
-      isLink: true,
       href: "/grade-calculator",
+      isLink: true,
     },
     {
-      title: "تماس با ما",
+      title: "درباره ما",
+      href: "/about",
       isLink: true,
     },
   ],
@@ -126,6 +131,7 @@ export default function Navigation({
       description: "Styles for headings, paragraphs, lists...etc",
     },
   ],
+  components = [],
 }: NavigationProps) {
   return (
     <NavigationMenu className="hidden md:flex md:flex-row-reverse">
@@ -133,11 +139,11 @@ export default function Navigation({
         {menuItems.map((item, index) => (
           <NavigationMenuItem key={index}>
             {item.isLink ? (
-              <Link to={item.href || ""}>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              <NavigationMenuLink asChild>
+                <Link to={item.href || ""} className={navigationMenuTriggerStyle()}>
                   {item.title}
-                </NavigationMenuLink>
-              </Link>
+                </Link>
+              </NavigationMenuLink>
             ) : (
               <>
                 <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>

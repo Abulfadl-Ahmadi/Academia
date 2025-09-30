@@ -7,6 +7,12 @@
 @import './assets/RaviPro/RaviFamily/Webfonts/fontiran.css';
 @import './assets/RaviPro/Ravi FaNum/Webfonts/fontiran.css';
 
+/* RTL content styles */
+.rtl-content {
+  direction: rtl;
+  text-align: justify;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
