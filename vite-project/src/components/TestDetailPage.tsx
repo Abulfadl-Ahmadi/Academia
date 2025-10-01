@@ -18,7 +18,8 @@ import {
   Users,
   BookOpen,
   Shield,
-  Timer
+  Timer,
+  ArrowRight
 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
@@ -46,6 +47,7 @@ interface Test {
   created_at: string;
   start_time: string;
   end_time: string;
+  duration: string;
   pdf_file_url: string;
   answers_file_url?: string;
   status?: string;
@@ -54,6 +56,10 @@ interface Test {
     name: string;
     created_by_name: string;
   };
+  folders?: Array<{
+    id: number;
+    name: string;
+  }>;
 }
 
 export default function TestDetailPage() {
@@ -67,11 +73,52 @@ export default function TestDetailPage() {
   const fetchTest = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/tests/${testId}/`);
+      const response = await axiosInstance.get(`/question-tests/${testId}/detail/`);
       setTest(response.data);
     } catch (err) {
       console.error("Error fetching test:", err);
-      toast.error("خطا در بارگیری اطلاعات آزمون");
+      const error = err as AxiosError;
+      
+      // Handle 401 Unauthorized specifically
+      if (error.response?.status === 401) {
+        toast.error("🔐 احراز هویت شما منقضی شده است. لطفاً دوباره وارد حساب کاربری خود شوید تا بتوانید به آزمون دسترسی داشته باشید.", {
+          duration: 6000
+        });
+        // Optionally redirect to login page
+        // navigate('/login');
+        return;
+      }
+      
+      // Handle 403 Forbidden
+      if (error.response?.status === 403) {
+        toast.error("🚫 متأسفانه شما مجوز دسترسی به این آزمون را ندارید. لطفاً با مدرس یا مدیر سیستم تماس بگیرید.", {
+          duration: 5000
+        });
+        navigate(-1);
+        return;
+      }
+      
+      // Handle 404 Not Found
+      if (error.response?.status === 404) {
+        toast.error("🔍 آزمون مورد نظر یافت نشد. ممکن است حذف شده یا لینک اشتباه باشد. لطفاً لینک را بررسی کنید.", {
+          duration: 5000
+        });
+        navigate(-1);
+        return;
+      }
+      
+      // Handle network/connection errors
+      if (!error.response) {
+        toast.error("🌐 مشکلی در اتصال به سرور وجود دارد. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.", {
+          duration: 5000
+        });
+        return;
+      }
+      
+      // Generic error fallback
+      toast.error("😔 متأسفیم! نتوانستیم اطلاعات آزمون را دریافت کنیم. لطفاً اتصال اینترنت خود را بررسی کرده و صفحه را تازه‌سازی کنید.", {
+        duration: 5000
+      });
       navigate(-1);
     } finally {
       setLoading(false);
@@ -95,7 +142,9 @@ export default function TestDetailPage() {
       });
 
       console.log("Session started:", res.data);
-      toast.success("آزمون با موفقیت شروع شد");
+      toast.success("🚀 فوق‌العاده! آزمون با موفقیت شروع شد. اکنون شما را به صفحه آزمون منتقل می‌کنیم. موفق باشید!", {
+        duration: 3000
+      });
       setConfirmDialogOpen(false);
 
       // ریدایرکت به صفحه آزمون با session data
@@ -104,22 +153,77 @@ export default function TestDetailPage() {
       console.error("Error starting session:", err);
       const error = err as AxiosError<{error?: string, detail?: string, message?: string, redirect_to?: string}>;
       
+      // Handle 401 Unauthorized
+      if (error.response?.status === 401) {
+        toast.error("🔐 جلسه شما منقضی شده است. لطفاً دوباره وارد سیستم شوید تا بتوانید آزمون را شروع کنید.", {
+          duration: 6000
+        });
+        // Optionally redirect to login
+        // navigate('/login');
+        return;
+      }
+      
+      // Handle 403 Forbidden
+      if (error.response?.status === 403) {
+        toast.error("🚫 متأسفانه شما مجوز شرکت در این آزمون را ندارید. لطفاً با مدرس خود تماس بگیرید.", {
+          duration: 5000
+        });
+        return;
+      }
+      
       // Handle completed test case specifically
       if (error.response?.data?.error === "completed" && error.response?.data?.redirect_to) {
-        toast.info(error.response.data.message || "شما قبلا این آزمون را به اتمام رسانده‌اید");
+        toast.success("🎉 عالی! شما این آزمون را قبلاً با موفقیت تکمیل کرده‌اید. اکنون شما را به صفحه نتایج هدایت می‌کنیم تا بتوانید نمره و جزئیات عملکردتان را مشاهده کنید.", {
+          duration: 4000
+        });
         navigate(error.response.data.redirect_to);
         return;
       }
       
-      // Handle other errors
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
-      } else if (error.response?.data?.detail) {
-        toast.error(error.response.data.detail);
-      } else if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
+      // Handle specific error cases with user-friendly messages
+      const errorData = error.response?.data;
+      
+      if (errorData?.error === "test_not_started") {
+        toast.error("⏰ آزمون هنوز شروع نشده است! لطفاً تا زمان شروع آزمون صبر کنید.", {
+          duration: 4000
+        });
+      } else if (errorData?.error === "test_ended") {
+        toast.error("⏱️ متأسفانه زمان آزمون به پایان رسیده است و امکان شرکت در آن وجود ندارد.", {
+          duration: 4000
+        });
+      } else if (errorData?.error === "already_participating") {
+        toast.error("📝 شما در حال حاضر در این آزمون شرکت دارید. لطفاً به صفحه آزمون بروید و آن را تکمیل کنید.", {
+          duration: 4000
+        });
+      } else if (errorData?.error === "device_mismatch") {
+        toast.error("🔒 به نظر می‌رسد شما از دستگاه متفاوتی تلاش می‌کنید. لطفاً از همان دستگاهی که آزمون را شروع کرده‌اید استفاده کنید.", {
+          duration: 5000
+        });
+      } else if (errorData?.error === "network_error") {
+        toast.error("🌐 مشکلی در اتصال به سرور وجود دارد. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.", {
+          duration: 4000
+        });
+      } else if (errorData?.error) {
+        toast.error(`😕 ${errorData.error} - اگر این مشکل ادامه دارد، لطفاً با پشتیبانی تماس بگیرید.`, {
+          duration: 4000
+        });
+      } else if (errorData?.detail) {
+        toast.error(`💭 ${errorData.detail}`, {
+          duration: 4000
+        });
+      } else if (errorData?.message) {
+        toast.error(`📢 ${errorData.message}`, {
+          duration: 4000
+        });
+      } else if (!error.response) {
+        // Network error - no response from server
+        toast.error("🌐 نتوانستیم به سرور متصل شویم. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.", {
+          duration: 5000
+        });
       } else {
-        toast.error("خطا در شروع آزمون");
+        toast.error("😓 متأسفیم! نتوانستیم آزمون را شروع کنیم. این مشکل ممکن است موقتی باشد. لطفاً چند دقیقه صبر کرده و دوباره تلاش کنید یا با پشتیبانی در تماس باشید.", {
+          duration: 6000
+        });
       }
     } finally {
       setStarting(false);
@@ -131,7 +235,8 @@ export default function TestDetailPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">در حال بارگیری اطلاعات آزمون...</p>
+          <p className="mt-4 text-muted-foreground">📚 در حال بارگیری اطلاعات آزمون...</p>
+          <p className="mt-2 text-sm text-muted-foreground">لطفاً کمی صبر کنید، تقریباً آماده است!</p>
         </div>
       </div>
     );
@@ -141,13 +246,16 @@ export default function TestDetailPage() {
     return (
       <div className="text-center py-8">
         <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-semibold">آزمون یافت نشد</h3>
+        <h3 className="mt-4 text-lg font-semibold">😕 آزمون مورد نظر یافت نشد</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          آزمون مورد نظر وجود ندارد یا دسترسی به آن ندارید.
+          متأسفانه آزمونی با این شناسه وجود ندارد یا ممکن است دسترسی به آن محدود باشد.
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          لطفاً لینک را بررسی کرده و دوباره تلاش کنید یا با مدرس خود تماس بگیرید.
         </p>
         <Button className="mt-4" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4 ml-1" />
-          بازگشت
+          بازگشت به صفحه قبل
         </Button>
       </div>
     );
@@ -162,16 +270,16 @@ export default function TestDetailPage() {
           size="sm"
           onClick={() => navigate(-1)}
         >
-          <ArrowLeft className="h-4 w-4 ml-1" />
+          <ArrowRight className="h-4 w-4 ml-1" />
           بازگشت
         </Button>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <FileText className="h-6 w-6" />
           <h1 className="text-3xl font-bold">{test.name}</h1>
           <Badge variant={test.is_active ? "default" : "secondary"}>
             {test.is_active ? "فعال" : "غیرفعال"}
           </Badge>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -181,7 +289,7 @@ export default function TestDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                جزئیات آزمون
+                <p className="text-lg">{test.name}</p>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -198,14 +306,14 @@ export default function TestDetailPage() {
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium">{test.questions_count}</p>
+                    <p className="persian-number text-sm font-medium">{test.questions_count}</p>
                     <p className="text-xs text-muted-foreground">سوال</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-orange-500" />
                   <div>
-                    <p className="text-sm font-medium">{test.time_limit}</p>
+                    <p className="persian-number text-sm font-medium">{test.time_limit}</p>
                     <p className="text-xs text-muted-foreground">دقیقه</p>
                   </div>
                 </div>
@@ -229,6 +337,22 @@ export default function TestDetailPage() {
                   <span>مدرس: {test.collection.created_by_name}</span>
                 </div>
               </div>
+
+              {test.folders && test.folders.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">مباحث آزمون</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {test.folders.map((folder) => (
+                        <Badge key={folder.id} variant="outline" className="text-xs">
+                          {folder.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <Separator />
 
@@ -266,9 +390,9 @@ export default function TestDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-start gap-3">
-                <Timer className="h-5 w-5 text-orange-500 mt-0.5" />
-                <div>
+              <div className="flex flex-row items-start gap-3">
+                <Timer className="flex-none w-5 text-orange-500 mt-0.5" />
+                <div className="grow ">
                   <h4 className="font-medium">مدت زمان آزمون</h4>
                   <p className="text-sm text-muted-foreground">
                     شما {test.time_limit} دقیقه وقت دارید. زمان از لحظه شروع آزمون محاسبه می‌شود.
@@ -276,9 +400,9 @@ export default function TestDetailPage() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
-                <div>
+              <div className="flex flex-row items-start gap-3">
+                <AlertTriangle className="flex-none h-5 w-5 text-red-500 mt-0.5" />
+                <div className="grow ">
                   <h4 className="font-medium">توجه مهم</h4>
                   <p className="text-sm text-muted-foreground">
                     پس از شروع آزمون، امکان بازگشت وجود ندارد. لطفاً مطمئن شوید که آماده هستید.
@@ -286,9 +410,9 @@ export default function TestDetailPage() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-red-500 mt-0.5" />
-                <div>
+              <div className="flex flex-row items-start gap-3">
+                <Shield className="flex-none h-5 w-5 text-red-500 mt-0.5" />
+                <div className="grow">
                   <h4 className="font-medium">امنیت آزمون</h4>
                   <p className="text-sm text-muted-foreground">
                     سوالات آزمون فقط پس از شروع رسمی آزمون قابل دسترسی خواهند بود. هرگونه تلاش برای دسترسی غیرمجاز به سوالات منجر به لغو آزمون می‌شود.
@@ -296,9 +420,9 @@ export default function TestDetailPage() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <FileText className="h-5 w-5 text-blue-500 mt-0.5" />
-                <div>
+              <div className="flex flex-row items-start gap-3">
+                <FileText className="flex-none h-5 w-5 text-blue-500 mt-0.5" />
+                <div className="grow">
                   <h4 className="font-medium">نحوه پاسخ‌دهی</h4>
                   <p className="text-sm text-muted-foreground">
                     پس از شروع آزمون، سوالات به صورت PDF نمایش داده می‌شود و شما پاسخ‌ها را در سیستم ثبت می‌کنید.
@@ -306,9 +430,9 @@ export default function TestDetailPage() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                <div>
+              <div className="flex flex-row items-start gap-3">
+                <CheckCircle className="flex-none h-5 w-5 text-green-500 mt-0.5" />
+                <div className="grow">
                   <h4 className="font-medium">ذخیره خودکار</h4>
                   <p className="text-sm text-muted-foreground">
                     پاسخ‌های شما به صورت خودکار ذخیره می‌شود.
@@ -334,7 +458,12 @@ export default function TestDetailPage() {
                       شما این آزمون را قبلاً تکمیل کرده‌اید
                     </p>
                   </div>
-                  <Button className="w-full" onClick={() => navigate(`/tests/${test.id}/result`)}>
+                  <Button className="w-full" onClick={() => {
+                    toast.success("📈 عالی! در حال انتقال به صفحه نتایج... شما می‌توانید نمره، تحلیل عملکرد و پاسخ‌های خود را مشاهده کنید.", {
+                      duration: 3000
+                    });
+                    navigate(`/tests/${test.id}/result`);
+                  }}>
                     <CheckCircle className="h-4 w-4 ml-2" />
                     مشاهده نتیجه
                   </Button>
@@ -360,7 +489,12 @@ export default function TestDetailPage() {
                     className="w-full" 
                     size="lg" 
                     disabled={starting}
-                    onClick={() => setConfirmDialogOpen(true)}
+                    onClick={() => {
+                      setConfirmDialogOpen(true);
+                      toast.info("💡 لطفاً قبل از شروع آزمون، قوانین و دستورالعمل‌ها را با دقت مطالعه کنید و مطمئن شوید که شرایط مناسبی برای آزمون دارید.", {
+                        duration: 4000
+                      });
+                    }}
                   >
                     {starting ? (
                       <>
@@ -399,7 +533,12 @@ export default function TestDetailPage() {
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>
+                        <Button variant="outline" onClick={() => {
+                          setConfirmDialogOpen(false);
+                          toast.info("👍 بدون مشکل! شما می‌توانید هر زمان که احساس آمادگی کردید، دوباره آزمون را شروع کنید. موفق باشید!", {
+                            duration: 3000
+                          });
+                        }}>
                           انصراف
                         </Button>
                         <Button onClick={handleStartTest} disabled={starting}>

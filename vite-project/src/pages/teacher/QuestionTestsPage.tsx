@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Calendar, Clock, FileText, Users, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, Clock, FileText, Users, Eye, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +82,11 @@ export default function QuestionTestsPage() {
       console.error('Error deleting test:', error);
       toast.error('خطا در حذف آزمون');
     }
+  };
+
+  const handleShare = async (test: QuestionTest) => {
+    // Navigate to poster page instead of copying link
+    navigate(`/panel/question-tests/${test.id}/poster`);
   };
 
   const formatDuration = (duration: string) => {
@@ -221,6 +226,15 @@ export default function QuestionTestsPage() {
                       onClick={() => navigate(`/panel/question-tests/${test.id}/results`)}
                     >
                       <Users className="w-4 h-4" />
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleShare(test)}
+                      title="اشتراک‌گذاری آزمون"
+                    >
+                      <Share className="w-4 h-4" />
                     </Button>
 
                     <Button

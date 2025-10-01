@@ -18,6 +18,7 @@ from .views import (
     ListCreateQuestionTestView,
     QuestionTestDetailView,
 )
+from .public_views import test_poster_public, test_detail_public
 from .topic_tests_views import (
     TopicTestViewSet,
     RandomTopicTestView,
@@ -35,8 +36,13 @@ urlpatterns = [
     path('', include(router.urls)),
     path('tests/', ListCreateTestView.as_view(), name='create-test'),
     path('tests/<int:pk>/update', UpdateDeleteTestView.as_view(), name='update-delete-test'),
-    path('tests/<int:pk>/', TestDetailView.as_view(), name='test-detail'),
     path('tests/<int:test_id>/file/<str:file_type>/', SecureTestFileView.as_view(), name='secure-test-file'),
+    
+    # Public poster endpoint - must come before tests/<int:pk>/ pattern
+    path('question-tests/<int:test_id>/poster/', test_poster_public, name='test-poster-public'),
+    path('question-tests/<int:test_id>/detail/', test_detail_public, name='test-detail-public'),
+    
+    path('tests/<int:pk>/', TestDetailView.as_view(), name='test-detail'),
 
     path('question-tests/', ListCreateQuestionTestView.as_view(), name='create-question-test'),
     path('question-tests/<int:pk>/', QuestionTestDetailView.as_view(), name='question-test-detail'),

@@ -31,6 +31,7 @@ import { PaymentSuccess } from '@/components/PaymentSuccess'
 import { PaymentFailed } from '@/components/PaymentFailed'
 import PublicBlogPage from './app/blog/page'
 import PublicBlogDetailPage from './app/blog/[slug]/page'
+import PublicTestPosterPage from '@/pages/PublicTestPosterPage'
 
 function PreApp() {
   return (
@@ -109,6 +110,15 @@ function App() {
           <>
             <Navbar />
             <PublicBlogDetailPage />
+            <Footer />
+          </>
+        } />
+        
+        {/* Public Test Poster Route */}
+        <Route path="/test-poster/:testId" element={
+          <>
+            <Navbar />
+            <PublicTestPosterPage />
             <Footer />
           </>
         } />

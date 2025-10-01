@@ -44,6 +44,7 @@ import FolderManagerPage from "@/pages/teacher/FolderManagerPage"
 import CreateQuestionTestPage from "@/pages/teacher/CreateQuestionTestPage"
 import QuestionTestsPage from "@/pages/teacher/QuestionTestsPage"
 import QuestionTestDetailPage from "@/pages/teacher/QuestionTestDetailPage"
+import TestPosterPage from "@/pages/teacher/TestPosterPage"
 import TestReport from "@/app/teacher-dashboard/tests/report/[id]"
 import TopPerformersLeaderboard from "@/app/teacher-dashboard/tests/report/leaderboard"
 
@@ -165,6 +166,7 @@ export default function PanelRoute() {
         <Route path="/question-tests/create" element={<CreateQuestionTestPage />} />
         <Route path="/question-tests/:id" element={<QuestionTestDetailPage />} />
         <Route path="/question-tests/:id/edit" element={<CreateQuestionTestPage />} />
+        <Route path="/question-tests/:id/poster" element={<TestPosterPage />} />
         <Route path="/question-tests/:id/results" element={<TestReport />} />
         <Route path="/question-tests/:id/leaderboard" element={<TopPerformersLeaderboard />} />
         {/* Question Routes */}
