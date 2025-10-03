@@ -22,6 +22,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Edit,
   Trash2,
@@ -188,6 +189,7 @@ export function QuestionCard({
   const [tests, setTests] = useState<Test[]>([]);
   const [selectedTests, setSelectedTests] = useState<number[]>([]);
   const [loadingTests, setLoadingTests] = useState(false);
+  const [testsWithQuestion, setTestsWithQuestion] = useState<number[]>([]);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -217,24 +219,49 @@ export function QuestionCard({
       }
       
       setTests(testsData);
+
+      // Check which tests already contain this question
+      const testsContainingQuestion: number[] = [];
+      
+      for (const test of testsData) {
+        try {
+          const testResponse = await axiosInstance.get(`/tests/${test.id}/`);
+          const testData = testResponse.data;
+          
+          // Get current question IDs - handle both array of IDs and array of objects
+          const currentQuestionIds = (testData.questions || []).map(q => 
+            typeof q === 'object' && q !== null ? q.id : q
+          );
+          
+          if (currentQuestionIds.includes(question.id)) {
+            testsContainingQuestion.push(test.id);
+          }
+        } catch (error) {
+          console.error(`Error checking test ${test.id}:`, error);
+        }
+      }
+      
+      setTestsWithQuestion(testsContainingQuestion);
+      // Set tests that already contain the question as selected
+      setSelectedTests(testsContainingQuestion);
     } catch (error) {
       console.error("Error fetching tests:", error);
       toast.error("خطا در بارگیری آزمون‌ها");
       setTests([]); // Ensure tests is always an array
+      setTestsWithQuestion([]);
     } finally {
       setLoadingTests(false);
     }
   };
 
   const addQuestionToTests = async () => {
-    if (selectedTests.length === 0) {
-      toast.error("لطفاً حداقل یک آزمون انتخاب کنید");
-      return;
-    }
-
     try {
-      // For each selected test, get current questions and add the new one
-      const promises = selectedTests.map(async (testId) => {
+      const promises: Promise<unknown>[] = [];
+      
+      // Get all tests that need to be updated
+      const allRelevantTests = [...new Set([...selectedTests, ...testsWithQuestion])];
+      
+      for (const testId of allRelevantTests) {
         // First get the current test data
         const testResponse = await axiosInstance.get(`/tests/${testId}/`);
         const currentTest = testResponse.data;
@@ -244,26 +271,50 @@ export function QuestionCard({
           typeof q === 'object' && q !== null ? q.id : q
         );
         
-        // Add the new question if not already present
-        if (!currentQuestionIds.includes(question.id)) {
-          const updatedQuestionIds = [...currentQuestionIds, question.id];
-          
-          // Update the test with the new questions list
-          return axiosInstance.patch(`/tests/${testId}/update`, {
-            questions: updatedQuestionIds
-          });
-        }
+        const isSelected = selectedTests.includes(testId);
+        const isCurrentlyIncluded = currentQuestionIds.includes(question.id);
         
-        return Promise.resolve(); // Question already in test
-      });
+        if (isSelected && !isCurrentlyIncluded) {
+          // Add question to test
+          const updatedQuestionIds = [...currentQuestionIds, question.id];
+          promises.push(
+            axiosInstance.patch(`/tests/${testId}/update`, {
+              questions: updatedQuestionIds
+            })
+          );
+        } else if (!isSelected && isCurrentlyIncluded) {
+          // Remove question from test
+          const updatedQuestionIds = currentQuestionIds.filter(id => id !== question.id);
+          promises.push(
+            axiosInstance.patch(`/tests/${testId}/update`, {
+              questions: updatedQuestionIds
+            })
+          );
+        }
+      }
 
       await Promise.all(promises);
-      toast.success(`سوال به ${selectedTests.length} آزمون اضافه شد`);
+      
+      const addedCount = selectedTests.filter(id => !testsWithQuestion.includes(id)).length;
+      const removedCount = testsWithQuestion.filter(id => !selectedTests.includes(id)).length;
+      
+      let message = '';
+      if (addedCount > 0 && removedCount > 0) {
+        message = `سوال به ${addedCount} آزمون اضافه و از ${removedCount} آزمون حذف شد`;
+      } else if (addedCount > 0) {
+        message = `سوال به ${addedCount} آزمون اضافه شد`;
+      } else if (removedCount > 0) {
+        message = `سوال از ${removedCount} آزمون حذف شد`;
+      } else {
+        message = 'تغییری اعمال نشد';
+      }
+      
+      toast.success(message);
       setShowAddToExamDrawer(false);
       setSelectedTests([]);
     } catch (error) {
-      console.error("Error adding question to tests:", error);
-      toast.error("خطا در اضافه کردن سوال به آزمون‌ها");
+      console.error("Error updating question in tests:", error);
+      toast.error("خطا در به‌روزرسانی آزمون‌ها");
     }
   };
 
@@ -632,21 +683,21 @@ export function QuestionCard({
       </CardContent>
     </Card>
     <Drawer direction="left" open={showAddToExamDrawer} onOpenChange={setShowAddToExamDrawer}>
-      <DrawerContent>
-        <DrawerHeader>
+      <DrawerContent className="h-screen flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
           <DrawerTitle>افزودن به آزمون</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4">
-          <div className="space-y-4">
-            <div>
+        <div className="p-4 flex-1 flex flex-col min-h-0">
+          <div className="space-y-4 flex-1 flex flex-col min-h-0">
+            <div className="flex-shrink-0">
               <h4 className="font-medium text-sm mb-2">سوال انتخاب شده:</h4>
               <div className="p-3 bg-muted/50 rounded border text-sm">
                 <MathPreview text={question.question_text} />
               </div>
             </div>
 
-            <div>
-              <h4 className="font-medium text-sm mb-2">انتخاب آزمون‌ها:</h4>
+            <div className="flex-1 flex flex-col min-h-0">
+              <h4 className="font-medium text-sm mb-2 flex-shrink-0">انتخاب آزمون‌ها:</h4>
               {loadingTests ? (
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
@@ -657,52 +708,91 @@ export function QuestionCard({
                   {Array.isArray(tests) && tests.length === 0 ? "هیچ آزمونی یافت نشد" : "خطا در بارگیری آزمون‌ها"}
                 </p>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {(tests || []).map((test) => (
-                    <div key={test.id} className="flex items-center space-x-2 space-x-reverse">
-                      <Checkbox
-                        id={`test-${test.id}`}
-                        checked={selectedTests.includes(test.id)}
-                        onCheckedChange={(checked) => handleTestSelection(test.id, checked as boolean)}
-                      />
-                      <label
-                        htmlFor={`test-${test.id}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
-                      >
-                        <div>
-                          <div className="font-medium">{test.name}</div>
-                          {test.description && (
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {test.description}
+                <ScrollArea className="flex-1 w-full border rounded-md min-h-0">
+                  <div className="p-2 space-y-2">
+                    {(tests || []).map((test) => {
+                      const isAlreadyIncluded = testsWithQuestion.includes(test.id);
+                      return (
+                        <div 
+                          key={test.id} 
+                          className={`flex items-start space-x-reverse p-2 rounded border transition-colors hover:bg-muted/50 ${
+                            isAlreadyIncluded ? 'bg-muted/30' : 'bg-background'
+                          }`}
+                        >
+                          <Checkbox
+                            id={`test-${test.id}`}
+                            checked={selectedTests.includes(test.id)}
+                            onCheckedChange={(checked) => handleTestSelection(test.id, checked as boolean)}
+                            className="mt-0.5 ml-3"
+                          />
+                          <label
+                            htmlFor={`test-${test.id}`}
+                            className={`text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1 ${
+                              isAlreadyIncluded ? 'text-muted-foreground' : ''
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{test.name}</span>
+                                {isAlreadyIncluded && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    شامل این سوال
+                                  </Badge>
+                                )}
+                              </div>
+                              {test.description && (
+                                <div className="text-xs text-muted-foreground leading-normal">
+                                  {test.description}
+                                </div>
+                              )}
+                              {test.collection && (
+                                <div className="text-xs text-muted-foreground">
+                                  مجموعه: {test.collection.name}
+                                </div>
+                              )}
                             </div>
-                          )}
-                          {test.collection && (
-                            <div className="text-xs text-muted-foreground">
-                              مجموعه: {test.collection.name}
-                            </div>
-                          )}
+                          </label>
                         </div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
               )}
             </div>
 
-            {selectedTests.length > 0 && (
-              <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground mb-3">
-                  {selectedTests.length} آزمون انتخاب شده
-                </p>
-                <Button
-                  onClick={addQuestionToTests}
-                  className="w-full"
-                  disabled={loadingTests}
-                >
-                  افزودن به آزمون‌ها
-                </Button>
-              </div>
-            )}
+            {(() => {
+              const hasChanges = selectedTests.some(id => !testsWithQuestion.includes(id)) || 
+                                testsWithQuestion.some(id => !selectedTests.includes(id));
+              
+              if (!hasChanges) return null;
+              
+              const addedCount = selectedTests.filter(id => !testsWithQuestion.includes(id)).length;
+              const removedCount = testsWithQuestion.filter(id => !selectedTests.includes(id)).length;
+              
+              let statusText = '';
+              if (addedCount > 0 && removedCount > 0) {
+                statusText = `${addedCount} اضافه، ${removedCount} حذف`;
+              } else if (addedCount > 0) {
+                statusText = `${addedCount} آزمون برای اضافه شدن`;
+              } else if (removedCount > 0) {
+                statusText = `${removedCount} آزمون برای حذف شدن`;
+              }
+              
+              return (
+                <div className="pt-4 border-t flex-shrink-0">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {statusText}
+                  </p>
+                  <Button
+                    onClick={addQuestionToTests}
+                    className="w-full"
+                    disabled={loadingTests}
+                  >
+                    اعمال تغییرات
+                  </Button>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </DrawerContent>
