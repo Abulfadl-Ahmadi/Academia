@@ -233,16 +233,16 @@ export default function EditQuestionPage() {
           if (nextPageQuestions.length > 0) {
             const nextQuestion = nextPageQuestions[0];
             urlParams.set('page', nextPage.toString());
-            navigate(`/teacher-dashboard/questions/edit/${nextQuestion.id}?${urlParams.toString()}`);
+            navigate(`/panel/questions/edit/${nextQuestion.id}?${urlParams.toString()}`);
           } else {
             // No more questions
             toast.info("این آخرین سوال است");
-            navigate(`/teacher-dashboard/questions?${urlParams.toString()}`);
+            navigate(`/panel/questions?${urlParams.toString()}`);
           }
         } else {
           // No more questions
           toast.info("این آخرین سوال است");
-          navigate(`/teacher-dashboard/questions?${urlParams.toString()}`);
+          navigate(`/panel/questions?${urlParams.toString()}`);
         }
       }
     } catch (error) {
