@@ -38,6 +38,12 @@ export default function TransactionsList() {
 
 
   const applyFilters = useCallback(() => {
+    // Ensure transactions is an array before applying filters
+    if (!Array.isArray(transactions)) {
+      setFilteredTransactions([]);
+      return;
+    }
+    
     let filtered = [...transactions];
 
     // Search filter
@@ -83,10 +89,25 @@ export default function TransactionsList() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/finance/transactions/");
-      setTransactions(response.data);
+      
+      // Handle different response formats
+      let transactionsData: Transaction[] = [];
+      if (Array.isArray(response.data)) {
+        transactionsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        transactionsData = response.data.results;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        transactionsData = response.data.data;
+      } else {
+        console.warn("Unexpected API response format:", response.data);
+        transactionsData = [];
+      }
+      
+      setTransactions(transactionsData);
     } catch (error) {
       console.error("Error fetching transactions:", error);
       toast.error("خطا در دریافت تراکنش‌ها");
+      setTransactions([]); // Ensure transactions is always an array
     } finally {
       setLoading(false);
     }
