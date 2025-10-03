@@ -34,6 +34,10 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
+    rtmp_url = models.CharField(max_length=255,blank=True, null=True, default=None)
+    rtmp_key = models.CharField(max_length=255, blank=True, null=True, default=None)
+    live_iframe = models.TextField(blank=True, null=True, help_text="کد iframe برای نمایش پخش زنده")
+    is_live = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

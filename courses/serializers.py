@@ -38,6 +38,24 @@ class CourseSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'updated_at']
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        
+        # اگر کاربر لاگین هست و غیر از دانش‌آموز است، فیلدهای RTMP و live status را اضافه کن
+        if request and request.user.is_authenticated and request.user.role != 'student':
+            representation['rtmp_url'] = instance.rtmp_url
+            representation['rtmp_key'] = instance.rtmp_key
+            representation['live_iframe'] = instance.live_iframe
+            representation['is_live'] = instance.is_live
+        # برای دانش‌آموزان فقط iframe در صورت live بودن
+        elif request and request.user.is_authenticated and request.user.role == 'student':
+            representation['is_live'] = instance.is_live
+            if instance.is_live and instance.live_iframe:
+                representation['live_iframe'] = instance.live_iframe
+            
+        return representation
+
 
 class TeacherCourseSerializer(serializers.ModelSerializer):
     teacher = UserSerializer(read_only=True)
@@ -49,7 +67,8 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'description', 'teacher', 'students_count', 'vod_channel_id',
-            'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active'
+            'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active',
+            'rtmp_url', 'rtmp_key', 'live_iframe', 'is_live'
         ]
         read_only_fields = ['created_at', 'updated_at']
 

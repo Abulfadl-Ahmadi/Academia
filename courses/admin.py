@@ -26,9 +26,9 @@ class ClassCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['title', 'teacher', 'category', 'students_count', 'sessions_count', 'schedules_count', 'is_active', 'created_at']
-    list_filter = ['is_active', 'created_at', 'teacher__role', 'category']
-    search_fields = ['title', 'description', 'teacher__username', 'vod_channel_id']
+    list_display = ['title', 'teacher', 'category', 'students_count', 'sessions_count', 'schedules_count', 'has_rtmp', 'is_live', 'is_active', 'created_at']
+    list_filter = ['is_active', 'is_live', 'created_at', 'teacher__role', 'category']
+    search_fields = ['title', 'description', 'teacher__username', 'vod_channel_id', 'rtmp_url']
     readonly_fields = ['created_at', 'updated_at']
     filter_horizontal = ['students']
     inlines = [CourseScheduleInline, CourseSessionInline]
@@ -43,6 +43,10 @@ class CourseAdmin(admin.ModelAdmin):
         }),
         ('Technical', {
             'fields': ('vod_channel_id', 'is_active')
+        }),
+        ('RTMP Streaming', {
+            'fields': ('rtmp_url', 'rtmp_key', 'live_iframe', 'is_live'),
+            'description': 'تنظیمات پخش زنده RTMP'
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -61,6 +65,11 @@ class CourseAdmin(admin.ModelAdmin):
     def schedules_count(self, obj):
         return obj.schedules.count()
     schedules_count.short_description = 'تعداد برنامه‌ها'
+    
+    def has_rtmp(self, obj):
+        return bool(obj.rtmp_url and obj.rtmp_key)
+    has_rtmp.boolean = True
+    has_rtmp.short_description = 'RTMP فعال'
 
 
 @admin.register(CourseSchedule)
