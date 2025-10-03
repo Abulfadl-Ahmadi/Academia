@@ -1,13 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  Clock,
-  BookOpen,
-  ArrowLeft,
-  Copy,
-  Link,
-} from "lucide-react";
+import { Calendar, Clock, BookOpen, ArrowLeft, Copy, Link } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import { TextShimmer } from "../../components/motion-primitives/text-shimmer";
@@ -479,7 +472,7 @@ export default function PublicTestPosterPage() {
               </div>
             </div>
 
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center mx-4">
               <h2 className="text-3xl font-bold">{test.name}</h2>
               {test.description && (
                 <p className="text-xl text-primary-foreground/90 max-w-2xl mx-auto leading-relaxed">
@@ -500,7 +493,7 @@ export default function PublicTestPosterPage() {
             </div>
 
             {/* Content Section */}
-            <div className="p-4 space-y-4">
+            <div className="px-4 pb-4 space-y-4">
               {/* Countdown Section */}
               {test.start_time && (
                 <Card className="border-2 border-primary/20 bg-primary/5">
@@ -617,7 +610,7 @@ export default function PublicTestPosterPage() {
                       </div>
                     )}
 
-                    <Separator className="my-6" />
+                    <Separator className="mt-3 mb-3" />
 
                     <div className="flex flex-row justify-around gap-6 persian-number">
                       <div>
@@ -648,7 +641,21 @@ export default function PublicTestPosterPage() {
                 </Card>
 
                 <div className="text-center w-full">
-                  <Button onClick={() => window.open(`/tests/${testId}/info`, "_blank")}>
+                  <div className="mb-4 items-center justify-center flex gap-4">
+                    <img
+                      src="https://c242950.parspack.net/c242950/media/anim.jpg"
+                      className="rounded-full w-22 border self-center"
+                    />
+                  <div className="">
+                    <p>وبسایت آرین تفضلی‌زاده</p>
+                    <p>ariantafazolizadeh.ir</p>
+                  </div>
+                  </div>
+                  <Button
+                    onClick={() =>
+                      window.open(`/tests/${testId}/info`, "_blank")
+                    }
+                  >
                     <Link />
                     <TextShimmer
                       duration={1.2}
