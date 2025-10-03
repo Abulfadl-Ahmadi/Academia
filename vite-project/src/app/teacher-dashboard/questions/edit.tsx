@@ -266,10 +266,10 @@ export default function EditQuestionPage() {
         .then(res => {
           console.log("Question data loaded successfully:", res.data);
           const data = res.data;
-          
+
           // Set folders
           setSelectedFolderIds(data.folders || []);
-          
+
           // Load existing question images as previews
           if (data.images && data.images.length > 0) {
             const existingImagePreviews = data.images.map((img: { id: number; image: string; alt_text?: string; order: number }) => img.image);
