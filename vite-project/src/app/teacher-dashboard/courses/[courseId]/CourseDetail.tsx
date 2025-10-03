@@ -3,6 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
@@ -16,7 +27,10 @@ import {
   Clock,
   Eye,
   Trash2,
-  BarChart3
+  BarChart3,
+  Radio,
+  Copy,
+  CheckCircle
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
 import EditSessionModal from "./EditSessionModal";
@@ -28,6 +42,10 @@ interface Course {
   students_count: number;
   created_at: string;
   is_active: boolean;
+  rtmp_url: string | null;
+  rtmp_key: string | null;
+  live_iframe: string | null;
+  is_live: boolean;
 }
 
 interface Session {
@@ -73,6 +91,8 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [loading, setLoading] = useState(true);
   const [showAddSession, setShowAddSession] = useState(false);
   const [editSessionId, setEditSessionId] = useState<number | null>(null);
+  const [showLiveDialog, setShowLiveDialog] = useState(false);
+  const [isStartingLive, setIsStartingLive] = useState(false);
 
   const fetchCourseData = useCallback(async () => {
     try {
@@ -156,6 +176,65 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     }
   };
 
+  const handleStartLive = async () => {
+    if (!course?.rtmp_url || !course?.rtmp_key) {
+      toast.error("اطلاعات RTMP تکمیل نشده است. لطفاً ابتدا دوره را ویرایش کنید.");
+      return;
+    }
+
+    if (!course?.live_iframe) {
+      toast.error("کد iframe پخش زنده تنظیم نشده است. لطفاً ابتدا دوره را ویرایش کنید.");
+      return;
+    }
+
+    try {
+      setIsStartingLive(true);
+      await axiosInstance.patch(`/courses/${courseId}/`, {
+        is_live: true
+      });
+      
+      // Update local state
+      setCourse(prev => prev ? { ...prev, is_live: true } : null);
+      
+      toast.success("کلاس آنلاین شروع شد!");
+      setShowLiveDialog(false);
+    } catch (error) {
+      console.error("Error starting live class:", error);
+      toast.error("خطا در شروع کلاس آنلاین");
+    } finally {
+      setIsStartingLive(false);
+    }
+  };
+
+  const handleStopLive = async () => {
+    try {
+      setIsStartingLive(true);
+      await axiosInstance.patch(`/courses/${courseId}/`, {
+        is_live: false
+      });
+      
+      // Update local state
+      setCourse(prev => prev ? { ...prev, is_live: false } : null);
+      
+      toast.success("کلاس آنلاین متوقف شد");
+    } catch (error) {
+      console.error("Error stopping live class:", error);
+      toast.error("خطا در متوقف کردن کلاس آنلاین");
+    } finally {
+      setIsStartingLive(false);
+    }
+  };
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} کپی شد`);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      toast.error("خطا در کپی کردن");
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
@@ -211,6 +290,38 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               <Badge variant={course.is_active ? "default" : "secondary"}>
                 {course.is_active ? "فعال" : "غیرفعال"}
               </Badge>
+              {course.is_live && (
+                <Badge variant="destructive" className="animate-pulse">
+                  <Radio className="w-3 h-3 ml-1" />
+                  پخش زنده
+                </Badge>
+              )}
+              
+              {course.rtmp_url && course.rtmp_key && course.live_iframe && (
+                <div className="flex gap-2">
+                  {!course.is_live ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowLiveDialog(true)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Radio className="w-4 h-4 ml-2" />
+                      شروع کلاس آنلاین
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={handleStopLive}
+                      disabled={isStartingLive}
+                    >
+                      {isStartingLive ? "در حال متوقف کردن..." : "متوقف کردن کلاس"}
+                    </Button>
+                  )}
+                </div>
+              )}
+              
               <Button 
                 variant="outline" 
                 size="sm"
@@ -392,6 +503,92 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           }}
         />
       )}
+
+      {/* Live Class Confirmation Dialog */}
+      <Dialog open={showLiveDialog} onOpenChange={setShowLiveDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Radio className="w-5 h-5 text-red-600" />
+              شروع کلاس آنلاین
+            </DialogTitle>
+            <DialogDescription>
+              آیا از شروع کلاس آنلاین اطمینان دارید؟ پس از تأیید، کلاس برای دانش‌آموزان قابل مشاهده خواهد بود.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+              <h4 className="font-medium text-sm">اطلاعات پخش زنده:</h4>
+              
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">RTMP URL:</Label>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={course?.rtmp_url || ""} 
+                    readOnly 
+                    className="font-mono text-xs"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => copyToClipboard(course?.rtmp_url || "", "RTMP URL")}
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Stream Key:</Label>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    type="password"
+                    value={course?.rtmp_key || ""} 
+                    readOnly 
+                    className="font-mono text-xs"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => copyToClipboard(course?.rtmp_key || "", "Stream Key")}
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+              <CheckCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-xs text-blue-800 dark:text-blue-300">
+                <p className="font-medium mb-1">نکات مهم:</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• از نرم‌افزار پخش مناسب (مثل OBS) استفاده کنید</li>
+                  <li>• اطلاعات RTMP را در نرم‌افزار خود تنظیم کنید</li>
+                  <li>• قبل از شروع، اتصال اینترنت را بررسی کنید</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowLiveDialog(false)}
+            >
+              انصراف
+            </Button>
+            <Button 
+              onClick={handleStartLive}
+              disabled={isStartingLive}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isStartingLive ? "در حال شروع..." : "شروع کلاس آنلاین"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
