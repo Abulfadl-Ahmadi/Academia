@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Calendar, Clock, FileText, Users, Eye, Share } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, Clock, FileText, Users, Eye, Share, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { toast } from 'sonner';
 import axiosInstance from '@/lib/axios';
 
@@ -155,99 +162,102 @@ export default function QuestionTestsPage() {
         <div className="grid gap-4">
           {(tests || []).map((test) => (
             <Card key={test.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold">{test.name}</h3>
-                      <Badge variant={test.is_active ? "default" : "secondary"}>
-                        {test.is_active ? "فعال" : "غیرفعال"}
-                      </Badge>
-                    </div>
-
-                    {test.description && (
-                      <p className="text-muted-foreground mb-3 line-clamp-2">
-                        {test.description}
-                      </p>
-                    )}
-
-                    {test.collection && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="outline" className="text-xs">
-                          مجموعه: {test.collection.name}
-                        </Badge>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        مدت: {formatDuration(test.duration)}
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <FileText className="w-4 h-4" />
-                        سوالات: {test.questions_count || 0}
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <FileText className="w-4 h-4" />
-                        پوشه‌ها: {test.folders_count || 0}
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        ایجاد: {formatDate(test.created_at)}
-                      </div>
-                    </div>
+              <CardHeader>
+                <CardTitle className="text-lg truncate">{test.name}</CardTitle>
+                <CardAction>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={test.is_active ? "default" : "secondary"}>
+                      {test.is_active ? "فعال" : "غیرفعال"}
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem 
+                          onClick={() => navigate(`/panel/question-tests/${test.id}`)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="w-4 h-4 ml-2" />
+                          مشاهده سوالات
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem 
+                          onClick={() => navigate(`/panel/question-tests/${test.id}/edit`)}
+                          className="cursor-pointer"
+                        >
+                          <Edit className="w-4 h-4 ml-2" />
+                          ویرایش آزمون
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem 
+                          onClick={() => navigate(`/panel/question-tests/${test.id}/results`)}
+                          className="cursor-pointer"
+                        >
+                          <Users className="w-4 h-4 ml-2" />
+                          نتایج آزمون
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem 
+                          onClick={() => handleShare(test)}
+                          className="cursor-pointer"
+                        >
+                          <Share className="w-4 h-4 ml-2" />
+                          اشتراک‌گذاری
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuSeparator />
+                        
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(test.id)}
+                          className="cursor-pointer text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 ml-2" />
+                          حذف آزمون
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/panel/question-tests/${test.id}`)}
-                      title="مشاهده سوالات"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/panel/question-tests/${test.id}/edit`)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/panel/question-tests/${test.id}/results`)}
-                    >
-                      <Users className="w-4 h-4" />
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleShare(test)}
-                      title="اشتراک‌گذاری آزمون"
-                    >
-                      <Share className="w-4 h-4" />
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(test.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                </CardAction>
+                
+                {test.description && (
+                  <CardDescription className="line-clamp-2">
+                    {test.description}
+                  </CardDescription>
+                )}
+                
+                {test.collection && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      مجموعه: {test.collection.name}
+                    </Badge>
                   </div>
+                )}
+              </CardHeader>
+
+              <CardFooter className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground border-t">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">مدت: {formatDuration(test.duration)}</span>
                 </div>
-              </CardContent>
+
+                <div className="flex items-center gap-1">
+                  <FileText className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">سوالات: {test.questions_count || 0}</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <FileText className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">پوشه‌ها: {test.folders_count || 0}</span>
+                </div>
+
+                <div className="flex items-center gap-1 col-span-2 sm:col-span-1">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">ایجاد: {formatDate(test.created_at)}</span>
+                </div>
+              </CardFooter>
             </Card>
           ))}
         </div>
