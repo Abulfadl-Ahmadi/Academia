@@ -390,7 +390,7 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center ">
-                <Button size="lg">
+                <Button size="lg" onClick={() => window.location.href="/register"}>
                   <PlayCircle className="h-5 w-5" />
                   <TextShimmer
                     duration={1.2}
@@ -399,12 +399,12 @@ export default function HomePage() {
                     شروع یاد گیری
                   </TextShimmer>{" "}
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" onClick={() => window.location.href="/shop"}>
                   مشاهده دوره‌ها
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
+              {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
                     <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mb-2">
@@ -418,7 +418,7 @@ export default function HomePage() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -583,7 +583,7 @@ export default function HomePage() {
       {/* About Me Section */}
       <section className="2xl:px-[10%] py-20">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-1 gap-12 items-center">
             <div ref={textRef} className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold">
                 درباره {BRAND.name}
@@ -640,32 +640,7 @@ export default function HomePage() {
                 </TextEffect>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold text-blue-600">8+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    سال تجربه
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold text-purple-600">50+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    پروژه موفق
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold text-green-600">3000+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    دانشجوی راضی
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold text-orange-600">25+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    دوره تخصصی
-                  </div>
-                </div>
-              </div>
+              
             </div>
 
             <div className="relative">

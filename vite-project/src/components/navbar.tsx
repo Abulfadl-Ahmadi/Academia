@@ -47,7 +47,7 @@ export default function Navbar({
 //   logo = <LaunchUI />,
   logo = <Logo showText={false} />,
   name = "آرین تفضلی‌زاده",
-  homeUrl = "#",
+  homeUrl = "/",
   mobileLinks = [
     { text: "فروشگاه", href: "/shop" },
     { text: "وبلاگ", href: "/blog" },

@@ -298,7 +298,7 @@ export function RegisterForm({
             />
           </div>
 
-          <div className="grid gap-3">
+          {/* <div className="grid gap-3">
             <Label htmlFor="firstName">نام</Label>
             <Input
               id="firstName"
@@ -318,18 +318,18 @@ export function RegisterForm({
               onChange={(e) => handleInputChange('lastName', e.target.value)}
               placeholder="نام خانوادگی"
             />
-          </div>
+          </div> */}
 
-          <div className="grid gap-3">
-            <Label htmlFor="email">ایمیل (اختیاری)</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="example@email.com"
-            />
-          </div>
+            {/* <div className="grid gap-3">
+              <Label htmlFor="email">ایمیل (اختیاری)</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="example@email.com"
+              />
+            </div> */}
 
           {/* COMMENTED OUT - Additional fields for later profile completion
           <div className="grid grid-cols-2 gap-3">
@@ -529,9 +529,9 @@ export function RegisterForm({
           </div>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="http://localhost:8000/media/login.jpg"
+              src="https://c242950.parspack.net/c242950/media/login.jpg"
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6]"
             />
           </div>
         </CardContent>

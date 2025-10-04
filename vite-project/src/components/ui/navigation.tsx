@@ -47,10 +47,10 @@ interface NavigationProps {
 
 export default function Navigation({
   menuItems = [
-    {
-      title: "مواد آموزشی",
-      content: "default",
-    },
+    // {
+    //   title: "مواد آموزشی",
+    //   content: "default",
+    // },
     {
       title: "فروشگاه",
       href: "/shop",
