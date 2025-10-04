@@ -371,6 +371,10 @@ LOGGING = {
             'format': '{levelname} {message}',
             'style': '{',
         },
+        'request': {
+            'format': '{asctime} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'file': {
@@ -384,6 +388,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        'request_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'requests.log',
+            'formatter': 'request',
+        },
     },
     'root': {
         'handlers': ['console', 'file'],
@@ -392,6 +402,16 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console', 'request_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'request_file'],
             'level': 'INFO',
             'propagate': False,
         },
