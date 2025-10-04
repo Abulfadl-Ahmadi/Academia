@@ -7,6 +7,15 @@
     <meta name="description" content="آکادمی آنلاین آرین تفضلی‌زاده - آموزش‌های تخصصی و کیفیت بالا" />
     <meta name="keywords" content="آموزش آنلاین, دوره آموزشی, آرین تفضلی‌زاده, آکادمی" />
     
+    <!-- Performance Optimization: Preload Critical Resources -->
+    <link rel="preload" href="/src/assets/RaviPro/RaviFamily/Webfonts/woff2/Ravi-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/src/assets/RaviPro/RaviFamily/Webfonts/woff2/Ravi-Medium.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/src/assets/RaviPro/RaviFamily/Webfonts/woff2/Ravi-Bold.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Network optimization -->
+    <link rel="dns-prefetch" href="//localhost:8000">
+    <link rel="preconnect" href="http://localhost:8000" crossorigin>
+    
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#4c51bf" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,14 +25,13 @@
     <link rel="apple-touch-icon" href="/pwa-icons/pwa-icon-192.png">
     <!-- /PWA Meta Tags -->
 
-    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"> -->
-    
-    <!-- PDF Viewer CSS -->
-    <link rel="stylesheet" href="/css/react-pdf-viewer/core/index.css">
-    <link rel="stylesheet" href="/css/react-pdf-viewer/page-navigation/index.css">
-    <link rel="stylesheet" href="/css/react-pdf-viewer/zoom/index.css">
+    <!-- PDF Viewer CSS with preload -->
+    <link rel="preload" href="/css/react-pdf-viewer/core/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/react-pdf-viewer/core/index.css"></noscript>
+    <link rel="preload" href="/css/react-pdf-viewer/page-navigation/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/react-pdf-viewer/page-navigation/index.css"></noscript>
+    <link rel="preload" href="/css/react-pdf-viewer/zoom/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/react-pdf-viewer/zoom/index.css"></noscript>
     
     <title>آرین تفضلی‌زاده - آکادمی آنلاین</title>
   </head>

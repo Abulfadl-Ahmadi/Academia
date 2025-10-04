@@ -72,6 +72,7 @@ export default function Navbar({
   const { user, loading, logout } = useUser();
 
   return (
+    <div className="fixed top-0 w-full z-50">
     <header className={cn("sticky top-0 z-50 -mb-4 px-4 pb-4", className)}>
       <div className="fade-bottom bg-background/15 absolute left-0 h-26 w-full backdrop-blur-lg"></div>
       <div className="max-w-container relative mx-auto">
@@ -211,5 +212,6 @@ export default function Navbar({
         </NavbarComponent>
       </div>
     </header>
+    </div>
   );
 }

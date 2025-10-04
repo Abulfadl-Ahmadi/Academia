@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type FontFamily = 'IRANSansX' | 'Ravi';
+type FontFamily = 'Ravi';
 
 interface FontContextType {
   fontFamily: FontFamily;
@@ -12,17 +12,17 @@ const FontContext = createContext<FontContextType | undefined>(undefined);
 export function FontProvider({ children }: { children: React.ReactNode }) {
   const [fontFamily, setFontFamily] = useState<FontFamily>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('fontFamily') as FontFamily) || 'IRANSansX';
+      return (localStorage.getItem('fontFamily') as FontFamily) || 'Ravi';
     }
-    return 'IRANSansX';
+    return 'Ravi';
   });
 
   useEffect(() => {
     const root = document.documentElement;
     
-    // Apply font family
+    // Apply font family - only Ravi is supported
     root.classList.remove('font-iransansx', 'font-ravi');
-    root.classList.add(`font-${fontFamily.toLowerCase()}`);
+    root.classList.add('font-ravi');
     
     // Save to localStorage
     localStorage.setItem('fontFamily', fontFamily);

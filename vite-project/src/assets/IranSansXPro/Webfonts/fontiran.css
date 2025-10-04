@@ -22,6 +22,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: IRANSansX;
 	font-style: normal;
 	font-weight: 100;
+	font-display: swap;
 	src: url('fonts/woff/IRANSansX-Thin.woff') format('woff'),   
 	url('fonts/woff2/IRANSansX-Thin.woff2') format('woff2');		
 }
@@ -30,6 +31,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: IRANSansX;
 	font-style: normal;
 	font-weight: 200;
+	font-display: swap;
 	src: url('fonts/woff/IRANSansX-UltraLight.woff') format('woff'),   
 	url('fonts/woff2/IRANSansX-UltraLight.woff2') format('woff2');	
 }
@@ -38,6 +40,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: IRANSansX;
 	font-style: normal;
 	font-weight: 300;
+	font-display: swap;
 	src: url('fonts/woff/IRANSansX-Light.woff') format('woff'),   
 	url('fonts/woff2/IRANSansX-Light.woff2') format('woff2');		 
 }
@@ -46,6 +49,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: IRANSansX;
 	font-style: normal;
 	font-weight: 500;
+	font-display: swap;
 	src: url('fonts/woff/IRANSansX-Medium.woff') format('woff'),   
 	url('fonts/woff2/IRANSansX-Medium.woff2') format('woff2');		 
 }

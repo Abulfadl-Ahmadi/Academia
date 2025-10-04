@@ -22,6 +22,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: 100;
+	font-display: swap;
 	src: url('woff/RaviFaNum-thin.woff') format('woff'),   
 	url('woff2/RaviFaNum-thin.woff2') format('woff2');		
 }
@@ -30,6 +31,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: 300;
+	font-display: swap;
 	src: url('woff/RaviFaNum-Light.woff') format('woff'),   
 	url('woff2/RaviFaNum-Light.woff2') format('woff2');	
 }
@@ -38,6 +40,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: normal;
+	font-display: swap;
 	src: url('woff/RaviFaNum-Regular.woff') format('woff'),   
 	url('woff2/RaviFaNum-Regular.woff2') format('woff2');		 
 }
@@ -46,6 +49,7 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: 500;
+	font-display: swap;
 	src: url('woff/Ravi FaNum-Medium.woff') format('woff'),   
 	url('woff2/Ravi FaNum-Medium.woff2') format('woff2');		 
 }
