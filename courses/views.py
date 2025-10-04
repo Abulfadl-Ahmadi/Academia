@@ -42,10 +42,17 @@ class CourseViewSet(viewsets.ModelViewSet):
             )
 
     def get_serializer_class(self):
-        if self.action == 'list' and self.request.user.role == 'teacher':
-            return TeacherCourseSerializer
-        elif self.action == 'list' and self.request.user.role == 'student':
-            return StudentCourseSerializer
+        user = self.request.user
+        if self.action in ['update', 'partial_update', 'retrieve']:
+            if user.role in ['teacher', 'admin']:
+                return TeacherCourseSerializer
+            elif user.role == 'student':
+                return StudentCourseSerializer
+        elif self.action == 'list':
+            if user.role == 'teacher':
+                return TeacherCourseSerializer
+            elif user.role == 'student':
+                return StudentCourseSerializer
         return CourseSerializer
 
     def perform_create(self, serializer):

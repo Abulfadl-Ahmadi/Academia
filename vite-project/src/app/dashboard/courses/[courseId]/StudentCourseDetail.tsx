@@ -1,5 +1,5 @@
 // StudentCourseDetail.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,9 @@ import {
   FileText,
   Clock,
   Download,
-  X
+  X,
+  Radio,
+  Eye
 } from "lucide-react";
 
 interface Course {
@@ -24,6 +26,8 @@ interface Course {
     username: string;
   };
   created_at: string;
+  is_live?: boolean;
+  live_iframe?: string;
 }
 
 interface File {
@@ -57,11 +61,7 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
   const [loading, setLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
-  useEffect(() => {
-    fetchCourseData();
-  }, [courseId]);
-
-  const fetchCourseData = async () => {
+  const fetchCourseData = useCallback(async () => {
     try {
       setLoading(true);
       const [courseResponse, sessionsResponse] = await Promise.all([
@@ -89,7 +89,11 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId]);
+
+  useEffect(() => {
+    fetchCourseData();
+  }, [fetchCourseData]);
 
   const handleSessionClick = (session: Session) => {
     // Check if session has video
@@ -171,8 +175,29 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-2xl">{course.title}</CardTitle>
+              <div className="flex items-center gap-3 mb-2">
+                <CardTitle className="text-2xl">{course.title}</CardTitle>
+                {course.is_live && (
+                  <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300 animate-pulse">
+                    <Radio className="w-3 h-3 mr-1" />
+                    آنلاین
+                  </Badge>
+                )}
+              </div>
               <p className="text-muted-foreground mt-2">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>
+              
+              {/* Live Stream Button */}
+              {course.is_live && course.live_iframe && (
+                <div className="mt-4">
+                  <Button 
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    onClick={() => window.open(`/panel/live/${course.id}`, '_blank')}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    مشاهده پخش زنده
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
           

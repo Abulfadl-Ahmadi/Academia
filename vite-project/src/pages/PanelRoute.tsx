@@ -34,6 +34,7 @@ import CoursesList from "@/app/teacher-dashboard/courses/CoursesList"
 import CreateCoursePage from "@/app/teacher-dashboard/courses/create/page"
 import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
 import VideoPage from "@/app/dashboard/video/page"
+import LiveStreamPage from "@/app/dashboard/live/[courseId]/page"
 
 // Topic Tests Components
 import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
@@ -105,6 +106,7 @@ export default function PanelRoute() {
         <Route path="/courses/active" element={<StudentCoursesPage />} />
         <Route path="/courses/completed" element={<CompletedCoursesPage />} />
         <Route path="/courses/:courseId" element={<StudentCourseDetailPage />} />
+        <Route path="/live/:courseId" element={<LiveStreamPage />} />
         <Route path="/video/:sessionId?" element={<VideoPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
         {/* Test Collections routes for students */}

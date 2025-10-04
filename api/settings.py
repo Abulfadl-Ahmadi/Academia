@@ -134,6 +134,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,6 +145,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'storages',
+    'channels',
 
     'accounts',
     'courses',
@@ -154,6 +156,7 @@ INSTALLED_APPS = [
     'tickets',
     'knowledge',
     'blog',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -402,4 +405,19 @@ LOGGING = {
 
 # Create logs directory if it doesn't exist
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+# ASGI & Channels Settings
+ASGI_APPLICATION = 'api.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        # Use InMemoryChannelLayer for development (no Redis needed)
+        # For production, switch back to RedisChannelLayer
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        # Redis configuration (commented out for now):
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #     "hosts": [(config('REDIS_HOST', default='127.0.0.1'), config('REDIS_PORT', cast=int, default=6379))],
+        # },
+    },
+}
 

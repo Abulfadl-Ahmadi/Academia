@@ -68,7 +68,7 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'teacher', 'students_count', 'vod_channel_id',
             'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active',
-            'rtmp_url', 'rtmp_key', 'live_iframe', 'is_live'
+            'rtmp_url', 'rtmp_key', 'live_iframe', 'is_live', 'chat_mode'
         ]
         read_only_fields = ['created_at', 'updated_at']
 
@@ -104,6 +104,17 @@ class StudentCourseSerializer(serializers.ModelSerializer):
         for test_collection in obj.test_collections.all():
             total_tests += test_collection.tests.count()
         return total_tests
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        
+        representation['is_live'] = instance.is_live
+        representation['chat_mode'] = instance.chat_mode
+        if instance.is_live and instance.live_iframe:
+            representation['live_iframe'] = instance.live_iframe
+            
+        return representation
 
 
 class CourseSessionSerializer(serializers.ModelSerializer):

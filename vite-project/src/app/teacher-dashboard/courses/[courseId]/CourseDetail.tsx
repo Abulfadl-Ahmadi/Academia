@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import copy from "copy-to-clipboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,10 +31,12 @@ import {
   BarChart3,
   Radio,
   Copy,
-  CheckCircle
+  CheckCircle,
+  MessageCircle
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
 import EditSessionModal from "./EditSessionModal";
+import TeacherLiveChat from "./TeacherLiveChat";
 
 interface Course {
   id: number;
@@ -46,6 +49,7 @@ interface Course {
   rtmp_key: string | null;
   live_iframe: string | null;
   is_live: boolean;
+  chat_mode: 'public' | 'private';
 }
 
 interface Session {
@@ -176,6 +180,23 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     }
   };
 
+  const handleToggleChatMode = async () => {
+    try {
+      const newChatMode = course?.chat_mode === 'public' ? 'private' : 'public';
+      await axiosInstance.patch(`/courses/${courseId}/`, {
+        chat_mode: newChatMode
+      });
+      
+      // Update local state
+      setCourse(prev => prev ? { ...prev, chat_mode: newChatMode } : null);
+      
+      toast.success(`حالت چت به ${newChatMode === 'public' ? 'عمومی' : 'خصوصی'} تغییر یافت`);
+    } catch (error) {
+      console.error("Error updating chat mode:", error);
+      toast.error("خطا در تغییر حالت چت");
+    }
+  };
+
   const handleStartLive = async () => {
     if (!course?.rtmp_url || !course?.rtmp_key) {
       toast.error("اطلاعات RTMP تکمیل نشده است. لطفاً ابتدا دوره را ویرایش کنید.");
@@ -225,15 +246,24 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
     }
   };
 
-  const copyToClipboard = async (text: string, label: string) => {
+  const copyToClipboard = (text: string, label: string) => {
+    if (!text) {
+      toast.error("متن برای کپی کردن یافت نشد");
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(text);
+      copy(text);
       toast.success(`${label} کپی شد`);
     } catch (error) {
       console.error("Failed to copy:", error);
-      toast.error("خطا در کپی کردن");
+      toast.error("خطا در کپی کردن. لطفاً دستی کپی کنید.");
+      // Fallback to show text to user if copy fails
+      window.prompt(`${label} - لطفاً متن زیر را کپی کنید:`, text);
     }
   };
+
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fa-IR");
@@ -369,10 +399,14 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="sessions" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="sessions">جلسات ({sessions.length})</TabsTrigger>
           <TabsTrigger value="tests">مجموعه آزمون‌ها ({testCollections.length})</TabsTrigger>
           <TabsTrigger value="students">دانش‌آموزان ({course.students_count})</TabsTrigger>
+          <TabsTrigger value="chat" className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4" />
+            چت زنده
+          </TabsTrigger>
         </TabsList>
 
         {/* Sessions Tab */}
@@ -463,7 +497,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               <CardTitle>دانش‌آموزان ثبت‌نام شده</CardTitle>
             </CardHeader>
             <CardContent>
-              {students.length === 0 ? (
+              {students && students.length === 0 ? (
                 <div className="text-center py-12">
                 <Users className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
@@ -471,12 +505,51 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               </div>
               ) : (
                 <div className="space-y-4">
-                  {students.map((student) => (
-                  <div>{student.username}</div>
-                ))}
+                  {students && students.map((student) => (
+                    <div key={student.id}>{student.username}</div>
+                  ))}
                 </div>
               )}
 
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Live Chat Tab */}
+        <TabsContent value="chat" className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5" />
+                    چت زنده کلاس
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    شما می‌توانید با دانش‌آموزان در طول کلاس زنده چت کنید
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">
+                      {course?.chat_mode === 'public' ? 'چت عمومی' : 'چت خصوصی'}
+                    </span>
+                    <Switch
+                      checked={course?.chat_mode === 'public'}
+                      onCheckedChange={handleToggleChatMode}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-right max-w-60">
+                    {course?.chat_mode === 'public' 
+                      ? 'دانش‌آموزان می‌توانند پیام‌های یکدیگر را ببینند'
+                      : 'دانش‌آموزان فقط پیام‌های خود و معلم را می‌بینند'
+                    }
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <TeacherLiveChat courseId={courseId.toString()} />
             </CardContent>
           </Card>
         </TabsContent>

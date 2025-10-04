@@ -38,6 +38,15 @@ class Course(models.Model):
     rtmp_key = models.CharField(max_length=255, blank=True, null=True, default=None)
     live_iframe = models.TextField(blank=True, null=True, help_text="کد iframe برای نمایش پخش زنده")
     is_live = models.BooleanField(default=False)
+    chat_mode = models.CharField(
+        max_length=20, 
+        choices=[
+            ('public', 'عمومی - همه پیام‌ها قابل مشاهده'),
+            ('private', 'خصوصی - فقط پیام معلم قابل مشاهده')
+        ],
+        default='public',
+        help_text="حالت نمایش چت برای دانش‌آموزان"
+    )
 
     def __str__(self):
         return self.title
