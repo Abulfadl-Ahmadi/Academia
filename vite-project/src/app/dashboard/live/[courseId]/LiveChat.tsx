@@ -46,8 +46,12 @@ export default function LiveChat({ courseId }: LiveChatProps) {
 
   useEffect(() => {
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    // Connect to Django backend (port 8000), not Vite dev server
-    const wsUrl = `${wsProtocol}//192.168.1.7:8000/ws/chat/${courseId}/`;
+    // Dynamic WebSocket URL based on current host
+    const wsHost = window.location.hostname;
+    const wsPort = window.location.protocol === "https:" ? "" : ":8000";
+    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/ws/chat/${courseId}/`;
+    
+    console.log("Connecting to WebSocket:", wsUrl); // برای debug
 
     const newSocket = new WebSocket(wsUrl);
 
