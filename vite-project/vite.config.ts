@@ -3,7 +3,6 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { VitePWA } from 'vite-plugin-pwa'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -31,12 +30,6 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,svg}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
       }
-    }),
-    visualizer({
-      filename: 'dist/stats.html',
-      open: true,
-      gzipSize: true,
-      brotliSize: true,
     })
   ],
   resolve: {
@@ -82,15 +75,10 @@ export default defineConfig({
       }
     },
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-      },
-    },
+    minify: 'esbuild', // Changed from terser to esbuild for faster builds
     chunkSizeWarningLimit: 1000,
+    // Add font files to public assets to avoid processing issues
+    assetsInlineLimit: 0, // Don't inline any assets
   },
     optimizeDeps: {
     include: ['react-pdf', 'pdfjs-dist'],
