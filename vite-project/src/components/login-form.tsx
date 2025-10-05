@@ -5,12 +5,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUser } from "@/context/UserContext"
 import { useState } from "react"
-// import axiosInstance from "@/lib/axios"
+import axiosInstance from "@/lib/axios"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import { markLoggedIn } from "@/lib/axios";
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export function LoginForm({
   className,
@@ -32,8 +29,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   setIsLoading(true) // شروع loading
   
   try {
-    const response = await axios.post(
-      baseURL+"/login/", // Updated endpoint
+    const response = await axiosInstance.post(
+      "/login/", // استفاده از axiosInstance
       { username, password },
       { withCredentials: true },
     )
@@ -51,11 +48,12 @@ const handleSubmit = async (e: React.FormEvent) => {
       navigate("/panel")
     }
   } catch (err: unknown) {
-    const error = err as { response?: { status?: number } }
+    console.error("Login error:", err); // Debug log
+    const error = err as { response?: { status?: number; data?: unknown } }
     if (error.response?.status === 401) {
       setError("نام کاربری یا رمز عبور اشتباه است")
     } else {
-      setError("خطایی رخ داد. دوباره تلاش کنید.")
+      setError(`خطایی رخ داد: ${error.response?.data?.message || 'دوباره تلاش کنید'}`)
     }
   } finally {
     setIsLoading(false) // پایان loading
