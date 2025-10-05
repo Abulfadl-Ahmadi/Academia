@@ -147,7 +147,7 @@ export default function HomePage() {
   const [textRef, isVisible] = useScrollTrigger();
 
   // Target date: September 20, 2025 at 8:00 PM
-  const targetDate = useMemo(() => new Date('2025-10-07T20:00:00'), []);
+  const targetDate = useMemo(() => new Date('2025-10-17T20:00:00'), []);
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
