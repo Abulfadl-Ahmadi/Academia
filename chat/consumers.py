@@ -13,12 +13,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.course_group_name = f'chat_{self.course_id}'
         self.user = self.scope['user']
 
-        if not self.user.is_authenticated:
-            await self.close()
-            return
+        # Allow anonymous users for chat
+        # if not self.user.is_authenticated:
+        #     await self.close()
+        #     return
 
-        # Check if user is part of the course (either teacher or student)
-        if not await self.is_user_in_course():
+        # Check if user is part of the course (either teacher or student) - skip for anonymous
+        if self.user.is_authenticated and not await self.is_user_in_course():
             await self.close()
             return
 
@@ -63,10 +64,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': {
                     'id': new_message.id,
-                    'user': self.user.username,
-                    'user_id': self.user.id,
-                    'first_name': self.user.first_name,
-                    'last_name': self.user.last_name,
+                    'user': self.user.username if self.user.is_authenticated else 'Anonymous',
+                    'user_id': self.user.id if self.user.is_authenticated else None,
+                    'first_name': self.user.first_name if self.user.is_authenticated else '',
+                    'last_name': self.user.last_name if self.user.is_authenticated else '',
                     'message': new_message.message,
                     'timestamp': new_message.timestamp.isoformat()
                 }
@@ -93,7 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             course = Course.objects.get(id=self.course_id)
             
             # اگر کاربر معلم است، همیشه همه پیام‌ها را می‌بیند
-            if self.user == course.teacher:
+            if self.user.is_authenticated and self.user == course.teacher:
                 return True
             
             # اگر mode public است، همه می‌توانند همه پیام‌ها را ببینند
@@ -102,8 +103,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
             # اگر mode private است، دانش‌آموزان فقط پیام‌های خودشان و معلم را می‌بینند
             if course.chat_mode == 'private':
-                # اگر پیام از معلم است یا از خود کاربر است
-                if message['user_id'] == course.teacher.id or message['user_id'] == self.user.id:
+                # اگر پیام از معلم است یا از خود کاربر است (برای authenticated)
+                if message['user_id'] == course.teacher.id or (self.user.is_authenticated and message['user_id'] == self.user.id):
                     return True
                 return False
             
@@ -141,9 +142,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 
                 # بررسی اینکه آیا کاربر باید این پیام را ببیند یا نه
                 should_show = True
-                if course.chat_mode == 'private' and self.user != course.teacher:
+                if course.chat_mode == 'private' and self.user.is_authenticated and self.user != course.teacher:
                     # در حالت private، دانش‌آموزان فقط پیام‌های خودشان و معلم را می‌بینند
-                    if msg.user.id != course.teacher.id and msg.user.id != self.user.id:
+                    if msg.user and msg.user.id != course.teacher.id and msg.user.id != self.user.id:
                         should_show = False
                 
                 if should_show:
@@ -157,6 +158,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message):
         return ChatMessage.objects.create(
             course_id=self.course_id,
-            user=self.user,
+            user=self.user if self.user.is_authenticated else None,
             message=message
         )
