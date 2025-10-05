@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useUser } from '../../../../context/UserContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Send, MessageCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useUser } from "../../../../context/UserContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Send, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface ChatMessage {
   id: number;
@@ -24,14 +24,16 @@ interface TeacherLiveChatProps {
 export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
   const { user: currentUser } = useUser();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
-      const scrollViewport = scrollAreaRef.current?.querySelector('[data-slot="scroll-area-viewport"]');
+      const scrollViewport = scrollAreaRef.current?.querySelector(
+        '[data-slot="scroll-area-viewport"]'
+      );
       if (scrollViewport) {
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
@@ -44,39 +46,41 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
   }, [messages, scrollToBottom]);
 
   useEffect(() => {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     // Connect to Django backend (port 8000), not Vite dev server
-    const wsUrl = `${wsProtocol}//192.168.1.7:8000/ws/chat/${courseId}/`;
+    const wsHost = window.location.hostname;
+    const wsPort = window.location.protocol === "https:" ? "" : ":8000";
+    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/ws/chat/${courseId}/`;
 
     const newSocket = new WebSocket(wsUrl);
 
     newSocket.onopen = () => {
-      console.log('Teacher WebSocket connected');
+      console.log("Teacher WebSocket connected");
       setIsConnected(true);
-      toast.success('به چت زنده متصل شدید');
+      toast.success("به چت زنده متصل شدید");
     };
 
     newSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'last_50_messages') {
+      if (data.type === "last_50_messages") {
         setMessages(data.messages);
         scrollToBottom();
-      } else if (data.type === 'chat_message') {
-        setMessages(prev => [...prev, data.message]);
+      } else if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
         scrollToBottom();
       }
     };
 
     newSocket.onclose = () => {
-      console.log('Teacher WebSocket disconnected');
+      console.log("Teacher WebSocket disconnected");
       setIsConnected(false);
-      toast.error('اتصال چت قطع شد');
+      toast.error("اتصال چت قطع شد");
     };
 
     newSocket.onerror = (error) => {
-      console.log('Teacher WebSocket error:', error);
+      console.log("Teacher WebSocket error:", error);
       setIsConnected(false);
-      toast.error('خطا در اتصال چت');
+      toast.error("خطا در اتصال چت");
     };
 
     setSocket(newSocket);
@@ -88,24 +92,26 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
 
   const sendMessage = () => {
     if (newMessage.trim() && socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({
-        'message': newMessage.trim()
-      }));
-      setNewMessage('');
+      socket.send(
+        JSON.stringify({
+          message: newMessage.trim(),
+        })
+      );
+      setNewMessage("");
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
   const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('fa-IR', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(timestamp).toLocaleTimeString("fa-IR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -128,9 +134,13 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
         <div className="flex items-center gap-2">
           <MessageCircle className="w-5 h-5" />
           <h3 className="font-semibold">چت زنده کلاس</h3>
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isConnected ? "bg-green-500" : "bg-red-500"
+            }`}
+          ></div>
           <span className="text-sm text-muted-foreground">
-            {isConnected ? 'متصل' : 'قطع شده'}
+            {isConnected ? "متصل" : "قطع شده"}
           </span>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
@@ -152,7 +162,9 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
               <div
                 key={message.id}
                 className={`flex gap-3 ${
-                  message.user_id === currentUser.id ? 'justify-end' : 'justify-start'
+                  message.user_id === currentUser.id
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 {message.user_id !== currentUser.id && (
@@ -162,19 +174,19 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
                     </AvatarFallback>
                   </Avatar>
                 )}
-                
+
                 <div
                   className={`max-w-[70%] rounded-lg px-3 py-2 ${
                     message.user_id === currentUser.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
                   }`}
                 >
                   {message.user_id !== currentUser.id && (
                     <div className="text-xs font-medium mb-1 opacity-70">
                       {message.first_name} {message.last_name}
                       {/* فقط برای پیام‌های دیگران (دانش‌آموزان) نمایش داده می‌شود */}
-                      {' (دانش‌آموز)'}
+                      {" (دانش‌آموز)"}
                     </div>
                   )}
                   {message.user_id === currentUser.id && (
@@ -212,8 +224,8 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
             disabled={!isConnected}
             className="flex-1"
           />
-          <Button 
-            onClick={sendMessage} 
+          <Button
+            onClick={sendMessage}
             disabled={!newMessage.trim() || !isConnected}
             size="icon"
           >
