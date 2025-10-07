@@ -28,10 +28,16 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=False)
+
+# Server URLs
+BACKEND_BASE_URL = config('BACKEND_BASE_URL')
+FRONTEND_BASE_URL = config('FRONTEND_BASE_URL')
+
+# For backward compatibility
 if DEBUG:
-    SERVER_IP = config('SERVER_IP', default="http://localhost:8000")
+    SERVER_IP = config('SERVER_IP', default=BACKEND_BASE_URL)
 else:
-    SERVER_IP = config('SERVER_IP', default="https://localhost:8000")
+    SERVER_IP = config('SERVER_IP', default=BACKEND_BASE_URL)
 
 # Email settings
 try:
@@ -134,7 +140,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
+    # 'daphne',  # Temporarily commented out
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,7 +151,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'storages',
-    'channels',
+    # 'channels',  # Temporarily commented out
 
     'accounts',
     'courses',

@@ -32,7 +32,8 @@ export const TeacherLayout = () => {
     'topic-tests': 'آزمون‌های مبحثی',
     transactions: 'تراکنش‌ها',
     knowledge: 'درخت دانش',
-    blog: 'وبلاگ'
+    blog: 'وبلاگ',
+    gallery: 'گالری تصاویر'
   };
   
   // Generate dynamic breadcrumb based on current path
@@ -84,9 +85,12 @@ export const TeacherLayout = () => {
                   {segment === 'transactions' && 'تراکنش‌ها'}
                   {segment === 'sessions' && 'جلسات'}
                   {segment === 'blog' && 'وبلاگ'}
+                  {segment === 'gallery' && 'گالری تصاویر'}
                   {segment === 'create' && pathSegments[pathSegments.length - 2] === 'courses' && 'ایجاد دوره جدید'}
                   {segment === 'create' && pathSegments[pathSegments.length - 2] === 'blog' && 'نوشته جدید'}
+                  {segment === 'upload' && pathSegments[pathSegments.length - 2] === 'gallery' && 'آپلود تصویر'}
                   {segment === 'edit' && pathSegments[pathSegments.length - 3] === 'blog' && 'ویرایش نوشته'}
+                  {segment === 'edit' && pathSegments[pathSegments.length - 3] === 'gallery' && 'ویرایش تصویر'}
                   {isDynamicSegment && courseTitle ? courseTitle : ''}
                 </BreadcrumbPage>
               </BreadcrumbItem>

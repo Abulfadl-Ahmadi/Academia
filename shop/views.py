@@ -2,9 +2,10 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db import transaction
 from django.utils import timezone
+from django.urls import reverse
 from .models import Product, Discount
 from .serializers import (
     ProductSerializer, ProductCreateSerializer, DiscountSerializer,
@@ -38,7 +39,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def add_to_cart(self, request, pk=None):
-        """Add product to cart (session-based for now)"""
+        """Add product to cart (session-based for non-authenticated users)"""
         product = self.get_object()
         quantity = int(request.data.get('quantity', 1))
         
@@ -48,12 +49,31 @@ class ProductViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # For now, we'll just return the product info
-        # In a real implementation, you'd store this in session or database
+        # Get or initialize cart from session
+        if 'cart' not in request.session:
+            request.session['cart'] = {}
+        
+        cart = request.session['cart']
+        product_id = str(product.id)
+        
+        # Add or update quantity in cart
+        if product_id in cart:
+            cart[product_id]['quantity'] += quantity
+        else:
+            cart[product_id] = {
+                'quantity': quantity,
+                'product_title': product.title,
+                'product_price': product.current_price
+            }
+        
+        request.session['cart'] = cart
+        request.session.modified = True
+        
         return Response({
             "message": f"Added {quantity} of {product.title} to cart",
             "product": ProductSerializer(product).data,
-            "quantity": quantity
+            "quantity": cart[product_id]['quantity'],
+            "cart_items_count": sum(item['quantity'] for item in cart.values())
         })
 
 
@@ -108,10 +128,53 @@ class DiscountViewSet(viewsets.ModelViewSet):
 
 
 class CartView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Allow both authenticated and anonymous users
+
+    def get(self, request):
+        """Get current cart contents"""
+        cart = request.session.get('cart', {})
+        cart_items = []
+        total_amount = 0
+        
+        for product_id, item_data in cart.items():
+            try:
+                product = Product.objects.get(
+                    id=product_id,
+                    is_active=True,
+                    is_deleted=False
+                )
+                
+                quantity = item_data['quantity']
+                price = product.current_price
+                item_total = price * quantity
+                total_amount += item_total
+                
+                cart_items.append({
+                    'product': ProductSerializer(product).data,
+                    'quantity': quantity,
+                    'price': price,
+                    'total': item_total
+                })
+                
+            except Product.DoesNotExist:
+                # Remove invalid product from cart
+                del cart[product_id]
+                request.session['cart'] = cart
+                request.session.modified = True
+        
+        return Response({
+            'items': cart_items,
+            'total_amount': total_amount,
+            'items_count': len(cart_items)
+        })
 
     def post(self, request):
-        """Calculate cart total and validate items"""
+        """Calculate cart total and validate items (for authenticated users) or initiate purchase flow"""
+        if not request.user.is_authenticated:
+            # For unauthenticated users, store cart and redirect to registration
+            return self._handle_unauthenticated_checkout(request)
+        
+        # Existing cart calculation logic for authenticated users
         serializer = CartSerializer(data=request.data)
         if serializer.is_valid():
             items = serializer.validated_data['items']
@@ -167,145 +230,328 @@ class CartView(APIView):
             })
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def _handle_unauthenticated_checkout(self, request):
+        """Handle checkout for unauthenticated users"""
+        cart = request.session.get('cart', {})
+        
+        if not cart:
+            return Response(
+                {"error": "Cart is empty"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Store the cart in session with a special key for post-registration retrieval
+        request.session['pending_cart'] = cart
+        request.session.modified = True
+        
+        # Return redirect information to frontend
+        register_url = request.build_absolute_uri(reverse('accounts:register'))
+        
+        return Response({
+            "redirect_to_register": True,
+            "register_url": "/accounts/register/",
+            "message": "Please register or login to complete your purchase",
+            "cart_items_count": len(cart)
+        }, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        """Clear cart"""
+        if 'cart' in request.session:
+            del request.session['cart']
+            request.session.modified = True
+        
+        return Response({"message": "Cart cleared successfully"})
+
+
+class CartManagementView(APIView):
+    """View for managing cart items (add, remove, update quantity)"""
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """Add item to cart"""
+        product_id = request.data.get('product_id')
+        quantity = int(request.data.get('quantity', 1))
+        
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if quantity < 1:
+            return Response(
+                {"error": "Quantity must be at least 1"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            product = Product.objects.get(
+                id=product_id,
+                is_active=True,
+                is_deleted=False
+            )
+        except Product.DoesNotExist:
+            return Response(
+                {"error": "Product not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Get or initialize cart from session
+        if 'cart' not in request.session:
+            request.session['cart'] = {}
+        
+        cart = request.session['cart']
+        product_id = str(product.id)
+        
+        # Add or update quantity in cart
+        if product_id in cart:
+            cart[product_id]['quantity'] += quantity
+        else:
+            cart[product_id] = {
+                'quantity': quantity,
+                'product_title': product.title,
+                'product_price': product.current_price
+            }
+        
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+        return Response({
+            "message": f"Added {quantity} of {product.title} to cart",
+            "product": ProductSerializer(product).data,
+            "quantity": cart[product_id]['quantity'],
+            "cart_items_count": sum(item['quantity'] for item in cart.values())
+        })
+    
+    def put(self, request):
+        """Update item quantity in cart"""
+        product_id = str(request.data.get('product_id'))
+        quantity = int(request.data.get('quantity', 0))
+        
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        cart = request.session.get('cart', {})
+        
+        if product_id not in cart:
+            return Response(
+                {"error": "Product not in cart"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        if quantity <= 0:
+            # Remove item from cart
+            del cart[product_id]
+            message = "Item removed from cart"
+        else:
+            # Update quantity
+            cart[product_id]['quantity'] = quantity
+            message = f"Updated quantity to {quantity}"
+        
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+        return Response({
+            "message": message,
+            "cart_items_count": sum(item['quantity'] for item in cart.values())
+        })
+    
+    def delete(self, request):
+        """Remove item from cart"""
+        product_id = str(request.data.get('product_id'))
+        
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        cart = request.session.get('cart', {})
+        
+        if product_id not in cart:
+            return Response(
+                {"error": "Product not in cart"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        del cart[product_id]
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+        return Response({
+            "message": "Item removed from cart",
+            "cart_items_count": sum(item['quantity'] for item in cart.values())
+        })
 
 
 class PurchaseView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]  # Must be authenticated
 
     @transaction.atomic
     def post(self, request):
-        """Create a purchase request and send email to admin"""
+        """Create order and initiate payment with ZarinPal"""
         serializer = PurchaseRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            items = serializer.validated_data['items']
-            
-            # Calculate total and validate products
-            total_amount = 0
-            order_items = []
-            
-            for item_data in items:
-                try:
-                    product = Product.objects.get(
-                        id=item_data['product_id'],
-                        is_active=True,
-                        is_deleted=False
-                    )
-                    
-                    quantity = item_data['quantity']
-                    price = product.current_price
-                    discount_amount = 0
-                    
-                    # Apply discount if provided
-                    if 'discount_code' in item_data and item_data['discount_code']:
-                        try:
-                            discount = Discount.objects.get(
-                                code=item_data['discount_code'],
-                                product=product,
-                                is_active=True
-                            )
-                            if discount.is_available:
-                                discount_amount = (price * discount.percentage) // 100
-                                price -= discount_amount
-                                discount.use_discount()
-                        except Discount.DoesNotExist:
-                            pass
-                    
-                    item_total = price * quantity
-                    total_amount += item_total
-                    
-                    order_items.append({
-                        'product': product,
-                        'quantity': quantity,
-                        'price': price,
-                        'discount_amount': discount_amount
-                    })
-                    
-                except Product.DoesNotExist:
-                    return Response(
-                        {"error": f"Product with id {item_data['product_id']} not found"}, 
-                        status=status.HTTP_404_NOT_FOUND
-                    )
-            
-            # Create order
-            order = Order.objects.create(
-                user=request.user,
-                total_amount=total_amount,
-                status=Order.OrderStatus.PENDING
-            )
-            
-            # Create order items
-            for item_data in order_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item_data['product'],
-                    quantity=item_data['quantity'],
-                    price=item_data['price'],
-                    discount_amount=item_data['discount_amount']
-                )
-            
-            # Send email to admin
-            self.send_purchase_notification_email(order)
-            
-            return Response({
-                'message': 'Purchase request created successfully. Admin will contact you soon.',
-                'order': OrderSerializer(order).data
-            }, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def send_purchase_notification_email(self, order):
-        """Send purchase notification email to admin"""
-        try:
-            # Get admin users
-            from accounts.models import User
-            admin_users = User.objects.filter(role=User.ADMIN)
-            
-            # Prepare email context
-            items_data = []
-            for item in order.items.all():
-                items_data.append({
-                    'product_title': item.product.title,
-                    'quantity': item.quantity,
-                    'price': item.price
-                })
-            
-            context = {
-                'order_id': order.id,
-                'customer_name': order.user.get_full_name() or order.user.username,
-                'customer_email': order.user.email,
-                'order_date': order.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'items': items_data,
-                'total_amount': order.total_amount,
-                'admin_url': f"http://localhost:8000/admin/finance/order/{order.id}/change/"
-            }
-            
-            # Send email to all admin users
-            for admin in admin_users:
-                if admin.email:
-                    from django.core.mail import send_mail
-                    from django.template.loader import render_to_string
-                    from django.utils.html import strip_tags
-                    
-                    subject = f'درخواست خرید جدید - سفارش #{order.id}'
-                    
-                    # Render HTML template
-                    html_message = render_to_string('accounts/purchase_notification.html', context)
-                    
-                    # Create plain text version
-                    plain_message = strip_tags(html_message)
-                    
-                    send_mail(
-                        subject=subject,
-                        message=plain_message,
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[admin.email],
-                        html_message=html_message,
-                        fail_silently=False,
-                    )
-                    
-        except Exception as e:
-            print(f"Error sending purchase notification email: {e}")
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        items = serializer.validated_data['items']
+        
+        # Calculate total and validate products
+        total_amount = 0
+        order_items = []
+        
+        for item_data in items:
+            try:
+                product = Product.objects.get(
+                    id=item_data['product_id'],
+                    is_active=True,
+                    is_deleted=False
+                )
+                
+                quantity = item_data['quantity']
+                price = product.current_price
+                discount_amount = 0
+                
+                # Apply discount if provided
+                if 'discount_code' in item_data and item_data['discount_code']:
+                    try:
+                        discount = Discount.objects.get(
+                            code=item_data['discount_code'],
+                            product=product,
+                            is_active=True
+                        )
+                        if discount.is_available:
+                            discount_amount = (price * discount.percentage) // 100
+                            price -= discount_amount
+                            discount.use_discount()
+                    except Discount.DoesNotExist:
+                        pass
+                
+                item_total = price * quantity
+                total_amount += item_total
+                
+                order_items.append({
+                    'product': product,
+                    'quantity': quantity,
+                    'price': price,
+                    'discount_amount': discount_amount
+                })
+                
+            except Product.DoesNotExist:
+                return Response(
+                    {"error": f"Product with id {item_data['product_id']} not found"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        
+        if total_amount <= 0:
+            return Response(
+                {"error": "Invalid total amount"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # ZarinPal minimum amount is 1000 Tomans
+        if total_amount < 1000:
+            return Response(
+                {"error": "حداقل مبلغ پرداخت 1000 تومان است"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if cart contains physical products and validate address
+        has_physical_products = any(item_data['product'].is_physical_product for item_data in order_items)
+        if has_physical_products:
+            from accounts.models import UserAddress
+            try:
+                user_address = UserAddress.objects.get(user=request.user)
+                if not user_address.is_complete:
+                    return Response({
+                        "error": "incomplete_address",
+                        "message": "برای خرید محصولات فیزیکی، تکمیل آدرس الزامی است",
+                        "redirect_to": "/panel/address"
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            except UserAddress.DoesNotExist:
+                return Response({
+                    "error": "missing_address", 
+                    "message": "برای خرید محصولات فیزیکی، وارد کردن آدرس الزامی است",
+                    "redirect_to": "/panel/address"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create order
+        order = Order.objects.create(
+            user=request.user,
+            total_amount=total_amount,
+            status=Order.OrderStatus.PENDING
+        )
+        
+        # Create order items
+        for item_data in order_items:
+            OrderItem.objects.create(
+                order=order,
+                product=item_data['product'],
+                quantity=item_data['quantity'],
+                price=item_data['price'],
+                discount_amount=item_data['discount_amount']
+            )
+
+        # Initiate ZarinPal payment
+        import requests
+        from django.conf import settings
+        
+        zarinpal_data = {
+            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
+            "amount": int(total_amount),
+            "callback_url": f"{settings.BACKEND_BASE_URL}/api/finance/payment/callback/",
+            "description": f"خرید محصولات - سفارش {order.id}",
+            "metadata": {"order_id": str(order.id)}
+        }
+        
+        print(f"ZarinPal Request Data: {zarinpal_data}")
+        print(f"ZarinPal URL: {settings.ZARINPAL_REQUEST_URL}")
+        
+        try:
+            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
+            response_data = response.json()
+            
+            print(f"ZarinPal Response Status: {response.status_code}")
+            print(f"ZarinPal Response Data: {response_data}")
+            
+            if response_data.get('data', {}).get('code') == 100:
+                authority = response_data['data']['authority']
+                
+                # Create Payment record
+                from finance.models import Payment
+                Payment.objects.create(
+                    user=request.user,
+                    order=order,
+                    amount=total_amount,
+                    authority=authority,
+                    status=Payment.PaymentStatus.PENDING
+                )
+                
+                # Generate payment URL
+                payment_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
+                
+                return Response({
+                    'message': 'در حال انتقال به درگاه پرداخت...',
+                    'payment_url': payment_url,
+                    'authority': authority,
+                    'order': OrderSerializer(order).data
+                }, status=status.HTTP_201_CREATED)
+            else:
+                error_message = response_data.get('errors', {})
+                print(f"ZarinPal Error: {error_message}")
+                return Response({
+                    'error': f'خطا در اتصال به درگاه پرداخت: {error_message}'
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
+        except requests.RequestException as e:
+            print(f"ZarinPal Request Exception: {e}")
+            return Response({
+                'error': f'خطا در اتصال به درگاه پرداخت: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserAccessView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -349,7 +595,11 @@ class UserAccessView(APIView):
             
             return Response({
                 "has_access": True,
-                "access": UserAccessSerializer(access).data
+                "access": {
+                    "product_id": access.product.id,
+                    "expires_at": access.expires_at,
+                    "is_active": access.is_active
+                }
             })
             
         except UserAccess.DoesNotExist:
@@ -357,3 +607,8 @@ class UserAccessView(APIView):
                 "has_access": False,
                 "message": "Product not purchased"
             })
+
+
+def shop_page_view(request):
+    """Render the shop page template"""
+    return render(request, 'shop/shop.html')

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,21 +12,30 @@ import {
   Trash2
 } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table-with-selection";
-import { columns, type Product } from "./columns";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { createColumns, type Product } from "./columns";
 
 export default function TeacherProducts() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState<Product[]>([]);
+
+  // Handle edit action
+  const handleEdit = useCallback((id: number) => {
+    navigate(`/panel/products/edit/${id}`);
+  }, [navigate]);
+
+  // Handle delete action
+  const handleDelete = useCallback((id: number) => {
+    // Add delete confirmation and logic here
+    if (window.confirm('آیا از حذف این محصول اطمینان دارید؟')) {
+      // Implement delete API call
+      console.log('Delete product:', id);
+    }
+  }, []);
+
+  // Create columns with callbacks
+  const columns = useMemo(() => createColumns(handleEdit, handleDelete), [handleEdit, handleDelete]);
 
   useEffect(() => {
     fetchProducts();
@@ -58,6 +68,16 @@ export default function TeacherProducts() {
   };
 
   const filterByType = (type: string) => {
+    if (type === 'physical') {
+      return (Array.isArray(products) ? products : []).filter(product => 
+        ['book', 'notebook', 'pamphlet', 'stationery'].includes(product.product_type)
+      );
+    }
+    if (type === 'digital') {
+      return (Array.isArray(products) ? products : []).filter(product => 
+        ['course', 'file', 'test'].includes(product.product_type)
+      );
+    }
     return (Array.isArray(products) ? products : []).filter(product => product.product_type === type);
   };
 
@@ -65,6 +85,7 @@ export default function TeacherProducts() {
     if (filterByType("course").length > 0) return "courses";
     if (filterByType("file").length > 0) return "files";
     if (filterByType("test").length > 0) return "tests";
+    if (filterByType("physical").length > 0) return "physical";
     return "all";
   };
 
@@ -168,8 +189,14 @@ export default function TeacherProducts() {
         <CardContent className="overflow-hidden">
           <Tabs defaultValue={getActiveTab()} className="w-full">
             <div className="overflow-x-auto mb-6">
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 min-w-fit">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 min-w-fit">
                 <TabsTrigger value="all" className="text-xs sm:text-sm whitespace-nowrap">همه ({products.length})</TabsTrigger>
+                <TabsTrigger value="digital" className="text-xs sm:text-sm whitespace-nowrap">
+                  دیجیتال ({filterByType("digital").length})
+                </TabsTrigger>
+                <TabsTrigger value="physical" className="text-xs sm:text-sm whitespace-nowrap">
+                  فیزیکی ({filterByType("physical").length})
+                </TabsTrigger>
                 <TabsTrigger value="courses" className="text-xs sm:text-sm whitespace-nowrap">
                   دوره‌ها ({filterByType("course").length})
                 </TabsTrigger>
@@ -188,6 +215,26 @@ export default function TeacherProducts() {
                   columns={columns} 
                   data={products} 
                   onRowSelectionChange={setSelectedRows}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="digital" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={filterByType("digital")}
+                  onRowSelectionChange={setSelectedRows} 
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="physical" className="mt-0">
+              <div className="w-full min-w-0">
+                <DataTable 
+                  columns={columns} 
+                  data={filterByType("physical")}
+                  onRowSelectionChange={setSelectedRows} 
                 />
               </div>
             </TabsContent>

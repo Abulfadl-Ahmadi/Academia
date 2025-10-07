@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import File
+from .models import File, GalleryImage
 
 
 @admin.register(File)
@@ -32,3 +32,31 @@ class FileAdmin(admin.ModelAdmin):
         return bool(obj.arvan_url)
     has_arvan_url.boolean = True
     has_arvan_url.short_description = 'Has Arvan URL'
+
+
+@admin.register(GalleryImage)
+class GalleryImageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_published', 'order', 'has_image', 'created_at')
+    list_filter = ('is_published', 'created_at')
+    search_fields = ('title', 'description')
+    list_editable = ('is_published', 'order')
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 25
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'description', 'image')
+        }),
+        ('Display Settings', {
+            'fields': ('is_published', 'order')
+        }),
+        ('Metadata', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def has_image(self, obj):
+        return bool(obj.image)
+    has_image.boolean = True
+    has_image.short_description = 'Has Image'

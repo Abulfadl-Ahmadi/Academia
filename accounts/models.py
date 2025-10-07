@@ -142,6 +142,47 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.user.role})"
+
+
+class UserAddress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='address')
+    full_name = models.CharField(max_length=200, verbose_name="نام کامل")
+    phone_number = models.CharField(
+        max_length=11, 
+        validators=[RegexValidator(regex=r'^09\d{9}$', message='شماره موبایل نامعتبر است')],
+        verbose_name="شماره موبایل"
+    )
+    province = models.CharField(max_length=100, verbose_name="استان")
+    city = models.CharField(max_length=100, verbose_name="شهر")
+    postal_code = models.CharField(
+        max_length=10, 
+        validators=[RegexValidator(regex=r'^\d{10}$', message='کد پستی باید 10 رقم باشد')],
+        verbose_name="کد پستی"
+    )
+    address_line = models.TextField(verbose_name="آدرس کامل")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "آدرس کاربر"
+        verbose_name_plural = "آدرس‌های کاربران"
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.city}, {self.province}"
+    
+    @property
+    def is_complete(self):
+        """Check if all required address fields are filled"""
+        required_fields = [
+            self.full_name, self.phone_number, self.province, 
+            self.city, self.postal_code, self.address_line
+        ]
+        return all(field and field.strip() for field in required_fields)
+    
+    @property
+    def formatted_address(self):
+        """Return formatted address for display"""
+        return f"{self.address_line}, {self.city}, {self.province} - {self.postal_code}"
     
 
 

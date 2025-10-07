@@ -973,6 +973,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 Q(options__option_text__icontains=search)
             ).distinct()
 
+        # جستجو بر اساس شناسه عمومی (public_id)
+        public_id = self.request.query_params.get('public_id', None)
+        if public_id:
+            queryset = queryset.filter(public_id__iexact=public_id)
+
         # فیلتر بر اساس وضعیت فعال بودن
         is_active = self.request.query_params.get('is_active', None)
         if is_active is not None:

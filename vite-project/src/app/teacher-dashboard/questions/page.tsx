@@ -16,6 +16,7 @@ import axiosInstance from "@/lib/axios";
 
 interface FilterOptions {
   search: string;
+  publicIdSearch: string;
   difficulty: string;
   folders: number[];
   sortBy: string;
@@ -134,6 +135,7 @@ export default function QuestionsListPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
+    publicIdSearch: '',
     difficulty: '',
     folders: [],
     sortBy: 'created_at',
@@ -155,6 +157,9 @@ export default function QuestionsListPage() {
 
     if (filters.search) {
       params.append('search', filters.search);
+    }
+    if (filters.publicIdSearch) {
+      params.append('public_id', filters.publicIdSearch);
     }
     if (filters.difficulty) {
       params.append('difficulty', filters.difficulty);

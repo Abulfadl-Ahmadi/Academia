@@ -33,8 +33,10 @@ import StudentCoursesPage from "@/app/dashboard/courses/page"
 import CoursesList from "@/app/teacher-dashboard/courses/CoursesList"
 import CreateCoursePage from "@/app/teacher-dashboard/courses/create/page"
 import CreateProductPage from "@/app/teacher-dashboard/products/create/page"
+import EditProductPage from "@/app/teacher-dashboard/products/edit/[id]/page"
 import VideoPage from "@/app/dashboard/video/page"
 import LiveStreamPage from "@/app/dashboard/live/[courseId]/page"
+import AddressPage from "@/app/dashboard/address/page"
 
 // Topic Tests Components
 import TopicTestsPage from "@/pages/teacher/TopicTestsPage"
@@ -76,6 +78,11 @@ import TeacherBlogCreatePage from '@/app/teacher-dashboard/blog/create/page'
 import TeacherBlogDetailPage from '@/app/teacher-dashboard/blog/[slug]/page'
 import TeacherBlogEditPage from '@/app/teacher-dashboard/blog/[slug]/edit/page'
 
+// Gallery pages
+import GalleryPage from '@/app/teacher-dashboard/gallery/page'
+import UploadGalleryPage from '@/app/teacher-dashboard/gallery/upload/page'
+import EditGalleryPage from '@/app/teacher-dashboard/gallery/edit/[id]/page'
+
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
 export default function PanelRoute() {
@@ -98,6 +105,7 @@ export default function PanelRoute() {
       <Route path="/" element={<StudentLayout />}>
         <Route index element={<Home />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/address" element={<AddressPage />} />
         <Route path="/products" element={<MyProducts />} />
         <Route path="/files" element={<div>فایل‌های من</div>} />
         <Route path="/files/downloaded" element={<div>فایل‌های دانلود شده</div>} />
@@ -158,6 +166,7 @@ export default function PanelRoute() {
         <Route path="/transactions/new" element={<NewTransactionPage />} />
         <Route path="/products" element={<TeacherProducts />} />
         <Route path="/products/create" element={<CreateProductPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
         {/* Topic Tests Routes */}
         <Route path="/topic-tests" element={<TopicTestsPage />} />
   <Route path="/topic-tests/create" element={<CreateTopicTestPage />} />
@@ -189,6 +198,10 @@ export default function PanelRoute() {
         <Route path="/blog/create" element={<TeacherBlogCreatePage />} />
         <Route path="/blog/:slug" element={<TeacherBlogDetailPage />} />
         <Route path="/blog/:slug/edit" element={<TeacherBlogEditPage />} />
+        {/* Gallery Management */}
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/gallery/upload" element={<UploadGalleryPage />} />
+        <Route path="/gallery/edit/:id" element={<EditGalleryPage />} />
       </Route>
     </Routes>
   )

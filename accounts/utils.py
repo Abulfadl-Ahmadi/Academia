@@ -53,7 +53,7 @@ def send_verification_sms(phone_number, verification_code):
         }
         payload = {
             "mobile": phone_number,
-            "templateId": 123456,
+            "templateId": 334868,
             "parameters": [
                 {
                     "name": "Code",
@@ -68,6 +68,7 @@ def send_verification_sms(phone_number, verification_code):
             result = response.json()
             # Assuming success if status is 1 based on sms.ir documentation
             if result.get('status') == 1:
+                print("SMS sent successfully")
                 return True
             else:
                 print(f"SMS sending failed: {result}")
@@ -75,6 +76,7 @@ def send_verification_sms(phone_number, verification_code):
         else:
             print(f"SMS API error: {response.status_code} - {response.text}")
             return False
+        
             
     except Exception as e:
         print(f"Error sending SMS: {e}")

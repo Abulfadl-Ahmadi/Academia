@@ -12,7 +12,8 @@ from .views import (
     VerifyEmailView,
     VerifyPhoneView,
     CompleteRegistrationView,
-    UserDetailView
+    UserDetailView,
+    UserAddressView
 )
 
 router = DefaultRouter()
@@ -30,4 +31,5 @@ urlpatterns += [
     path('token/refresh/', RefreshTokenView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('user/', UserDetailView.as_view()),
+    path('address/', UserAddressView.as_view()),
 ]

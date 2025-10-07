@@ -29,18 +29,27 @@ interface CreateProductForm {
   title: string;
   description: string;
   price: number;
-  product_type: 'file' | 'course' | 'test';
+  product_type: 'file' | 'course' | 'test' | 'book' | 'notebook' | 'pamphlet' | 'stationery';
   is_active: boolean;
   course?: number;
   test?: number;
   file?: number;
   image?: File;
+  // Physical product fields
+  weight?: number;
+  dimensions?: string;
+  stock_quantity?: number;
+  shipping_cost?: number;
 }
 
 const PRODUCT_TYPES = [
-  { value: 'file', label: 'فایل', icon: FileText },
-  { value: 'course', label: 'دوره', icon: BookOpen },
-  { value: 'test', label: 'آزمون', icon: FileText },
+  { value: 'file', label: 'فایل', icon: FileText, isPhysical: false },
+  { value: 'course', label: 'دوره', icon: BookOpen, isPhysical: false },
+  { value: 'test', label: 'آزمون', icon: FileText, isPhysical: false },
+  { value: 'book', label: 'کتاب', icon: BookOpen, isPhysical: true },
+  { value: 'notebook', label: 'دفتر', icon: FileText, isPhysical: true },
+  { value: 'pamphlet', label: 'جزوه', icon: FileText, isPhysical: true },
+  { value: 'stationery', label: 'لوازم تحریر', icon: FileText, isPhysical: true },
 ];
 
 export default function CreateProductPage() {
@@ -52,6 +61,10 @@ export default function CreateProductPage() {
     price: 0,
     product_type: 'file',
     is_active: true,
+    weight: 0,
+    dimensions: "",
+    stock_quantity: 0,
+    shipping_cost: 0,
   });
 
   const handleInputChange = (field: keyof CreateProductForm, value: any) => {
@@ -90,6 +103,23 @@ export default function CreateProductPage() {
       return;
     }
 
+    // Validate physical product fields
+    const isPhysical = ['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type);
+    if (isPhysical) {
+      if (!formData.weight || formData.weight <= 0) {
+        toast.error("وزن محصول فیزیکی الزامی است");
+        return;
+      }
+      if (!formData.dimensions?.trim()) {
+        toast.error("ابعاد محصول فیزیکی الزامی است");
+        return;
+      }
+      if (!formData.stock_quantity || formData.stock_quantity < 0) {
+        toast.error("موجودی محصول فیزیکی الزامی است");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -111,6 +141,24 @@ export default function CreateProductPage() {
       }
       if (formData.image) {
         productData.append('image', formData.image);
+      }
+
+      // Add physical product fields
+      const isPhysical = ['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type);
+      if (isPhysical) {
+        if (formData.weight) {
+          productData.append('weight', formData.weight.toString());
+        }
+        if (formData.dimensions) {
+          productData.append('dimensions', formData.dimensions);
+        }
+        if (formData.stock_quantity !== undefined) {
+          productData.append('stock_quantity', formData.stock_quantity.toString());
+        }
+        if (formData.shipping_cost !== undefined) {
+          productData.append('shipping_cost', formData.shipping_cost.toString());
+        }
+        productData.append('requires_shipping', 'true');
       }
 
       await axiosInstance.post("/shop/products/", productData, {
@@ -248,7 +296,7 @@ export default function CreateProductPage() {
                 <Label htmlFor="product_type">نوع محصول *</Label>
                 <Select
                   value={formData.product_type}
-                  onValueChange={(value: 'file' | 'course' | 'test') => handleInputChange("product_type", value)}
+                  onValueChange={(value: 'file' | 'course' | 'test' | 'book' | 'notebook' | 'pamphlet' | 'stationery') => handleInputChange("product_type", value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="انتخاب نوع محصول" />
@@ -259,6 +307,9 @@ export default function CreateProductPage() {
                         <div className="flex items-center gap-2">
                           <type.icon className="w-4 h-4" />
                           {type.label}
+                          {type.isPhysical && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded">فیزیکی</span>
+                          )}
                         </div>
                       </SelectItem>
                     ))}
@@ -382,6 +433,76 @@ export default function CreateProductPage() {
           </Card>
         )}
 
+        {/* Physical Product Fields */}
+        {['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5" />
+                مشخصات محصول فیزیکی
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                اطلاعات مربوط به ارسال و نگهداری محصول فیزیکی
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="weight">وزن (گرم) *</Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.weight || ''}
+                    onChange={(e) => handleInputChange("weight", parseFloat(e.target.value) || 0)}
+                    placeholder="وزن به گرم"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dimensions">ابعاد (سانتی‌متر) *</Label>
+                  <Input
+                    id="dimensions"
+                    value={formData.dimensions || ''}
+                    onChange={(e) => handleInputChange("dimensions", e.target.value)}
+                    placeholder="مثال: 20x15x2"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">فرمت: طول×عرض×ارتفاع</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="stock_quantity">موجودی *</Label>
+                  <Input
+                    id="stock_quantity"
+                    type="number"
+                    min="0"
+                    value={formData.stock_quantity || ''}
+                    onChange={(e) => handleInputChange("stock_quantity", parseInt(e.target.value) || 0)}
+                    placeholder="تعداد موجودی"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="shipping_cost">هزینه ارسال (تومان)</Label>
+                  <Input
+                    id="shipping_cost"
+                    type="number"
+                    min="0"
+                    value={formData.shipping_cost || ''}
+                    onChange={(e) => handleInputChange("shipping_cost", parseInt(e.target.value) || 0)}
+                    placeholder="هزینه ارسال (اختیاری)"
+                  />
+                  <p className="text-xs text-muted-foreground">اگر خالی باشد، 0 تومان محاسبه می‌شود</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Product Preview */}
         <Card>
           <CardHeader>
@@ -404,11 +525,28 @@ export default function CreateProductPage() {
                   <p className="text-muted-foreground text-sm mt-1">
                     {formData.description || 'توضیحات محصول'}
                   </p>
-                  <div className="flex items-center gap-4 mt-3 text-sm">
+                  <div className="flex items-center gap-4 mt-3 text-sm flex-wrap">
                     <span className="text-muted-foreground">نوع: {getProductTypeLabel(formData.product_type)}</span>
                     <span className="text-primary font-medium">
                       قیمت: {formData.price.toLocaleString()} تومان
                     </span>
+                    {['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type) && (
+                      <>
+                        {formData.shipping_cost && formData.shipping_cost > 0 && (
+                          <span className="text-muted-foreground">
+                            ارسال: {formData.shipping_cost.toLocaleString()} تومان
+                          </span>
+                        )}
+                        {formData.stock_quantity !== undefined && (
+                          <span className="text-muted-foreground">
+                            موجودی: {formData.stock_quantity} عدد
+                          </span>
+                        )}
+                        <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          محصول فیزیکی
+                        </span>
+                      </>
+                    )}
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       formData.is_active 
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
@@ -417,6 +555,11 @@ export default function CreateProductPage() {
                       {formData.is_active ? 'فعال' : 'غیرفعال'}
                     </span>
                   </div>
+                  {['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type) && formData.weight && formData.dimensions && (
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      وزن: {formData.weight} گرم | ابعاد: {formData.dimensions} سانتی‌متر
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

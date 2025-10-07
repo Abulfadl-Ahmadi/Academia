@@ -7,6 +7,8 @@ class ProductSerializer(serializers.ModelSerializer):
     creator = UserSerializer(read_only=True, required=False)
     current_price = serializers.ReadOnlyField()
     has_active_discount = serializers.ReadOnlyField()
+    is_physical_product = serializers.ReadOnlyField()
+    is_digital_product = serializers.ReadOnlyField()
     
     class Meta:
         model = Product
@@ -14,7 +16,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'price', 'current_price',
             'product_type', 'created_at', 'updated_at', 'creator',
             'is_active', 'image', 'file', 'course', 'test',
-            'has_active_discount'
+            'has_active_discount', 'is_physical_product', 'is_digital_product',
+            'weight', 'dimensions', 'stock_quantity', 'requires_shipping', 'shipping_cost'
         ]
         read_only_fields = ['creator', 'created_at', 'updated_at']
 
@@ -24,7 +27,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'title', 'description', 'price', 'product_type',
-            'image', 'file', 'course', 'test'
+            'image', 'file', 'course', 'test', 'weight', 'dimensions', 
+            'stock_quantity', 'requires_shipping', 'shipping_cost'
         ]
 
 

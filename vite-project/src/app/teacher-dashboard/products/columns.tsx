@@ -31,9 +31,15 @@ export type Product = {
   created_at: string;
   updated_at: string;
   sales_count?: number;
+  // Physical product fields
+  weight?: number;
+  dimensions?: string;
+  stock_quantity?: number;
+  requires_shipping?: boolean;
+  shipping_cost?: number;
 };
 
-export const columns: ColumnDef<Product>[] = [
+export const createColumns = (onEdit: (id: number) => void, onDelete: (id: number) => void): ColumnDef<Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -70,13 +76,27 @@ export const columns: ColumnDef<Product>[] = [
     header: () => <span className="font-iransans">{tableHeaders.productType}</span>,
     cell: ({ row }) => {
       const type = row.getValue("product_type") as string;
+      const isPhysical = ["book", "notebook", "pamphlet", "stationery"].includes(type);
       
       return (
         <div className="product-type-cell font-iransans text-right" dir="rtl">
-          {type === "course" && "دوره آموزشی"}
-          {type === "file" && "فایل"}
-          {type === "test" && "آزمون"}
-          {!["course", "file", "test"].includes(type) && type}
+          <div className="flex items-center gap-2">
+            <span>
+              {type === "course" && "دوره آموزشی"}
+              {type === "file" && "فایل"}
+              {type === "test" && "آزمون"}
+              {type === "book" && "کتاب"}
+              {type === "notebook" && "دفتر"}
+              {type === "pamphlet" && "جزوه"}
+              {type === "stationery" && "لوازم تحریر"}
+              {!["course", "file", "test", "book", "notebook", "pamphlet", "stationery"].includes(type) && type}
+            </span>
+            {isPhysical && (
+              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                فیزیکی
+              </Badge>
+            )}
+          </div>
         </div>
       );
     },
@@ -111,6 +131,27 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
+    accessorKey: "stock_quantity",
+    header: () => <span className="font-iransans">موجودی</span>,
+    cell: ({ row }) => {
+      const type = row.getValue("product_type") as string;
+      const isPhysical = ["book", "notebook", "pamphlet", "stationery"].includes(type);
+      const stock = row.getValue("stock_quantity") as number;
+      
+      if (!isPhysical) {
+        return <div className="font-iransans text-muted-foreground">—</div>;
+      }
+      
+      return (
+        <div className="font-iransans">
+          <span className={stock <= 5 ? "text-red-600" : stock <= 20 ? "text-yellow-600" : "text-green-600"}>
+            {stock || 0}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "created_at",
     header: () => <span className="font-iransans">{tableHeaders.createdAt}</span>,
     cell: ({ row }) => {
@@ -142,14 +183,14 @@ export const columns: ColumnDef<Product>[] = [
               <Eye className="h-4 w-4" /> مشاهده
             </DropdownMenuItem>
             <DropdownMenuItem 
-              onClick={() => window.location.href = `/panel/products/edit/${product.id}`}
+              onClick={() => onEdit(product.id)}
               className="flex items-center gap-2"
             >
               <Edit className="h-4 w-4" /> ویرایش
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              onClick={() => alert(`حذف محصول ${product.title}`)}
+              onClick={() => onDelete(product.id)}
               className="text-red-600 flex items-center gap-2"
             >
               <Trash2 className="h-4 w-4" /> حذف

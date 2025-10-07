@@ -143,12 +143,24 @@ export function RegisterForm({
         // { withCredentials: true }
       )
       console.log("Registration completed:", response.data)
-      navigate("/login", { 
-        state: { 
-          message: 'ثبت نام با موفقیت انجام شد. اکنون وارد شوید.',
-          phone_number: phoneNumber 
-        } 
-      });
+      
+      // Check if there's pending cart for purchase
+      const pendingCart = localStorage.getItem('pending_purchase_cart')
+      console.log('Registration success - pendingCart:', pendingCart, 'response.data:', response.data)
+      
+      if (pendingCart || response.data.has_pending_cart || response.data.redirect_to_panel) {
+        console.log('Redirecting to dashboard with cart')
+        // Redirect to dashboard to complete purchase
+  navigate("/panel?registration_success=true&show_cart=true");
+      } else {
+        // Normal registration flow
+        navigate("/login", { 
+          state: { 
+            message: response.data.message || 'ثبت نام با موفقیت انجام شد. اکنون وارد شوید.',
+            phone_number: phoneNumber 
+          } 
+        });
+      }
     } catch (err: unknown) {
       console.error("Complete registration error:", err)
       if (err && typeof err === 'object' && 'response' in err) {

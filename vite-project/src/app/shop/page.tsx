@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,12 +20,19 @@ interface Product {
   description: string
   price: number
   current_price: number
-  product_type: 'course' | 'file' | 'test'
+  product_type: 'course' | 'file' | 'test' | 'book' | 'notebook' | 'pamphlet' | 'stationery'
   image?: string
   file?: number
   course?: number
   test?: number
   has_active_discount: boolean
+  is_physical_product: boolean
+  is_digital_product: boolean
+  weight?: number
+  dimensions?: string
+  stock_quantity?: number
+  requires_shipping: boolean
+  shipping_cost?: number
   created_at: string
 }
 
@@ -36,6 +44,7 @@ interface Discount {
 }
 
 export default function ShopPage() {
+  const navigate = useNavigate()
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -44,9 +53,64 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true)
   const [discountCode, setDiscountCode] = useState('')
   const [appliedDiscount, setAppliedDiscount] = useState<Discount | null>(null)
+  const [showCartDrawer, setShowCartDrawer] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart()
 
   const TAX_RATE = 0.099 // 9.9%
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await axiosInstance.get('/profiles/')
+        setIsAuthenticated(true)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  // Check if user came from registration with cart items
+  useEffect(() => {
+    // Check for registration success message in URL params or localStorage
+    const urlParams = new URLSearchParams(window.location.search)
+    const registrationSuccess = urlParams.get('registration_success')
+    const showCart = urlParams.get('show_cart')
+    
+    if (registrationSuccess === 'true' || showCart === 'true') {
+      // Show success message and open cart drawer
+      toast.success('ثبت نام موفقیت آمیز بود! محصولات شما در سبد خرید قرار گرفته‌اند.')
+      setShowCartDrawer(true)
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+
+    // Check for pending purchase cart from localStorage
+    const pendingCart = localStorage.getItem('pending_purchase_cart')
+    if (pendingCart) {
+      try {
+        const cartData = JSON.parse(pendingCart)
+        // Add items back to cart
+        cartData.forEach(async (item: {product_id: number, quantity: number, product_title: string, product_price: number}) => {
+          // Find the product by ID and add to cart
+          const product = products.find(p => p.id === item.product_id)
+          if (product) {
+            await addToCart(product, item.quantity)
+          }
+        })
+        // Remove from localStorage
+        localStorage.removeItem('pending_purchase_cart')
+        // Show message and open cart
+        toast.success('🎉 خوش آمدید! محصولات شما بازیابی شد و آماده تکمیل خرید است.')
+        setShowCartDrawer(true)
+      } catch (error) {
+        console.error('Error restoring cart:', error)
+        localStorage.removeItem('pending_purchase_cart')
+      }
+    }
+  }, [products, addToCart])
 
   const filterAndSortProducts = useCallback(() => {
     let filtered = products
@@ -85,6 +149,8 @@ export default function ShopPage() {
 
   useEffect(() => {
     fetchProducts()
+    // Test if new backend endpoints are available
+    testBackendEndpoints()
   }, [])
 
   useEffect(() => {
@@ -114,22 +180,44 @@ export default function ShopPage() {
     }
   }
 
-  const handleAddToCart = (product: Product) => {
-    addToCart(product)
-    toast.success(`${product.title} به سبد خرید اضافه شد`)
+  const testBackendEndpoints = async () => {
+    try {
+      // Test if new purchase endpoint exists
+      const response = await axiosInstance.options('/shop/purchase/')
+      console.log('New purchase endpoint is available:', response.status === 200)
+    } catch {
+      console.log('New purchase endpoint not available, will use fallback')
+    }
   }
 
-  const handleRemoveFromCart = (productId: number) => {
-    removeFromCart(productId)
-    toast.info("محصول از سبد خرید حذف شد")
+  const handleAddToCart = async (product: Product) => {
+    try {
+      await addToCart(product)
+      toast.success(`${product.title} به سبد خرید اضافه شد`)
+    } catch {
+      toast.error("خطا در افزودن به سبد خرید")
+    }
   }
 
-  const handleUpdateQuantity = (productId: number, quantity: number) => {
+  const handleRemoveFromCart = async (productId: number) => {
+    try {
+      await removeFromCart(productId)
+      toast.info("محصول از سبد خرید حذف شد")
+    } catch {
+      toast.error("خطا در حذف از سبد خرید")
+    }
+  }
+
+  const handleUpdateQuantity = async (productId: number, quantity: number) => {
     if (quantity <= 0) {
-      handleRemoveFromCart(productId)
+      await handleRemoveFromCart(productId)
       return
     }
-    updateQuantity(productId, quantity)
+    try {
+      await updateQuantity(productId, quantity)
+    } catch {
+      toast.error("خطا در بروزرسانی تعداد")
+    }
   }
 
   const validateDiscountCode = async () => {
@@ -172,34 +260,95 @@ export default function ShopPage() {
   }
 
   const handleCheckout = async () => {
+    console.log('handleCheckout called, cart:', cart, 'isAuthenticated:', isAuthenticated)
+    
     if (cart.length === 0) {
       toast.error("سبد خرید خالی است")
       return
     }
 
-    try {
-      const items = cart.map(item => ({
+    // Check if user is authenticated from state
+    if (isAuthenticated === false) {
+      console.log('User not authenticated, redirecting to register')
+      // User is not authenticated, redirect to registration with message
+      toast.info("برای تکمیل خرید، ابتدا ثبت نام کنید. محصولات شما حفظ خواهد شد! 🛒")
+      
+      // Store cart items in localStorage before redirect
+      const cartData = cart.map(item => ({
         product_id: item.product.id,
         quantity: item.quantity,
-        discount_code: appliedDiscount?.code || undefined
+        product_title: item.product.title,
+        product_price: item.product.current_price
       }))
+      localStorage.setItem('pending_purchase_cart', JSON.stringify(cartData))
+      
+      setTimeout(() => {
+        navigate('/register')
+      }, 2000)
+      return
+    }
 
-      // Create order
-      const orderResponse = await axiosInstance.post('/finance/orders/', { items })
-      const orderId = orderResponse.data.id
+    // User is authenticated, proceed with purchase
+    try {
+      // Try new endpoint first
+      let response
+      try {
+        response = await axiosInstance.post('/shop/purchase/', {
+          items: cart.map(item => ({
+            product_id: item.product.id,
+            quantity: item.quantity,
+            discount_code: appliedDiscount?.code || undefined
+          }))
+        })
+      } catch (error) {
+        const errorResponse = error as { response?: { status?: number } }
+        if (errorResponse.response?.status === 404) {
+          // Fallback to old endpoint
+          response = await axiosInstance.post('/finance/orders/', {
+            items: cart.map(item => ({
+              product_id: item.product.id,
+              quantity: item.quantity,
+              discount_code: appliedDiscount?.code || undefined
+            }))
+          })
+        } else {
+          throw error
+        }
+      }
 
-      toast.success("سفارش شما ایجاد شد. در حال انتقال به درگاه پرداخت...")
+      // Success
+      if (response.data.payment_url) {
+        // Redirect to payment gateway
+        toast.success(response.data.message || "در حال انتقال به درگاه پرداخت...")
+        
+        setTimeout(() => {
+          window.open(response.data.payment_url, '_self')
+        }, 1500)
+      } else {
+        toast.success(response.data.message || "سفارش شما با موفقیت ثبت شد")
+        // Only clear cart if no payment_url (immediate success)
+        await clearCart()
+        setAppliedDiscount(null)
+        setDiscountCode('')
+      }
 
-      // Clear cart
-      clearCart()
-      setAppliedDiscount(null)
-      setDiscountCode('')
-
-      // Redirect to payment page with order ID
-      window.location.href = `/payment/initiate?orderId=${orderId}&amount=${calculateTotal()}`
-
-    } catch {
-      toast.error("خطا در ایجاد سفارش")
+    } catch (error) {
+      const errorResponse = error as { response?: { status?: number; data?: { error?: string; message?: string; redirect_to?: string } } }
+      
+      // Handle address validation errors
+      if (errorResponse.response?.data?.error === 'incomplete_address' || 
+          errorResponse.response?.data?.error === 'missing_address') {
+        toast.error(errorResponse.response.data.message || "اطلاعات آدرس کامل نیست")
+        
+        // Redirect to address page
+        if (errorResponse.response.data.redirect_to) {
+          setTimeout(() => {
+            navigate(errorResponse.response.data.redirect_to!)
+          }, 2000)
+        }
+      } else {
+        toast.error(errorResponse.response?.data?.error || "خطا در تکمیل خرید")
+      }
     }
   }
 
@@ -224,6 +373,14 @@ export default function ShopPage() {
         return 'فایل و جزوه'
       case 'test':
         return 'آزمون'
+      case 'book':
+        return 'کتاب'
+      case 'notebook':
+        return 'دفتر'
+      case 'pamphlet':
+        return 'جزوه'
+      case 'stationery':
+        return 'لوازم التحریر'
       default:
         return type
     }
@@ -250,9 +407,16 @@ export default function ShopPage() {
         <div>
           <h1 className="text-3xl font-bold">فروشگاه</h1>
           <p className="text-muted-foreground mt-2">محصولات آموزشی با کیفیت</p>
+          {isAuthenticated === false && cart.length > 0 && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm">
+                💡 برای تکمیل خرید، ابتدا ثبت نام کنید. محصولات انتخابی شما حفظ خواهد شد.
+              </p>
+            </div>
+          )}
         </div>
 
-        <Drawer direction="left">
+        <Drawer direction="left" open={showCartDrawer} onOpenChange={setShowCartDrawer}>
           <DrawerTrigger asChild>
             <Button
               className="relative"
@@ -383,7 +547,7 @@ export default function ShopPage() {
                     onClick={handleCheckout}
                     className="w-full mt-4"
                   >
-                    تکمیل خرید
+                    {isAuthenticated === false ? 'ثبت نام و تکمیل خرید' : 'تکمیل خرید'}
                   </Button>
                 </>
               )}
@@ -417,6 +581,10 @@ export default function ShopPage() {
                   <SelectItem value="course">دوره آموزشی</SelectItem>
                   <SelectItem value="file">فایل و جزوه</SelectItem>
                   <SelectItem value="test">آزمون</SelectItem>
+                  <SelectItem value="book">کتاب</SelectItem>
+                  <SelectItem value="notebook">دفتر</SelectItem>
+                  <SelectItem value="pamphlet">جزوه</SelectItem>
+                  <SelectItem value="stationery">لوازم التحریر</SelectItem>
                 </SelectContent>
               </Select>
 

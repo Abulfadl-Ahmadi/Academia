@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from .models import File
+from .models import File, GalleryImage
 from utils.vod import create_upload_url
 from utils.vod import get_video_player_url
 from botocore.exceptions import ClientError
 import logging
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -118,3 +119,40 @@ class VideoFinalizeSerializer(serializers.Serializer):
     title = serializers.CharField()
     course = serializers.IntegerField(required=False)
     session = serializers.IntegerField(required=False)
+
+
+class GalleryImageSerializer(serializers.ModelSerializer):
+    """Serializer for gallery images with full CRUD operations"""
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = GalleryImage
+        fields = [
+            'id', 'title', 'description', 'image', 'image_url', 
+            'is_published', 'order', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'image_url', 'created_at', 'updated_at']
+    
+    def get_image_url(self, obj):
+        """Generate public URL for the image without signature"""
+        if obj.image:
+            # Use the storage's URL method which will return a clean public URL
+            return obj.image.url
+        return None
+
+
+class PublicGalleryImageSerializer(serializers.ModelSerializer):
+    """Serializer for public gallery images (only published ones)"""
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = GalleryImage
+        fields = ['id', 'title', 'description', 'image_url', 'order']
+        read_only_fields = ['id', 'title', 'description', 'image_url', 'order']
+    
+    def get_image_url(self, obj):
+        """Generate public URL for the image without signature"""
+        if obj.image:
+            # Use the storage's URL method which will return a clean public URL
+            return obj.image.url
+        return None

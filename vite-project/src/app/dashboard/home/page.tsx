@@ -1,10 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/context/UserContext"
+import { useCart } from "@/context/CartContext"
 import { BookOpen, FileText, Play, User, Mail, GraduationCap } from "lucide-react"
+import DashboardCart from "@/components/dashboard-cart"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 export default function Home() {
   const { user } = useUser();
+  const { restorePendingCart } = useCart();
+  const navigate = useNavigate();
+
+  // Check for pending cart restoration on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const showCart = urlParams.get('show_cart');
+    const registrationSuccess = urlParams.get('registration_success');
+    
+    if (showCart === 'true' && registrationSuccess === 'true') {
+      console.log('Dashboard: restoring pending cart after registration');
+      restorePendingCart();
+    }
+  }, [restorePendingCart]);
 
   return (
         <div className="flex flex-1 flex-col gap-6">
@@ -89,6 +107,9 @@ export default function Home() {
             </Card>
           </div>
 
+          {/* Shopping Cart */}
+          <DashboardCart />
+
           {/* Quick Actions */}
           <Card>
             <CardHeader>
@@ -97,7 +118,7 @@ export default function Home() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Button 
-                  onClick={() => window.location.href = "/panel/products"} 
+                  onClick={() => navigate("/panel/products")} 
                   variant="outline" 
                   className="h-20 flex flex-col items-center justify-center gap-2"
                 >
@@ -106,7 +127,7 @@ export default function Home() {
                 </Button>
                 
                 <Button 
-                  onClick={() => window.location.href = "/panel/profile"} 
+                  onClick={() => navigate("/panel/profile")} 
                   variant="outline" 
                   className="h-20 flex flex-col items-center justify-center gap-2"
                 >
@@ -115,7 +136,7 @@ export default function Home() {
                 </Button>
                 
                 <Button 
-                  onClick={() => window.location.href = "/shop"} 
+                  onClick={() => navigate("/shop")} 
                   variant="outline" 
                   className="h-20 flex flex-col items-center justify-center gap-2"
                 >
@@ -124,7 +145,7 @@ export default function Home() {
                 </Button>
                 
                 <Button 
-                  onClick={() => window.location.href = "/panel/support"} 
+                  onClick={() => navigate("/panel/support")} 
                   variant="outline" 
                   className="h-20 flex flex-col items-center justify-center gap-2"
                 >

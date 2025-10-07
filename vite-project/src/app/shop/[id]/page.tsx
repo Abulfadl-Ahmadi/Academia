@@ -333,7 +333,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Guarantee */}
-              <div className="text-center text-sm text-muted-foreground bg-green-50 p-3 rounded-lg">
+              <div className="text-center text-sm text-muted-foreground bg-green-500/7 p-3 rounded-lg">
                 <div className="font-medium text-green-700 mb-1">✅ تضمین کیفیت</div>
                 <div>در صورت عدم رضایت، تا ۷ روز امکان بازگشت</div>
               </div>

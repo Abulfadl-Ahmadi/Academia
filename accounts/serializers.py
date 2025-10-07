@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
-from .models import UserProfile, VerificationCode
+from .models import UserProfile, VerificationCode, UserAddress
 from .validators import validate_iranian_national_id
 
 User = get_user_model()
@@ -90,3 +90,17 @@ class CompleteRegistrationSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False, allow_blank=True)
     # birth_date = serializers.DateField(required=False)
     grade = serializers.CharField(required=False, allow_blank=True)
+
+
+class UserAddressSerializer(serializers.ModelSerializer):
+    is_complete = serializers.ReadOnlyField()
+    formatted_address = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = UserAddress
+        fields = [
+            'id', 'full_name', 'phone_number', 'province', 'city', 
+            'postal_code', 'address_line', 'is_complete', 'formatted_address',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']

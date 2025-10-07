@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework import viewsets, permissions
-from .models import UserProfile, User, VerificationCode
+from .models import UserProfile, User, VerificationCode, UserAddress
 from .serializers import (
     UserProfileSerializer, 
     UserSerializer, 
@@ -14,7 +14,8 @@ from .serializers import (
     SendPhoneVerificationCodeSerializer,
     VerifyEmailSerializer,
     VerifyPhoneSerializer,
-    CompleteRegistrationSerializer
+    CompleteRegistrationSerializer,
+    UserAddressSerializer
 )
 from .utils import send_verification_email, send_verification_sms
 from django.core.cache import cache
@@ -91,6 +92,7 @@ class SendPhoneVerificationCodeView(APIView):
             
             # Send SMS
             sms_sent = send_verification_sms(phone_number, verification_code.code)
+            print("\n\n",20*"-", "sms_sent:", sms_sent)
 
             if sms_sent:
                 return Response({
@@ -260,11 +262,21 @@ class CompleteRegistrationView(APIView):
             # Generate tokens
             refresh = RefreshToken.for_user(user)
             
+            # Handle pending cart from shop
+            pending_cart = request.session.get('pending_cart', {})
+            cart_message = ""
+            if pending_cart:
+                # Move pending cart to regular cart for the authenticated user
+                request.session['cart'] = pending_cart
+                del request.session['pending_cart']
+                request.session.modified = True
+                cart_message = f" محصولات انتخابی شما ({len(pending_cart)} محصول) در سبد خرید شما قرار گرفت."
+            
             # Clear verification codes
             VerificationCode.objects.filter(phone_number=phone_number).delete()
             
             response = Response({
-                "message": "ثبت‌نام با موفقیت انجام شد.",
+                "message": f"ثبت‌نام با موفقیت انجام شد.{cart_message}",
                 "user": {
                     "username": user.username,
                     "email": user.email,
@@ -272,7 +284,9 @@ class CompleteRegistrationView(APIView):
                     "last_name": user.last_name,
                     "role": user.role,
                     "is_email_verified": user.is_email_verified
-                }
+                },
+                "has_pending_cart": bool(pending_cart),
+                "redirect_to_panel": True
             }, status=status.HTTP_201_CREATED)
             
             # Set tokens in HttpOnly cookies
@@ -313,15 +327,27 @@ class RegisterView(APIView):
             user = profile.user
             refresh = RefreshToken.for_user(user)
             
+            # Handle pending cart from shop
+            pending_cart = request.session.get('pending_cart', {})
+            cart_message = ""
+            if pending_cart:
+                # Move pending cart to regular cart for the authenticated user
+                request.session['cart'] = pending_cart
+                del request.session['pending_cart']
+                request.session.modified = True
+                cart_message = f" Selected products ({len(pending_cart)} items) have been added to your cart."
+            
             response = Response({
-                "message": "Registration successful",
+                "message": f"Registration successful.{cart_message}",
                 "user": {
                     "username": user.username,
                     "email": user.email,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "role": user.role
-                }
+                },
+                "has_pending_cart": bool(pending_cart),
+                "redirect_to_panel": True
             }, status=status.HTTP_201_CREATED)
             
             # Set tokens in HttpOnly cookies
@@ -399,15 +425,34 @@ class LoginView(APIView):
                 UserProfile.objects.create(user=user)
                 profile_completed = False
 
+            # Handle pending cart from shop
+            pending_cart = request.session.get('pending_cart', {})
+            cart_message = ""
+            if pending_cart:
+                # Merge pending cart with user's existing cart if any
+                current_cart = request.session.get('cart', {})
+                for product_id, item in pending_cart.items():
+                    if product_id in current_cart:
+                        current_cart[product_id]['quantity'] += item['quantity']
+                    else:
+                        current_cart[product_id] = item
+                
+                request.session['cart'] = current_cart
+                del request.session['pending_cart']
+                request.session.modified = True
+                cart_message = f" محصولات انتخابی شما ({len(pending_cart)} محصول) در سبد خرید شما قرار گرفت."
+
             response = Response({
-                "message": "ورود با موفقیت انجام شد",
+                "message": f"ورود با موفقیت انجام شد.{cart_message}",
                 "user": {
                     "id": user.id,
                     "username": user.username,
                     "email": user.email,
                     "role": user.role,
                     "profile_completed": profile_completed
-                }
+                },
+                "has_pending_cart": bool(pending_cart),
+                "redirect_to_panel": True if pending_cart else False
             }, status=status.HTTP_200_OK)
 
             # Set cookie parameters based on environment
@@ -529,4 +574,48 @@ class UserDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserAddressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        """Get user's address"""
+        try:
+            address = UserAddress.objects.get(user=request.user)
+            serializer = UserAddressSerializer(address)
+            return Response(serializer.data)
+        except UserAddress.DoesNotExist:
+            return Response(
+                {"message": "آدرس کاربر یافت نشد"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    def post(self, request):
+        """Create or update user's address"""
+        try:
+            address = UserAddress.objects.get(user=request.user)
+            serializer = UserAddressSerializer(address, data=request.data, partial=True)
+        except UserAddress.DoesNotExist:
+            serializer = UserAddressSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request):
+        """Update user's address"""
+        try:
+            address = UserAddress.objects.get(user=request.user)
+            serializer = UserAddressSerializer(address, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except UserAddress.DoesNotExist:
+            return Response(
+                {"message": "آدرس کاربر یافت نشد"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 

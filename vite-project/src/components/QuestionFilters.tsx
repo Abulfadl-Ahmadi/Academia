@@ -10,6 +10,7 @@ import { FolderTreeSelector } from '@/components/FolderTreeSelector';
 
 interface FilterOptions {
   search: string;
+  publicIdSearch: string;
   difficulty: string;
   folders: number[];
   sortBy: string;
@@ -48,6 +49,7 @@ interface QuestionFiltersProps {
 export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps) {
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
+    publicIdSearch: '',
     difficulty: '',
     folders: [],
     sortBy: 'created_at',
@@ -62,6 +64,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchDebounce, setSearchDebounce] = useState('');
+  const [publicIdSearchDebounce, setPublicIdSearchDebounce] = useState('');
 
   // Debounce search input
   useEffect(() => {
@@ -71,6 +74,15 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
 
     return () => clearTimeout(timer);
   }, [searchDebounce]);
+
+  // Debounce public ID search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => ({ ...prev, publicIdSearch: publicIdSearchDebounce }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [publicIdSearchDebounce]);
 
   // Notify parent when filters change
   useEffect(() => {
@@ -86,6 +98,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
   const clearFilters = () => {
     setFilters({
       search: '',
+      publicIdSearch: '',
       difficulty: '',
       folders: [],
       sortBy: 'created_at',
@@ -98,11 +111,13 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
       dateTo: '',
     });
     setSearchDebounce('');
+    setPublicIdSearchDebounce('');
   };
 
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.search) count++;
+    if (filters.publicIdSearch) count++;
     if (filters.difficulty) count++;
     if (filters.folders.length > 0) count++;
     if (filters.isActive) count++;
@@ -133,18 +148,33 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
   return (
     <Card className="mb-6">
       <CardContent className="p-4">
-        {/* Search Bar */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="جستجو در متن سوالات..."
-              value={searchDebounce}
-              onChange={(e) => setSearchDebounce(e.target.value)}
-              className="pr-10"
-            />
+        {/* Search Bars */}
+        <div className="space-y-3 mb-4 flex flex-row gap-2">
+          {/* General Search */}
+          <div className="flex flex-col sm:flex-row gap-3 grow">
+            <div className="relative flex-1">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="جستجو در متن سوالات و پاسخ تشریحی..."
+                value={searchDebounce}
+                onChange={(e) => setSearchDebounce(e.target.value)}
+                className="pr-10"
+              />
+            </div>
           </div>
           
+          {/* Public ID Search */}
+          <div className="flex flex-col sm:flex-row gap-3 w-20">
+              <Input
+                placeholder="شناسه"
+                value={publicIdSearchDebounce}
+                onChange={(e) => setPublicIdSearchDebounce(e.target.value)}
+                maxLength={6}
+              />
+          </div>
+        </div>
+        
+        <div className="flex justify-end gap-2 mb-4">
           <div className="flex gap-2">
             <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <CollapsibleTrigger asChild>

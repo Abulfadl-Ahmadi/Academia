@@ -13,6 +13,7 @@ import {
   Target,
   TreePine,
   PenTool,
+  Image,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -195,6 +196,23 @@ export function TeacherSidebar({
             title: "نوشته جدید",
             url: "/panel/blog/create",
             description: "ایجاد مقاله و نوشته جدید"
+          },
+        ],
+      },
+      {
+        title: "گالری تصاویر",
+        url: "/panel/gallery",
+        icon: Image,
+        items: [
+          {
+            title: "مدیریت تصاویر",
+            url: "/panel/gallery",
+            description: "مشاهده و مدیریت تصاویر گالری صفحه اصلی"
+          },
+          {
+            title: "آپلود تصویر جدید",
+            url: "/panel/gallery/upload",
+            description: "افزودن تصویر جدید به گالری"
           },
         ],
       },

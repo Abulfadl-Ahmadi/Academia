@@ -3,8 +3,12 @@ from rest_framework import generics, permissions, views, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
-from .models import File
-from .serializers import FileSerializer, FileUploadSerializer, VideoInitUploadSerializer, VideoFinalizeSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+from .models import File, GalleryImage
+from .serializers import (
+    FileSerializer, FileUploadSerializer, VideoInitUploadSerializer, 
+    VideoFinalizeSerializer, GalleryImageSerializer, PublicGalleryImageSerializer
+)
 from utils.vod import upload_video_file, create_video, create_upload_url, get_video, get_video_player_url
 from utils.vod2 import create_upload_url as create_presigned_upload_url
 import logging
@@ -149,7 +153,6 @@ class VideoFinalizeUploadView(views.APIView):
             # print("\tDONE")
             print(video_data["data"].get('player_url'))
 
-
             file = File.objects.create(
                 file_id=serializer.validated_data["file_id"],
                 title=serializer.validated_data["title"],
@@ -164,7 +167,63 @@ class VideoFinalizeUploadView(views.APIView):
                 "file_url": video_data.get("player_url"),
                 "embed_code": video_data.get("embed_code"),
             }, status=status.HTTP_201_CREATED)
-
+        
         except Exception as e:
-            print(e)
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error finalizing video upload: {e}")
+            return Response(
+                {"error": "Failed to finalize video upload"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# ================================
+# Gallery Views
+# ================================
+
+class GalleryImageViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing gallery images (admin operations).
+    Supports full CRUD operations for authenticated users.
+    """
+    queryset = GalleryImage.objects.all().order_by('order', '-created_at')
+    serializer_class = GalleryImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+class PublicGalleryImageListView(generics.ListAPIView):
+    """
+    Public API for listing only published gallery images.
+    Used on homepage and other public pages.
+    """
+    serializer_class = PublicGalleryImageSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return GalleryImage.objects.filter(is_published=True).order_by('order', '-created_at')
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+class PublicGalleryImageDetailView(generics.RetrieveAPIView):
+    """
+    Public API for retrieving a single published gallery image.
+    """
+    serializer_class = PublicGalleryImageSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return GalleryImage.objects.filter(is_published=True)
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context

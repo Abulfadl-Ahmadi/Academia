@@ -1,10 +1,15 @@
 from django.urls import path, include
-from .views import FileListCreateView, FileRetrieveUpdateDeleteView, VideoUploadView, VideoInitUploadView, VideoFinalizeUploadView
+from .views import (
+    FileListCreateView, FileRetrieveUpdateDeleteView, VideoUploadView, 
+    VideoInitUploadView, VideoFinalizeUploadView,
+    GalleryImageViewSet, PublicGalleryImageListView, PublicGalleryImageDetailView
+)
 from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
 router.register(r'files', FileListCreateView, basename='files')
+router.register(r'gallery-images', GalleryImageViewSet, basename='gallery-images')
 
 
 
@@ -15,4 +20,8 @@ urlpatterns = [
     path('videos/upload/', VideoUploadView.as_view(), name='video-upload'),
     path('videos/init-upload/', VideoInitUploadView.as_view()),
     path('videos/finalize/', VideoFinalizeUploadView.as_view()),
+    
+    # Public gallery endpoints
+    path('gallery/images/', PublicGalleryImageListView.as_view(), name='public-gallery-list'),
+    path('gallery/images/<int:pk>/', PublicGalleryImageDetailView.as_view(), name='public-gallery-detail'),
 ]

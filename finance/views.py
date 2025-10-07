@@ -46,9 +46,48 @@ class OrderViewSet(viewsets.ModelViewSet):
         except Exception:
             pass
 
-        output_serializer = OrderSerializer(order, context={"request": request})
-        headers = self.get_success_headers(output_serializer.data)
-        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # Initiate payment automatically
+        try:
+            # Prepare Zarinpal request
+            callback_url = f"{settings.SERVER_IP}/finance/payment/callback/"
+            zarinpal_data = {
+                "merchant_id": settings.ZARINPAL_MERCHANT_ID,
+                "amount": order.total_amount,
+                "callback_url": callback_url,
+                "description": f'پرداخت سفارش #{order.id}'
+            }
+
+            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
+            result = response.json()
+
+            if result.get("data") and result["data"].get("authority"):
+                authority = result["data"]["authority"]
+                Payment.objects.create(
+                    user=request.user,
+                    order=order,
+                    amount=order.total_amount,
+                    description=f'پرداخت سفارش #{order.id}',
+                    authority=authority
+                )
+                payment_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
+                
+                return Response({
+                    "order": OrderSerializer(order, context={"request": request}).data,
+                    "payment_url": payment_url,
+                    "authority": authority,
+                    "message": "سفارش ایجاد شد. در حال انتقال به درگاه پرداخت..."
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    "order": OrderSerializer(order, context={"request": request}).data,
+                    "message": "سفارش ایجاد شد اما مشکلی در ایجاد درگاه پرداخت وجود دارد. لطفاً دوباره تلاش کنید."
+                }, status=status.HTTP_201_CREATED)
+                
+        except Exception as e:
+            return Response({
+                "order": OrderSerializer(order, context={"request": request}).data,
+                "message": "سفارش ایجاد شد اما مشکلی در اتصال به درگاه پرداخت وجود دارد. لطفاً دوباره تلاش کنید."
+            }, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
@@ -396,7 +435,7 @@ class PaymentCallbackView(APIView):
         authority = request.GET.get('Authority')
         status_param = request.GET.get('Status')
 
-        FRONTEND_URL = "http://localhost:5173"
+        FRONTEND_URL = settings.FRONTEND_BASE_URL
         if not authority or status_param != 'OK':
             return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
 

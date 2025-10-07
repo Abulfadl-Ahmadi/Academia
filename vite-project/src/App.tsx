@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Navbar from "./components/navbar";
 import { UserProvider } from "@/context/UserContext";
@@ -102,6 +102,8 @@ function App() {
           <Route path="/tests/:id/" element={<TestPage />} />
           <Route path="/tests/:id/detail" element={<TestPage />} />
           <Route path="/panel/*" element={<PanelRoute />} />
+           {/* Redirect /dashboard to /panel for dashboard compatibility */}
+           <Route path="/dashboard" element={<Navigate to="/panel" replace />} />
           <Route
             path="/teacher/knowledge"
             element={<TeacherKnowledgePanel />}
@@ -123,7 +125,7 @@ function App() {
           <Route
             path="/shop/:id"
             element={
-              <ProfileGuard requireProfile={true}>
+              <ProfileGuard>
                 <Navbar />
                 <div className="pt-24">
                   <ProductDetailPage />
@@ -137,6 +139,20 @@ function App() {
           <Route path="/payment/initiate" element={<PaymentInitiate />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failed" element={<PaymentFailed />} />
+          
+          {/* Checkout Route */}
+          <Route 
+            path="/checkout" 
+            element={
+              <ProfileGuard>
+                <Navbar />
+                <div className="pt-24">
+                  <div>صفحه checkout در حال ساخت...</div>
+                </div>
+                <Footer />
+              </ProfileGuard>
+            } 
+          />
 
           {/* Public Blog Routes */}
           <Route
