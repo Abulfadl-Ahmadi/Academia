@@ -44,7 +44,7 @@ class Subject(models.Model):
 class Folder(models.Model):
     """پوشه سلسله مراتبی عمومی برای درخت دانش جدید (نامحدود عمق)."""
     name = models.CharField(max_length=200, verbose_name="نام پوشه")
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE, verbose_name="پوشه والد")
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL, verbose_name="پوشه والد")
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب")
     created_at = models.DateTimeField(auto_now_add=True)
