@@ -29,30 +29,157 @@ def split_topics(topics):
 def normalize_text(text):
     """متن را برای مقایسه نرمال کند"""
     import re
-    # حذف فاصله‌های اضافی و کاراکترهای خاص
+    
+    # حذف فاصله‌های اضافی
     text = re.sub(r'\s+', ' ', text.strip())
-    # حذف LaTeX tags برای مقایسه بهتر
-    text = re.sub(r'\$[^$]*\$', '', text)
-    text = re.sub(r'\\[a-zA-Z]+\{[^}]*\}', '', text)
+    
+    # نرمال‌سازی LaTeX commands
+    # تبدیل \\ به \ (برای LaTeX line breaks)
+    text = re.sub(r'\\\\+', r'\\', text)
+    
+    # نرمال‌سازی فاصله‌گذاری در LaTeX
+    text = re.sub(r'\\\s+', r'\\', text)  # حذف فاصله بعد از بک‌اسلش
+    text = re.sub(r'\s+\\', r'\\', text)  # حذف فاصله قبل از بک‌اسلش
+    
+    # نرمال‌سازی matrix و aligned environments
+    text = re.sub(r'\\begin\s*\{\s*matrix\s*\}', r'\\begin{matrix}', text)
+    text = re.sub(r'\\end\s*\{\s*matrix\s*\}', r'\\end{matrix}', text)
+    text = re.sub(r'\\begin\s*\{\s*aligned\s*\}', r'\\begin{aligned}', text)
+    text = re.sub(r'\\end\s*\{\s*aligned\s*\}', r'\\end{aligned}', text)
+    
+    # حذف LaTeX tags برای مقایسه بهتر (اختیاری - فقط برای محاسبه شباهت)
+    text_for_comparison = re.sub(r'\$[^$]*\$', ' [MATH] ', text)
+    text_for_comparison = re.sub(r'\\[a-zA-Z]+\{[^}]*\}', ' [LATEX] ', text_for_comparison)
+    text_for_comparison = re.sub(r'\\[a-zA-Z]+', ' [CMD] ', text_for_comparison)
+    
+    # نرمال‌سازی کلمات فارسی متصل/جدا
+    # "بهصورت" و "به صورت"
+    text = re.sub(r'به\s*صورت', 'بهصورت', text)
+    text = re.sub(r'بصورت', 'بهصورت', text)
+    
+    # "درصورت" و "در صورت"
+    text = re.sub(r'در\s*صورت', 'درصورت', text)
+    
+    # "بهعنوان" و "به عنوان"
+    text = re.sub(r'به\s*عنوان', 'بهعنوان', text)
+    
+    # "درنظر" و "در نظر"
+    text = re.sub(r'در\s*نظر', 'درنظر', text)
+    
+    # حذف علامات نگارشی متداول
+    punctuation_chars = '،؛:؟!.;:?!()[]{}«»""\'`'
+    for char in punctuation_chars:
+        text = text.replace(char, '')
+    
+    # حذف فاصله‌های اضافی مجدد بعد از حذف علامات
+    text = re.sub(r'\s+', ' ', text.strip())
+    
+    # تبدیل ی/ي و ک/ك به حالت استاندارد
+    text = text.replace('ي', 'ی').replace('ك', 'ک')
+    
+    # حذف اعراب فارسی (اختیاری)
+    arabic_diacritics = 'َُِّْٰٱٲٳٴٵٶٷٸٹٺٻټٽپٿڀځڂڃڄڅچڇڈډڊڋڌڍڎڏڐڑڒړڔڕږڗژڙښڛڜڝڞڟڠڡڢڣڤڥڦڧڨکڪګڬڭڮگڰڱڲڳڴڵڶڷڸڹںڻڼڽھڿ'
+    for char in arabic_diacritics:
+        text = text.replace(char, '')
+    
     return text.lower()
 
 
-def find_question_by_text(question_text):
-    """پیدا کردن سوال بر اساس متن"""
+def test_normalization(text1, text2):
+    """تست نرمال‌سازی دو متن و نمایش تفاوت‌ها"""
+    print("=== تست نرمال‌سازی ===")
+    print(f"متن اول (اصلی): {text1[:100]}...")
+    print(f"متن دوم (اصلی): {text2[:100]}...")
+    print()
+    
+    norm1 = normalize_text(text1)
+    norm2 = normalize_text(text2)
+    
+    print(f"متن اول (نرمال): {norm1[:100]}...")
+    print(f"متن دوم (نرمال): {norm2[:100]}...")
+    print()
+    
+    similarity = calculate_similarity(norm1, norm2)
+    print(f"شباهت: {similarity:.2f}%")
+    
+    if norm1 == norm2:
+        print("✅ تطابق کامل!")
+    else:
+        print("❌ تطابق کامل نیست")
+        
+        # نمایش تفاوت‌ها
+        from difflib import unified_diff
+        diff = list(unified_diff(
+            norm1.splitlines(keepends=True),
+            norm2.splitlines(keepends=True),
+            fromfile='JSON',
+            tofile='DB',
+            lineterm=''
+        ))
+        if diff:
+            print("\nتفاوت‌ها:")
+            for line in diff[:10]:  # فقط 10 خط اول
+                print(line.rstrip())
+    
+    print("=" * 50)
+
+
+def calculate_similarity(text1, text2):
+    """محاسبه شباهت دو متن (0 تا 100)"""
+    from difflib import SequenceMatcher
+    return SequenceMatcher(None, text1, text2).ratio() * 100
+
+
+def find_question_by_text(question_text, similarity_threshold=85):
+    """پیدا کردن سوال بر اساس متن با قابلیت تطبیق تقریبی"""
     normalized_input = normalize_text(question_text)
     
-    # ابتدا جستجوی دقیق
-    for question in Question.objects.all():
-        if normalize_text(question.question_text) == normalized_input:
-            return question
-    
-    # اگر پیدا نشد، جستجوی تطبیقی
+    # مرحله 1: جستجوی دقیق
     for question in Question.objects.all():
         normalized_db = normalize_text(question.question_text)
-        if normalized_input in normalized_db or normalized_db in normalized_input:
-            return question
+        if normalized_db == normalized_input:
+            return question, 100  # تطابق کامل
     
-    return None
+    # مرحله 2: جستجوی تطبیقی با محاسبه شباهت
+    candidates = []
+    
+    for question in Question.objects.all():
+        normalized_db = normalize_text(question.question_text)
+        
+        # محاسبه شباهت
+        similarity = calculate_similarity(normalized_input, normalized_db)
+        
+        if similarity >= similarity_threshold:
+            candidates.append((question, similarity))
+    
+    # مرتب‌سازی بر اساس بیشترین شباهت
+    if candidates:
+        candidates.sort(key=lambda x: x[1], reverse=True)
+        best_match = candidates[0]
+        print(f"🔍 تطابق تقریبی پیدا شد با {best_match[1]:.1f}% شباهت")
+        return best_match[0], best_match[1]
+    
+    # مرحله 3: جستجوی بر اساس کلمات کلیدی (برای موارد شدیداً تغییر یافته)
+    input_words = set(normalized_input.split())
+    if len(input_words) < 3:  # اگر متن خیلی کوتاه باشد این مرحله را رد کن
+        return None, 0
+    
+    for question in Question.objects.all():
+        normalized_db = normalize_text(question.question_text)
+        db_words = set(normalized_db.split())
+        
+        # محاسبه درصد کلمات مشترک
+        if len(db_words) == 0:
+            continue
+            
+        common_words = input_words.intersection(db_words)
+        similarity = (len(common_words) / max(len(input_words), len(db_words))) * 100
+        
+        if similarity >= 70:  # حداقل 70% کلمات مشترک
+            print(f"🔍 تطابق بر اساس کلمات کلیدی پیدا شد با {similarity:.1f}% کلمات مشترک")
+            return question, similarity
+    
+    return None, 0
 
 
 def create_folder_hierarchy(folder_topics):
@@ -119,12 +246,18 @@ def get_json_files(path):
     return json_files
 
 
-def update_question_folders(path):
+def update_question_folders(path, similarity_threshold=85, debug_mode=False):
     """بروزرسانی فولدرهای سوالات از فایل یا پوشه JSON"""
     
     if not os.path.exists(path):
         print(f"❌ مسیر {path} یافت نشد!")
         return
+    
+    print(f"🎯 حد آستانه شباهت: {similarity_threshold}%")
+    if debug_mode:
+        print("🐛 حالت دیباگ فعال است")
+    print("   (برای تنظیم: python script.py path --threshold 80)")
+    print()
     
     # دریافت تمام فایل‌های JSON
     json_files = get_json_files(path)
@@ -159,12 +292,31 @@ def update_question_folders(path):
             continue
         
         # پیدا کردن سوال در دیتابیس
-        question = find_question_by_text(question_text)
-        
-        if not question:
+        result = find_question_by_text(question_text, similarity_threshold)
+        if result[0] is None:  # اگر سوال پیدا نشد
             print(f"❌ سوال {i}: پیدا نشد - {question_text[:50]}...")
+            if debug_mode:
+                print(f"   متن کامل: {question_text}")
+                # جستجوی محدود برای نمایش نزدیک‌ترین موارد
+                print("   🔍 نزدیک‌ترین موارد:")
+                candidates = []
+                for q in Question.objects.all()[:10]:  # فقط 10 سوال اول برای تست
+                    similarity = calculate_similarity(normalize_text(question_text), normalize_text(q.question_text))
+                    if similarity > 50:
+                        candidates.append((q, similarity))
+                candidates.sort(key=lambda x: x[1], reverse=True)
+                for q, sim in candidates[:3]:
+                    print(f"     - {sim:.1f}%: {q.question_text[:60]}...")
             not_found_count += 1
             continue
+        
+        question, similarity = result
+        if similarity < 100:
+            print(f"📝 سوال {i}: تطابق تقریبی با {similarity:.1f}% شباهت")
+            if debug_mode:
+                print(f"   JSON: {question_text[:80]}...")
+                print(f"   DB:   {question.question_text[:80]}...")
+                test_normalization(question_text, question.question_text)
         
         # استخراج فولدرها از topics
         source, publish_date, folder_topics = split_topics(item.get("topics", []))
@@ -206,17 +358,32 @@ def update_question_folders(path):
 
 if __name__ == "__main__":
     import sys
+    import argparse
     
-    if len(sys.argv) != 2:
-        print("❌ نحوه استفاده:")
-        print("python update_question_folders.py path/to/questions.json")
-        print("یا:")
-        print("python update_question_folders.py path/to/questions_folder/")
+    parser = argparse.ArgumentParser(description="بروزرسانی فولدرهای سوالات از فایل یا پوشه JSON")
+    parser.add_argument("path", help="مسیر فایل JSON یا پوشه حاوی فایل‌های JSON")
+    parser.add_argument("--threshold", "-t", type=int, default=85, 
+                       help="حد آستانه شباهت برای تطابق تقریبی (پیش‌فرض: 85)")
+    parser.add_argument("--debug", "-d", action="store_true",
+                       help="فعال‌سازی حالت دیباگ برای نمایش جزئیات بیشتر")
+    
+    # Parse arguments but also support old style for backwards compatibility
+    if len(sys.argv) == 2 and not sys.argv[1].startswith('-'):
+        # Old style: just path
+        path = sys.argv[1]
+        threshold = 85
+        debug_mode = False
+    elif len(sys.argv) >= 2:
+        args = parser.parse_args()
+        path = args.path
+        threshold = args.threshold
+        debug_mode = args.debug
+    else:
+        parser.print_help()
         print("\nمثال‌ها:")
         print("python update_question_folders.py data/50.json")
-        print("python update_question_folders.py data/questions/")
-        print("python update_question_folders.py C:\\Users\\Username\\Downloads\\questions\\")
+        print("python update_question_folders.py data/questions/ --threshold 80")
+        print("python update_question_folders.py \"C:\\Users\\Username\\Downloads\\questions\\\" -t 90 --debug")
         sys.exit(1)
     
-    path = sys.argv[1]
-    update_question_folders(path)
+    update_question_folders(path, threshold, debug_mode)
