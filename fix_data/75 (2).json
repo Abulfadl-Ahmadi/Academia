@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "اگر مقدار $x$ از دستگاه معادلات $\\left\\{ \\begin{aligned} & ax+y=7 \\\\ & 2x-by=14 \\\\ \\end{aligned} \\right.$ برابر 3 باشد، مقدار $a+b$ برابر کدام گزینه است؟ $(ab=5)$",
+    "options": [
+      "0",
+      "1",
+      "6",
+      "2-"
+    ],
+    "answer_index": 2,
+    "answer_text": "1",
+    "explanation": "$x=3$ را در دو معادله جایگذاری میکنیم: $\\left\\{ \\begin{aligned} & ax+y=7 \\\\ & 2x-by=14 \\\\ \\end{aligned} \\right.\\Rightarrow\\left\\{ \\begin{matrix} 3a+y=7 \\\\ 6-by=14 \\\\ \\end{matrix} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & 3a+y=7 \\\\ & by=-8\\Rightarrow y=-\\dfrac{8}{b} \\\\ \\end{aligned} \\right.$ $3a-\\dfrac{8}{b}=7\\xrightarrow{\\times b}3ab-7b-8=0\\xrightarrow{ab=5}\\left\\{ \\begin{aligned} & b=1 \\\\ & a=5 \\\\ \\end{aligned} \\right.\\Rightarrow a+b=6$"
+  }
+]

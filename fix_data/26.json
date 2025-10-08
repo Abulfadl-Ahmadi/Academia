@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "به ازای کدام مقدار m دستگاه $\\left[ \\begin{matrix} m+1 & 2 \\\\ m+1 & m-1 \\\\ \\end{matrix} \\right]\\left[ \\begin{aligned} & x \\\\ & y \\\\ \\end{aligned} \\right]=O$ جواب غیرصفر دارد؟",
+    "options": [
+      "هیچ مقدار m",
+      "1 و 3",
+      "$-1$ و $-3$",
+      "$-1$ و $3$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "چون ماتریس مقادیر معلوم $\\left[ \\begin{aligned} & 0 \\\\ & 0 \\\\ \\end{aligned} \\right]$ است، یعنی دستگاه حتماً جواب $\\left\\{ \\begin{aligned} & x=0 \\\\ & y=0 \\\\ \\end{aligned} \\right.$ را دارد. برای آنکه دستگاه جواب غیرصفر داشته باشد باید بیشمار جواب داشته باشد و این یعنی دترمینان ضرایب باید صفر شود؛ درنتیجه: $\\left( m+1 \\right)\\left( m-1 \\right)-2\\left( m+1 \\right)=0\\Rightarrow {{m}^{2}}-1-2m-2=0$ $\\Rightarrow {{m}^{2}}-2m-3=0\\Rightarrow \\left\\{ \\begin{aligned} & m=-1 \\\\ & m=3 \\\\ \\end{aligned} \\right.$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 2 \\\\ x & 3 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} -1 & y \\\\ 3 & 5 \\\\ \\end{matrix} \\right]$ و ${{A}^{2}}-{{B}^{2}}=\\left( A-B \\right)\\left( A+B \\right)$ ، آنگاه $xy$ کدام است؟",
+    "options": [
+      "$6$",
+      "9",
+      "12",
+      "$-4$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$6$",
+    "explanation": "اگر دو ماتریس $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} {{a}'} & {{b}'} \\\\ {{c}'} & {{d}'} \\\\ \\end{matrix} \\right]$ در شرط $AB=BA$ صدق کنند، داریم: $\\frac{{{b}}}{{{b}'}}=\\frac{{{c}}}{{{c}'}}=\\frac{{a}-{d}}{{a}'-{d}'}$ از اتحاد ${{A}^{2}}-{{B}^{2}}=\\left( A-B \\right)\\left( A+B \\right)$ نتیجه میگیریم ضرب دو ماتریس $A$ و $B$ تعویضپذیر است، پس: $B=\\left[ \\begin{matrix} -1 & y \\\\ 3 & 5 \\\\ \\end{matrix} \\right],A=\\left[ \\begin{matrix} 1 & 2 \\\\ x & 3 \\\\ \\end{matrix} \\right]\\Rightarrow \\dfrac{2}{y}=\\frac{x}{3}=\\dfrac{1-3}{-1-5}\\Rightarrow \\left\\{ \\begin{aligned} &y=6 \\\\ &x=1 \\\\ \\end{aligned} \\right.\\Rightarrow xy=6$"
+  }
+]

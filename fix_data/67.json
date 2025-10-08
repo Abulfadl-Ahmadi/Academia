@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "در دستگاه معادلات $\\left\\{ \\begin{aligned} &{{a}^{2}}x-2y=0 \\\\& x+y=b \\\\ \\end{aligned} \\right.$ دترمینان وارون ماتریس ضرایب برابر $\\dfrac{1}{6}$ میباشد. اگر جواب این دستگاه نقطه $\\left( 1,a \\right)$ باشد، مقدار $b$ کدام است؟",
+    "options": [
+      "$-1$",
+      "$\\pm 1$",
+      "$\\pm 3$",
+      "$3$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$3$",
+    "explanation": "$\\begin{aligned} & \\left| {{A}^{-1}} \\right|=\\dfrac{1}{6}\\Rightarrow \\left| A \\right|=6 \\\\ & \\left| \\begin{matrix} {{a}^{2}} & -2 \\\\ 1 & 1 \\\\ \\end{matrix} \\right|=6\\Rightarrow {{a}^{2}}+2=6\\Rightarrow a=\\pm 2 \\\\ & \\left[ \\begin{matrix} {{a}^{2}} & -2 \\\\ 1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} x \\\\ y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 \\\\ b \\\\ \\end{matrix} \\right]\\xrightarrow{a=2 }\\left[ \\begin{matrix} 4 & -2 \\\\ 1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 \\\\ 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 \\\\ b \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow \\left\\{ \\begin{aligned} &4-2\\times 2=0\\,\\,\\,\\, \\\\& 1+2=b\\Rightarrow b=3 \\\\ \\end{aligned} \\right. \\\\ \\end{aligned}$ $a=-2\\Rightarrow \\left[ \\begin{matrix} 4 & -2 \\\\ 1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 \\\\ -2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 \\\\ b \\\\ \\end{matrix} \\right]$ $\\Rightarrow 4+4=0\\,\\,\\,\\,\\times \\, \\text{غ.ق.ق}$."
+  }
+]

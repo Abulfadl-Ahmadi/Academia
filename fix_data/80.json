@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "فاصلۀ محل تلاقی خطوط به معادلات $\\left| \\begin{matrix} 0 & 2 & 4 \\\\ x & y & 1 \\\\ 2 & -1 & 2 \\\\ \\end{matrix} \\right|=0$ و $\\left| \\begin{matrix} 2 & y+1 \\\\ 4 & x \\\\ \\end{matrix} \\right|=0$ از مبدأ مختصات کدام است؟",
+    "options": [
+      "$\\sqrt{10}$",
+      "$\\dfrac{\\sqrt{5}}{2}$",
+      "$\\sqrt{5}$",
+      "$\\dfrac{\\sqrt{10}}{2}$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\dfrac{\\sqrt{5}}{2}$",
+    "explanation": "ابتدا با استفاده از دترمینان، معادلۀ خطوط دادهشده را پیدا میکنیم. $\\begin{aligned} & \\left| \\begin{matrix} 0 & 2 & 4 \\\\ x & y & 1 \\\\ 2 & -1 & 2 \\\\ \\end{matrix} \\right| \\begin{matrix} 0 & 2 \\\\ x & y \\\\ 2 & -1 \\\\ \\end{matrix} \\\\ & \\Rightarrow (0+4-4x)-(8y+0+4x)=0 \\\\ & \\Rightarrow -8y-8x=-4 \\Rightarrow y=-x+\\dfrac{1}{2} \\,\\,\\,(1)\\\\ & \\left| \\begin{matrix} 2 & y+1 \\\\ 4 & x \\\\ \\end{matrix} \\right|=0\\Rightarrow 2x-4y-4=0\\Rightarrow y=\\dfrac{x}{2}-1\\,\\,\\,\\,(2) \\\\ & \\xrightarrow{(1),(2)\\,\\text{تقاطع}} -x+\\dfrac{1}{2}=\\dfrac{x}{2}-1\\Rightarrow \\left\\{ \\begin{aligned} &x=1 \\\\& y=-\\dfrac{1}{2} \\\\ \\end{aligned} \\right. \\\\&\\Rightarrow \\text{فاصله از مبدأ}=\\sqrt{{{1}^{2}}+{{(-\\dfrac{1}{2})^{2}}}}=\\dfrac{\\sqrt{5}}{2} \\\\ \\end{aligned}$"
+  }
+]

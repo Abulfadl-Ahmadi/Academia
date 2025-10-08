@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر ${{A}_{3\\times 3}}$ ، وارونپذیر باشد و ${{A}^{2}}=3A$ آنگاه $\\left| A-I \\right|$ کدام است؟",
+    "options": [
+      "8",
+      "4",
+      "16",
+      "27"
+    ],
+    "answer_index": 1,
+    "answer_text": "8",
+    "explanation": "${{A}^{2}}=3A\\xrightarrow{\\times {{A}^{-1}}}{{A}^{2}}\\times {{A}^{-1}}=3A\\times {{A}^{-1}}\\Rightarrow A=3I$ $\\xrightarrow{-I}A-I=3I-I\\Rightarrow A-I=2I$ $\\xrightarrow{\\text{دترمینان}}\\left| A-I \\right|=\\left| 2I \\right|={{2}^{3}}\\times \\left| I \\right|=8$"
+  }
+]

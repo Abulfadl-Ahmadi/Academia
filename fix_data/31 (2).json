@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} a & -3 \\\\ b & -4 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 8 & -6 \\\\ 4 & c \\\\ \\end{matrix} \\right]$ و $AB$ یک ماتریس اسکالر باشد، حاصل $2a+b+c$ کدام است؟",
+    "options": [
+      "5",
+      "2",
+      "3-",
+      "اطلاعات کافی نیست"
+    ],
+    "answer_index": 2,
+    "answer_text": "2",
+    "explanation": "در ماتریس اسکالر درایههای قطر اصلی باهم برابر و بقیۀ درایهها صفر هستند. $\\begin{aligned} & A\\times B=\\left[ \\begin{aligned} & \\begin{matrix} a & -3 \\\\ \\end{matrix} \\\\ & \\begin{matrix} b & -4 \\\\ \\end{matrix} \\\\ \\end{aligned} \\right]\\left[ \\begin{aligned} & \\begin{matrix} 8 & -6 \\\\ \\end{matrix} \\\\ & \\begin{matrix} 4 & \\,\\,\\,\\,c \\\\ \\end{matrix} \\\\ \\end{aligned} \\right]=\\left[ \\begin{aligned} & \\begin{matrix} 8a-12 & -6a-3c \\\\ \\end{matrix} \\\\ & \\begin{matrix} 8b-16 & -6b-4c \\\\ \\end{matrix} \\\\ \\end{aligned} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & 8a-12=-6b-4c \\\\ & -6a-3c=0 \\\\ & 8b-16=0 \\\\ \\end{aligned} \\right. \\\\ & \\Rightarrow b=2\\Rightarrow \\left\\{ \\begin{aligned} & 8a-12=-12-4c\\Rightarrow c=-2a \\\\ & -6a-3c=0\\Rightarrow c=-2a \\\\ \\end{aligned} \\right.\\Rightarrow 2a+b+c=b=2 \\\\ \\end{aligned}$"
+  }
+]

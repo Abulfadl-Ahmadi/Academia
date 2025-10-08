@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "برای دو ماتریس $A=\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & a \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 0 & 1 \\\\ b & 0 \\\\ \\end{matrix} \\right]$ اگر فرض ${{\\left( A+B \\right)}^{2}}={{A}^{2}}+{{B}^{2}}$ برقرار باشد، حاصل $a+b$ کدام است؟",
+    "options": [
+      "2",
+      "$-1$",
+      "صفر",
+      "نادرستی فرض"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-1$",
+    "explanation": "باتوجهبه فرض و به کمک عبارت ${{\\left( A+B \\right)}^{2}}$ داریم: $\\begin{aligned} & {{\\left( A+B \\right)}^{2}}={{A}^{2}}+{{B}^{2}} \\\\ & {{\\left( A+B \\right)}^{2}}=\\left( A+B \\right)\\left( A+B \\right)={{A}^{2}}+AB+BA+{{B}^{2}} \\\\ & \\Rightarrow {{A}^{2}}+AB+BA+{{B}^{2}}={{A}^{2}}+{{B}^{2}}\\Rightarrow AB+BA=0 \\\\ & AB=\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & a \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & 1 \\\\ b & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} b & 0 \\\\ ab & 1 \\\\ \\end{matrix} \\right] \\\\ & BA=\\left[ \\begin{matrix} 0 & 1 \\\\ b & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & a \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & a \\\\ 0 & b \\\\ \\end{matrix} \\right] \\\\ & AB+BA=0\\Rightarrow \\left[ \\begin{matrix} b+1 & a \\\\ ab & b+1 \\\\ \\end{matrix} \\right]=0\\Rightarrow \\left\\{ \\begin{aligned} &b+1=0\\Rightarrow b=-1 \\\\ &a=0\\Rightarrow a+b=-1 \\\\ \\end{aligned} \\right. \\\\ \\end{aligned}$"
+  }
+]

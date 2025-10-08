@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & a \\\\ 1 & b \\\\ \\end{matrix} \\right]$ و ${{A}^{2}}=2A+3I$ ، حاصل $a+b$ کدام است؟",
+    "options": [
+      "$-5$",
+      "5",
+      "$-3$",
+      "3"
+    ],
+    "answer_index": 3,
+    "answer_text": "$-3$",
+    "explanation": "میدانیم اگر $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ آنگاه ${{A}^{2}}=\\left( a+d \\right)A-\\left( ad-bc \\right)I$. بنابراین با فرض $A=\\left[ \\begin{matrix} 2 & a \\\\ 1 & b \\\\ \\end{matrix} \\right]$ داریم: ${{A}^{2}}=\\left( 2+b \\right)A-\\left( 2b-a \\right)I$ با مقایسه با فرض داریم: $\\left\\{ \\begin{aligned} &2+b=2 \\\\& 2b-a=-3 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} b=0 \\\\ a=3 \\\\ \\end{aligned}\\Rightarrow a+b=3 \\right.$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر $A={{[i+j]}_{1\\times 3}}$ و $B={{[{{i}^{j}}]}_{2\\times 3}}$ و $C=\\left[ \\begin{matrix} A \\\\ B \\\\ \\end{matrix} \\right]$ ، آنگاه حاصلجمع درایههای روی قطر اصلی ماتریس C کدام است؟",
+    "options": [
+      "8",
+      "10",
+      "11",
+      "6"
+    ],
+    "answer_index": 3,
+    "answer_text": "11",
+    "explanation": "ابتدا ماتریس C را تشکیل میدهیم: $\\left \\{ \\begin{matrix} A=\\left[ \\begin{matrix} 2 & 3 & 4 \\\\ \\end{matrix} \\right] \\\\ \\\\ B=\\left[ \\begin{matrix} 1 & 1 & 1 \\\\ 2 & 4 & 8 \\\\ \\end{matrix} \\right] \\\\ \\end{matrix} \\right.\\,\\,\\,\\,\\,\\,\\Rightarrow C=\\left[ \\begin{matrix} 2 & 3 & 4 \\\\ 1 & 1 & 1 \\\\ 2 & 4 & 8 \\\\ \\end{matrix} \\right]\\Rightarrow 2+1+8=11$"
+  }
+]

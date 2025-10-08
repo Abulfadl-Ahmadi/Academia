@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $\\left[ \\begin{matrix} 1 & -1 & 1 \\\\ -1 & 1 & -1 \\\\ 1 & -1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} m & 0 & m \\\\ 1 & 1 & 1 \\\\ n & n & n \\\\ \\end{matrix} \\right]=0$ ، کدام ماتریس اسکالر است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} m & n \\\\ n & m \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 1-m & 1-n \\\\ 1-n & 1-m \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} m+1 & n \\\\ n & m+1 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 1+n & m+1 \\\\ m+1 & 1+n \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "در ماتریس اسکالر درایههای قطر اصلی برابرند و بقیۀ درایهها برابر صفر هستند. در ماتریس صفر تمام درایهها صفرند: $\\left[ \\begin{matrix} 1 & -1 & 1 \\\\ -1 & 1 & -1 \\\\ 1 & -1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} m & 0 & m \\\\ 1 & 1 & 1 \\\\ n & n & n \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} m+n-1 & -1+n & m+n-1 \\\\ -m-n+1 & 1-n & -m-n+1 \\\\ m+n-1 & -1+n & m+n-1 \\\\ \\end{matrix} \\right]=0\\Rightarrow \\left\\{ \\begin{matrix} m=0 \\\\ n=1 \\\\ \\end{matrix} \\right.$ بنابراین تنها گزینۀ 2 ماتریس اسکالر است."
+  }
+]

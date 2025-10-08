@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد - حمیدرضا پردازی مقدم",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & -5 \\\\ 1 & -3 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 5 & -4 \\\\ -1 & 2 \\\\ \\end{matrix} \\right]$ باشند، مجموع درایههای ماتریس $2{{A}^{-1}}+3{{B}^{-1}}$ کدام است؟",
+    "options": [
+      "2",
+      "7",
+      "صفر",
+      "7-"
+    ],
+    "answer_index": 3,
+    "answer_text": "صفر",
+    "explanation": "معکوس ماتریسهای دادهشده و درنهایت حاصل عبارت خواستهشده را به دست میآوریم: $\\begin{aligned} & A=\\left[ \\begin{matrix} 2 & -5 \\\\ 1 & -3 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{-1}}=\\dfrac{1}{-6-(-5)}\\left[ \\begin{matrix} -3 & 5 \\\\ -1 & 2 \\\\ \\end{matrix} \\right]=-\\left[ \\begin{matrix} -3 & 5 \\\\ -1 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & -5 \\\\ 1 & -2 \\\\ \\end{matrix} \\right] \\\\ & B=\\left[ \\begin{matrix} 5 & -4 \\\\ -1 & 2 \\\\ \\end{matrix} \\right]\\Rightarrow {{B}^{-1}}=\\dfrac{1}{10-(4)}\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 5 \\\\ \\end{matrix} \\right]=\\dfrac{1}{6}\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 5 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ بنابراین حاصل عبارت مسئله برابر است با: $\\begin{aligned} & 2{{A}^{-1}}+3{{B}^{-1}}=2\\left[ \\begin{matrix} 3 & -5 \\\\ 1 & -2 \\\\ \\end{matrix} \\right]+3(\\dfrac{1}{6})\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 5 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 6 & -10 \\\\ 2 & -4 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 1 & 2 \\\\ 0/5 & 2/5 \\\\ \\end{matrix} \\right] \\\\ & =\\left[ \\begin{matrix} 7 & -8 \\\\ 2/5 & -1/5 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ که مجموع درایههای آن برابر صفر است."
+  }
+]

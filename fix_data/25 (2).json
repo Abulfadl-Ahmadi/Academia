@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "ماتریسهای ${{A}_{2\\times 2}}$ و $B=\\left[ \\begin{matrix} -2 & 1 \\\\ 3 & -1 \\\\ \\end{matrix} \\right]$ مفروضاند. اگر $A+B=AB$ باشد، مجموع درایههای ماتریس $A$ کدام است؟",
+    "options": [
+      "صفر",
+      "$-1$",
+      "1",
+      "$-2$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-1$",
+    "explanation": "اولاً چون $|B|\\,=-1\\cancel{=} 0$ است، ماتریس $B$ وارونپذیر است. حال ماتریس ${{B}^{-1}}$ را در طرفین تساوی ضرب میکنیم: $(A+B){{B}^{-1}}=(AB){{B}^{-1}}\\Rightarrow A{{B}^{-1}}+I=A\\Rightarrow I=A-A{{B}^{-1}}\\Rightarrow I=A(I-{{B}^{-1}})\\Rightarrow {{A}^{-1}}=I-{{B}^{-1}}$ همچنین داریم: ${{B}^{-1}}=\\dfrac{1}{\\left| B \\right|}\\left[ \\begin{matrix} -1 & -1 \\\\ -3 & -2 \\\\ \\end{matrix} \\right]=\\dfrac{1}{-1}\\left[ \\begin{matrix} -1 & -1 \\\\ -3 & -2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]$ بنابراین: ${{A}^{-1}}=I-{{B}^{-1}}=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & -1 \\\\ -3 & -1 \\\\ \\end{matrix} \\right]$ $\\xrightarrow{A=\\,{{({{A}^{-1}})}^{-1}}}\\,A=-\\dfrac{1}{3}\\left[ \\begin{matrix} -1 & 1 \\\\ 3 & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\dfrac{1}{3} & -\\dfrac{1}{3} \\\\ -1 & 0 \\\\ \\end{matrix} \\right]$ $\\Rightarrow A\\,\\text{مجموع درایههای }=\\dfrac{1}{3}+(-\\dfrac{1}{3})+(-1)+0=-1$"
+  }
+]

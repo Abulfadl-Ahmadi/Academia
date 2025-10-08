@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} a & b & c \\\\ d & e & f \\\\ 2 & 2 & 2 \\\\ \\end{matrix} \\right]$ وارونپذیر نباشد، حاصل عبارت $ae+bf+cd$ با کدام گزینه برابر است؟",
+    "options": [
+      "$2\\left( ce+af+bd \\right)$",
+      "$2\\left( cf+be+ad \\right)$",
+      "$cf+be+ad$",
+      "$ce+af+bd$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$ce+af+bd$",
+    "explanation": "این سؤال با دستور ساروس سریعتر حل میشود. $2ae+2bf+2cd-\\left( 2ce+2af+2bd \\right)=0$ $\\Rightarrow ae+bf+cd=ce+af+bd$"
+  }
+]

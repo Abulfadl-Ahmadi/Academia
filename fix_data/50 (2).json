@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]$ ، آنگاه ${{A}^{3}}$ با کدام عبارت برابر است؟",
+    "options": [
+      "$3A-I$",
+      "$5A+2I$",
+      "$A-4I$",
+      "$2A-3I$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$5A+2I$",
+    "explanation": "برای هر ماتریس مربعی مرتبۀ 2 داریم: $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{2}}=\\left( a+d \\right)A-\\left( ad-bc \\right)I$ بنابراین برای ماتریس $A$ میتوان نوشت: $A=\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{2}}=2A+I\\Rightarrow {{A}^{3}}=A\\left( 2A+I \\right)=2{{A}^{2}}+A=2\\left( 2A+I \\right)+A=5A+2I$"
+  }
+]

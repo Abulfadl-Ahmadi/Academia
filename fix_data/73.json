@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر برای ماتریس $A$ داشته باشیم $A+{{A}^{-1}}=8{{I}_{2}}$ ، ماتریس $A$ کدام میتواند باشد؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 3 & 4 \\\\ 4 & 5 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & 3 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 7 & 3 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 4 & 3 \\\\ 2 & 4 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "روش اول: تست گزینهها: گزینۀ 3: ${{A}^{-1}}=\\frac{1}{7-6}\\left[ \\begin{matrix} 1 & -3 \\\\ -2 & 7 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -3 \\\\ -2 & 7 \\\\ \\end{matrix} \\right]$ ${{A}^{-1}}=\\dfrac{1}{7-6}\\left[ \\begin{matrix} 1 & -3 \\\\ -2 & 7 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -3 \\\\ -2 & 7 \\\\ \\end{matrix} \\right]\\Rightarrow A+{{A}^{-1}}$ روش دوم: رابطۀ کیلی- همیلتون: اگر $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ باشد: ${{A}^{2}}-\\left( a+d \\right)A+\\left| A \\right|I=\\bar{O}$ $A+{{A}^{-1}}=8I\\xrightarrow{\\times A}{{A}^{2}}-8A+I=0\\Rightarrow \\left\\{ \\begin{matrix} a+d=8 \\\\ \\left| A \\right|=1\\,\\, \\\\ \\end{matrix} \\right.$ که این موضوع فقط در گزینۀ 3 دیده میشود."
+  }
+]

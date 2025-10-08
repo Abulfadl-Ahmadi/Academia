@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سولماز احمدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر برای ماتریس $A$ ، $B$ و $C$ داشته باشیم، $A=B+C$ ، حاصل ${{A}^{2}}+{{B}^{2}}-A\\times B-B\\times A$ کدام است؟",
+    "options": [
+      "$-{{C}^{2}}$",
+      "${{C}^{2}}$",
+      "$\\overline{O}$",
+      "$C$"
+    ],
+    "answer_index": 2,
+    "answer_text": "${{C}^{2}}$",
+    "explanation": "$\\begin{aligned} & {{A}^{2}}+{{B}^{2}}-A\\times B-B\\times A={{A}^{2}}-A\\times B+{{B}^{2}}-B\\times A \\\\ & =A\\times (A-B)+B\\times (B-A)=A\\times (A-B)-B\\times (A-B) \\\\ & =(A-B)\\times (A-B)={{(A-B)}^{2}} \\\\ \\end{aligned}$ چون $A-B=C\\Leftarrow A=B+C$ ، بنابراین: ${{A}^{2}}+{{B}^{2}}-A\\times B-B\\times A={{(A-B)}^{2}}={{C}^{2}}$"
+  }
+]

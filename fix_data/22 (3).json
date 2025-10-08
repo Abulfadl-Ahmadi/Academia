@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "دترمینان ماتریس $\\left[ \\begin{matrix} {{\\cos }^{2}}a & \\cos 2a & {{\\sin }^{2}}a \\\\ {{\\cos }^{2}}b & \\cos 2b & {{\\sin }^{2}}b \\\\ {{\\cos }^{2}}c & \\cos 2c & {{\\sin }^{2}}c \\\\ \\end{matrix} \\right]$ با دترمینان کدام ماتریس برابر است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 1 & 0 & 3 \\\\ 0 & 1 & 2 \\\\ 2 & 3 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 2 & 0 & 3 \\\\ 3 & 4 & 0 \\\\ 0 & 1 & 2 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & -2 & 3 \\\\ 2 & 0 & 1 \\\\ -3 & -1 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 2 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 3 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "با عددگذاری دترمینان ماتریس دادهشده را محاسبه میکنیم: $a=0\\,,\\,b=90\\,,\\,c=90\\Rightarrow \\left| \\begin{matrix} 1 & 1 & 0 \\\\ 0 & -1 & 1 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right|=1(-1)^{1+1}\\left| \\begin{matrix} -1 & 1 \\\\ -1 & 1 \\\\ \\end{matrix} \\right|=1(-1+1)=0$ در گزینۀ 3 داریم: $\\left| \\begin{matrix} 0 & -2 & 3 \\\\ 2 & 0 & 1 \\\\ -3 & -1 & 0 \\\\ \\end{matrix} \\right|=-2(-1)^{1+2}\\left| \\begin{matrix} 2 & 1 \\\\ -3 & 0 \\end{matrix} \\right|+3(-1)^{1+3}\\left| \\begin{matrix} 2 & 0 \\\\ -3 & -1 \\end{matrix} \\right|$ $=2(0-(-3))+3(-2-0)=6-6=0$ در بقیه گزینهها دترمینان برابر با صفر نمیشود."
+  }
+]

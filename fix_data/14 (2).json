@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "اگر دستگاه $\\left\\{ \\begin{aligned} & mx+(2-m)y=4+{{m}^{2}} \\\\ & mx+(2m-1)y=m-2 \\\\ \\end{aligned} \\right.$ بیشمار جواب داشته باشد، دستگاه $\\left\\{ \\begin{aligned} & (m+1)x+(m-3)y=m \\\\ & (m+2)x+(5m-6)y={{m}^{2}} \\\\ \\end{aligned} \\right.$ چند جواب دارد؟",
+    "options": [
+      "صفر",
+      "بیشمار",
+      "صفر یا بیشمار",
+      "یک یا بیشمار"
+    ],
+    "answer_index": 2,
+    "answer_text": "بیشمار",
+    "explanation": "چون دستگاه اول بیشمار جواب دارد، اولاً دترمینان ماتریس ضرایب آن صفر است و داریم: $\\begin{aligned} & \\left| \\begin{matrix} m & 2-m \\\\ m & 2m-1 \\\\ \\end{matrix} \\right|=0\\Rightarrow m(2m-1)-m(2-m)=0 \\\\ & \\Rightarrow m(3m-3)=0\\Rightarrow m=0\\,\\text{ یا }\\,m=1 \\\\ \\end{aligned}$ $\\left. \\begin{aligned} & m=0\\Rightarrow \\left\\{ \\begin{aligned} & 2y=4 \\\\ & -y=-2 \\\\ \\end{aligned} \\right.\\Rightarrow \\text{ بیشمار جواب } \\\\ & m=1\\Rightarrow \\left\\{ \\begin{aligned} & x+y=5 \\\\ & x+y=-1 \\\\ \\end{aligned} \\right.\\Rightarrow \\text{ فاقد جواب } \\\\ \\end{aligned} \\right\\}\\,\\xrightarrow{\\text{ فرض }}\\,m=0$ حال با جایگذاری $m=0$ در دستگاه دوم، داریم: $\\left\\{ \\begin{aligned} & x-3y=0 \\\\ & 2x-6y=0 \\\\ \\end{aligned} \\right.\\Rightarrow \\text{ بیشمار جواب }$"
+  }
+]

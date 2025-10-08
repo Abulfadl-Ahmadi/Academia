@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$ آنگاه مجموع درایههای ماتریس $A{{\\left( A-I \\right)}^{2}}$ کدام است؟",
+    "options": [
+      "4",
+      "6",
+      "8",
+      "10"
+    ],
+    "answer_index": 1,
+    "answer_text": "4",
+    "explanation": "ماتریس $\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$ را میتوان به صورت $2I$ نوشت، بنابراین: $A{{\\left( A-I \\right)}^{2}}=2I{{\\left( I \\right)}^{2}}=2I=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]\\Rightarrow \\text{جمع درایهها }=4$"
+  }
+]

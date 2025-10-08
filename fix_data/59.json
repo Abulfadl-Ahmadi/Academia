@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "اگر سه خط ${{L}_{1}}:\\,x+2y=3$ ، ${{L}_{2}}:x+y=10$ و ${{L}_{3}}:ax-4y=-6$ همرس باشند، دو خط $\\Delta :\\,ax+y=3$ و ${\\Delta }':(2-a)x-\\left( a+1 \\right)y=1$ نسبت به هم، چه وضعیتی دارند؟",
+    "options": [
+      "متقاطع",
+      "منطبق",
+      "موازی و متمایز",
+      "موازی یا منطبق"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "اولاً چون سه خط ${{L}_{1}}$ ، ${{L}_{2}}$ و ${{L}_{3}}$ همرساند، محل برخورد ${{L}_{1}}$ و ${{L}_{2}}$ ، روی ${{L}_{3}}$ هم قرار دارد و داریم: $\\begin{aligned} & \\left\\{ \\begin{matrix} x+2y=3 \\\\ x+y=10 \\\\ \\end{matrix}\\Rightarrow \\left\\{ \\begin{matrix} x=17 \\\\ y=-7 \\\\ \\end{matrix}\\xrightarrow{{{L}_{3}}\\,\\text{جایگذاری در}} \\right. 17a+28=-6 \\right. \\\\ & \\Rightarrow 17a=-34\\Rightarrow a=-2\\Rightarrow \\Delta :\\,-2x+y=3\\,\\,,\\,\\,{\\Delta }':4x+y=1 \\\\ & \\xrightarrow{\\frac{-2}{4}\\cancel{=} \\frac{1}{1}}\\text{متقاطعاند}\\,{\\Delta }',\\Delta \\\\ \\end{aligned}$"
+  }
+]

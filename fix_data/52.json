@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} -1 & 2 \\\\ 2 & 0 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} a & b+1 \\\\ -1 & \\frac{1}{2} \\\\ \\end{matrix} \\right]$ و $A+2B$ ماتریس همانی باشد، حاصل $ab$ کدام است؟",
+    "options": [
+      "2",
+      "2-",
+      "صفر",
+      "1"
+    ],
+    "answer_index": 1,
+    "answer_text": "2",
+    "explanation": "$A+2B=\\left[ \\begin{matrix} -1 & 2 \\\\ 2 & 0 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 2a & 2b+2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2a-1 & 2b+4 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & 2a-1=1\\Rightarrow a=1 \\\\ & 2b+4=0\\Rightarrow b=-2 \\\\ \\end{aligned} \\right.\\Rightarrow ab=-2$"
+  }
+]

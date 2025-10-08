@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سولماز احمدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 2 \\\\ 1 & -1 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 3 & 2 \\\\ 6 & 5 \\\\ \\end{matrix} \\right]$ ، آنگاه حاصل $\\dfrac{|{{A}^{2}}+A\\times B|}{|{{B}^{2}}+B\\times A|}$ کدام است؟",
+    "options": [
+      "1",
+      "1-",
+      "2",
+      "$-\\dfrac{1}{2}$"
+    ],
+    "answer_index": 1,
+    "answer_text": "1",
+    "explanation": "$\\begin{aligned} & \\dfrac{|{{A}^{2}}+A\\times B|}{|{{B}^{2}}+B\\times A|}=\\dfrac{|A\\times (A+B)|}{|B\\times (B+A)|}=\\dfrac{|A|\\cancel{|A+B|}}{|B|\\cancel{|B+ A|}}=\\dfrac{|A|}{|B|} \\\\ & A=\\left[ \\begin{matrix} 1 & 2 \\\\ 1 & -1 \\\\ \\end{matrix} \\right]\\Rightarrow |A|=-3 \\\\ & B=\\left[ \\begin{matrix} 3 & 2 \\\\ 6 & 5 \\\\ \\end{matrix} \\right]\\Rightarrow |B|=3 \\\\ & \\Rightarrow \\dfrac{|{{A}^{2}}+A\\times B|}{|{{B}^{2}}+B\\times A|}=\\dfrac{-3}{3}=-1 \\\\ \\end{aligned}$"
+  }
+]

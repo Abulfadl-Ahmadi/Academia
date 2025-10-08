@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "مجید قهرمانی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 1 & -2 \\\\ 3 & -a & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 & 2 \\\\ -3 & b \\\\ 2b & -1 \\\\ \\end{matrix} \\right]$ ماتریس قطری باشد، دترمینان وارون ماتریس A کدام گزینه است؟",
+    "options": [
+      "$-100$",
+      "1000",
+      "$\\dfrac{1}{1000}$",
+      "$\\dfrac{1}{100}$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$\\dfrac{1}{1000}$",
+    "explanation": "$A=\\left[ \\begin{matrix} 4-3-4b & 4+b+2 \\\\ 6+3a+4b & 6-ab-2 \\\\ \\end{matrix} \\right]$ $\\text{شرط قطری بودن}:\\left\\{ \\begin{aligned} & 4+b+2=0\\Rightarrow b=-6 \\\\ & 6+3a+4b=0\\Rightarrow a=6 \\\\ \\end{aligned} \\right.$ $\\Rightarrow A=\\left[ \\begin{matrix} 25 & 0 \\\\ 0 & 40 \\\\ \\end{matrix} \\right]\\Rightarrow |A|=1000\\Rightarrow |{{A}^{-1}}|=\\dfrac{1}{1000}$"
+  }
+]

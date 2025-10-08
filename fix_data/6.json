@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد - حمیدرضا پردازی مقدم",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "برای دو ماتریس $A=\\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]$ میدانیم $AB=BA$ است. مقدار $x+y$ کدام است؟",
+    "options": [
+      "1",
+      "1-",
+      "2",
+      "2-"
+    ],
+    "answer_index": 1,
+    "answer_text": "1",
+    "explanation": "ابتدا دو ماتریس $AB$ و $BA$ را به دست میآوریم و سپس آنها را باهم برابر قرار میدهیم: $AB=\\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 6+x & 15+xy \\\\ 0 & 2y-5 \\\\ \\end{matrix} \\right]$ $BA=\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 2x+10 \\\\ 3-y & x+2y \\\\ \\end{matrix} \\right]$ ازآنجاکه $AB=BA$ است، بنابراین $6+x=1$ و درنتیجه $x=-5$. با برابر قرار دادن درایۀ سطر دوم و ستون اول ماتریسها داریم: $3-y=0\\Rightarrow y=3$ بنابراین $x+y=-5+3=-2$ است."
+  }
+]

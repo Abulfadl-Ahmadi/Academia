@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "ماتریسهای $A-B$ و $2A+3B$ به ترتیب $\\left[ \\begin{matrix} 2 & 3 \\\\ 3 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]$ و $\\left[ \\begin{matrix} 4 & 1 \\\\ 6 & 2 \\\\ 15 & 18 \\\\ \\end{matrix} \\right]$ میباشند. ماتریس $C=[A:B]$ مفروض است. مجموع درایههای ستون اول و سطر آخر ماتریس $C$ کدام است؟ ( $C=[A:B]$ : از کنار هم قراردادن ماتریسهای A و B ماتریس C حاصل میشود)",
+    "options": [
+      "20",
+      "15",
+      "11",
+      "26"
+    ],
+    "answer_index": 2,
+    "answer_text": "15",
+    "explanation": "چون ماتریسهای $A-B$ و $2A+3B$ را داریم، پس با استفاده از حل دستگاه 2 معادله 2 مجهولی $A$ و $B$ را محاسبه میکنیم. برای این منظور ابتدا 3 برابر ماتریس $A-B$ را مییابیم، پس: $3(A-B)=3\\left[ \\begin{matrix} 2 & 3 \\\\ 3 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]\\Rightarrow 3A-3B=\\left[ \\begin{matrix} 6 & 9 \\\\ 9 & 3 \\\\ 15 & 12 \\\\ \\end{matrix} \\right]$ $\\,\\left\\{ \\begin{matrix} 3A-3B=\\left[ \\begin{matrix} 6 & 9 \\\\ 9 & 3 \\\\ 15 & 12 \\\\ \\end{matrix} \\right] \\\\ 2A+3B=\\left[ \\begin{matrix} 4 & 1 \\\\ 6 & 2 \\\\ 15 & 18 \\\\ \\end{matrix} \\right] \\\\ \\end{matrix} \\right.\\xrightarrow{\\text{ جمع طرفین ماتریسها }}\\,5A=\\left[ \\begin{matrix} 6 & 9 \\\\ 9 & 3 \\\\ 15 & 12 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 4 & 1 \\\\ 6 & 2 \\\\ 15 & 18 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 10 & 10 \\\\ 15 & 5 \\\\ 30 & 30 \\\\ \\end{matrix} \\right]$ پس ماتریس $A=\\left[ \\begin{matrix} 2 & 2 \\\\ 3 & 1 \\\\ 6 & 6 \\\\ \\end{matrix} \\right]$ ، پس باید ماتریس $B$ را بیابیم، چون: $A-B=\\left[ \\begin{matrix} 2 & 3 \\\\ 3 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]\\Rightarrow B=A-\\left[ \\begin{matrix} 2 & 3 \\\\ 3 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]$ پس: $B=\\left[ \\begin{matrix} 2 & 2 \\\\ 3 & 1 \\\\ 6 & 6 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 2 & 3 \\\\ 3 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & -1 \\\\ 0 & 0 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]$ $C=[A:B]\\Rightarrow {{C}_{3\\times 4}}=\\left[ \\begin{matrix} 2 & 2 & 0 & -1 \\\\ 3 & 1 & 0 & 0 \\\\ 6 & 6 & 1 & 2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow {C}\\,\\text{مجموع درایههای ستون اول }\\,+\\,{C}\\,\\text{مجموع درایههای سطر آخر} =11+15=26$"
+  }
+]

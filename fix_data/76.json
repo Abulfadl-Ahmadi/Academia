@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A+I=\\left[ \\begin{matrix} -\\left| A \\right| & 1 \\\\ \\left| A \\right| & 2 \\\\ \\end{matrix} \\right]$ باشد، حاصل دترمینان ماتریس $-3{{A}^{2}}$ کدام است؟",
+    "options": [
+      "1",
+      "$-1$",
+      "3",
+      "$\\dfrac{-1}{3}$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$\\dfrac{-1}{3}$",
+    "explanation": "$A=\\left[ \\begin{matrix} -\\left| A \\right| & 1 \\\\ \\left| A \\right| & 2 \\\\ \\end{matrix} \\right]-I=\\left[ \\begin{matrix} -\\left| A \\right|-1 & 1 \\\\ \\left| A \\right| & 1 \\\\ \\end{matrix} \\right]$ از طرفین دترمینان میگیریم: $\\left| A \\right|=-\\left| A \\right|-1-\\left| A \\right|\\Rightarrow 3\\left| A \\right|=-1\\Rightarrow \\left| A \\right|=\\dfrac{-1}{3}$ وقتی عدد از دترمینان خارج شود، به توان مرتبۀ ماتریس میرسد. $\\left| -3{{A}^{2}} \\right|={{\\left( -3 \\right)}^{2}}{{\\left| A \\right|}^{2}}=9\\times {{(-\\dfrac{1}{3})}^{2}}=1$"
+  }
+]

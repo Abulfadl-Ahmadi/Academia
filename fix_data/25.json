@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "دو دستگاه $\\left\\{ \\begin{aligned} & 2x+ay=5 \\\\ & x+y=1 \\\\ \\end{aligned} \\right.$ و $\\left\\{ \\begin{aligned} & -3x+2y=-4 \\\\ & bx-3y=-1 \\\\ \\end{aligned} \\right.$ جوابهای یکسان دارند. ab کدام است؟",
+    "options": [
+      "$\\dfrac{11}{3}$",
+      "$\\dfrac{52}{3}$",
+      "$-\\dfrac{13}{3}$",
+      "$\\dfrac{-64}{3}$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\dfrac{52}{3}$",
+    "explanation": "ازآنجاکه جوابهای هر دو دستگاه یکسان است، ابتدا دو معادلهای که مجهول a و b ندارند را حل میکنیم که مقادیر x و y را پیدا کنیم، سپس با جایگذاری در معادلههای دیگر، a و b را محاسبه میکنیم. $\\begin{aligned} & \\left\\{ \\begin{matrix} -3x+2y=-4 \\\\ x+y=1\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix} \\right.\\Rightarrow \\underline{\\left\\{ \\begin{matrix} -3x+2y=-4 \\\\ 3x+3y=3\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix} \\right.} \\\\ & \\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,5y=-1\\Rightarrow y=\\frac{-1}{5} \\\\ \\end{aligned}$ $x+y=1\\xrightarrow{y=-\\frac{1}{5}}x-\\dfrac{1}{5}=1\\Rightarrow x=\\dfrac{6}{5}$ $2x+ay=5\\Rightarrow 2\\times \\dfrac{6}{5}+a(-\\dfrac{1}{5})=5\\Rightarrow 12-a=25\\Rightarrow a=-13$ $bx-3y=-1\\Rightarrow b\\times \\dfrac{6}{5}-3(-\\dfrac{1}{5})=-1\\Rightarrow 6b+3=-5$ $\\Rightarrow 6b=-8\\Rightarrow b=-\\dfrac{8}{6}=-\\dfrac{4}{3}\\Rightarrow ab=\\dfrac{52}{3}$"
+  }
+]

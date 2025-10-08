@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "در معادله $\\left| \\begin{matrix} 2 & x & 1 \\\\ 4 & 2 & 2 \\\\ x & 3 & 3 \\\\ \\end{matrix} \\right|=0$ ، حاصلضرب ریشهها کدام است؟",
+    "options": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "answer_index": 1,
+    "answer_text": "6",
+    "explanation": "$\\text{ سطر اول }:\\,\\left| \\begin{matrix} 2 & x & 1 \\\\ 4 & 2 & 2 \\\\ x & 3 & 3 \\\\ \\end{matrix} \\right|=2(0)-x(12-2x)+(12-2x)=0$ $\\begin{aligned} & \\Rightarrow 2{{x}^{2}}-14x+12=0\\Rightarrow {{x}^{2}}-7x+6=0 \\\\ & \\Rightarrow (x-6)(x-1)=0\\Rightarrow x=1,6\\Rightarrow 1\\times 6=6 \\\\ \\end{aligned}$"
+  }
+]

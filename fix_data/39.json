@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "در دستگاه معادلات $\\left\\{ \\begin{aligned} & ax+by=f \\\\ & cx+dy=1 \\\\ \\end{aligned} \\right.$ معکوس ماتریس ضرایب مجهول بهصورت $\\left[ \\begin{matrix} -1 & 0 \\\\ 2 & -1 \\\\ \\end{matrix} \\right]$ است. اگر $y=5$ باشد آنگاه مقدار $x$ کدام است؟",
+    "options": [
+      "$-2$",
+      "$-3$",
+      "$-1$",
+      "$-4$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-3$",
+    "explanation": "$AX=B\\xrightarrow{\\times {{A}^{-1}}}X={{A}^{-1}}\\times B\\Rightarrow \\left[ \\begin{matrix} x \\\\ y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -1 & 0 \\\\ 2 & -1 \\\\ \\end{matrix} \\right]\\left[ \\begin{aligned} & f \\\\ & 1 \\\\ \\end{aligned} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & x=-f \\\\ & y=2f-1\\xrightarrow{y=5}5=2f-1\\Rightarrow f=3 \\\\ \\end{aligned} \\right. \\Rightarrow x=-3$"
+  }
+]

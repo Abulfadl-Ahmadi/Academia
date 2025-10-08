@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "ماتریسهای $A={{[2i-3j]}_{2\\times 2}}$ و $B=\\left[ \\begin{matrix} a-1 & b \\\\ 2c & 2{{d}^{3}} \\\\ \\end{matrix} \\right]$ باهم برابرند. در این صورت $\\dfrac{a+d}{b+c}$ برابر با کدام است؟",
+    "options": [
+      "$\\dfrac{3}{5}$",
+      "$-\\dfrac{2}{7}$",
+      "$\\dfrac{2}{7}$",
+      "$-\\dfrac{3}{5}$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$\\dfrac{2}{7}$",
+    "explanation": "$A=\\left[ \\begin{matrix} -1 & -4 \\\\ 1 & -2 \\\\ \\end{matrix} \\right]\\,\\,\\,\\,,\\,\\,\\,\\,B=\\left[ \\begin{matrix} a-1 & b \\\\ 2c & 2{{d}^{3}} \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & -1=a-1\\Rightarrow a=0 \\\\ & -4=b \\\\ & 1=2c\\Rightarrow c=\\dfrac{1}{2} \\\\ & 2{{d}^{3}}=-2\\Rightarrow d=-1 \\\\ \\end{aligned} \\right.$ $\\Rightarrow \\dfrac{a+d}{b+c}=\\dfrac{0-1}{-4+\\dfrac{1}{2}}=\\dfrac{-1}{-\\dfrac{7}{2}}=\\dfrac{2}{7}$"
+  }
+]

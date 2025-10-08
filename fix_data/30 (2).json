@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A$ یک ماتریس وارونپذیر از مرتبۀ $3\\times 3$ باشد که $\\,\\left| 2{{A}^{-1}} \\right|A=4I$ ، آنگاه حاصل $\\left| {{A}^{-1}} \\right|$ کدام است؟",
+    "options": [
+      "$\\sqrt{2}$",
+      "2",
+      "4",
+      "$\\dfrac{\\sqrt{2}}{4}$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$\\dfrac{\\sqrt{2}}{4}$",
+    "explanation": "میدانیم اگر ضریبی از دترمینان خارج شود به توان مرتبه میرسد. $\\begin{aligned} & {{A}_{n\\times n}}\\Rightarrow \\left| kA \\right|={{k}^{n}}\\left| A \\right| \\\\ & \\left| 2{{A}^{-1}} \\right|A=4I\\Rightarrow {{2}^{3}}\\left| {{A}^{-1}} \\right|A=4I\\Rightarrow 2\\left| {{A}^{-1}} \\right|A=I \\\\ & \\Rightarrow \\left| 2\\left| {{A}^{-1}} \\right|A \\right|=\\left| I \\right|\\Rightarrow {{2}^{3}}{{\\left| {{A}^{-1}} \\right|}^{3}}\\left| A \\right|=1\\Rightarrow {{2}^{3}}\\dfrac{1}{{{\\left| A \\right|}^{3}}}\\left| A \\right|=1 \\\\ & \\Rightarrow {{\\left| A \\right|}^{2}}={{2}^{3}}\\Rightarrow \\left| A \\right|=2\\sqrt{2}\\Rightarrow \\left| {{A}^{-1}} \\right|=\\dfrac{1}{\\left| A \\right|}=\\dfrac{1}{2\\sqrt{2}}=\\dfrac{\\sqrt{2}}{4} \\\\ \\end{aligned}$"
+  }
+]

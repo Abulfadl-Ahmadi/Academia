@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 3 \\\\ 4 & 5 \\\\ \\end{matrix} \\right]$ و ${{A}^{2}}X-{{A}^{3}}=2A$ ، مجموع درایههای ماتریس $X$ کدام است؟",
+    "options": [
+      "18",
+      "12",
+      "14",
+      "16"
+    ],
+    "answer_index": 3,
+    "answer_text": "14",
+    "explanation": "میدانیم ${{({{A}^{2}})}^{-1}}={{({{A}^{-1}})}^{2}}$. حال داریم: ${{({{A}^{2}})}^{-1}}({{A}^{2}}X-{{A}^{3}})={{({{A}^{2}})}^{-1}}(2A)$ $\\Rightarrow X-A=2{{A}^{-1}}\\Rightarrow X=A+2{{A}^{-1}}$ $\\Rightarrow X=\\left[ \\begin{matrix} 2 & 3 \\\\ 4 & 5 \\\\ \\end{matrix} \\right]+2\\left( \\dfrac{1}{-2}\\left[ \\begin{matrix} 5 & -3 \\\\ -4 & 2 \\\\ \\end{matrix} \\right] \\right)=\\left[ \\begin{matrix} 2 & 3 \\\\ 4 & 5 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} -5 & 3 \\\\ 4 & -2 \\\\ \\end{matrix} \\right]$ $=\\left[ \\begin{matrix} -3 & 6 \\\\ 8 & 3 \\\\ \\end{matrix} \\right]\\Rightarrow X\\text{ مجموع درایههای }=14$"
+  }
+]

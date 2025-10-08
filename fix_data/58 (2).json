@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $\\left| \\begin{matrix} a & b & 1 \\\\ {{a}^{2}} & {{b}^{2}} & 1 \\\\ {{a}^{3}} & {{b}^{3}} & 1 \\\\ \\end{matrix} \\right|=k\\left| \\begin{matrix} a-1 & b-1 \\\\ {{a}^{2}}-1 & {{b}^{2}}-1 \\\\ \\end{matrix} \\right|$ باشد، $k$ کدام است؟",
+    "options": [
+      "$ab(a-b)$",
+      "${{a}^{2}}{{b}^{2}}$",
+      "$ab$",
+      "$\\frac{1}{ab}$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "به جای $a$ و $b$ اعداد 1- و 2 را میگذاریم: $\\left| \\begin{matrix} -1 & 2 & 1 \\\\ 1 & 4 & 1 \\\\ -1 & 8 & 1 \\\\ \\end{matrix} \\right|=k\\left| \\begin{matrix} -2 & 1 \\\\ 0 & 3 \\\\ \\end{matrix} \\right|\\Rightarrow 4-4+12=-6k\\Rightarrow k=-2$ حال در گزینهها هم $a$ و $b$ را قرار میدهیم. گزینه 3 جواب است."
+  }
+]

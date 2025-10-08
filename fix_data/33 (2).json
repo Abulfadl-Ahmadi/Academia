@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "مجموع درایههای ستون سوم ماتریس ${{A}^{5}}={{\\left[ \\begin{matrix} 1 & 0 & 1 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 2 \\\\ \\end{matrix} \\right]}^{5}}$ کدام است؟",
+    "options": [
+      "63",
+      "64",
+      "31",
+      "32"
+    ],
+    "answer_index": 1,
+    "answer_text": "63",
+    "explanation": "ابتدا ماتریسهای ${{A}^{2}}$ و ${{A}^{3}}$ را به دست میآوریم، سپس ماتریس ${{A}^{5}}$ را محاسبه میکنیم: $\\begin{aligned} & {{A}^{2}}=\\left[ \\begin{matrix} 1 & 0 & 1 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 2 \\\\ \\end{matrix} \\right]\\times \\left[ \\begin{matrix} 1 & 0 & 1 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 & 3 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 4 \\\\ \\end{matrix} \\right] \\\\ & {{A}^{3}}=\\left[ \\begin{matrix} 1 & 0 & 1 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 2 \\\\ \\end{matrix} \\right]\\times \\left[ \\begin{matrix} 1 & 0 & 3 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 4 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 & 7 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 8 \\\\ \\end{matrix} \\right] \\\\ & {{A}^{5}}=\\left[ \\begin{matrix} 1 & 0 & 3 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 4 \\\\ \\end{matrix} \\right]\\times \\left[ \\begin{matrix} 1 & 0 & 7 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 8 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 & 31 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 32 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ سپس جمع درایههای ستون سوم برابر 63 است."
+  }
+]

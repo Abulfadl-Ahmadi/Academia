@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "به ازای کدام مقدار $m$ دستگاه $\\left\\{ \\begin{aligned} & mx+y=4 \\\\ & 3x+\\left( m+2 \\right)y=-4 \\\\ \\end{aligned} \\right.$ جواب ندارد ؟",
+    "options": [
+      "1-",
+      "3",
+      "1",
+      "3-"
+    ],
+    "answer_index": 2,
+    "answer_text": "3",
+    "explanation": "شرط جواب نداشتن دستگاه به صورت زیر است: $\\left\\{ \\begin{aligned} & mx+y=4 \\\\ & 3x+\\left( m+2 \\right)y=-4 \\\\ \\end{aligned} \\right.\\Rightarrow \\dfrac{m}{3}=\\dfrac{1}{m+2}\\cancel{=} \\dfrac{4}{-4}\\Rightarrow {{m}^{2}}+2m-3=0\\Rightarrow\\left\\{ \\begin{aligned} & m=1 \\\\ & m=-3 \\\\ \\end{aligned} \\right.$ اگر در رابطه مقدار $m=-3$ را قرار دهیم $\\dfrac{-3}{3}=\\dfrac{1}{-1}=\\dfrac{4}{-4}$ یعنی دستگاه بیشمار جواب دارد، بنابراین به ازای $m=1$ دستگاه جواب ندارد."
+  }
+]

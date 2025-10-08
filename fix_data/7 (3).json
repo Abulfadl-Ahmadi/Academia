@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "حاصل دترمینان ماتریس $A=\\left[ \\begin{matrix} -1 & -1 & -1 \\\\ 1-\\sin \\alpha & 1+\\cos \\alpha & 1 \\\\ 1-\\cos \\alpha & 1+\\sin \\alpha & 1 \\\\ \\end{matrix} \\right]$ کدام است؟",
+    "options": [
+      "صفر",
+      "$\\sin \\alpha +\\cos \\alpha$",
+      "$\\sin 2\\alpha$",
+      "$-\\cos 2\\alpha$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "عددگذاری میکنیم: $\\alpha =90\\Rightarrow |A|=\\left| \\begin{matrix} -1 & -1 & -1 \\\\ 0 & 1 & 1 \\\\ 1 & 2 & 1 \\\\ \\end{matrix} \\right|=1\\Rightarrow \\text{ قابل قبول }\\,4\\,\\text{و}\\,2\\,\\text{ گزینه }$ $\\alpha =0\\Rightarrow |A|=\\left| \\begin{matrix} -1 & -1 & -1 \\\\ 1 & 2 & 1 \\\\ 0 & 1 & 1 \\\\ \\end{matrix} \\right|=-1\\Rightarrow \\text{ درست است }\\,4\\,\\text{ گزینه }$"
+  }
+]

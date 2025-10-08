@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} |A| & 1 \\\\ 5 & |A|\\,-3 \\\\ \\end{matrix} \\right]$ و $|A|\\,>0$ باشد، حاصل $\\left| \\begin{matrix} \\left| \\begin{matrix} 1 & 2 \\\\ 1 & 3 \\\\ \\end{matrix} \\right| & \\left| \\begin{matrix} -2 & |A| \\\\ 1 & -3 \\\\ \\end{matrix} \\right| \\\\ \\left| \\begin{matrix} \\,|A|\\,-1 & 3 \\\\ 3 & 2 \\\\ \\end{matrix} \\right| & \\left| \\begin{matrix} 4 & 1 \\\\ 0 & 1 \\\\ \\end{matrix} \\right| \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "3",
+      "5",
+      "2",
+      "4"
+    ],
+    "answer_index": 1,
+    "answer_text": "3",
+    "explanation": "ابتدا از طرفین رابطۀ فرض، دترمینان میگیریم: $|A|=\\left| \\begin{matrix} |A| & 1 \\\\ 5 & |A|-3 \\\\ \\end{matrix} \\right|\\Rightarrow |A|=|A{{|}^{2}}-3|A|-5\\Rightarrow |A{{|}^{2}}-4|A|-5=0\\Rightarrow (|A|+1)(|A|-5)=0$ $\\Rightarrow \\left\\{ \\begin{aligned} &\\,|A|\\,=-1 \\\\ &|A|\\,=5 \\\\ \\end{aligned} \\right.\\,\\xrightarrow{\\,|A|\\,>\\,0}\\,|A|\\,=5$ حال با جایگذاری $|A|\\,=5$ در دترمینان دوم، مقدار آن را مییابیم: $\\left| \\begin{matrix} \\left| \\begin{matrix} 1 & 2 \\\\ 1 & 3 \\\\ \\end{matrix} \\right| & \\left| \\begin{matrix} -2 & 5 \\\\ 1 & -3 \\\\ \\end{matrix} \\right| \\\\ \\left| \\begin{matrix} 4 & 3 \\\\ 3 & 2 \\\\ \\end{matrix} \\right| & \\left| \\begin{matrix} 4 & 1 \\\\ 0 & 1 \\\\ \\end{matrix} \\right| \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} 1 & 1 \\\\ -1 & 4 \\\\ \\end{matrix} \\right|=4+1=5$"
+  }
+]

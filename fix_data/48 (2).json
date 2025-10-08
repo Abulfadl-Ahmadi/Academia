@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & -2 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]$ ، آنگاه مجموع درایههای ماتریس $\\left( A-3I \\right)\\left( A-I \\right)$ کدام است؟",
+    "options": [
+      "8",
+      "12",
+      "16",
+      "20"
+    ],
+    "answer_index": 3,
+    "answer_text": "16",
+    "explanation": "ابتدا درایههای ماتریس $A$ را به دست میآوریم: $\\begin{aligned} & A=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & -2 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 5 & 0 \\\\ 0 & 5 \\\\ \\end{matrix} \\right]=5I \\\\ & \\Rightarrow \\left( A-3I \\right)\\left( A-I \\right)=\\left( 5I-3I \\right)\\left( 5I-I \\right)=2I\\times 4I=8I=\\left[ \\begin{matrix} 8 & 0 \\\\ 0 & 8 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ بنابراین جمع درایهها برابر 16 است."
+  }
+]

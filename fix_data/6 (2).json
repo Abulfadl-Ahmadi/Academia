@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "اگر ماتریس $A+B=\\left[ \\begin{matrix} 2 & 4 & 3 \\\\ -3 & 1 & 7 \\\\ \\dfrac{5}{2} & -5 & 9 \\\\ \\end{matrix} \\right]$ و $2B=\\left[ \\begin{matrix} 12 & 6 & 8 \\\\ 2 & 4 & -6 \\\\ 7 & -8 & -2 \\\\ \\end{matrix} \\right]$ باشد، مجموع درایههای غیرواقع بر قطر اصلی و فرعی ماتریس $2A-3I$ کدام است؟",
+    "options": [
+      "4",
+      "صفر",
+      "8",
+      "12"
+    ],
+    "answer_index": 4,
+    "answer_text": "12",
+    "explanation": "ابتدا باید ماتریسهای $A$ و $B$ را به دست آوریم. چون: $2B=\\left[ \\begin{matrix} 12 & 6 & 8 \\\\ 2 & 4 & -6 \\\\ 7 & -8 & -2 \\\\ \\end{matrix} \\right]\\,\\xrightarrow{\\times \\frac{1}{2}}\\,B=\\left[ \\begin{matrix} 6 & 3 & 4 \\\\ 1 & 2 & -3 \\\\ \\dfrac{7}{2} & -4 & -1 \\\\ \\end{matrix} \\right]$ پس: $A+B=\\left[ \\begin{matrix} 2 & 4 & 3 \\\\ -3 & 1 & 7 \\\\ \\dfrac{5}{2} & -5 & 9 \\\\ \\end{matrix} \\right]\\Rightarrow A=\\left[ \\begin{matrix} 2 & 4 & 3 \\\\ -3 & 1 & 7 \\\\ \\dfrac{5}{2} & -5 & 9 \\\\ \\end{matrix} \\right]-B$ $\\Rightarrow A=\\left[ \\begin{matrix} 2 & 4 & 3 \\\\ -3 & 1 & 7 \\\\ \\dfrac{5}{2} & -5 & 9 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 6 & 3 & 4 \\\\ 1 & 2 & -3 \\\\ \\dfrac{7}{2} & -4 & -1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -4 & 1 & -1 \\\\ -4 & -1 & 10 \\\\ -1 & -1 & 10 \\\\ \\end{matrix} \\right]$ حال ماتریس $2A-3I$ را تشکیل میدهیم: $2A-3I=2\\left[ \\begin{matrix} -4 & 1 & -1 \\\\ -4 & -1 & 10 \\\\ -1 & -1 & 10 \\\\ \\end{matrix} \\right]-3\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -8 & 2 & -2 \\\\ -8 & -2 & 20 \\\\ -2 & -2 & 20 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 3 & 0 & 0 \\\\ 0 & 3 & 0 \\\\ 0 & 0 & 3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -11 & 2 & -2 \\\\ -8 & -5 & 20 \\\\ -2 & -2 & 17 \\\\ \\end{matrix} \\right]$ پس درایههای غیرواقع بر قطر اصلی و قطر فرعی این ماتریس میشود: 2، $-8$ ، 20 و $-2$ که مجموع آنها 12 میشود. پس گزینۀ 4 صحیح است."
+  }
+]

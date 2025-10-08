@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "هرگاه دترمینان ماتریس $A=\\left[ \\begin{matrix} 1 & 6 & a+1 \\\\ a-1 & 5 & 3 \\\\ a-1 & 0 & a \\\\ \\end{matrix} \\right]$ ، 25 برابر دترمینان وارون آن باشد، اختلاف مقادیر ممکن برای $a$ کدام است؟ ( $|A|>0$ )",
+    "options": [
+      "$\\dfrac{7}{11}$",
+      "$\\dfrac{3}{11}$",
+      "$\\dfrac{5}{11}$",
+      "$\\dfrac{17}{11}$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$\\dfrac{7}{11}$",
+    "explanation": "$\\begin{aligned} & \\left| A \\right|=25\\left| {{A}^{-1}} \\right|\\Rightarrow \\left| A \\right|=25\\dfrac{1}{\\left| A \\right|}\\xrightarrow{\\left| A \\right|>0}\\left| A \\right|=5 \\\\ & \\left| \\begin{matrix} 1 & 6 & a+1 \\\\ a-1 & 5 & 3 & \\\\ a-1 & 0 & a \\\\ \\end{matrix}\\right|\\begin{matrix} 1 & 6 \\\\ a-1 & 5\\\\ a-1 & 0 \\end{matrix}\\\\ & \\Rightarrow \\left| A \\right|=(5a+18a-18+0)-(5{{a}^{2}}-5+0+6{{a}^{2}}-6a)=5 \\\\ & \\Rightarrow -11{{a}^{2}}+29a-18=0 \\\\ & \\Rightarrow \\left\\{ \\begin{matrix} a=1\\,\\,\\,\\, \\\\ a=\\dfrac{18}{11} \\\\ \\end{matrix} \\right.\\Rightarrow \\dfrac{18}{11}-1=\\dfrac{7}{11} \\\\ \\end{aligned}$"
+  }
+]

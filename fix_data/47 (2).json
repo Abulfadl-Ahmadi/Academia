@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 1 \\\\ b & 2 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 1 & a \\\\ a & 2 \\\\ \\end{matrix} \\right]$ و $AB$ ماتریس قطری باشد، $BA$ کدام است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & -1 \\\\ 2 & 3 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 3 \\\\ 2 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 0 \\\\ 3 & -2 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\left[ \\begin{matrix} 0 & -1 \\\\ 2 & 3 \\\\ \\end{matrix} \\right]$",
+    "explanation": "در ماتریس قطری تمام درایههای غیر واقع بر قطر اصلی صفرند، بنابراین داریم: $\\begin{aligned} & AB=\\left[ \\begin{matrix} 2 & 1 \\\\ b & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & a \\\\ a & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} {} & 2a+2 \\\\ b+2a & {} \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{matrix} 2a+2=0 \\\\ b+2a=0 \\\\ \\end{matrix}\\Rightarrow \\left\\{ \\begin{aligned} &a=-1 \\\\& b=2 \\\\ \\end{aligned} \\right. \\right. \\\\ & BA=\\left[ \\begin{matrix} 1 & a \\\\ a & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 & 1 \\\\ b & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -1 \\\\ -1 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 & 1 \\\\ 2 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & -1 \\\\ 2 & 3 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$"
+  }
+]

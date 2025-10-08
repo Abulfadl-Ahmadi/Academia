@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر ماتریس $A+B=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 1 & 1 & 0 \\\\ 2 & 3 & 1 \\\\ \\end{matrix} \\right]$ و $B$ یک ماتریس اسکالر باشد که حاصلضرب قطر اصلی آن یک باشد، حاصل عبارت $\\left( {{A}^{2}}+2A+4B \\right)\\left( 2B-A \\right)$ برابر کدام گزینه است؟",
+    "options": [
+      "$-8A$",
+      "$8A$",
+      "$-8B$",
+      "$8B$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$8B$",
+    "explanation": "$B=\\left[ \\begin{matrix} x & 0 & 0 \\\\ 0 & x & 0 \\\\ 0 & 0 & x \\\\ \\end{matrix} \\right]\\,\\,\\,\\,{{x}^{3}}=1\\Rightarrow x=1\\Rightarrow B=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]=I$ $A=\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 1 & 1 & 0 \\\\ 2 & 3 & 1 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & 0 & 0 \\\\ 1 & 0 & 0 \\\\ 2 & 3 & 0 \\\\ \\end{matrix} \\right]$ $\\Rightarrow {{A}^{2}}=\\left[ \\begin{matrix} 0 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ 3 & 0 & 0 \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{3}}=\\left[ \\begin{matrix} 0 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ \\end{matrix} \\right]=\\bar{O}$ حال در عبارت خواستهشده جای $B$ ماتریس $I$ میگذاریم و به کمک اتحاد چاق و لاغر محاسبه میکنیم: $\\left( {{A}^{2}}+2A+4I \\right)\\left( 2I-A \\right)=8{{I}^{3}}-\\underbrace{{{A}^{3}}}_{{\\bar{O}}}=8I=8B$"
+  }
+]

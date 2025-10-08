@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "ماتریسهای $A=[ix+jy]$ ( سطر $i$ و ستون $j$ ) و $B=\\left[ \\begin{matrix} 7 & b+2 \\\\ 10 & 3a-1 \\\\ \\end{matrix} \\right]$ برابر هستند. ماتریس سطری با 4 درایه بهصورت $C=[(a-x)i+(b-y)j]$ داریم. مجموع ستونهای $C$ کدام است؟",
+    "options": [
+      "49",
+      "58",
+      "51",
+      "19"
+    ],
+    "answer_index": 2,
+    "answer_text": "58",
+    "explanation": "ماتریسهای $A$ و $B$ برابر هستند. پس در این صورت چون $B$ ماتریس مربعی مرتبۀ 2 است $(2\\times 2)$ ، پس $A$ نیز $2\\times 2$ میباشد. ابتدا درایههای ماتریس $A$ را میسازیم. $A=\\left[ \\begin{matrix} {{a}_{11}} & {{a}_{12}} \\\\ {{a}_{21}} & {{a}_{22}} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} x+y & x+2y \\\\ 2x+y & 2x+2y \\\\ \\end{matrix} \\right]$ $A=B\\Rightarrow \\left[ \\begin{matrix} x+y & x+2y \\\\ 2x+y & 2x+2y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 7 & b+2 \\\\ 10 & 3a-1 \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & x+y=7 \\\\ & 2x+y=10 \\\\ \\end{aligned} \\right.\\,\\,,\\,\\,\\left\\{ \\begin{aligned} & x+2y=b+2 \\\\ & 2x+2y=3a-1 \\\\ \\end{aligned} \\right.$ باید دستگاهها را حل کنیم: $\\left\\{ \\begin{aligned} & 2x+y=10 \\\\ & x+y=7 \\\\ \\end{aligned} \\right.\\,\\xrightarrow{-}\\,x=3\\,\\,,\\,\\,y=4$ پس: $\\left\\{ \\begin{aligned} & b+2=3+2(4)\\Rightarrow b=9 \\\\ & 3a-1=2(3)+2(4)\\Rightarrow a=5 \\\\ \\end{aligned} \\right.$ بنابراین: $C=[(5-3)i+(9-4)j]\\Rightarrow C=[2i+5j]$ چون ماتریس $C$ ، ماتریس سطری است با 4 درایه، پس ${{C}_{1\\times 4}}$ برابر است با: $C=\\left[ \\begin{matrix} {{C}_{11}} & {{C}_{12}} & {{C}_{13}} & {{C}_{14}} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 7 & 12 & 17 & 22 \\\\ \\end{matrix} \\right]$ $\\text{مجموع تمام ستونها}=C\\, \\text{مجموع تمام درایهها در ماتریس}=7+12+17+22=58$ پس گزینۀ 2 صحیح است."
+  }
+]

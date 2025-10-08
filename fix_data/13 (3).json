@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "ماتریسهای $A$ و $B$ برابر هستند، $A=\\left[ \\begin{matrix} {{x}^{2}}+xy & 4 \\\\ 9 & {{y}^{2}}+yx \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 28 & {{a}^{2}} \\\\ {{z}^{2}} & 21 \\\\ \\end{matrix} \\right]$ میباشد. کمترین مقدار $x+y+z+a$ کدام است؟",
+    "options": [
+      "$-12$",
+      "$12$",
+      "$7$",
+      "$-9$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$-12$",
+    "explanation": "چون ماتریس $A$ و $B$ برابر هستند، پس درایههای نظیر به نظیر آنها باید برابر باشند. تذکر: دو ماتریس برابر همواره هممرتبه هستند: $\\forall i\\,\\ j\\quad {{a}_{ij}}={{b}_{ij}}\\Rightarrow [{{a}_{ij}}]=[{{b}_{ij}}]$ پس: $A=B\\Rightarrow \\left[ \\begin{matrix} {{x}^{2}}+xy & 4 \\\\ 9 & {{y}^{2}}+yx \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 28 & {{a}^{2}} \\\\ {{z}^{2}} & 21 \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & {{a}^{2}}=4\\Rightarrow a=\\pm 2 \\\\ & {{z}^{2}}=9\\Rightarrow z=\\pm 3 \\\\ \\end{aligned} \\right.$ بنابراین: $\\left\\{ \\begin{aligned} & {{x}^{2}}+xy=28 \\\\ & {{y}^{2}}+xy=21 \\\\ \\end{aligned} \\right.\\,\\xrightarrow{+}\\,{{x}^{2}}+{{y}^{2}}+2xy=49\\Rightarrow {{(x+y)}^{2}}={{7}^{2}}\\Rightarrow x+y=\\pm 7$ در این صورت: $1) \\,x+y=7\\Rightarrow \\left\\{ \\begin{aligned} & x(x+y)=28 \\\\ & y(y+x)=21 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & x(7)=28\\Rightarrow x=4 \\\\ & y(7)=21\\Rightarrow y=3 \\\\ \\end{aligned} \\right.$ $2)\\,x+y=-7\\Rightarrow \\left\\{ \\begin{aligned} & x(x+y)=28 \\\\ & y(y+x)=21 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & x(-7)=28\\Rightarrow x=-4 \\\\ & y(-7)=21\\Rightarrow y=-3 \\\\ \\end{aligned} \\right.$ پس کمترین مقدار $x+y+z+a$ زمانی رخ میدهد که $x\\,\\ y\\,\\ z\\,\\ a<0$ باشند. پس: $Min(x+y+z+a)=-4-3-3-2=-12$ پس گزینۀ 1 صحیح است."
+  }
+]

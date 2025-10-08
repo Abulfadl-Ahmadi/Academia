@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "زهرا علیزاده",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر $\\left[ \\begin{matrix} 1 & -1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]M\\left[ \\begin{matrix} 0 & 2 \\\\ -1 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -7 \\\\ -2 & 4 \\\\ \\end{matrix} \\right]$ باشد، مجموع درایههای ماتریس $M$ کدام است؟",
+    "options": [
+      "2",
+      "3",
+      "4-",
+      "7"
+    ],
+    "answer_index": 1,
+    "answer_text": "2",
+    "explanation": "$\\underbrace{\\left[ \\begin{matrix} 1 & -1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]}_{A}M\\underbrace{\\left[ \\begin{matrix} 0 & 2 \\\\ -1 & 1 \\\\ \\end{matrix} \\right]}_{B}=\\underbrace{\\left[ \\begin{matrix} 1 & -7 \\\\ -2 & 4 \\\\ \\end{matrix} \\right]}_{C}\\Rightarrow AMB=C$ $\\Rightarrow {{A}^{-1}}(AMB){{B}^{-1}}={{A}^{-1}}C{{B}^{-1}}\\Rightarrow M={{A}^{-1}}C{{B}^{-1}}$ ${{A}^{-1}}=\\dfrac{1}{2+3}\\left[ \\begin{matrix} 2 & 1 \\\\ -3 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\tfrac{2}{5} & \\tfrac{1}{5} \\\\ -\\tfrac{3}{5} & \\tfrac{1}{5} \\\\ \\end{matrix} \\right]$ ${{B}^{-1}}=\\dfrac{1}{2}\\left[ \\begin{matrix} 1 & -2 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\tfrac{1}{2} & -1 \\\\ \\tfrac{1}{2} & 0 \\\\ \\end{matrix} \\right]$ $\\Rightarrow M={{A}^{-1}}C{{B}^{-1}}=\\left[ \\begin{matrix} \\tfrac{2}{5} & \\tfrac{1}{5} \\\\ -\\tfrac{3}{5} & \\tfrac{1}{5} \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & -7 \\\\ -2 & 4 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\tfrac{1}{2} & -1 \\\\ \\tfrac{1}{2} & 0 \\\\ \\end{matrix} \\right]$ $\\Rightarrow M=\\left[ \\begin{matrix} 0 & -2 \\\\ -1 & 5 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\tfrac{1}{2} & -1 \\\\ \\tfrac{1}{2} & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -1 & 0 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]$ بنابراین مجموع درایههای ماتریس $M$ برابر است با 2."
+  }
+]

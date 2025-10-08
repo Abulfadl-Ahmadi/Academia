@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "در دستگاه $\\left\\{ \\begin{matrix} ax+by=3 \\\\ cx+dy=e \\\\ \\end{matrix} \\right.$ وارون ماتریس ضرایب بهصورت $\\left[ \\begin{matrix} 2 & -1 \\\\ -3 & 2 \\\\ \\end{matrix} \\right]$ است. اگر $y=-1$ ، مقدار $x$ کدام است؟",
+    "options": [
+      "2-",
+      "2",
+      "3",
+      "3-"
+    ],
+    "answer_index": 2,
+    "answer_text": "2",
+    "explanation": "طبق روش ماتریس وارون برای حل دستگاه، داریم: $X={{A}^{-1}}B$ $\\left[ \\begin{matrix} x \\\\ y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 & -1 \\\\ -3 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 3 \\\\ e \\\\ \\end{matrix} \\right]\\xrightarrow{y=-1}\\left[ \\begin{matrix} x \\\\ -1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 6-e \\\\ -9+2e \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & x=6-e \\\\ &-1=-9+2e \\\\ \\end{aligned} \\right. \\Rightarrow \\left\\{ \\begin{matrix} x=2 \\\\ e=4 \\\\ \\end{matrix} \\right.$"
+  }
+]

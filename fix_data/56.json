@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} -2 & 1 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]$ و $\\left( A-I \\right)\\left( B-I \\right)=3\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 2 \\\\ \\end{matrix} \\right]$ ، مجموع درایههای ماتریس $B$ ، کدام است؟",
+    "options": [
+      "7",
+      "8",
+      "9",
+      "6"
+    ],
+    "answer_index": 2,
+    "answer_text": "8",
+    "explanation": "با جایگذاری ماتریس $A$ در رابطۀ فوق، داریم: $\\begin{aligned} & \\left( \\left[ \\begin{matrix} -2 & 1 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right] \\right)\\left( B-I \\right)=3\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 2 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow \\left[ \\begin{matrix} -3 & 1 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]\\left( B-I \\right)=3\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 2 \\\\ \\end{matrix} \\right]\\,\\,\\,\\,(*) \\\\ \\end{aligned}$ حال وارون ماتریس $\\left[ \\begin{matrix} -3 & 1 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$ را یافته و از سمت چپ، در طرفین رابطۀ (*) ضرب میکنیم. $\\begin{aligned} & {{\\left[ \\begin{matrix} -3 & 1 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]}^{-1}}=\\dfrac{1}{-6}\\left[ \\begin{matrix} 2 & -1 \\\\ 0 & -3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -\\dfrac{1}{3} & \\dfrac{1}{6} \\\\ 0 & \\dfrac{1}{2} \\\\ \\end{matrix} \\right] \\\\ & \\xrightarrow{(*)\\,\\text{ضرب در رابطۀ}}B-I=3\\left[ \\begin{matrix} -\\dfrac{1}{3} & \\dfrac{1}{6} \\\\ 0 & \\dfrac{1}{2} \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 1 \\\\ 2 & 2 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow B-\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & 0 \\\\ 3 & 3 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow B=\\left[ \\begin{matrix} 0 & 0 \\\\ 3 & 3 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 3 & 4 \\\\ \\end{matrix} \\right]\\Rightarrow B\\,\\text{مجموع درایههای}=8 \\\\ \\end{aligned}$"
+  }
+]

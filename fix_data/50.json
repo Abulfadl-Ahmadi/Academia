@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $\\left| \\begin{matrix} a & 2a & a \\\\ 1 & 2 & -1 \\\\ 0 & 1 & a \\\\ \\end{matrix} \\right|=k$ باشد، حاصل $\\left| \\begin{matrix} 1 & a & 2a \\\\ -1 & 0 & 1 \\\\ 2 & 2a & -1 \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "صفر",
+      "$-\\dfrac{k}{2}-{k}^{2}$",
+      "$\\dfrac{-2}{5}k$",
+      "$\\dfrac{-5}{2}k$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "$\\left| \\begin{matrix} a & 2a & a \\\\ 1 & 2 & -1 \\\\ 0 & 1 & a \\\\ \\end{matrix} \\right|=0+1\\times {{\\left( -1 \\right)}^{5}}\\times \\left| \\begin{matrix} a & a \\\\ 1 & -1 \\\\ \\end{matrix} \\right|+a\\times {{\\left( -1 \\right)}^{6}}\\times \\left| \\begin{matrix} a & 2a \\\\ 1 & 2 \\\\ \\end{matrix} \\right|$ $=2a=k\\Rightarrow a=\\dfrac{k}{2}$ $\\left| \\begin{matrix} 1 & a & 2a \\\\ -1 & 0 & 1 \\\\ 2 & 2a & -1 \\\\ \\end{matrix} \\right|=\\left( -1 \\right)\\times {{\\left( -1 \\right)}^{3}}\\times \\left| \\begin{matrix} a & 2a \\\\ 2a & -1 \\\\ \\end{matrix} \\right|+0+1\\times {{\\left( -1 \\right)}^{5}}\\times \\left| \\begin{matrix} 1 & a \\\\ 2 & 2a \\\\ \\end{matrix} \\right|=-a-4{a}^{2}$ $\\xrightarrow{a=\\frac{k}{2}}-a-4{a}^{2}=-\\frac{k}{2}-{k}^{2}$"
+  }
+]

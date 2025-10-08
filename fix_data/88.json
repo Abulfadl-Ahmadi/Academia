@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "به ازای کدام مقدار m معادلۀ ماتریسی $\\left[ \\begin{matrix} m-2 & -2 \\\\ 3 & m+2 \\\\ \\end{matrix} \\right]\\left[ \\begin{aligned} & x \\\\ & y \\\\ \\end{aligned} \\right]=\\left[ \\begin{matrix} 1 \\\\ 2 \\\\ \\end{matrix} \\right]$ جواب منحصربهفرد دارد؟",
+    "options": [
+      "$\\mathbb{R}$",
+      "$\\mathbb{R}-\\left\\{ \\pm \\sqrt{2} \\right\\}$",
+      "$\\varnothing$",
+      "$\\left\\{ \\pm \\sqrt{2} \\right\\}$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "برای آنکه جواب منحصربهفرد داشته باشیم باید دترمینان ماتریس ضرایب مخالف صفر باشد، یعنی: $\\left( m-2 \\right)\\left( m+2 \\right)-\\left( -2 \\right)\\left( 3 \\right)\\cancel{=} 0\\Rightarrow {{m}^{2}}+2\\cancel{=} 0\\Rightarrow {{m}^{2}}\\cancel{=} -2$ واضح است که رابطۀ بالا به ازای تمامی مقادیر m برقرار است."
+  }
+]

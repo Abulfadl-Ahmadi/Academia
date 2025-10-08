@@ -1,0 +1,25 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها"
+    ],
+    "question": "حاصل $\\sin x\\left[ \\begin{matrix} \\sin x & \\cos x \\\\ \\cos x & \\sin x \\\\ \\end{matrix} \\right]+\\cos x\\left[ \\begin{matrix} \\cos x & -\\sin x \\\\ -\\sin x & \\cos x \\\\ \\end{matrix} \\right]$ کدام است؟",
+    "options": [
+      "$\\overline{O}$",
+      "$-I$",
+      "$I$",
+      "$\\dfrac{1}{2}I$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$I$",
+    "explanation": "$\\sin x\\left[ \\begin{matrix} \\sin x & \\cos x \\\\ \\cos x & \\sin x \\\\ \\end{matrix} \\right]+\\cos x\\left[ \\begin{matrix} \\cos x & -\\sin x \\\\ -\\sin x & \\cos x \\\\ \\end{matrix} \\right]$ $=\\left[ \\begin{matrix} {{\\sin }^{2}}x & \\sin x\\cos x \\\\ \\sin x\\cos x & {{\\sin }^{2}}x \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} {{\\cos }^{2}}x & -\\sin x\\cos x \\\\ -\\sin x\\cos x & {{\\cos }^{2}}x \\\\ \\end{matrix} \\right]$ $=\\left[ \\begin{matrix} {{\\sin }^{2}}x+{{\\cos }^{2}}x & 0 \\\\ 0 & {{\\sin }^{2}}x+{{\\cos }^{2}}x \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=I$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]$ آنگاه ${{A}^{4}}$ با کدام گزینه برابر است؟",
+    "options": [
+      "$16I$",
+      "$64A$",
+      "$64I$",
+      "$16A$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$64A$",
+    "explanation": "ابتدا ماتریس ${{A}^{2}}$ را به دست میآوریم: $A=\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 & 4 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 8 & 16 \\\\ 4 & 8 \\\\ \\end{matrix} \\right]=4A\\Rightarrow {{A}^{4}}={{\\left( 4A \\right)}^{2}}=16{{A}^{2}}=16\\left( 4A \\right)=64A$"
+  }
+]

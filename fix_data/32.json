@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر حاصلضرب $\\left[ \\begin{matrix} x+1 & -1 & y-3 \\\\ 2 & 2x & y+2 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} -3 & -1 \\\\ -1 & -3 \\\\ 2 & 2 \\\\ \\end{matrix} \\right]$ یک ماتریس قطری باشد، کدامیک از ماتریسهای زیر، اسکالر است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 2x & 2y-3x \\\\ x+y-5 & 3y \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 3x & x-y+1 \\\\ 2x-y-1 & 2y \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} x-2 & x+y+1 \\\\ x-2y+3 & y-3 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 2y-3x & x-y+4 \\\\ y-x+2 & 2x+y-7 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\left[ \\begin{matrix} 3x & x-y+1 \\\\ 2x-y-1 & 2y \\\\ \\end{matrix} \\right]$",
+    "explanation": "حاصلضرب موردنظر را ماتریس $A={{[{{a}_{ij}}]}_{2\\times 2}}$ مینامیم. چون این ماتریس، قطری و $2\\times 2$ است، داریم: $\\begin{aligned} & \\left\\{ \\begin{aligned} & {{a}_{12}}=0 \\\\ & {{a}_{21}}=0 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & (x+1)(-1)+(-1)(-3)+(y-3)(2)=0 \\\\ & (2)(-3)+(2x)(-1)+(y+2)(2)=0 \\\\ \\end{aligned} \\right. \\\\ & \\Rightarrow \\left\\{ \\begin{aligned} & -x-1+3+2y-6=0 \\\\ & -6-2x+2y+4=0 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & -x+2y=4 \\\\ & -2x+2y=2 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & x=2 \\\\ & y=3 \\\\ \\end{aligned} \\right. \\\\ \\end{aligned}$ از بین گزینهها، فقط ماتریس گزینۀ 2، اسکالر است؛ زیرا: $\\left[ \\begin{matrix} 3x & x-y+1 \\\\ 2x-y-1 & 2y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 6 & 0 \\\\ 0 & 6 \\\\ \\end{matrix} \\right]$"
+  }
+]

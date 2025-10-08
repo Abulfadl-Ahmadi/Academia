@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "صبا مهدوی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "ماتریس $A$ ماتریسی $n\\times n$ است. اگر $A\\left( A-I \\right)=0$ ، آنگاه ${{\\left( 2A-I \\right)}^{17}}$ کدام است؟",
+    "options": [
+      "$2A+I$",
+      "$A-I$",
+      "$2A-I$",
+      "$I$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$2A-I$",
+    "explanation": "$\\begin{aligned} & A\\left( A-I \\right)=0\\Rightarrow {{A}^{2}}-A=0\\Rightarrow 4\\times \\left( {{A}^{2}}-A \\right)=4{{A}^{2}}-4A=0\\xrightarrow{+I}4{{A}^{2}}-4A+I=I \\\\ & \\Rightarrow {{\\left( 2A-I \\right)}^{2}}=I \\\\ \\end{aligned}$ دو طرف معادله را به توان 8 میرسانیم: ${{\\left( 2A-I \\right)}^{16}}=I\\xrightarrow{\\times \\left( 2A-I \\right)}{{\\left( 2A-I \\right)}^{17}}=2A-I$"
+  }
+]

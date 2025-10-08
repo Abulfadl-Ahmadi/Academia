@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $16{{A}^{3}}+16{{A}^{2}}+16A+16I=\\bar{O}$ باشد، دترمینان ماتریس ${{A}_{2\\times 2}}$ کدام است؟",
+    "options": [
+      "$\\pm 1$",
+      "$\\pm 2$",
+      "$\\pm 4$",
+      "$\\pm 16$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$\\pm 1$",
+    "explanation": "$16{{A}^{3}}+16{{A}^{2}}+16A=-16I\\Rightarrow 16A( \\underbrace{{{A}^{2}}+A+I}_{-{{A}^{3}}} )=-16I$ $\\Rightarrow -{{A}^{4}}=-I\\Rightarrow {{A}^{4}}=I\\Rightarrow {{\\left| A \\right|}^{4}}=\\left| I \\right|=1\\Rightarrow \\left| A \\right|=\\pm 1$"
+  }
+]

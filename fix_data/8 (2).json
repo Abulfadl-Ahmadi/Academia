@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "ماتریس $T=\\left[ \\begin{matrix} 3 & 0 & 4 \\\\ 0 & 2 & 0 \\\\ 4 & 0 & 5 \\\\ \\end{matrix} \\right]$ مفروض است. اگر $T=A+B$ باشد، بهطوریکه $A$ ماتریس قطری است، درایههای ماتریس $A$ و $B$ همگی از همان درایههای ماتریس $T$ هستند. قرینۀ $B$ کدام است؟ ( $A$ ماتریس صفر نیست.)",
+    "options": [
+      "$\\left[ \\begin{matrix} 0 & 0 & 4 \\\\ 0 & 2 & 0 \\\\ -4 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 0 & -4 \\\\ 0 & 0 & 0 \\\\ -4 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 0 & -4 \\\\ 0 & -2 & 0 \\\\ -4 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} -3 & 0 & 0 \\\\ 0 & -2 & 0 \\\\ 0 & 0 & -5 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\left[ \\begin{matrix} 0 & 0 & -4 \\\\ 0 & 0 & 0 \\\\ -4 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+    "explanation": "چون درایههای ماتریس $A$ و $B$ از ماتریس $T$ هستند و $A$ ماتریس قطری است، پس ماتریس $A$ را از درون $T$ بهصورت زیر میسازیم: $A=\\left[ \\begin{matrix} 3 & 0 & 0 \\\\ 0 & 2 & 0 \\\\ 0 & 0 & 5 \\\\ \\end{matrix} \\right]$ پس: $T=A+B\\Rightarrow B=T-A=\\left[ \\begin{matrix} 3 & 0 & 4 \\\\ 0 & 2 & 0 \\\\ 4 & 0 & 5 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 3 & 0 & 0 \\\\ 0 & 2 & 0 \\\\ 0 & 0 & 5 \\\\ \\end{matrix} \\right]$ $B=\\left[ \\begin{matrix} 0 & 0 & 4 \\\\ 0 & 0 & 0 \\\\ 4 & 0 & 0 \\\\ \\end{matrix} \\right]\\,\\xrightarrow{B\\,\\text{قرینۀ }\\,}\\,-B=\\left[ \\begin{matrix} 0 & 0 & -4 \\\\ 0 & 0 & 0 \\\\ -4 & 0 & 0 \\\\ \\end{matrix} \\right]$"
+  }
+]

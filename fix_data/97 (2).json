@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر اعضای روی قطر فرعی ماتریس $A=\\left[ \\begin{matrix} \\sin \\alpha +1 & \\cos \\alpha \\\\ \\cos \\beta -1 & \\sin \\beta -2 \\\\ \\end{matrix} \\right]$ صفر باشد، مجموع تمام ماتریسهای این چنینی به حالت فوق را ماتریس $B$ مینامیم. حاصلضرب درایههای روی قطر اصلی $B$ کدام است؟",
+    "options": [
+      "صفر",
+      "$-8$",
+      "$-4$",
+      "$8$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-8$",
+    "explanation": "اعضای روی قطر فرعی ماتریس $A$ ، $\\cos \\alpha$ و $\\cos \\beta -1$ میباشد، پس: $\\left\\{ \\begin{aligned} & \\cos \\alpha =0\\Rightarrow \\alpha =\\dfrac{\\pi }{2}\\,,\\,\\dfrac{3\\pi }{2}\\,,\\,\\cdots \\Rightarrow \\alpha =k\\pi +\\dfrac{\\pi }{2} \\\\ & \\cos \\beta -1=0\\Rightarrow \\cos \\beta =1\\Rightarrow \\beta =\\cdots,-2\\pi,0\\,,\\,2\\pi \\,,\\,\\ldots \\Rightarrow \\beta =2k\\pi \\\\ \\end{aligned} \\right.$ اگر $\\alpha =k\\pi +\\dfrac{\\pi }{2}$ باشد، $\\sin (k\\pi +\\dfrac{\\pi }{2})=\\left\\{ \\begin{aligned} & 1\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,;\\,\\,\\text{زوج}\\,k \\\\ & -1\\,\\,\\,\\,\\,;\\,\\text{فرد}\\,k \\\\ \\end{aligned} \\right.$ است. پس $A=\\left[ \\begin{matrix} \\sin \\alpha +1 & 0 \\\\ 0 & \\sin \\beta -2 \\\\ \\end{matrix} \\right]$. در ضمن اگر $\\beta =2k\\pi$ باشد، پس $\\sin \\beta =0$ است؛ لذا برای $A$ ، 2 حالت داریم: $A=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -2 \\\\ \\end{matrix} \\right]\\,\\,,\\,\\,\\left[ \\begin{matrix} 0 & 0 \\\\ 0 & -2 \\\\ \\end{matrix} \\right]$ پس ماتریس $B$ برابر است با: $\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -2 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 0 & 0 \\\\ 0 & -2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -4 \\\\ \\end{matrix} \\right]$ پس اعضای روی قطر اصلی ماتریس $B$ میشود $2$ و $-4$. پس حاصل ضرب آنها $(-8)$ میشود. لذا گزینۀ 2 صحیح است."
+  }
+]

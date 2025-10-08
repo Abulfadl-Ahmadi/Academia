@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A$ ماتریس مربعی از مرتبۀ 3 و $\\left| A \\right|=2$ آنگاه حاصل $\\left| \\dfrac{\\left| A \\right|}{2}A \\right|+\\left| \\dfrac{4}{\\left| A \\right|}A \\right|$ کدام است؟",
+    "options": [
+      "10",
+      "18",
+      "34",
+      "20"
+    ],
+    "answer_index": 2,
+    "answer_text": "18",
+    "explanation": "$\\left\\{ \\begin{aligned} & \\left| \\dfrac{\\left| A \\right|}{2}A \\right|={{(\\dfrac{\\left| A \\right|}{2})}^{3}}\\left| A \\right|={{(\\dfrac{2}{2})}^{3}}\\times 2=2 \\\\ & \\left| \\dfrac{4}{\\left| A \\right|}A \\right|={{(\\dfrac{4}{\\underbrace{\\left| A \\right|}_{2}})}^{3}}\\left| A \\right|={{2}^{3}}\\times 2=16 \\\\ \\end{aligned} \\right.\\,\\,\\,\\Rightarrow 2+16=18$"
+  }
+]

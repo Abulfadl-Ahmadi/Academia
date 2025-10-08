@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $abc\\cancel{=} 0$ و $\\left| \\begin{matrix} a & 1 & 1 \\\\ 1 & b & 1 \\\\ 1 & 1 & c \\\\ \\end{matrix} \\right|=2$ باشد، حاصل $\\dfrac{1}{ab}+\\dfrac{1}{bc}+\\dfrac{1}{ca}$ کدام است؟",
+    "options": [
+      "1",
+      "$-1$",
+      "2",
+      "$-2$"
+    ],
+    "answer_index": 1,
+    "answer_text": "1",
+    "explanation": "$\\left. \\begin{matrix} a & 1 & 1 \\\\ 1 & b & 1 \\\\ 1 & 1 & c \\\\ \\end{matrix} \\right|\\begin{matrix} a & 1 \\\\ 1 & b \\\\ 1 & 1 \\\\ \\end{matrix}$ $\\begin{aligned} & \\Rightarrow \\text{دترمینان }=(abc+1+1)-(b+a+c) \\\\ & \\xrightarrow{\\text{فرض}}(abc+1+1)-(b+a+c)=2\\Rightarrow a+b+c=abc \\\\ & \\xrightarrow{\\times \\frac{1}{abc}}\\frac{1}{bc}+\\frac{1}{ac}+\\frac{1}{ab}=1 \\\\ \\end{aligned}$"
+  }
+]

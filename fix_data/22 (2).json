@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $\\left| \\begin{matrix} a-1 & a+3 & 4 \\\\ 2 & -1 & 0 \\\\ 5 & 3 & 1 \\\\ \\end{matrix} \\right|=45$ باشد، حاصل $\\left| \\begin{matrix} 2a & a+1 & 0 \\\\ a-1 & 3a & a+2 \\\\ 3 & a & a+4 \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "25",
+      "36",
+      "42",
+      "28"
+    ],
+    "answer_index": 3,
+    "answer_text": "42",
+    "explanation": "ابتدا مقدار دترمینان اول را به روش ساروس یافته و برابر 45 قرار میدهیم: $\\left| \\begin{matrix} a-1 & a+3 & 4 \\\\ 2 & -1 & 0 \\\\ 5 & 3 & 1 \\\\ \\end{matrix} \\right|\\,\\,\\begin{matrix} a-1 \\\\ 2 \\\\ 5 \\\\ \\end{matrix}\\,\\,\\,\\,\\,\\,\\begin{matrix} a+3 \\\\ -1 \\\\ 3 \\\\ \\end{matrix}=((a-1)\\,(-1)\\,(1)+0+(4)\\,(2)\\,(3))-(-20+0+(1)\\,(2)\\,(a+3))=45$ $\\Rightarrow (-a+1+24)-(-20+2a+6)=45\\Rightarrow -3a+39=45\\Rightarrow -3a=6\\Rightarrow a=-2$ حال با جایگذاری $a=-2$ در دترمینان دوم، داریم: $\\left| \\begin{matrix} 2a & a+1 & 0 \\\\ a-1 & 3a & a+2 \\\\ 3 & a & a+4 \\\\ \\end{matrix} \\right|\\xrightarrow{a=-2}\\left| \\begin{matrix} -4 & -1 & 0 \\\\ -3 & -6 & 0 \\\\ 3 & -2 & 2 \\\\ \\end{matrix} \\right| \\\\ \\xrightarrow{\\text{بسط نسبت به ستون سوم}}\\,2{{(-1)}^{6}}\\left| \\begin{matrix} -4 & -1 \\\\ -3 & -6 \\\\ \\end{matrix} \\right|=2(24-3)=2\\times 21=42$"
+  }
+]

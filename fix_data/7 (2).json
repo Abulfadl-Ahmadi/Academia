@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 5 \\\\ 3 & 7 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} -3 & b-2 \\\\ m-3 & b+m \\\\ \\end{matrix} \\right]$ ماتریس قطری باشد، حاصلضرب درایههای ماتریس $B-A-2I$ کدام است؟",
+    "options": [
+      "350",
+      "420",
+      "صفر",
+      "$-105$"
+    ],
+    "answer_index": 2,
+    "answer_text": "420",
+    "explanation": "چون $B$ ماتریس قطری است، پس باید تمام درایههای خارج قطر اصلی صفر باشد. پس در این صورت، $m-3=b-2=0$ ، لذا $b=2$ و $m=3$ میباشد. در این صورت: $B=\\left[ \\begin{matrix} -3 & 0 \\\\ 0 & 5 \\\\ \\end{matrix} \\right]$ $\\Rightarrow B-A-2I=\\left[ \\begin{matrix} -3 & 0 \\\\ 0 & 5 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 2 & 5 \\\\ 3 & 7 \\\\ \\end{matrix} \\right]-2\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -5 & -5 \\\\ -3 & -2 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow B-A-2I=\\left[ \\begin{matrix} -7 & -5 \\\\ -3 & -4 \\\\ \\end{matrix} \\right]$ $\\text{حاصلضرب درایهها }:(-7)\\,(-5)\\,(-3)\\,(-4)=420$ پس گزینۀ 2 صحیح است."
+  }
+]

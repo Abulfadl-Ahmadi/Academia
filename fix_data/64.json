@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} x & \\dfrac{1}{x} \\\\ {{x}^{2}} & x \\\\ \\end{matrix} \\right]$ آنگاه دترمینان ماتریس $\\left( 5A \\right)\\left( 2{{A}^{-1}} \\right)$ کدام است؟",
+    "options": [
+      "10",
+      "100",
+      "20",
+      "200"
+    ],
+    "answer_index": 2,
+    "answer_text": "100",
+    "explanation": "ابتدا دترمینان ماتریس خواستهشده را به دست میآوریم: $\\left| \\left( 5A \\right)\\left( 2{{A}^{-1}} \\right) \\right|=\\left| 5A \\right|\\left| 2{{A}^{-1}} \\right|=25\\left| A \\right|\\times 4\\underbrace{\\left| {{A}^{-1}} \\right|}_{\\frac{1}{\\left| A \\right|}}=100$"
+  }
+]

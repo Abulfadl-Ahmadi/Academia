@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "مجید قهرمانی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "مجموع درایههای ماتریس A در رابطۀ $A=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]-2A\\left[ \\begin{matrix} 2 & -1 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]$ چقدر است؟",
+    "options": [
+      "$\\dfrac{52}{29}$",
+      "$\\dfrac{47}{19}$",
+      "$\\dfrac{51}{29}$",
+      "$\\dfrac{41}{19}$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$\\dfrac{52}{29}$",
+    "explanation": "$A=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]-2A\\left[ \\begin{matrix} 2 & -1 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow A+2A\\left[ \\begin{matrix} 2 & -1 \\\\ 1 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow A(\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 4 & -2 \\\\ 2 & 4 \\\\ \\end{matrix} \\right])=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow A\\left[ \\begin{matrix} 5 & -2 \\\\ 2 & 5 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]$ $\\begin{aligned} & \\Rightarrow A=\\left[ \\begin{matrix} 3 & -1 \\\\ 4 & 2 \\\\ \\end{matrix} \\right]\\times \\dfrac{1}{29}\\left[ \\begin{matrix} 5 & 2 \\\\ -2 & 5 \\\\ \\end{matrix} \\right]\\Rightarrow A=\\dfrac{1}{29}\\left[ \\begin{matrix} 17 & 1 \\\\ 16 & 18 \\\\ \\end{matrix} \\right] \\\\ & A\\,\\text{مجموع درایههای ماتریس}=\\dfrac{17+1+16+18}{29}=\\dfrac{52}{29} \\\\ \\end{aligned}$"
+  }
+]

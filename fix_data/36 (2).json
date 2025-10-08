@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 0 \\\\ 1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 0 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 0 \\\\ 3 & 1 \\\\ \\end{matrix} \\right]...\\left[ \\begin{matrix} 1 & 0 \\\\ 8 & 1 \\\\ \\end{matrix} \\right]$ ، آنگاه در ماتریس $A-I$ جمع درایهها چقدر است؟",
+    "options": [
+      "28",
+      "56",
+      "72",
+      "36"
+    ],
+    "answer_index": 4,
+    "answer_text": "36",
+    "explanation": "میدانیم ضرب دو ماتریس $\\left[ \\begin{matrix} 1 & 0 \\\\ x & 1 \\\\ \\end{matrix} \\right]$ و $\\left[ \\begin{matrix} 1 & 0 \\\\ y & 1 \\\\ \\end{matrix} \\right]$ به صورت زیر است: $\\left[ \\begin{matrix} 1 & 0 \\\\ x & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 0 \\\\ y & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ x+y & 1 \\\\ \\end{matrix} \\right]$ بنابراین ماتریس $A$ را میتوان به صورت زیر به دست آورد: $\\begin{aligned} & A=\\left[ \\begin{matrix} 1 & 0 \\\\ 1 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 0 \\\\ 2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 0 \\\\ 3 & 1 \\\\ \\end{matrix} \\right]...\\left[ \\begin{matrix} 1 & 0 \\\\ 8 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 1+2+...+8 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 36 & 1 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow A-I=\\left[ \\begin{matrix} 1 & 0 \\\\ 36 & 1 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & 0 \\\\ 36 & 0 \\\\ \\end{matrix} \\right]\\Rightarrow \\text{جمع درایهها }=36 \\\\ \\end{aligned}$"
+  }
+]

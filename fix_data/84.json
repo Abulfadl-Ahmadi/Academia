@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $\\left[ \\begin{matrix} -3 & -1 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]A\\left[ \\begin{matrix} 2 & -1 \\\\ 5 & -3 \\\\ \\end{matrix} \\right]=10I$ باشد، دترمینان $A$ کدام است؟",
+    "options": [
+      "10",
+      "20",
+      "5",
+      "25"
+    ],
+    "answer_index": 2,
+    "answer_text": "20",
+    "explanation": "از طرفین تساوی دادهشده دترمینان میگیریم، داریم: $\\begin{aligned} & \\left| \\begin{matrix} -3 & -1 \\\\ -2 & 1 \\\\ \\end{matrix} \\right|\\left| A \\right|\\left| \\begin{matrix} 2 & -1 \\\\ 5 & -3 \\\\ \\end{matrix} \\right|=\\left| 10I \\right| \\\\ & \\Rightarrow \\left( -5 \\right)\\times \\left| A \\right|\\times \\left( -1 \\right)=100\\times 1\\Rightarrow \\left| A \\right|=20 \\\\ \\end{aligned}$"
+  }
+]

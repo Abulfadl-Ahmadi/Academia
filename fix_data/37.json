@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "اگر $A$ یک ماتریس قطری باشد و داشته باشیم $A+3{{I}_{2}}=\\left[ \\begin{matrix} b+2 & a+3 \\\\ b-5 & a-2 \\\\ \\end{matrix} \\right]-3A$ ، ماتریس $A+{{I}_{2}}$ به کدام شکل خواهد بود؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -1 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 2 \\\\ -1 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} -1 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 3 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -1 \\\\ \\end{matrix} \\right]$",
+    "explanation": "$A+3A=\\left[ \\begin{matrix} b+2 & a+3 \\\\ b-5 & a-2 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 3 & 0 \\\\ 0 & 3 \\\\ \\end{matrix} \\right]\\Rightarrow 4A=\\left[ \\begin{matrix} b-1 & a+3 \\\\ b-5 & a-5 \\\\ \\end{matrix} \\right]$ ازآنجاکه $A$ ماتریس قطری است، درنتیجه: $\\begin{aligned} & \\begin{matrix} \\begin{aligned} & a+3=0\\Rightarrow a=-3 \\\\ & b-5=0\\Rightarrow b=5 \\\\ \\end{aligned} \\\\ \\end{matrix}\\Rightarrow 4A=\\left[ \\begin{matrix} 4 & 0 \\\\ 0 & -8 \\\\ \\end{matrix} \\right]\\Rightarrow A=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & -2 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow A+{{I}_{2}}=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & -1 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر $\\left[ \\begin{matrix} {{x}^{2}}-4 & {{x}^{2}}-5x+6 & 0 \\\\ 0 & 3{{y}^{2}}+2 & 0 \\\\ {{y}^{2}}+5y+4 & 0 & 5 \\\\ \\end{matrix} \\right]$ ماتریس اسکالر باشد، مجموع درایههای ماتریس مربعی $[2xi+yj]$ ( سطر $i$ و ستون $j$ ) از مرتبۀ 2 کدام است؟",
+    "options": [
+      "20",
+      "30",
+      "10",
+      "5"
+    ],
+    "answer_index": 2,
+    "answer_text": "30",
+    "explanation": "چون ماتریس اسکالر است، پس تمام درایههای روی قطر اصلی باهم برابرند. درایههای خارج قطر اصلی همه صفر هستند. بنابراین: $\\left\\{ \\begin{aligned} & {{x}^{2}}-4=3{{y}^{2}}+2=5 \\\\ & {{x}^{2}}-5x+6={{y}^{2}}+5y+4=0 \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & \\left\\{ \\begin{aligned} & {{x}^{2}}=9\\Rightarrow x=\\pm 3 \\\\ & 3{{y}^{2}}=3\\Rightarrow {{y}^{2}}=1\\Rightarrow y=\\pm 1 \\\\ \\end{aligned} \\right. \\\\ & \\left\\{ \\begin{aligned} & {{x}^{2}}-5x+6=0\\Rightarrow (x-2)\\,(x-3)=0\\Rightarrow x=2\\,\\,,\\,\\,3 \\\\ & {{y}^{2}}+5y+4=0\\Rightarrow (y+1)\\,(y+4)=0\\Rightarrow y=-1\\,\\,,\\,\\,y=-4 \\\\ \\end{aligned} \\right. \\\\ \\end{aligned} \\right.$ پس باید جوابهای مشترک را انتخاب کنیم، پس $x=3$ و $y=-1$ قابلقبول هستند. ${{[2xi+yj]}_{2\\times 2}}=\\left[ \\begin{matrix} 2x+y & 2x+2y \\\\ 4x+y & 4x+2y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 5 & 4 \\\\ 11 & 10 \\\\ \\end{matrix} \\right]$ $\\text{مجموع تمام درایهها}:5+4+11+10=30$"
+  }
+]

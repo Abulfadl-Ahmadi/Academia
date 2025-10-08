@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} |A| & |A| \\\\ 3 & 2|A| \\\\ \\end{matrix} \\right]$ باشد، $|A|$ کدام است؟",
+    "options": [
+      "2 و 0",
+      "1 و 0",
+      "2 و 1",
+      "5 و 3"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "یک دترمینان ساده کار را حل میکند: $|A|=(|A|\\times 2|A|)-(3\\times |A|)$ $\\begin{aligned} & |A|=2|A{{|}^{2}}-3|A|\\Rightarrow 2|A{{|}^{2}}-4|A|=0 \\\\ & \\Rightarrow |A|(2|A|-4)=0\\Rightarrow |A|=0\\,,\\,2 \\\\ \\end{aligned}$"
+  }
+]

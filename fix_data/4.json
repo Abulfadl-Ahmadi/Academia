@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد - حمیدرضا پردازی مقدم",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "برای دو ماتریس $A$ و $B$ اگر $A+B=\\left[ \\begin{matrix} -1 & 3 \\\\ -2 & 6 \\\\ \\end{matrix} \\right]$ و $A-B=\\left[ \\begin{matrix} 1 & -1 \\\\ -2 & -4 \\\\ \\end{matrix} \\right]$ باشد، مجموع درایههای قطر اصلی ماتریس $BA$ کدام است؟",
+    "options": [
+      "1",
+      "4-",
+      "3",
+      "2-"
+    ],
+    "answer_index": 1,
+    "answer_text": "1",
+    "explanation": "از جمع دو ماتریس دادهشده، ماتریس $A$ و سپس ماتریس $B$ را به دست میآوریم: $\\begin{aligned} & \\left( A-B \\right)+\\left( A+B \\right)=\\left[ \\begin{matrix} 1 & -1 \\\\ -2 & -4 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} -1 & 3 \\\\ -2 & 6 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & 2 \\\\ -4 & 2 \\\\ \\end{matrix} \\right]=2A \\\\ & \\Rightarrow A=\\left[ \\begin{matrix} 0 & 1 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]\\,\\,\\,\\,\\left( * \\right) \\\\ & A+B=\\left[ \\begin{matrix} -1 & 3 \\\\ -2 & 6 \\\\ \\end{matrix} \\right]\\xrightarrow{\\left( * \\right)}\\left[ \\begin{matrix} 0 & 1 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]+B=\\left[ \\begin{matrix} -1 & 3 \\\\ -2 & 6 \\\\ \\end{matrix} \\right]\\Rightarrow B=\\left[ \\begin{matrix} -1 & 2 \\\\ 0 & 5 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$ حال حاصل $BA$ را به دست میآوریم: $BA=\\left[ \\begin{matrix} -1 & 2 \\\\ 0 & 5 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & 1 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -4 & 1 \\\\ -10 & 5 \\\\ \\end{matrix} \\right]$ بنابراین مجموع درایههای قطر اصلی برابر $-4+5=1$ است."
+  }
+]

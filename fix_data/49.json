@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "صبا مهدوی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A={{\\left[ x \\right]}_{3\\times 3}}$ و ${{A}^{n}}={{3}^{3n-3}}\\times {{5}^{n-1}}A$ ، $x$ برابر چند است؟",
+    "options": [
+      "15",
+      "45",
+      "20",
+      "10"
+    ],
+    "answer_index": 2,
+    "answer_text": "45",
+    "explanation": "$\\begin{aligned} & {{A}^{2}}=\\left[ \\begin{matrix} x & x & x \\\\ x & x & x \\\\ x & x & x \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} x & x & x \\\\ x & x & x \\\\ x & x & x \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3{{x}^{2}} & 3{{x}^{2}} & 3{{x}^{2}} \\\\ 3{{x}^{2}} & 3{{x}^{2}} & 3{{x}^{2}} \\\\ 3{{x}^{2}} & 3{{x}^{2}} & 3{{x}^{2}} \\\\ \\end{matrix} \\right]=3xA \\\\ & \\Rightarrow {{A}^{3}}=A\\times {{A}^{2}}=A\\times 3xA=3x\\times {{A}^{2}}=3x\\times 3xA={{3}^{2}}{{x}^{2}}A \\\\ & \\Rightarrow {{A}^{4}}={{A}^{3}}\\times A=9{{x}^{2}}A\\times A=9{{x}^{2}}{{A}^{2}}=9{{x}^{2}}\\times 3xA={{3}^{3}}{{x}^{3}}A \\\\ &...\\Rightarrow {{A}^{n}}={{3}^{n-1}}{{x}^{n-1}}A={{3}^{3n-3}}\\times {{5}^{n-1}}A\\Rightarrow {{x}^{n-1}}={{3}^{2n-2}}\\times {{5}^{n-1}}={{9}^{n-1}}\\times {{5}^{n-1}} \\\\ & \\Rightarrow x=9\\times 5=45 \\\\ \\end{aligned}$"
+  }
+]

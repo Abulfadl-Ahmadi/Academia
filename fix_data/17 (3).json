@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "صبا مهدوی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $M=\\left[ \\begin{matrix} 1 & 1 & 1 \\\\ 0 & 0 & 1 \\\\ 0 & 1 & 0 \\\\ \\end{matrix} \\right]$ باشد، ماتریس ${{M}^{10}}-{{M}^{9}}$ کدام است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} 0 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ 1 & 1 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 1 & 1 & 0 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 0 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} 0 & 1 & 1 \\\\ 0 & 1 & -1 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$\\left[ \\begin{matrix} 0 & 1 & 1 \\\\ 0 & 1 & -1 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right]$",
+    "explanation": "$\\begin{aligned} & {{M}^{2}}=\\left[ \\begin{matrix} 1 & 2 & 2 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]\\,\\,\\,\\,,\\,\\,\\,{{M}^{3}}=\\left[ \\begin{matrix} 1 & 3 & 3 \\\\ 0 & 0 & 1 \\\\ 0 & 1 & 0 \\\\ \\end{matrix} \\right]\\,\\,\\,,\\,\\,\\,\\,{{M}^{4}}=\\left[ \\begin{matrix} 1 & 4 & 4 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right] \\\\& \\,\\,\\,\\,,\\,\\,\\,{{M}^{5}}=\\left[ \\begin{matrix} 1 & 5 & 5 \\\\ 0 & 0 & 1 \\\\ 0 & 1 & 0 \\\\ \\end{matrix} \\right] \\,\\,\\,,...,\\,\\,\\,{{M}^{9}}=\\left[ \\begin{matrix} 1 & 9 & 9 \\\\ 0 & 0 & 1 \\\\ 0 & 1 & 0 \\\\ \\end{matrix} \\right] \\,\\,\\,\\,,\\,\\,\\, {{M}^{10}}=\\left[ \\begin{matrix} 1 & 10 & 10 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow {{M}^{10}}-{{M}^{9}}=\\left[ \\begin{matrix} 0 & 1 & 1 \\\\ 0 & 1 & -1 \\\\ 0 & -1 & 1 \\\\ \\end{matrix} \\right] \\\\ \\end{aligned}$"
+  }
+]

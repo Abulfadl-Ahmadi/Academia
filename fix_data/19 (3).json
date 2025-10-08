@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "در دستگاه $\\left\\{ \\begin{aligned} & ax+by=4 \\\\ & cx+dy=m \\\\ \\end{aligned} \\right.$ ، معکوس ماتریس ضرایب مجهولات، بهصورت $\\left[ \\begin{matrix} -2 & -1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]$ است. اگر $y=2$ باشد، مقدار $x$ کدام است؟",
+    "options": [
+      "$-3$",
+      "$-4$",
+      "$3$",
+      "$4$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$-3$",
+    "explanation": "طبق روش ماتریس وارون برای حل دستگاه دو معادله ـ دو مجهول، داریم: $\\left[ \\begin{matrix} x \\\\ y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -2 & -1 \\\\ 3 & 2 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 4 \\\\ m \\\\ \\end{matrix} \\right]\\ \\xrightarrow{y=\\,2}\\,\\left[ \\begin{matrix} x \\\\ 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -8-m \\\\ 12+2m \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & x=-8-m \\\\ & 2=12+2m\\Rightarrow m=-5 \\\\ \\end{aligned} \\right.$ $\\Rightarrow x=-8-(-5)=-3$"
+  }
+]

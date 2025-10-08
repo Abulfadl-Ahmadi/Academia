@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A{{\\left( A-B \\right)}^{-1}}=\\left[ \\begin{matrix} 4 & 1 & 0 \\\\ 3 & -4 & 1 \\\\ -2 & -2 & 1 \\\\ \\end{matrix} \\right]$ باشد حاصل دترمینان ماتریس $B{{\\left( A-B \\right)}^{-1}}$ کدام است؟",
+    "options": [
+      "17",
+      "4",
+      "$-2$",
+      "$-13$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$-2$",
+    "explanation": "میدانیم حاصلضرب هر ماتریس در وارون آن برابر ماتریس همانی است. $\\begin{aligned} & \\left( A-B \\right){{\\left( A-B \\right)}^{-1}}=I\\Rightarrow A{{\\left( A-B \\right)}^{-1}}-B{{\\left( A-B \\right)}^{-1}}=I \\\\ & \\Rightarrow B{{\\left( A-B \\right)}^{-1}}=A{{\\left( A-B \\right)}^{-1}}-I \\\\ & =\\left[ \\begin{matrix} 4 & 1 & 0 \\\\ 3 & -4 & 1 \\\\ -2 & -2 & 1 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 3 & 1 & 0 \\\\ 3 & -5 & 1 \\\\ -2 & -2 & 0 \\\\ \\end{matrix} \\right] \\\\ & \\left| B{{\\left( A-B \\right)}^{-1}} \\right|=0+1\\times {{\\left( -1 \\right)}^{5}}\\times \\left| \\begin{matrix} 3 & 1 \\\\ -2 & -2 \\\\ \\end{matrix} \\right|+0=4 \\\\ \\end{aligned}$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} \\sqrt{2}-2 & 0 \\\\ 1 & 2-\\sqrt{2} \\\\ \\end{matrix} \\right]$ ، در ماتریس ${{A}^{256}}$ جمع درایههای غیر قطر اصلی چقدر است؟",
+    "options": [
+      "صفر",
+      "${{2}^{255}}$",
+      "$-{{2}^{127}}$",
+      "${{2}^{128}}$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "توانهای ماتریسهای قطری را میتوان به صورت زیر به دست آورد: $A=\\left[ \\begin{matrix} x & 0 \\\\ 0 & y \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{n}}=\\left[ \\begin{matrix} {{x}^{n}} & 0 \\\\ 0 & {{y}^{n}} \\\\ \\end{matrix} \\right]$ ابتدا ماتریس ${{A}^{2}}$ را به دست میآوریم: $\\begin{aligned} & A=\\left[ \\begin{matrix} \\sqrt{2}-2 & 0 \\\\ 1 & 2-\\sqrt{2} \\\\ \\end{matrix} \\right]\\Rightarrow {{A}^{2}}=\\left[ \\begin{matrix} \\sqrt{2}-2 & 0 \\\\ 1 & 2-\\sqrt{2} \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\sqrt{2}-2 & 0 \\\\ 1 & 2-\\sqrt{2} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} {{\\left( \\sqrt{2}-2 \\right)}^{2}} & 0 \\\\ 0 & {{\\left( 2-\\sqrt{2} \\right)}^{2}} \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow {{A}^{256}}={{\\left( {{A}^{2}} \\right)}^{128}}=\\left[ \\begin{matrix} {{\\left( \\sqrt{2}-2 \\right)}^{256}} & 0 \\\\ 0 & {{\\left( 2-\\sqrt{2} \\right)}^{256}} \\\\ \\end{matrix} \\right]\\Rightarrow \\text{جمع درایههای غیر قطر اصلی }=0 \\\\ \\end{aligned}$"
+  }
+]

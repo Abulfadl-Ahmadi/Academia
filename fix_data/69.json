@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "حاصلجمع جوابهای معادلۀ $\\left| \\begin{matrix} x-1 & -1 & 1 \\\\ 1 & x+1 & -1 \\\\ -1 & x & 1 \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "2",
+      "$-1$",
+      "1",
+      "$-2$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-1$",
+    "explanation": "$\\left| \\begin{matrix} x-1 & -1 & 1 \\\\ 1 & x+1 & -1 \\\\ -1 & x & 1 \\\\ \\end{matrix} \\right|=\\left( -1 \\right)\\times {{\\left( -1 \\right)}^{4}}\\times \\left| \\begin{matrix} -1 & 1 \\\\ x+1 & -1 \\\\ \\end{matrix} \\right|+x{{\\left( -1 \\right)}^{5}}\\times \\left| \\begin{matrix} x-1 & 1 \\\\ 1 & -1 \\\\ \\end{matrix} \\right|+1\\times {{\\left( -1 \\right)}^{6}}\\times \\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|$ $=-\\left( 1-x-1 \\right)-x\\left( -x+1-1 \\right)+\\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|$ $\\Rightarrow -\\left( 1-x-1 \\right)-x\\left( -x+1-1 \\right)=\\underbrace{\\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|-\\left| \\begin{matrix} x-1 & -1 \\\\ 1 & x+1 \\\\ \\end{matrix} \\right|}_{0}$ $\\Rightarrow x+{{x}^{2}}=0\\Rightarrow x\\left( x+1 \\right)=0\\Rightarrow \\left\\{ \\begin{matrix} x=0 \\\\ x=-1 \\\\ \\end{matrix} \\right.$ $0+\\left( -1 \\right)=-1$."
+  }
+]

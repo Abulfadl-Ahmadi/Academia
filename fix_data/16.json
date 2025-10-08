@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر $A$ ، $B$ ، $C$ و $D$ به ترتیب ماتریسهایی با مرتبههای $1\\times 3$ و $2\\times 3$ و $2\\times 2$ و $2\\times 1$ باشند، کدام ماتریس زیر مربعی $3\\times 3$ خواهد بود؟",
+    "options": [
+      "$\\left[ \\begin{matrix} C & D \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} A & B \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} B \\\\ A \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} D & C \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "$\\left[ \\begin{matrix} \\overbrace{\\left[ \\begin{matrix} \\bigcirc & \\bigcirc & \\bigcirc \\\\ \\bigcirc & \\bigcirc & \\bigcirc \\\\ \\end{matrix} \\right]}^{B} \\\\ \\\\ \\underbrace{\\left[ \\begin{matrix} \\bigcirc & \\bigcirc & \\bigcirc \\\\ \\end{matrix} \\right]}_{A} \\\\ \\end{matrix} \\right]$"
+  }
+]

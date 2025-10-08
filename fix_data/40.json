@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "صبا مهدوی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "محل تلاقی دو خط $\\left| \\begin{matrix} x & y & 1 \\\\ 3 & 1 & 1 \\\\ 2 & -1 & 1 \\\\ \\end{matrix} \\right|=0$ و $\\left| \\begin{matrix} x & 5 & -1 \\\\ y & 6 & 2 \\\\ 1 & 1 & 1 \\\\ \\end{matrix} \\right|=0$ کدام است؟",
+    "options": [
+      "$(-\\dfrac{7}{4},\\dfrac{3}{4})$",
+      "$(\\dfrac{7}{4},\\dfrac{-3}{2})$",
+      "$(-\\dfrac{7}{4},\\dfrac{3}{2})$",
+      "$(\\dfrac{23}{4},\\dfrac{13}{2})$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "$\\begin{aligned} &\\left| \\begin{matrix} x & y & 1 \\\\ 3 & 1 & 1 \\\\ 2 & -1 & 1 \\\\ \\end{matrix} \\right|=4(x+1)-6(y-2)=0\\Rightarrow 4x-6y+16=0\\Rightarrow {\\ell }':y=\\frac{2}{3}x+\\frac{8}{3} \\\\ &\\left| \\begin{matrix} x & 5 & -1 \\\\ y & 6 & 2 \\\\ 1 & 1 & 1 \\\\ \\end{matrix} \\right|=2(x-2)-(y+1)=0\\Rightarrow \\ell :y=2x-5 \\end{aligned}$ ${\\ell }'=\\ell \\Rightarrow \\frac{2}{3}x+\\frac{8}{3}=2x-5\\Rightarrow x=\\frac{23}{4},y=\\frac{13}{2}$"
+  }
+]

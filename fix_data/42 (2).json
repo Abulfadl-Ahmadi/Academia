@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & -1 \\\\ \\end{matrix} \\right]$ آنگاه ${{A}^{6}}$ با کدام گزینه برابر است؟",
+    "options": [
+      "$-6I$",
+      "$-27I$",
+      "$8A$",
+      "$4A$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-27I$",
+    "explanation": "ابتدا ماتریس ${{A}^{2}}$ را به دست میآوریم: ${{A}^{2}}=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & -1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & -1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -3 & 0 \\\\ 0 & -3 \\\\ \\end{matrix} \\right]=-3I\\Rightarrow {{A}^{6}}={{\\left( -3I \\right)}^{3}}=-27I$"
+  }
+]

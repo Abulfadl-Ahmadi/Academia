@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر ${{A}_{n\\times 3}}$ و ${{B}_{m\\times 2}}$ و ${{C}_{2\\times n}}$ و ماتریسهای $ABC$ و $CAB$ هممرتبه باشند، آنگاه حاصل $m+n$ کدام است؟",
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer_index": 1,
+    "answer_text": "3",
+    "explanation": "مرتبۀ ماتریسهای $ABC$ و $CAB$ را تعیین میکنیم: $\\left. \\begin{matrix} {{A}_{n\\times 3}}\\times {{B}_{m\\times 2}}\\times {{C}_{2\\times n}}={{D}_{n\\times n}}\\Rightarrow m=3 \\\\ {{C}_{2\\times n}}\\times {{A}_{n\\times 3}}\\times {{B}_{m\\times 2}}={{E}_{2\\times 2}}\\Rightarrow n=2 \\\\ \\end{matrix} \\right\\}\\Rightarrow m+n=5$"
+  }
+]

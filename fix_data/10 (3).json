@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "برای ماتریسهای $A$ و $B$ که وارونپذیر و از مرتبۀ 3 میباشند، داریم ${{A}^{-1}}=A{{B}^{-1}}$. کدامیک از گزینههای زیر صحیح نیست؟",
+    "options": [
+      "$\\left| {{A}^{2}} \\right|=\\left| B \\right|$",
+      "$\\left| I+{{A}^{2}}{{B}^{-1}} \\right|=8$",
+      "$\\left| A+{{A}^{-1}}B \\right|=2\\left| A \\right|$",
+      "$\\left| {{A}^{3}}-AB \\right|=0$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$\\left| {{A}^{2}} \\right|=\\left| B \\right|$",
+    "explanation": "$\\begin{aligned} & \\text{گزینۀ 1}:{{A}^{-1}}=A{{B}^{-1}}\\Rightarrow \\left| {{A}^{-1}} \\right|=\\left| A \\right|\\left| {{B}^{-1}} \\right|\\Rightarrow \\dfrac{1}{\\left| A \\right|}=\\dfrac{\\left| A \\right|}{\\left| B \\right|} \\\\ & \\Rightarrow {{\\left| A \\right|}^{2}}=\\left| B \\right|\\Rightarrow \\left| {{A}^{2}} \\right|=\\left| B \\right| \\\\ \\end{aligned}$ $\\begin{aligned} & \\text{گزینۀ 2}:{{A}^{-1}}=A{{B}^{-1}}\\xrightarrow[\\text{از چپ}]{\\times A}I={{A}^{2}}{{B}^{-1}} \\\\ & \\left| I+{{A}^{2}}{{B}^{-1}} \\right|=\\left| I+I \\right|=\\left| 2I \\right|=8\\left| I \\right|=8 \\\\ \\end{aligned}$ $\\text{گزینۀ 3}:{{A}^{-1}}=A{{B}^{-1}}\\xrightarrow[\\text{از راست}]{\\times B}{{A}^{-1}}B=A$ $\\left| A+{{A}^{-1}}B \\right|=|َA+A|=\\left| 2A \\right|=8\\left| A \\right|\\,\\,\\,\\,\\times$ $\\begin{aligned} & \\text{گزینۀ 4}:{{A}^{-1}}=A{{B}^{-1}}\\xrightarrow[\\text{از چپ}]{\\times {{A}^{2}}}A={{A}^{3}}{{B}^{-1}} \\\\ & \\xrightarrow[\\text{از راست}]{\\times B}AB={{A}^{3}} \\\\ & \\left| {{A}^{3}}-AB \\right|=\\left| {\\bar{O}} \\right|=0\\,\\,\\,\\, \\\\ \\end{aligned}$"
+  }
+]

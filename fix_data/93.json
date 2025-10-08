@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "اگر ماتریس $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]$ خاصیت تعویضپذیری را داشته باشند، دستگاه معادلات $\\left\\{ \\begin{matrix} ax-by=2 \\\\ dx+cy=-2 \\\\ \\end{matrix} \\right.$ چند جواب دارد؟",
+    "options": [
+      "صفر",
+      "1",
+      "2",
+      "بیشمار"
+    ],
+    "answer_index": 2,
+    "answer_text": "1",
+    "explanation": "$AB=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} a-2b & 2a+b \\\\ c-2d & 2c+d \\\\ \\end{matrix} \\right]$ $BA=\\left[ \\begin{matrix} 1 & 2 \\\\ -2 & 1 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} a+2c & b+2d \\\\ -2a+c & -2b+d \\\\ \\end{matrix} \\right]$ $AB=BA\\Rightarrow \\left\\{ \\begin{matrix} a-2b=a+2c\\Rightarrow b=-c \\\\ 2a+b=b+2d\\Rightarrow a=d \\\\ \\end{matrix} \\right.$ حال دستگاه را بررسی میکنیم: $\\underbrace{\\dfrac{a}{d}}_{\\,1\\,}=\\underbrace{\\dfrac{-b}{c}}_{\\,1\\,}\\ne \\dfrac{2}{-2}$ پس این دو خط موازیاند و دستگاه جواب ندارد."
+  }
+]

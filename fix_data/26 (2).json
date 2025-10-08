@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر $A$ ماتریسی غیراسکالر باشد و ${{A}^{2}}=A$ ، وارون ماتریس $2A+I$ کدام است؟",
+    "options": [
+      "$2I+\\dfrac{3}{2}A$",
+      "$2I-\\dfrac{3}{4}A$",
+      "$I+\\dfrac{3}{5}I$",
+      "$I-\\dfrac{2}{3}A$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$I-\\dfrac{2}{3}A$",
+    "explanation": "روش اول: فرض کنیم وارون ماتریس $2A+I$ ، ماتریس $mA+nI$ باشد $(m\\,,\\,n\\in \\mathbb{R})$. بنابراین: $(mA+nI)(2A+I)=I\\Rightarrow 2m{{A}^{2}}+mA+2nA+nI=I\\xrightarrow{{{A}^{2}}=A}2mA+mA+2nA+nI=I$ $\\Rightarrow (3m+2n)A+nI=I\\xrightarrow{\\text{غیراسکالر }\\,A\\,}\\left\\{ \\begin{aligned} & 3m+2n=0 \\\\ & n=1 \\\\ \\end{aligned} \\right.\\Rightarrow m=-\\dfrac{2}{3}\\Rightarrow {{(2A+I)}^{-1}}=-\\dfrac{2}{3}A+I$ روش دوم: نکته: اگر $A$ ماتریسی مربعی، ${{A}^{2}}=A$ و $\\lambda \\cancel{=} 1$ باشد، آنگاه ماتریس $I-\\lambda A$ وارونپذیر است و ${{(I-\\lambda A)}^{-1}}=I+\\dfrac{\\lambda }{1-\\lambda }A$. باتوجهبه نکتۀ فوق داریم: $\\lambda =-2\\Rightarrow {{(I-(-2)A)}^{-1}}=I+\\dfrac{-2}{1-(-2)}A=I-\\dfrac{2}{3}A$"
+  }
+]

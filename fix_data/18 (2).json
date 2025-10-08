@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & -1 & 0 \\\\ 3 & 1 & -2 \\\\ 4 & 0 & 5 \\\\ \\end{matrix} \\right]$ باشد، مجموع درایههای واقع بر ستون سوم ماتریس ${{A}^{3}}$ کدام است؟",
+    "options": [
+      "128",
+      "113",
+      "93",
+      "85"
+    ],
+    "answer_index": 3,
+    "answer_text": "93",
+    "explanation": "طبق فرض داریم: ${{A}^{2}}=\\left[ \\begin{matrix} 2 & -1 & 0 \\\\ 3 & 1 & -2 \\\\ 4 & 0 & 5 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} 2 & -1 & 0 \\\\ 3 & 1 & -2 \\\\ 4 & 0 & 5 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & -3 & 2 \\\\ 1 & -2 & -12 \\\\ 28 & -4 & 25 \\\\ \\end{matrix} \\right]$ ${{A}^{3}}={{A}^{2}}A\\Rightarrow\\left[ {{A}^{3}}\\text{ ستون سوم }\\, \\right]={{A}^{2}}\\left[ A\\text{ ستون سوم }\\, \\right]=\\left[ \\begin{matrix} 1 & -3 & 2 \\\\ 1 & -2 & -12 \\\\ 28 & -4 & 25 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} 0 \\\\ -2 \\\\ 5 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 16\\\\ -56 \\\\ 133\\\\ \\end{matrix} \\right]$ $\\Rightarrow {{A}^{3}}\\text{ مجموع درایههای ستون سوم }=16-56+133=93$"
+  }
+]

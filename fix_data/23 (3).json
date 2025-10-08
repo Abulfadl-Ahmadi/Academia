@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "معادله $\\left| \\begin{matrix} 1 & -1 & 0 \\\\ 1 & 0 & 0 \\\\ x & 0 & x \\\\ \\end{matrix} \\right|+\\left| \\begin{matrix} x & 0 & 1 \\\\ 0 & 2 & 1 \\\\ 0 & x & x \\\\ \\end{matrix} \\right|+\\left| \\begin{matrix} 0 & 1 & x \\\\ 0 & 0 & 1 \\\\ 1 & x & x \\\\ \\end{matrix} \\right|=0$ چند ریشه دارد؟",
+    "options": [
+      "بیشمار",
+      "1",
+      "2",
+      "هیچ"
+    ],
+    "answer_index": 2,
+    "answer_text": "1",
+    "explanation": "حاصل دترمینانها را حساب میکنیم و باهم جمع میکنیم. $\\left| \\begin{matrix} 1 & -1 & 0 \\\\ 1 & 0 & 0 \\\\ x & 0 & x \\\\ \\end{matrix} \\right|=x(-1)^{3+3}\\left| \\begin{matrix} 1 & -1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right|=x(0-(-1))=x$ $\\left| \\begin{matrix} x & 0 & 1 \\\\ 0 & 2 & 1 \\\\ 0 & x & x \\\\ \\end{matrix} \\right|=x(-1)^{1+1}\\left| \\begin{matrix} 2 & 1 \\\\ x & x \\\\ \\end{matrix} \\right|=x(2x-x)=x^2$ $\\left| \\begin{matrix} 0 & 1 & x \\\\ 0 & 0 & 1 \\\\ 1 & x & x \\\\ \\end{matrix} \\right|=1(-1)^{3+1}\\left| \\begin{matrix} 1 & x \\\\ 0 & 1 \\\\ \\end{matrix} \\right|=1(1-0)=1$ $\\Rightarrow x+{{x}^{2}}+1=0$ $\\Delta <0\\Rightarrow \\text{ فاقد ریشه }$"
+  }
+]

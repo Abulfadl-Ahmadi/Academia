@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "رضا ادیبی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "ماتریس قطری $A=\\left[ \\begin{matrix} {{m}^{2}}+{{a}^{2}} & {{m}^{2}}-4 & m+2 \\\\ 3m-b & 2b+a & a-m \\\\ z+m & k-a+1 & k-{{a}^{2}} \\\\ \\end{matrix} \\right]$ را در نظر بگیرید. اگر $A+B$ یک ماتریس اسکالر باشد که مجموع درایههای روی قطر اصلی آن 18 باشد، حاصلضرب درایههای روی قطر اصلی ماتریس $B$ کدام است؟",
+    "options": [
+      "صفر",
+      "$-520$",
+      "40",
+      "$-156$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-520$",
+    "explanation": "چون $A$ ماتریس قطری است، پس تمام درایههای غیرواقع بر قطر اصلی آن صفر است (قطر اصلی میتواند صفر باشد یا نباشد)، پس: $\\left. \\begin{aligned} & {{m}^{2}}-4=0 \\\\ & m+2=0 \\\\ \\end{aligned} \\right\\}\\Rightarrow m=-2$ $\\left\\{ \\begin{aligned} & a-m=0\\Rightarrow a=m=-2 \\\\ & 3m-b=0\\Rightarrow b=3m\\Rightarrow b=-6 \\\\ & z+m=0\\Rightarrow z=-m\\Rightarrow z=2 \\\\ & k-a+1=0\\Rightarrow k+2+1=0\\Rightarrow k=-3 \\\\ \\end{aligned} \\right.\\Rightarrow A=\\left[ \\begin{matrix} 8 & 0 & 0 \\\\ 0 & -14 & 0 \\\\ 0 & 0 & -7 \\\\ \\end{matrix} \\right]$ چون $A$ ماتریس $3\\times 3$ پس $B$ نیز باید $3\\times 3$ باشد تا جمع $A$ و $B$ انجام شود، لذا چون $A+B$ اسکالر است، پس به صورت $A+B=\\left[ \\begin{matrix} k & 0 & 0 \\\\ 0 & k & 0 \\\\ 0 & 0 & k \\\\ \\end{matrix} \\right]$ است چون مجموع اعضای روی درایههای قطر اصلی 18 میباشد، پس $3k=18$. پس $k=6$ ، که در این صورت داریم: $A+B=\\left[ \\begin{matrix} 6 & 0 & 0 \\\\ 0 & 6 & 0 \\\\ 0 & 0 & 6 \\\\ \\end{matrix} \\right]\\Rightarrow B=\\left[ \\begin{matrix} 6 & 0 & 0 \\\\ 0 & 6 & 0 \\\\ 0 & 0 & 6 \\\\ \\end{matrix} \\right]-A$ $\\Rightarrow B=\\left[ \\begin{matrix} 6 & 0 & 0 \\\\ 0 & 6 & 0 \\\\ 0 & 0 & 6 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 8 & 0 & 0 \\\\ 0 & -14 & 0 \\\\ 0 & 0 & -7 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -2 & 0 & 0 \\\\ 0 & 20 & 0 \\\\ 0 & 0 & 13 \\\\ \\end{matrix} \\right]$ $B\\,\\text{ حاصل ضرب روی قطر اصلی }:(-2)\\,(20)\\,(13)=-520$ درنتیجه گزینۀ 2 صحیح است."
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "به ازای کدام مقدار $k$ ، معادلۀ $\\left| \\begin{matrix} x & 1-x & 1 \\\\ 2 & k & 0 \\\\ 3 & -1 & x \\\\ \\end{matrix} \\right|=0$ ریشۀ مضاعف دارد؟",
+    "options": [
+      "$-\\dfrac{2}{3}$",
+      "$-\\dfrac{4}{3}$",
+      "$-\\dfrac{5}{3}$",
+      "$-\\dfrac{7}{3}$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$-\\dfrac{5}{3}$",
+    "explanation": "$\\begin{aligned} & \\left| \\begin{matrix} x & 1-x & 1 \\\\ 2 & k & 0 \\\\ 3 & -1 & x \\\\ \\end{matrix}\\right| \\begin{matrix} x & 1-x \\\\ 2 & k \\\\ 3 & -1 \\\\ \\end{matrix} \\\\ & \\Rightarrow \\left( k{{x}^{2}}+0-2 \\right)-\\left( 3k+0+2x-2{{x}^{2}} \\right)=0 \\\\ & \\Rightarrow \\left( k+2 \\right){{x}^{2}}-2x+\\left( -2-3k \\right)=0 \\\\ & \\Rightarrow \\Delta =4-4\\left( k+2 \\right)\\left( -2-3k \\right)=0\\Rightarrow 3{{k}^{2}}+8k+5=0\\Rightarrow \\left\\{ \\begin{matrix} k=-1\\,\\,\\, \\\\ k=-\\dfrac{5}{3} \\\\ \\end{matrix} \\right. \\\\ \\end{aligned}$"
+  }
+]

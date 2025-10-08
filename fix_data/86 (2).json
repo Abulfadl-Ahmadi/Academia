@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "فرض کنید $A=\\left[ \\begin{matrix} 1 & b & 0 \\\\ c & 4 & -1 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} a & 0 \\\\ -2 & 0 \\\\ 1 & -1 \\\\ \\end{matrix} \\right]$ ، اگر $|AB|\\,\\cancel{=} 0$ و ${{(AB)}^{2}}=AB$ ، حاصل $a-2b+ac$ کدام است؟",
+    "options": [
+      "10",
+      "9",
+      "8",
+      "7"
+    ],
+    "answer_index": 1,
+    "answer_text": "10",
+    "explanation": "چون $|AB|\\, \\cancel{=} 0$ ، ماتریس $AB$ وارونپذیر است. حال داریم: ${{(AB)}^{2}}=AB\\Rightarrow {{(AB)}^{2}}{{(AB)}^{-1}}=(AB)\\,{{(AB)}^{-1}}\\Rightarrow AB=I$ $\\left[ \\begin{matrix} 1 & b & 0 \\\\ c & 4 & -1 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} a & 0 \\\\ -2 & 0 \\\\ 1 & -1 \\\\ \\end{matrix} \\right]=I\\Rightarrow \\left[ \\begin{matrix} a-2b & 0 \\\\ ac-9 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & a-2b=1 \\\\ & ac=9 \\\\ \\end{aligned} \\right.\\Rightarrow a-2b+ac=10$"
+  }
+]

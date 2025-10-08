@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "$B$ و $A$ ماتریسهای مربعی از مرتبۀ 2 هستند بهطوریکه $4A-3I=\\bar{O}$ و $\\left| B \\right|=8$ ، حاصل دترمینان $\\left| 2AB-3B \\right|$ کدام است؟",
+    "options": [
+      "18",
+      "8",
+      "12",
+      "15"
+    ],
+    "answer_index": 1,
+    "answer_text": "18",
+    "explanation": "$\\begin{aligned} & \\left| 2AB-3B \\right|=\\left| \\left( 2A-3I \\right)B \\right|=\\left| 2A-3I \\right|\\left| B \\right| \\\\ & \\xrightarrow{A=\\frac{3}{4}I}\\left| 2A-3I \\right|\\left| B \\right|=\\left| -\\frac{3}{2}I \\right|\\left| B \\right|=\\frac{9}{4}\\times 1\\times 8=18 \\\\ \\end{aligned}$"
+  }
+]

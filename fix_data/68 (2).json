@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "محمد علی نیک بخش",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر دترمینان $\\left| \\begin{matrix} ab & bc & ac \\\\ 1 & 1 & 1 \\\\ bc & ac & ab \\\\ \\end{matrix} \\right|=D$ باشد، حاصل $\\left| \\begin{matrix} a & ab & a+b \\\\ b & bc & b+c \\\\ c & ac & a+c \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "$abcD$",
+      "$(a+b+c)D$",
+      "$-D$",
+      "$D$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$-D$",
+    "explanation": "به جای $a$ و $b$ و $c$ سه عدد دلخواه میگذاریم و جوابها را باهم مقایسه میکنیم. $a=0\\,,\\,b=1\\,,\\,c=1$ $\\left| \\begin{matrix} ab & bc & ac \\\\ 1 & 1 & 1 \\\\ bc & ac & ab \\\\ \\end{matrix} \\right|=D\\Rightarrow \\left| \\begin{matrix} 0 & 1 & 0 \\\\ 1 & 1 & 1 \\\\ 1 & 0 & 0 \\\\ \\end{matrix} \\right|=D\\xrightarrow[\\text{ را حساب میکنیم }]{\\text{ حاصل دترمینان }}1=D$ $\\left| \\begin{matrix} a & ab & a+b \\\\ b & bc & b+c \\\\ c & ac & a+c \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} 0 & 0 & 1 \\\\ 1 & 1 & 2 \\\\ 1 & 0 & 1 \\\\ \\end{matrix} \\right|\\xrightarrow[\\text{ را حساب میکنیم }]{\\text{ حاصل دترمینان }}-1=-D$"
+  }
+]

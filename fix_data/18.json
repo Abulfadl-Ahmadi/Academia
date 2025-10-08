@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر $A={{[2i+j]}_{3\\times 1}}$ و $B={{[i\\times {{j}^{2}}]}_{3\\times 2}}$ و $C=[\\begin{matrix} A & B \\\\ \\end{matrix}]$ ، آنگاه حاصلضرب درایههای روی سطر سوم ماتریس C چقدر از حاصلضرب درایههای روی سطر دوم بیشتر است؟",
+    "options": [
+      "108",
+      "162",
+      "152",
+      "172"
+    ],
+    "answer_index": 4,
+    "answer_text": "172",
+    "explanation": "ابتدا ماتریس C را تشکیل میدهیم: $A=\\left[ \\begin{matrix} 3 \\\\ 5 \\\\ 7 \\\\ \\end{matrix} \\right]\\,\\,\\,;\\,\\,\\,B=\\left[ \\begin{matrix} 1 & 4 \\\\ 2 & 8 \\\\ 3 & 12 \\\\ \\end{matrix} \\right]\\Rightarrow C=\\left[ \\begin{matrix} 3 & 1 & 4 \\\\ 5 & 2 & 8 \\\\ 7 & 3 & 12 \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\begin{matrix} \\text{حاصلضرب درایههای سطر دوم}=5\\times 2\\times 8=80 \\\\ \\text{حاصلضرب درایههای سطر سوم}=7\\times 3\\times 12=252 \\\\ \\end{matrix}\\Rightarrow 252-80=172$"
+  }
+]

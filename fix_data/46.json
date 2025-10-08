@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "صبا مهدوی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "وارون ماتریسها"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 1 \\\\ 2 & 3 \\\\ \\end{matrix} \\right]$ و $4{{A}^{-1}}=nA+mI$ باشد، $\\dfrac{m}{n}$ کدام است؟",
+    "options": [
+      "$\\dfrac{1}{5}$",
+      "$-\\dfrac{1}{5}$",
+      "5",
+      "$-5$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$-5$",
+    "explanation": "راه اول: $\\begin{aligned} & {{A}^{-1}}=\\frac{1}{2\\times 3-1\\times 2}\\left[ \\begin{matrix} 3 & -1 \\\\ -2 & 2 \\\\ \\end{matrix} \\right]=\\frac{1}{4}\\left[ \\begin{matrix} 3 & -1 \\\\ -2 & 2 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow 4{{A}^{-1}}=\\left[ \\begin{matrix} 3 & -1 \\\\ -2 & 2 \\\\ \\end{matrix} \\right]=nA+mI=\\left[ \\begin{matrix} 2n+m & n \\\\ 2n & 3n+m \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow n=-1,m=5\\Rightarrow \\frac{m}{n}=-5 \\\\ \\end{aligned}$ راه دوم: رابطۀ کیلی- همیلتون: اگر $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ باشد: ${{A}^{2}}-\\left( a+d \\right)A+\\left| A \\right|I=\\bar{O}$ پس: $\\begin{aligned} & A\\times \\left( nA+mI \\right)=4\\times A\\times {{A}^{-1}}\\Rightarrow n{{A}^{2}}+mA-4I=0 \\\\ & \\Rightarrow {{A}^{2}}+\\frac{m}{n}A-\\frac{4}{n}I=0\\xrightarrow \\text{کیلی همیلتون}\\frac{m}{n}=-\\underbrace{tr\\left( A \\right)}_{\\begin{matrix} \\text{جمع درایههای } \\\\ \\,\\,A\\,\\text{روی قطر} \\end{matrix}}=-\\left( 2+3 \\right)=-5 \\\\ \\end{aligned}$"
+  }
+]

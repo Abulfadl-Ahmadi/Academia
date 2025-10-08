@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $\\left| \\begin{matrix} 6 & 3x & 2x \\\\ 3x & 2x & 6 \\\\ 2x & 6 & 3x \\\\ \\end{matrix} \\right|=k$ باشد، حاصل $\\left| \\begin{matrix} 6 & {{x}^{2}} & {{x}^{2}} \\\\ 9 & 2x & 9 \\\\ 4 & 4 & 3x \\\\ \\end{matrix} \\right|$ کدام است؟",
+    "options": [
+      "$-2k$",
+      "$2k$",
+      "$-k$",
+      "$k$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$k$",
+    "explanation": "به کمک ویژگیهای دترمینان، داریم: $\\left| \\begin{matrix} 6 & {{x}^{2}} & {{x}^{2}} \\\\ 9 & 2x & 9 \\\\ 4 & 4 & 3x \\\\ \\end{matrix} \\right|=x(3)\\,(2)\\left| \\begin{matrix} \\dfrac{6}{x} & x & x \\\\ 3 & \\dfrac{2}{3}x & 3 \\\\ 2 & 2 & \\dfrac{3}{2}x \\\\ \\end{matrix} \\right|=\\left| \\begin{matrix} 6 & 3x & 2x \\\\ 3x & 2x & 6 \\\\ 2x & 6 & 3x \\\\ \\end{matrix} \\right|=k$"
+  }
+]

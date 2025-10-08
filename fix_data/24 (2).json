@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر $A$ ماتریسی $2\\times 2$ باشد و $|A|\\,=k$ ، حاصل $\\left| \\left| \\left| {{A}^{-1}} \\right|{{A}^{-1}} \\right|{{A}^{-1}} \\right|$ کدام است؟",
+    "options": [
+      "$\\dfrac{1}{{{k}^{6}}}$",
+      "$\\dfrac{1}{{{k}^{9}}}$",
+      "$\\dfrac{1}{{{k}^{7}}}$",
+      "$\\dfrac{1}{{{k}^{8}}}$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$\\dfrac{1}{{{k}^{7}}}$",
+    "explanation": "با استفاده از ویژگیهای دترمینان داریم: $\\left| \\left| \\left| {{A}^{-1}} \\right|{{A}^{-1}} \\right|{{A}^{-1}} \\right|=\\left| \\left| \\dfrac{1}{\\left| A \\right|}{{A}^{-1}} \\right|{{A}^{-1}} \\right|=\\left| \\dfrac{1}{{{\\left| A \\right|}^{2}}}\\left| {{A}^{-1}} \\right|{{A}^{-1}} \\right|=\\left| \\dfrac{1}{{{\\left| A \\right|}^{2}}}\\times \\dfrac{1}{\\left| A \\right|}\\times {{A}^{-1}} \\right|=\\left| \\dfrac{1}{{{\\left| A \\right|}^{3}}}{{A}^{-1}} \\right|$ $=\\dfrac{1}{{{\\left| A \\right|}^{6}}}\\left| {{A}^{-1}} \\right|=\\dfrac{1}{{{\\left| A \\right|}^{6}}}\\times \\dfrac{1}{\\left| A \\right|}=\\dfrac{1}{{{\\left| A \\right|}^{7}}}$ $\\xrightarrow{|A|=k}\\left| \\left| \\left| {{A}^{-1}} \\right|{{A}^{-1}} \\right|{{A}^{-1}} \\right|=\\dfrac{1}{{{k}^{7}}}$"
+  }
+]

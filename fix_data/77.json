@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "حسین سعیدی",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "اگر ماتریس $A=\\left[ \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right]$ وارونپذیر نباشد و $\\left| \\begin{matrix} a & 3 & b \\\\ 2 & -1 & 0 \\\\ c & -3 & d \\\\ \\end{matrix} \\right|=-6$ باشد، حاصل $b+d$ کدام است؟",
+    "options": [
+      "صفر",
+      "1",
+      "$-1$",
+      "$-2$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$-1$",
+    "explanation": "برای محاسبۀ دترمینان، آن را حول سطر دوم بسط میدهیم. $\\Rightarrow \\left| \\begin{matrix} a & 3 & b \\\\ 2 & -1 & 0 \\\\ c & -3 & d \\\\ \\end{matrix} \\right|=-6\\Rightarrow 2\\times {{\\left( -1 \\right)}^{3}}\\times \\left| \\begin{matrix} 3 & b \\\\ -3 & d \\\\ \\end{matrix} \\right|+\\left( -1 \\right)\\times {{\\left( -1 \\right)}^{4}}\\times \\cancel{\\overset{0}{\\mathop{\\left| \\begin{matrix} a & b \\\\ c & d \\\\ \\end{matrix} \\right|}}\\,}+0=-6$ $\\Rightarrow -2\\left( 3d+3b \\right)=-6\\Rightarrow 3\\left( b+d \\right)=3\\Rightarrow b+d=1$"
+  }
+]

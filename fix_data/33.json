@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]$ ، $B=\\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]$ و $(A+B)\\,(A-B)={{A}^{2}}-{{B}^{2}}$ باشد، حاصل $x+2y$ کدام است؟",
+    "options": [
+      "1",
+      "$-1$",
+      "2",
+      "$-2$"
+    ],
+    "answer_index": 2,
+    "answer_text": "$-1$",
+    "explanation": "طبق فرض، داریم: $(A+B)\\,(A-B)={{A}^{2}}-{{B}^{2}}\\Rightarrow {{A}^{2}}-AB+BA-{{B}^{2}}={{A}^{2}}-{{B}^{2}}\\Rightarrow BA=AB$ $\\Rightarrow \\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 & 5 \\\\ 1 & y \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} 3 & x \\\\ -1 & 2 \\\\ \\end{matrix} \\right]\\Rightarrow \\left[ \\begin{matrix} 6+x & 15+xy \\\\ 0 & -5+2y \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 1 & 2x+10 \\\\ 3-y & x+2y \\\\ \\end{matrix} \\right]\\Rightarrow \\left\\{ \\begin{aligned} & x=-5 \\\\ & y=3 \\\\ \\end{aligned} \\right.$ $\\Rightarrow x+2y=-5+6=1$"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "جمع و تفریق ماتریسها و خواص آنها"
+    ],
+    "question": "اگر $A={{[i+3j]}_{2\\times 2}}$ و $B={{[{{i}^{2}}+j]}_{2\\times 2}}$ و $C=A-2B$ ، آنگاه درایۀ واقع در سطر اول و ستون دوم ماتریس C چندبرابر درایۀ واقع در سطر دوم و ستون اول ماتریس C است؟",
+    "options": [
+      "0",
+      "$\\dfrac{1}{5}$",
+      "$\\dfrac{-1}{5}$",
+      "1"
+    ],
+    "answer_index": 2,
+    "answer_text": "$\\dfrac{1}{5}$",
+    "explanation": "$A=\\left[ \\begin{matrix} 4 & 7 \\\\ 5 & 8 \\\\ \\end{matrix} \\right]\\,\\,\\,,\\,\\,\\,B=\\left[ \\begin{matrix} 2 & 3 \\\\ 5 & 6 \\\\ \\end{matrix} \\right]$ $\\Rightarrow C=A-2B=\\left[ \\begin{matrix} 4 & 7 \\\\ 5 & 8 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 4 & 6 \\\\ 10 & 12 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & 1 \\\\ -5 & -4 \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\dfrac{{{C}_{12}}}{{{C}_{21}}}=-\\dfrac{1}{5}$"
+  }
+]

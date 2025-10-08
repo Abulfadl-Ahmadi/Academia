@@ -1,0 +1,25 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها"
+    ],
+    "question": "اگر $A={{[xi+j]}_{2\\times 2}}$ و $B=\\left[ \\begin{matrix} 0 & x+2 \\\\ y-1 & -2 \\\\ \\end{matrix} \\right]$ و $A+2I=B$ ، آنگاه $x+y$ کدام است؟",
+    "options": [
+      "7-",
+      "7",
+      "5-",
+      "5"
+    ],
+    "answer_index": 2,
+    "answer_text": "7",
+    "explanation": "$A=\\left[ \\begin{matrix} x+1 & x+2 \\\\ 2x+1 & 2x+2 \\\\ \\end{matrix} \\right]\\,\\,\\,,\\,\\,\\,I=\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]$ $\\Rightarrow A+2I=B\\Rightarrow \\left[ \\begin{matrix} x+1 & x+2 \\\\ 2x+1 & 2x+2 \\\\ \\end{matrix} \\right]+\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & x+2 \\\\ y-1 & -2 \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left[ \\begin{matrix} x+3 & x+2 \\\\ 2x+1 & 2x+4 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 0 & x+2 \\\\ y-1 & -2 \\\\ \\end{matrix} \\right]$ $\\left\\{ \\begin{matrix} x+3=0\\Rightarrow x=-3 \\\\ y-1=2x+1\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix} \\right.\\Rightarrow y-1=-5\\Rightarrow y=-4$ $\\Rightarrow x+y=-3-4=-7$"
+  }
+]

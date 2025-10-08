@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دترمینان و کاربردهای آن"
+    ],
+    "question": "کدام نقطه روی خط به معادلۀ $\\left| \\begin{matrix} 0 & 2 & 4 \\\\ 2x & y & 1 \\\\ 1 & -1 & 0 \\\\ \\end{matrix} \\right|=0$ قرار دارد؟",
+    "options": [
+      "$( 0,\\dfrac{1}{2} )$",
+      "$(-1,\\dfrac{1}{2})$",
+      "$(-\\dfrac{1}{2},1)$",
+      "$(1,0)$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "ابتدا معادلۀ خط دادهشده را با استفاده از دترمینان دادهشده پیدا میکنیم: $\\begin{aligned} & \\left| \\begin{matrix} 0 & 2 & 4 \\\\ 2x & y & 1 \\\\ 1 & -1 & 0 \\\\ \\end{matrix} \\right|\\begin{matrix} 0 & 2 \\\\ 2x & y \\\\ 1 & -1 \\\\ \\end{matrix}=0\\Rightarrow \\left( 0+2-8x \\right)-\\left( 4y+0+0 \\right)=0 \\\\ & \\Rightarrow 4y=-8x+2\\Rightarrow y=-2x+\\frac{1}{2} \\\\ \\end{aligned}$"
+  }
+]

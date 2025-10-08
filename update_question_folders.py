@@ -77,30 +77,82 @@ def create_folder_hierarchy(folder_topics):
     return created_folders
 
 
-def update_question_folders(json_file_path):
-    """بروزرسانی فولدرهای سوالات از فایل JSON"""
+def process_json_file(file_path):
+    """پردازش یک فایل JSON"""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+        
+        # صاف کردن داده‌ها
+        all_data = []
+        for block in raw_data:
+            if isinstance(block, list):
+                all_data.extend(block)
+            else:
+                all_data.append(block)
+        
+        return all_data
+    except Exception as e:
+        print(f"❌ خطا در خواندن فایل {file_path}: {str(e)}")
+        return []
+
+
+def get_json_files(path):
+    """دریافت تمام فایل‌های JSON از مسیر داده شده"""
+    json_files = []
     
-    if not os.path.exists(json_file_path):
-        print(f"❌ فایل {json_file_path} یافت نشد!")
+    if os.path.isfile(path):
+        # اگر یک فایل است
+        if path.lower().endswith('.json'):
+            json_files.append(path)
+        else:
+            print(f"❌ فایل {path} یک فایل JSON نیست!")
+    elif os.path.isdir(path):
+        # اگر یک پوشه است
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.lower().endswith('.json'):
+                    json_files.append(os.path.join(root, file))
+    else:
+        print(f"❌ مسیر {path} یافت نشد!")
+    
+    return json_files
+
+
+def update_question_folders(path):
+    """بروزرسانی فولدرهای سوالات از فایل یا پوشه JSON"""
+    
+    if not os.path.exists(path):
+        print(f"❌ مسیر {path} یافت نشد!")
         return
     
-    with open(json_file_path, "r", encoding="utf-8") as f:
-        raw_data = json.load(f)
+    # دریافت تمام فایل‌های JSON
+    json_files = get_json_files(path)
     
-    # صاف کردن داده‌ها
-    all_data = []
-    for block in raw_data:
-        if isinstance(block, list):
-            all_data.extend(block)
-        else:
-            all_data.append(block)
+    if not json_files:
+        print(f"❌ هیچ فایل JSON در مسیر {path} یافت نشد!")
+        return
+    
+    print(f"📁 پیدا شده: {len(json_files)} فایل JSON")
+    for file in json_files:
+        print(f"   • {os.path.basename(file)}")
+    print()
+    
+    # پردازش تمام فایل‌ها
+    all_questions = []
+    for json_file in json_files:
+        print(f"📄 در حال پردازش: {os.path.basename(json_file)}")
+        file_data = process_json_file(json_file)
+        all_questions.extend(file_data)
+        print(f"   ✅ {len(file_data)} سوال بارگذاری شد")
+    
+    print(f"\n🔍 در حال پردازش {len(all_questions)} سوال از {len(json_files)} فایل...")
     
     updated_count = 0
     not_found_count = 0
+    processed_files = {}
     
-    print(f"🔍 در حال پردازش {len(all_data)} سوال...")
-    
-    for i, item in enumerate(all_data, 1):
+    for i, item in enumerate(all_questions, 1):
         question_text = item.get("question", "").strip()
         if not question_text:
             print(f"⚠️  سوال {i}: متن سوال خالی است")
@@ -143,12 +195,13 @@ def update_question_folders(json_file_path):
         
         updated_count += 1
     
-    print("\n" + "="*50)
+    print("\n" + "="*60)
     print(f"📊 گزارش نهایی:")
-    print(f"   • کل سوالات: {len(all_data)}")
+    print(f"   • فایل‌های پردازش شده: {len(json_files)}")
+    print(f"   • کل سوالات: {len(all_questions)}")
     print(f"   • بروزرسانی شده: {updated_count}")
     print(f"   • پیدا نشده: {not_found_count}")
-    print("="*50)
+    print("="*60)
 
 
 if __name__ == "__main__":
@@ -157,7 +210,13 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("❌ نحوه استفاده:")
         print("python update_question_folders.py path/to/questions.json")
+        print("یا:")
+        print("python update_question_folders.py path/to/questions_folder/")
+        print("\nمثال‌ها:")
+        print("python update_question_folders.py data/50.json")
+        print("python update_question_folders.py data/questions/")
+        print("python update_question_folders.py C:\\Users\\Username\\Downloads\\questions\\")
         sys.exit(1)
     
-    json_file = sys.argv[1]
-    update_question_folders(json_file)
+    path = sys.argv[1]
+    update_question_folders(path)

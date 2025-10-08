@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "دشوار",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس دوم: وارون ماتریس و دترمینان",
+      "دستگاه دو معادله دو مجهول"
+    ],
+    "question": "از معادلۀ ماتریسی $\\left[ \\begin{matrix} 6 & 8 \\\\ 12 & -24 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\tfrac{1}{x} \\\\ \\tfrac{1}{y} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 \\\\ -1 \\\\ \\end{matrix} \\right]$ مقدار $x+y$ کدام است؟",
+    "options": [
+      "14",
+      "13",
+      "12",
+      "11"
+    ],
+    "answer_index": 1,
+    "answer_text": "14",
+    "explanation": "$\\left[ \\begin{matrix} 6 & 8 \\\\ 12 & -24 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} \\tfrac{1}{x} \\\\ \\tfrac{1}{y} \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 \\\\ -1 \\\\ \\end{matrix} \\right]\\xrightarrow{\\frac{1}{x}=a\\,\\,\\,,\\,\\,\\,\\frac{1}{y}=b}\\left[ \\begin{matrix} 6 & 8 \\\\ 12 & -24 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} a \\\\ b \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 \\\\ -1 \\\\ \\end{matrix} \\right]$ $\\left[ \\begin{matrix} a \\\\ b \\\\ \\end{matrix} \\right]=\\dfrac{1}{-240}\\left[ \\begin{matrix} -24 & -8 \\\\ -12 & 6 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 2 \\\\ -1 \\\\ \\end{matrix} \\right]=\\dfrac{1}{-240}\\left[ \\begin{matrix} -40 \\\\ -30 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} \\tfrac{1}{6} \\\\ \\tfrac{1}{8} \\\\ \\end{matrix} \\right]$ $\\Rightarrow \\left\\{ \\begin{aligned} & a=\\frac{1}{6} \\\\ & b=\\frac{1}{8} \\\\ \\end{aligned} \\right.\\Rightarrow \\left\\{ \\begin{aligned} & x=6 \\\\ & y=8 \\\\ \\end{aligned} \\right.\\Rightarrow x+y=14$"
+  }
+]

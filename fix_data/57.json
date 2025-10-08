@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر ماتریس $A=\\left[ \\begin{matrix} 1 & {{a}^{2}}-4a-5 \\\\ {{a}^{2}}+a & 2 \\\\ \\end{matrix} \\right]$ قطری باشد، کدامیک از ماتریسهای زیر، اسکالر است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} a+1 & 2a \\\\ 2a & a+1 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} {{a}^{2}}+1 & a-1 \\\\ {{a}^{4}} & a+1 \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} {{a}^{2}}+1 & {{a}^{2}}-1 \\\\ {{a}^{4}}-1 & -2a \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} a & -{{a}^{2}}+1 \\\\ -{{a}^{2}}+1 & -2a \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": null,
+    "answer_text": null,
+    "explanation": "چون ماتریس $A$ قطری است، درایههای غیرواقع بر قطر اصلی آن، صفر میباشند و داریم: $\\begin{aligned} & \\left\\{ \\begin{matrix} {{a}^{2}}-4a-5=0 \\\\ {{a}^{2}}+a=0\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix} \\right.\\Rightarrow \\left\\{ \\begin{matrix} \\left( a+1 \\right)\\left( a-5 \\right)=0 \\\\ a\\left( a+1 \\right)=0\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix}\\Rightarrow \\left\\{ \\begin{matrix} a=-1\\,\\,\\text{یا}\\,\\,a=5 \\\\ a=0\\,\\,\\text{یا}\\,\\,a=-1 \\\\ \\end{matrix} \\right. \\right. \\\\ & \\xrightarrow{\\text{اشتراک جوابها}}a=-1 \\\\ \\end{aligned}$ با جایگذاری $a=-1$ در گزینهها، نتیجه میگیریم فقط ماتریس گزینۀ 3 یعنی $\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 2 \\\\ \\end{matrix} \\right]$ ، اسکالر است."
+  }
+]

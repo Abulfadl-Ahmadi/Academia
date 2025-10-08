@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "ساده",
+    "topics": [
+      "تالیفی",
+      "نرگس کارگر",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "تعریف ماتریسهای خاص و مقدمات ماتریس"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} 3x-y & 5 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]$ و $B=\\left[ \\begin{matrix} 3 & 5x+y \\\\ z-2 & 0 \\\\ \\end{matrix} \\right]$ باهم برابر باشند، حاصل $xyz$ کدام است؟",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "0"
+    ],
+    "answer_index": 2,
+    "answer_text": "2",
+    "explanation": "هنگامی دو ماتریس باهم برابرند که درایههایشان نظیر به نظیر باهم مساوی باشد؛ درنتیجه: $\\left\\{ \\begin{aligned} & \\begin{matrix} 3x-y=3 \\\\ 5x+y=5 \\\\ \\end{matrix}\\Rightarrow x=1\\,\\,,\\,\\,y=0 \\\\ & z-2=1\\Rightarrow z=3 \\\\ \\end{aligned} \\right.\\Rightarrow xyz=1\\times 0\\times 3=0$"
+  }
+]

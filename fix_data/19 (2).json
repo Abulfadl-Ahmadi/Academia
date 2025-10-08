@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "فرزاد زمانی نژاد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر حاصلضرب $\\left[ \\begin{matrix} -2 & 3 & 1 \\\\ 4 & -1 & 2 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} a & 4 \\\\ 2 & b \\\\ c & -1 \\\\ \\end{matrix} \\right]$ یک ماتریس اسکالر باشد، کدامیک از ماتریسهای زیر، قطری است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} a+b & c-a \\\\ c-3b & b+c \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} c & 2a+b \\\\ b-3c & a+b \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} a+b & b-c \\\\ 3a+c & 2b \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} b-a & 2a+c \\\\ c-3b & 3a \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 3,
+    "answer_text": "$\\left[ \\begin{matrix} a+b & b-c \\\\ 3a+c & 2b \\\\ \\end{matrix} \\right]$",
+    "explanation": "طبق فرض داریم: $\\left[ \\begin{matrix} -2 & 3 & 1 \\\\ 4 & -1 & 2 \\\\ \\end{matrix} \\right]\\,\\left[ \\begin{matrix} a & 4 \\\\ 2 & b \\\\ c & -1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -2a+6+c & -9+3b \\\\ 4a-2+2c & 14-b \\\\ \\end{matrix} \\right]\\,$ $\\xrightarrow{\\text{ماتریس اسکالر است }}\\left\\{ \\begin{matrix} -2a+6+c=14-b \\\\ -9+3b=0\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ 4a-2+2c=0\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix} \\right.\\Rightarrow \\left\\{ \\begin{matrix} -2a+b+c=8 \\\\ 3b=9\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\,\\, \\\\ 4a+2c=2\\,\\,\\,\\,\\,\\,\\, \\\\ \\end{matrix}\\, \\right.\\Rightarrow \\left\\{ \\begin{matrix} a=-1 \\\\ b=3\\,\\,\\, \\\\ c=3\\,\\,\\, \\\\ \\end{matrix} \\right.$ با جایگذاری مقادیر $a$ ، $b$ و $c$ در گزینهها، نتیجه میشود گزینۀ 3 ماتریس قطری است، زیرا: $\\left[ \\begin{matrix} a+b & b-c \\\\ 3a+c & 2b \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 2 & 0 \\\\ 0 & 6 \\\\ \\end{matrix} \\right]$"
+  }
+]

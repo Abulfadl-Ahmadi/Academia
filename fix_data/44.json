@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "امیر خمسه",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} -2 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]$ و ${{A}^{2}}=2A+13B$ آنگاه ماتریس $B$ کدام است؟",
+    "options": [
+      "$I$",
+      "$2I$",
+      "$\\dfrac{1}{2}I$",
+      "$-\\dfrac{1}{2}I$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$I$",
+    "explanation": "عبارت $2A$ را بهسمت چپ برده و به طرفین تساوی، ماتریس $I$ را میافزاییم: $\\begin{aligned} & {{A}^{2}}-2A+I=13B+I\\Rightarrow {{\\left( A-I \\right)^{2}}}=13B+I \\\\ & A-I=\\left[ \\begin{matrix} -2 & 1 \\\\ 5 & 4 \\\\ \\end{matrix} \\right]-\\left[ \\begin{matrix} 1 & 0 \\\\ 0 & 1 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -3 & 1 \\\\ 5 & 3 \\\\ \\end{matrix} \\right] \\\\ & {{\\left( A-I \\right)^{2}}}=\\left[ \\begin{matrix} -3 & 1 \\\\ 5 & 3 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} -3 & 1 \\\\ 5 & 3 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} 14 & 0 \\\\ 0 & 14 \\\\ \\end{matrix} \\right]=13B+I \\\\ & \\Rightarrow \\left[ \\begin{matrix} 13 & 0 \\\\ 0 & 13 \\\\ \\end{matrix} \\right]=13B\\Rightarrow B=I \\\\ \\end{aligned}$"
+  }
+]

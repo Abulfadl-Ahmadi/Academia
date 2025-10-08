@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A={{\\left[ 2i+3j \\right]}_{2\\times 2}}$ و $B={{\\left[ i+4j \\right]}_{2\\times 2}}$ ، حاصل ${{\\left( A-B \\right)}^{10}}$ کدام است؟",
+    "options": [
+      "$A-B$",
+      "$B-A$",
+      "$I$",
+      "$-I$"
+    ],
+    "answer_index": 1,
+    "answer_text": "$A-B$",
+    "explanation": "$\\begin{aligned} & A-B=\\left[ 2i+3j \\right]-\\left[ i+4j \\right]={{\\left[ i-j \\right]}_{2\\times 2}}=\\left[ \\begin{matrix} 0 & -1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right] \\\\ & \\Rightarrow {{\\left( A-B \\right)}^{2}}=\\left[ \\begin{matrix} 0 & -1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & -1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -1 & 0 \\\\ 0 & -1 \\\\ \\end{matrix} \\right]=-I\\Rightarrow {{\\left( A-B \\right)}^{10}}={{\\left( -I \\right)}^{5}}=-I \\\\ \\end{aligned}$"
+  }
+]

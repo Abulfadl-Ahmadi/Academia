@@ -1,0 +1,26 @@
+[
+  {
+    "id": "question-undefined",
+    "difficulty": "متوسط",
+    "topics": [
+      "تالیفی",
+      "سیدمحمدرضا حسینی فرد",
+      "ریاضی و فیزیک",
+      "دوازدهم",
+      "هندسه",
+      "فصل 1: ماتریس و کاربردها",
+      "درس اول: ماتریس و اعمال روی ماتریسها",
+      "ضرب ماتریسها و خواص عمل ضرب"
+    ],
+    "question": "اگر $A=\\left[ \\begin{matrix} x & y \\\\ y & x \\\\ \\end{matrix} \\right]$ حاصل $\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]A\\left[ \\begin{matrix} 0 & -1 \\\\ -1 & 0 \\\\ \\end{matrix} \\right]$ کدام است؟",
+    "options": [
+      "$\\left[ \\begin{matrix} -y & x \\\\ x & -y \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} x & -y \\\\ -y & x \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} y & -x \\\\ -x & y \\\\ \\end{matrix} \\right]$",
+      "$\\left[ \\begin{matrix} -x & -y \\\\ -y & -x \\\\ \\end{matrix} \\right]$"
+    ],
+    "answer_index": 4,
+    "answer_text": "$\\left[ \\begin{matrix} -x & -y \\\\ -y & -x \\\\ \\end{matrix} \\right]$",
+    "explanation": "$\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]A\\left[ \\begin{matrix} 0 & -1 \\\\ -1 & 0 \\\\ \\end{matrix} \\right]=\\underbrace{\\left[ \\begin{matrix} 0 & 1 \\\\ 1 & 0 \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} x & y \\\\ y & x \\\\ \\end{matrix} \\right]}_{\\text{ضرب میکنیم }}\\left[ \\begin{matrix} 0 & -1 \\\\ -1 & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} y & x \\\\ x & y \\\\ \\end{matrix} \\right]\\left[ \\begin{matrix} 0 & -1 \\\\ -1 & 0 \\\\ \\end{matrix} \\right]=\\left[ \\begin{matrix} -x & -y \\\\ -y & -x \\\\ \\end{matrix} \\right]$"
+  }
+]
