@@ -7,6 +7,8 @@ import { TextShimmer } from "../../components/motion-primitives/text-shimmer";
 import { SlidingNumber } from "../../components/motion-primitives/sliding-number";
 import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { HeroGeometric } from "@/components/ui/shadcn-io/shape-landing-hero";
+import { ImagePreloader } from "./ImagePreloader";
+import "../styles/glass-shapes.css";
 
 import {
   Card,
@@ -495,8 +497,40 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen w-full my-10">
+      <ImagePreloader />
       {/* Countdown Section */}
       <div className="flex flex-col items-center justify-center gap-6 mb-16 py-12 px-6 max-w-3xl mx-auto relative overflow-hidden">
+        {/* Decorative Glass Shapes */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img 
+            src="/Glass_shapes_optimized/1.webp" 
+            alt="" 
+            className="absolute top-10 left-10 w-12 h-12 sm:w-16 sm:h-16 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/17.webp" 
+            alt="" 
+            className="absolute top-20 right-20 w-8 h-8 sm:w-12 sm:h-12 opacity-30"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/24.webp" 
+            alt="" 
+            className="absolute bottom-10 left-20 w-10 h-10 sm:w-14 sm:h-14 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/30.webp" 
+            alt="" 
+            className="absolute bottom-20 right-10 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
         
         <div className="flex flex-col items-center gap-6 relative z-10" dir="ltr">
           <div className="flex items-center gap-4 sm:gap-6 font-mono">
@@ -537,7 +571,39 @@ export default function HomePage() {
       </div>
 
       {/* Hero Section */}
-      <div className="">
+      <div className="relative">
+        {/* Background Glass Shapes for Hero */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <img 
+            src="/Glass_shapes_optimized/5.webp" 
+            alt="" 
+            className="absolute top-1/4 left-10 w-16 h-16 sm:w-24 sm:h-24 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/14.webp" 
+            alt="" 
+            className="absolute top-1/3 right-16 w-12 h-12 sm:w-20 sm:h-20 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/36.webp" 
+            alt="" 
+            className="absolute bottom-1/4 left-1/4 w-10 h-10 sm:w-16 sm:h-16 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/39.webp" 
+            alt="" 
+            className="absolute bottom-1/3 right-1/3 w-12 h-12 sm:w-18 sm:h-18 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        
         <HeroGeometric
           title1="به آکادمی "
           title2="آرین تفضلی‌زاده خوش آمدید"
@@ -623,8 +689,40 @@ export default function HomePage() {
       <LogoCloud />
 
       {/* Featured Products Section */}
-      <section className="2xl:px-[10%] py-20">
-        <div className="container mx-auto px-4">
+      <section className="2xl:px-[10%] py-20 relative overflow-hidden">
+        {/* Background Glass Shapes for Products Section */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img 
+            src="/Glass_shapes_optimized/7.webp" 
+            alt="" 
+            className="absolute top-10 left-8 w-10 h-10 sm:w-16 sm:h-16 opacity-18"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/9.webp" 
+            alt="" 
+            className="absolute top-1/4 right-12 w-12 h-12 sm:w-20 sm:h-20 opacity-22"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/26.webp" 
+            alt="" 
+            className="absolute bottom-1/3 left-1/3 w-8 h-8 sm:w-14 sm:h-14 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/40.webp" 
+            alt="" 
+            className="absolute bottom-10 right-8 w-10 h-10 sm:w-18 sm:h-18 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               محصولات آموزشی پرطرفدار
@@ -985,8 +1083,40 @@ export default function HomePage() {
       </section>
 
       {/* About Me Section */}
-      <section className="2xl:px-[10%] py-20">
-        <div className="container mx-auto px-4">
+      <section className="2xl:px-[10%] py-20 relative overflow-hidden">
+        {/* Background Glass Shapes for About Section */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img 
+            src="/Glass_shapes_optimized/6.webp" 
+            alt="" 
+            className="absolute top-20 left-5 w-12 h-12 sm:w-20 sm:h-20 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/23.webp" 
+            alt="" 
+            className="absolute top-1/3 right-10 w-10 h-10 sm:w-16 sm:h-16 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/27.webp" 
+            alt="" 
+            className="absolute bottom-20 left-1/4 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img 
+            src="/Glass_shapes_optimized/33.webp" 
+            alt="" 
+            className="absolute bottom-1/4 right-5 w-14 h-14 sm:w-22 sm:h-22 opacity-22"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-1 gap-12 items-center">
             <div ref={textRef} className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold">

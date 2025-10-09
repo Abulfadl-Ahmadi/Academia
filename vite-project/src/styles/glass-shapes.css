@@ -1,0 +1,169 @@
+/* Glass Shapes Animation Delays */
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.delay-800 {
+  animation-delay: 0.8s;
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}
+
+.delay-1200 {
+  animation-delay: 1.2s;
+}
+
+.delay-1500 {
+  animation-delay: 1.5s;
+}
+
+/* Additional responsive sizes */
+.w-18 {
+  width: 4.5rem;
+}
+
+.h-18 {
+  height: 4.5rem;
+}
+
+.w-22 {
+  width: 5.5rem;
+}
+
+.h-22 {
+  height: 5.5rem;
+}
+
+/* Glass shapes optimized backgrounds */
+.glass-shape-bg {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  will-change: transform;
+}
+
+/* Specific glass shape backgrounds - optimized versions */
+.glass-shape-1 {
+  background-image: url('/Glass_shapes/1.png');
+}
+
+.glass-shape-5 {
+  background-image: url('/Glass_shapes/5.png');
+}
+
+.glass-shape-6 {
+  background-image: url('/Glass_shapes/6.png');
+}
+
+.glass-shape-7 {
+  background-image: url('/Glass_shapes/7.png');
+}
+
+.glass-shape-9 {
+  background-image: url('/Glass_shapes/9.png');
+}
+
+.glass-shape-14 {
+  background-image: url('/Glass_shapes/14.png');
+}
+
+.glass-shape-17 {
+  background-image: url('/Glass_shapes/17.png');
+}
+
+.glass-shape-23 {
+  background-image: url('/Glass_shapes/23.png');
+}
+
+.glass-shape-24 {
+  background-image: url('/Glass_shapes/24.png');
+}
+
+.glass-shape-26 {
+  background-image: url('/Glass_shapes/26.png');
+}
+
+.glass-shape-27 {
+  background-image: url('/Glass_shapes/27.png');
+}
+
+.glass-shape-30 {
+  background-image: url('/Glass_shapes/30.png');
+}
+
+.glass-shape-33 {
+  background-image: url('/Glass_shapes/33.png');
+}
+
+.glass-shape-36 {
+  background-image: url('/Glass_shapes/36.png');
+}
+
+.glass-shape-39 {
+  background-image: url('/Glass_shapes/39.png');
+}
+
+.glass-shape-40 {
+  background-image: url('/Glass_shapes/40.png');
+}
+
+/* Glass shapes hover effects */
+.glass-shape {
+  transition: all 0.3s ease-in-out;
+  filter: blur(0px);
+}
+
+.glass-shape:hover {
+  transform: scale(1.1);
+  filter: blur(0.5px);
+}
+
+/* Subtle glow effect for glass shapes */
+.glass-glow {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* Different animation speeds */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 4s ease-in-out infinite;
+}
