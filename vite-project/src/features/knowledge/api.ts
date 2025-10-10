@@ -119,6 +119,11 @@ export const knowledgeApi = {
     axiosInstance.delete(`/knowledge/folders/${id}/`),
   getQuestionStatistics: () =>
     axiosInstance.get<QuestionStatistics>('/knowledge/folders/question_statistics/'),
+  mergeFolders: (sourceFolderId: number, destinationFolderId: number) =>
+    axiosInstance.post('/knowledge/folders/merge_folders/', {
+      source_folder_id: sourceFolderId,
+      destination_folder_id: destinationFolderId
+    }),
 
   // Knowledge Tree
   getKnowledgeTree: () =>

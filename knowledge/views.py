@@ -284,6 +284,64 @@ class FolderViewSet(viewsets.ModelViewSet):
             )
         })
 
+    @action(detail=False, methods=['post'])
+    def merge_folders(self, request):
+        """ادغام سوالات از پوشه مبدا به پوشه مقصد"""
+        source_folder_id = request.data.get('source_folder_id')
+        destination_folder_id = request.data.get('destination_folder_id')
+        
+        if not source_folder_id or not destination_folder_id:
+            return Response(
+                {'error': 'شناسه پوشه مبدا و مقصد الزامی است'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if source_folder_id == destination_folder_id:
+            return Response(
+                {'error': 'پوشه مبدا و مقصد نمی‌توانند یکسان باشند'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            source_folder = Folder.objects.get(id=source_folder_id)
+            destination_folder = Folder.objects.get(id=destination_folder_id)
+        except Folder.DoesNotExist:
+            return Response(
+                {'error': 'یکی از پوشه‌ها پیدا نشد'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        from tests.models import Question
+        
+        # پیدا کردن تمام سوالاتی که در پوشه مبدا هستند
+        questions_in_source = Question.objects.filter(
+            folders=source_folder,
+            is_active=True
+        ).distinct()
+        
+        questions_count = questions_in_source.count()
+        
+        if questions_count == 0:
+            return Response(
+                {'message': 'هیچ سوالی در پوشه مبدا موجود نیست'},
+                status=status.HTTP_200_OK
+            )
+        
+        # اضافه کردن پوشه مقصد به تمام سوالات
+        for question in questions_in_source:
+            question.folders.add(destination_folder)
+        
+        # حذف پوشه مبدا از تمام سوالات
+        for question in questions_in_source:
+            question.folders.remove(source_folder)
+        
+        return Response({
+            'message': f'{questions_count} سوال با موفقیت از پوشه "{source_folder.name}" به پوشه "{destination_folder.name}" منتقل شد',
+            'questions_moved': questions_count,
+            'source_folder_name': source_folder.name,
+            'destination_folder_name': destination_folder.name
+        })
+
 
 class KnowledgeTreeView(APIView):
     """View برای نمایش کامل درخت دانش"""
