@@ -1196,7 +1196,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
                                 order=idx
                             )
                             if correct_index is not None and idx - 1 == correct_index:
-                                correct_option_obj = option
+                                correct_option_obj = optioncorrect_option_obj = option
 
                         if correct_option_obj:
                             question.correct_option = correct_option_obj
@@ -1206,15 +1206,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
                         parent = None
                         attached_folders = []
                         for folder_name in folder_parts:
-                            if Folder.objects.filter(name=folder_name).exists():
-                                folder = Folder.objects.get(name=folder_name)
-                                if folder not in attached_folders:
-                                    attached_folders.append(folder)
-                                parent = folder
-                                continue
-                            folder = Folder.objects.create(name=folder_name, parent=parent)
+                            # استفاده از get_or_create برای جلوگیری از خطای MultipleObjectsReturned
+                            folder, created = Folder.objects.get_or_create(
+                                name=folder_name, 
+                                parent=parent,
+                                defaults={'name': folder_name, 'parent': parent}
+                            )
+                            if folder not in attached_folders:
+                                attached_folders.append(folder)
                             parent = folder
-                            attached_folders.append(folder)
 
                         # اتصال همه پوشه‌ها به سوال
                         for folder in attached_folders:

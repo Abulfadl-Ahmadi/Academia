@@ -18,14 +18,19 @@ class FolderSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     path_ids = serializers.ReadOnlyField()
     depth = serializers.ReadOnlyField()
+    questions_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
-        fields = ['id', 'name', 'parent', 'description', 'order', 'depth', 'path_ids', 'children']
+        fields = ['id', 'name', 'parent', 'description', 'order', 'depth', 'path_ids', 'children', 'questions_count']
 
     def get_children(self, obj):
         children = obj.children.all().order_by('order', 'id')
         return FolderSerializer(children, many=True, context=self.context).data
+
+    def get_questions_count(self, obj):
+        """Get count of questions directly assigned to this folder"""
+        return obj.questions.count()
 
 
 class TopicCategorySerializer(serializers.ModelSerializer):
