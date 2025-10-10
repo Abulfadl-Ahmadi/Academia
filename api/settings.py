@@ -253,8 +253,9 @@ MEDIA_URL = '/media/'  # local style URLs for now; can switch back after success
 
 # File Upload Security
 FILE_UPLOAD_PERMISSIONS = 0o644
-DATA_UPLOAD_MAX_MEMORY_SIZE = config('DATA_UPLOAD_MAX_MEMORY_SIZE', cast=int, default=5242880)  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = config('DATA_UPLOAD_MAX_MEMORY_SIZE', cast=int, default=10*5242880)  # 5MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = config('DATA_UPLOAD_MAX_NUMBER_FIELDS', cast=int, default=1000)
+DATA_UPLOAD_MAX_NUMBER_FILES = config('DATA_UPLOAD_MAX_NUMBER_FILES', cast=int, default=500)
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
