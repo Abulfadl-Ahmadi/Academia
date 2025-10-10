@@ -286,7 +286,7 @@ class FolderViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def merge_folders(self, request):
-        """ادغام سوالات از پوشه مبدا به پوشه مقصد"""
+        """ادغام سوالات از پوشه مبدا و تمام زیرپوشه‌هایش به پوشه مقصد همراه با کپی ساختار"""
         source_folder_id = request.data.get('source_folder_id')
         destination_folder_id = request.data.get('destination_folder_id')
         
@@ -313,9 +313,56 @@ class FolderViewSet(viewsets.ModelViewSet):
         
         from tests.models import Question
         
-        # پیدا کردن تمام سوالاتی که در پوشه مبدا هستند
+        # تابع برای کپی کردن ساختار پوشه‌ها
+        def copy_folder_structure(source, destination_parent, folder_mapping=None):
+            """کپی کردن ساختار پوشه به صورت بازگشتی"""
+            if folder_mapping is None:
+                folder_mapping = {}
+            
+            # کپی کردن زیرپوشه‌های مستقیم
+            children = Folder.objects.filter(parent=source)
+            for child in children:
+                # بررسی اینکه آیا این پوشه قبلاً در مقصد وجود دارد
+                existing_folder = Folder.objects.filter(
+                    parent=destination_parent,
+                    name=child.name
+                ).first()
+                
+                if existing_folder:
+                    # اگر پوشه‌ای با همین نام وجود دارد، از همان استفاده کن
+                    new_folder = existing_folder
+                else:
+                    # ایجاد پوشه جدید
+                    new_folder = Folder.objects.create(
+                        name=child.name,
+                        parent=destination_parent,
+                        order=child.order
+                    )
+                
+                folder_mapping[child.id] = new_folder
+                
+                # به صورت بازگشتی کپی کردن زیرپوشه‌ها
+                copy_folder_structure(child, new_folder, folder_mapping)
+            
+            return folder_mapping
+        
+        # کپی کردن ساختار زیرپوشه‌ها به مقصد
+        folder_mapping = copy_folder_structure(source_folder, destination_folder)
+        
+        # پیدا کردن تمام زیرپوشه‌های پوشه مبدا
+        def get_all_subfolders(folder):
+            """بازگرداندن تمام زیرپوشه‌های یک پوشه به صورت بازگشتی"""
+            subfolders = [folder]
+            children = Folder.objects.filter(parent=folder)
+            for child in children:
+                subfolders.extend(get_all_subfolders(child))
+            return subfolders
+        
+        all_source_folders = get_all_subfolders(source_folder)
+        
+        # پیدا کردن تمام سوالاتی که در پوشه مبدا یا زیرپوشه‌هایش هستند
         questions_in_source = Question.objects.filter(
-            folders=source_folder,
+            folders__in=all_source_folders,
             is_active=True
         ).distinct()
         
@@ -323,21 +370,32 @@ class FolderViewSet(viewsets.ModelViewSet):
         
         if questions_count == 0:
             return Response(
-                {'message': 'هیچ سوالی در پوشه مبدا موجود نیست'},
+                {'message': 'هیچ سوالی در پوشه مبدا و زیرپوشه‌هایش موجود نیست'},
                 status=status.HTTP_200_OK
             )
         
-        # اضافه کردن پوشه مقصد به تمام سوالات
+        # انتقال سوالات
         for question in questions_in_source:
+            # اضافه کردن پوشه مقصد اصلی
             question.folders.add(destination_folder)
+            
+            # برای هر سوال، بررسی اینکه در کدام پوشه‌های مبدا بوده و آن‌ها را به پوشه‌های متناظر در مقصد اضافه کردن
+            question_folders = question.folders.filter(id__in=[f.id for f in all_source_folders])
+            for folder in question_folders:
+                if folder.id != source_folder.id and folder.id in folder_mapping:
+                    # اضافه کردن به پوشه متناظر در مقصد
+                    question.folders.add(folder_mapping[folder.id])
         
-        # حذف پوشه مبدا از تمام سوالات
+        # حذف تمام پوشه‌های مبدا از سوالات
         for question in questions_in_source:
-            question.folders.remove(source_folder)
+            for folder in all_source_folders:
+                question.folders.remove(folder)
         
         return Response({
-            'message': f'{questions_count} سوال با موفقیت از پوشه "{source_folder.name}" به پوشه "{destination_folder.name}" منتقل شد',
+            'message': f'{questions_count} سوال از پوشه "{source_folder.name}" و {len(all_source_folders)-1} زیرپوشه‌اش به پوشه "{destination_folder.name}" منتقل شد و ساختار زیرپوشه‌ها کپی شد',
             'questions_moved': questions_count,
+            'folders_affected': len(all_source_folders),
+            'folders_copied': len(folder_mapping),
             'source_folder_name': source_folder.name,
             'destination_folder_name': destination_folder.name
         })

@@ -43,7 +43,6 @@ export default function FolderManagerPage() {
   const [moving, setMoving] = useState(false);
 
   // Merge folders states
-  const [mergeMode, setMergeMode] = useState(false);
   const [sourceFolderId, setSourceFolderId] = useState<number | null>(null);
   const [destinationFolderId, setDestinationFolderId] = useState<number | null>(null);
   const [merging, setMerging] = useState(false);
@@ -213,6 +212,74 @@ export default function FolderManagerPage() {
     }
   };
 
+  // Bulk merge function
+  const handleBulkMerge = async () => {
+    if (selectedFolders.size !== 2) {
+      toast.error('لطفاً دقیقاً دو پوشه انتخاب کنید');
+      return;
+    }
+
+    const selectedFolderObjs = allFolders.filter(f => selectedFolders.has(f.id));
+    
+    // سوال از کاربر: کدام پوشه مبدا و کدام مقصد باشد
+    const folder1 = selectedFolderObjs[0];
+    const folder2 = selectedFolderObjs[1];
+    
+    const choice = confirm(
+      `دو پوشه انتخاب شده:\n\n` +
+      `1️⃣ ${folder1.name} (${folder1.questions_count} سوال)\n` +
+      `2️⃣ ${folder2.name} (${folder2.questions_count} سوال)\n\n` +
+      `"تأیید" = ${folder1.name} → ${folder2.name}\n` +
+      `"لغو" = ${folder2.name} → ${folder1.name}\n\n` +
+      `کدام گزینه را می‌خواهید؟`
+    );
+
+    let sourceFolderId, destinationFolderId;
+    if (choice) {
+      // folder1 → folder2
+      sourceFolderId = folder1.id;
+      destinationFolderId = folder2.id;
+    } else {
+      // folder2 → folder1
+      sourceFolderId = folder2.id;
+      destinationFolderId = folder1.id;
+    }
+
+    const sourceFolder = allFolders.find(f => f.id === sourceFolderId);
+    const destinationFolder = allFolders.find(f => f.id === destinationFolderId);
+
+    const finalConfirm = confirm(
+      `آیا مطمئن هستید که می‌خواهید تمام سوالات از پوشه "${sourceFolder?.name}" و زیرپوشه‌هایش به پوشه "${destinationFolder?.name}" منتقل شوند؟\n\n` +
+      `این عمل تمام ${sourceFolder?.questions_count} سوال را به پوشه "${destinationFolder?.name}" منتقل کرده و ساختار زیرپوشه‌ها را نیز در آنجا کپی می‌کند.`
+    );
+
+    if (!finalConfirm) return;
+
+    setMerging(true);
+    try {
+      const response = await knowledgeApi.mergeFolders(sourceFolderId, destinationFolderId);
+      toast.success(response.data.message || 'ادغام با موفقیت انجام شد');
+      
+      // Reset bulk mode and reload data
+      setSelectedFolders(new Set());
+      setBulkMode(false);
+      loadTree();
+      loadQuestionStats();
+    } catch (e) {
+      console.error(e);
+      let errorMessage = 'خطا در ادغام سوالات';
+      if (e && typeof e === 'object' && 'response' in e) {
+        const response = (e as { response?: { data?: { error?: string } } }).response;
+        if (response?.data?.error) {
+          errorMessage = response.data.error;
+        }
+      }
+      toast.error(errorMessage);
+    } finally {
+      setMerging(false);
+    }
+  };
+
   // Drag and drop functions
   const handleDragStart = (e: React.DragEvent, folder: Folder) => {
     if (bulkMode) return; // Disable drag in bulk mode
@@ -323,9 +390,9 @@ export default function FolderManagerPage() {
       return;
     }
 
-    const confirmMessage = `آیا مطمئن هستید که می‌خواهید تمام سوالات از پوشه "${sourceFolder.name}" (${sourceFolder.questions_count} سوال) به پوشه "${destinationFolder.name}" منتقل شوند؟
+    const confirmMessage = `آیا مطمئن هستید که می‌خواهید تمام سوالات از پوشه "${sourceFolder.name}" و زیرپوشه‌هایش به پوشه "${destinationFolder.name}" منتقل شوند؟
 
-این عمل تمام سوالات را از پوشه مبدا حذف کرده و به پوشه مقصد اضافه می‌کند.`;
+این عمل تمام ${sourceFolder.questions_count} سوال را به پوشه "${destinationFolder.name}" منتقل کرده و ساختار زیرپوشه‌ها را نیز در آنجا کپی می‌کند. پوشه‌های اصلی خالی می‌شوند.`;
 
     if (!confirm(confirmMessage)) {
       return;
@@ -336,15 +403,14 @@ export default function FolderManagerPage() {
       const response = await knowledgeApi.mergeFolders(sourceFolderId, destinationFolderId);
       toast.success(response.data.message || 'ادغام با موفقیت انجام شد');
       
-      // Reset merge mode and reload data
-      setMergeMode(false);
+      // Reset and reload data
       setSourceFolderId(null);
       setDestinationFolderId(null);
       loadTree();
       loadQuestionStats();
     } catch (e) {
       console.error(e);
-      let errorMessage = 'خطا در ادغام پوشه‌ها';
+      let errorMessage = 'خطا در ادغام سوالات';
       if (e && typeof e === 'object' && 'response' in e) {
         const response = (e as { response?: { data?: { error?: string } } }).response;
         if (response?.data?.error) {
@@ -576,18 +642,18 @@ export default function FolderManagerPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Merge className="w-5 h-5" />
-            ادغام پوشه‌ها
+            ادغام سوالات پوشه‌ها
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="text-sm text-muted-foreground">
-              تمام سوالات از پوشه مبدا به پوشه مقصد منتقل می‌شوند. پوشه مبدا خالی خواهد شد.
+              تمام سوالات از پوشه مبدا و زیرپوشه‌هایش به پوشه مقصد منتقل می‌شوند. ساختار زیرپوشه‌ها نیز در مقصد کپی خواهد شد.
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <div className="space-y-1">
-                <label className="text-xs font-medium">پوشه مبدا (سوالات از اینجا منتقل می‌شوند)</label>
+                <label className="text-xs font-medium">پوشه مبدا (سوالات از اینجا و زیرپوشه‌هایش منتقل می‌شوند)</label>
                 <Select value={sourceFolderId?.toString() || ''} onValueChange={(v) => setSourceFolderId(v ? parseInt(v) : null)}>
                   <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="انتخاب پوشه مبدا" />
@@ -603,7 +669,7 @@ export default function FolderManagerPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium">پوشه مقصد (سوالات به اینجا اضافه می‌شوند)</label>
+                <label className="text-xs font-medium">پوشه مقصد (سوالات به اینجا منتقل می‌شوند)</label>
                 <Select value={destinationFolderId?.toString() || ''} onValueChange={(v) => setDestinationFolderId(v ? parseInt(v) : null)}>
                   <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="انتخاب پوشه مقصد" />
@@ -632,7 +698,7 @@ export default function FolderManagerPage() {
                   ) : (
                     <>
                       <Merge className="w-4 h-4 mr-2" />
-                      ادغام پوشه‌ها
+                      ادغام سوالات
                     </>
                   )}
                 </Button>
@@ -642,8 +708,8 @@ export default function FolderManagerPage() {
             {sourceFolderId && destinationFolderId && sourceFolderId !== destinationFolderId && (
               <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
                 <div className="text-sm text-amber-800 dark:text-amber-200">
-                  <strong>هشدار:</strong> تمام {allFolders.find(f => f.id === sourceFolderId)?.questions_count} سوال از پوشه "{allFolders.find(f => f.id === sourceFolderId)?.name}" 
-                  به پوشه "{allFolders.find(f => f.id === destinationFolderId)?.name}" منتقل خواهد شد.
+                  <strong>هشدار:</strong> تمام {allFolders.find(f => f.id === sourceFolderId)?.questions_count} سوال از پوشه "{allFolders.find(f => f.id === sourceFolderId)?.name}" و زیرپوشه‌هایش 
+                  به پوشه "{allFolders.find(f => f.id === destinationFolderId)?.name}" منتقل شده و ساختار زیرپوشه‌ها کپی خواهد شد.
                 </div>
               </div>
             )}
@@ -715,6 +781,26 @@ export default function FolderManagerPage() {
                   >
                     لغو انتخاب
                   </Button>
+                  {selectedFolders.size === 2 && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleBulkMerge}
+                      disabled={merging}
+                    >
+                      {merging ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                          در حال ادغام...
+                        </>
+                      ) : (
+                        <>
+                          <Merge className="w-4 h-4 mr-1" />
+                          ادغام دو پوشه
+                        </>
+                      )}
+                    </Button>
+                  )}
                   <Button
                     variant="destructive"
                     size="sm"
@@ -737,6 +823,13 @@ export default function FolderManagerPage() {
               )}
             </div>
           </div>
+          {bulkMode && (
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>💡 راهنما:</strong> برای ادغام، دقیقاً دو پوشه انتخاب کنید. دکمه "ادغام دو پوشه" ظاهر خواهد شد.
+              </div>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {loading ? (
