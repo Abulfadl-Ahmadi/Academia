@@ -6,7 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Loader2, Plus, RefreshCw, Trash2, Pencil, Save, X, ChevronRight, ChevronDown, FolderPlus } from 'lucide-react';
+import { Loader2, Plus, RefreshCw, Trash2, Pencil, Save, X, ChevronRight, ChevronDown, FolderPlus, MoreVertical } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 interface EditingState { [id: number]: { name: string } }
 
@@ -21,6 +29,16 @@ export default function FolderManagerPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [inlineCreate, setInlineCreate] = useState<{[parentId:number]: string}>({});
+  
+  // Bulk selection states
+  const [selectedFolders, setSelectedFolders] = useState<Set<number>>(new Set());
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  
+  // Drag and drop states
+  const [draggedFolder, setDraggedFolder] = useState<Folder | null>(null);
+  const [dragOverFolder, setDragOverFolder] = useState<number | null>(null);
+  const [moving, setMoving] = useState(false);
 
   const loadTree = async () => {
     try {
@@ -109,6 +127,155 @@ export default function FolderManagerPage() {
     finally { setCreating(false); }
   };
 
+  // Bulk selection functions
+  const toggleBulkMode = () => {
+    setBulkMode(!bulkMode);
+    setSelectedFolders(new Set());
+  };
+
+  const toggleFolderSelection = (id: number) => {
+    setSelectedFolders(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const selectAllFolders = () => {
+    setSelectedFolders(new Set(allFolders.map(f => f.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedFolders(new Set());
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedFolders.size === 0) {
+      toast.error('هیچ پوشه‌ای انتخاب نشده است');
+      return;
+    }
+
+    const folderNames = allFolders
+      .filter(f => selectedFolders.has(f.id))
+      .map(f => `${f.name} (${f.questions_count} سوال)`)
+      .join('، ');
+
+    if (!confirm(`آیا مطمئن هستید که می‌خواهید این پوشه‌ها و تمام زیرپوشه‌هایشان را حذف کنید؟\n\n${folderNames}`)) {
+      return;
+    }
+
+    setBulkDeleting(true);
+    try {
+      // Delete folders one by one
+      for (const id of selectedFolders) {
+        await knowledgeApi.deleteFolder(id);
+      }
+      toast.success(`${selectedFolders.size} پوشه با موفقیت حذف شد`);
+      setSelectedFolders(new Set());
+      setBulkMode(false);
+      loadTree();
+    } catch (e) {
+      console.error(e);
+      toast.error('خطا در حذف برخی پوشه‌ها');
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  // Drag and drop functions
+  const handleDragStart = (e: React.DragEvent, folder: Folder) => {
+    if (bulkMode) return; // Disable drag in bulk mode
+    setDraggedFolder(folder);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', folder.id.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetFolder: Folder) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverFolder(targetFolder.id);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverFolder(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetFolder: Folder) => {
+    e.preventDefault();
+    setDragOverFolder(null);
+    
+    if (!draggedFolder || draggedFolder.id === targetFolder.id) {
+      setDraggedFolder(null);
+      return;
+    }
+
+    // Check if trying to move a folder into its own descendant
+    const isDescendant = (folder: Folder, potentialAncestor: Folder): boolean => {
+      if (!folder.children) return false;
+      return folder.children.some(child => 
+        child.id === potentialAncestor.id || isDescendant(child, potentialAncestor)
+      );
+    };
+
+    if (isDescendant(draggedFolder, targetFolder)) {
+      toast.error('نمی‌توان پوشه را به زیرپوشه خودش منتقل کرد');
+      setDraggedFolder(null);
+      return;
+    }
+
+    // Move the folder
+    setMoving(true);
+    try {
+      await knowledgeApi.updateFolder(draggedFolder.id, { 
+        name: draggedFolder.name,
+        parent: targetFolder.id 
+      });
+      toast.success(`پوشه "${draggedFolder.name}" به زیرپوشه "${targetFolder.name}" منتقل شد`);
+      loadTree();
+      // Expand the target folder to show the moved folder
+      setExpanded(prev => new Set(prev).add(targetFolder.id));
+    } catch (e) {
+      console.error(e);
+      toast.error('انتقال پوشه ناموفق بود');
+    } finally {
+      setMoving(false);
+      setDraggedFolder(null);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedFolder(null);
+    setDragOverFolder(null);
+  };
+
+  const handleDropToRoot = async (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedFolder || draggedFolder.parent === null) {
+      setDraggedFolder(null);
+      return;
+    }
+
+    setMoving(true);
+    try {
+      await knowledgeApi.updateFolder(draggedFolder.id, { 
+        name: draggedFolder.name,
+        parent: null 
+      });
+      toast.success(`پوشه "${draggedFolder.name}" به ریشه منتقل شد`);
+      loadTree();
+    } catch (e) {
+      console.error(e);
+      toast.error('انتقال پوشه ناموفق بود');
+    } finally {
+      setMoving(false);
+      setDraggedFolder(null);
+    }
+  };
+
   const renderTree = (nodes: Folder[], depth = 0) => (
     <ul className={depth === 0 ? 'space-y-1' : 'space-y-1 mt-1'}>
       {nodes.map(n => {
@@ -117,8 +284,28 @@ export default function FolderManagerPage() {
         const isExpanded = expanded.has(n.id);
         return (
           <li key={n.id}>
-            <div className="flex items-start gap-2">
-              <div className="flex items-center gap-1 min-h-7">
+            <div 
+              className={`flex items-start gap-2 p-1 rounded transition-colors group ${
+                dragOverFolder === n.id ? 'bg-primary/10 border-2 border-primary/30' : ''
+              } ${draggedFolder?.id === n.id ? 'opacity-50' : ''} ${
+                !bulkMode && !isEditing ? 'cursor-move hover:bg-muted/50' : ''
+              }`}
+              draggable={!bulkMode && !isEditing}
+              onDragStart={(e) => handleDragStart(e, n)}
+              onDragOver={(e) => handleDragOver(e, n)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, n)}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="flex items-center gap-1 min-h-7 flex-1">
+                {/* Checkbox for bulk selection */}
+                {bulkMode && (
+                  <Checkbox
+                    checked={selectedFolders.has(n.id)}
+                    onCheckedChange={() => toggleFolderSelection(n.id)}
+                    className="mr-1"
+                  />
+                )}
                 {hasChildren ? (
                   <button
                     type="button"
@@ -131,49 +318,91 @@ export default function FolderManagerPage() {
                   <span className="w-5 h-5 inline-block" />
                 )}
                 {isEditing ? (
-                  <Input
-                    value={editing[n.id].name}
-                    onChange={e => setEditing(prev => ({ ...prev, [n.id]: { name: e.target.value } }))}
-                    className="h-7 w-40"
-                  />
+                  <div className="flex items-center gap-2 flex-1">
+                    <Input
+                      value={editing[n.id].name}
+                      onChange={e => setEditing(prev => ({ ...prev, [n.id]: { name: e.target.value } }))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          commitEdit(n.id);
+                        } else if (e.key === 'Escape') {
+                          cancelEdit(n.id);
+                        }
+                      }}
+                      className="h-7 flex-1"
+                      autoFocus
+                    />
+                  </div>
                 ) : (
-                  <span className="text-sm font-medium truncate max-w-[180px]" title={n.name}>{n.name}</span>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span 
+                        className="text-sm font-medium truncate cursor-help" 
+                        title={n.name.length > 30 ? n.name : undefined}
+                      >
+                        {n.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-sm whitespace-nowrap">
+                        {n.questions_count} سوال
+                      </span>
+                    </div>
+                  </div>
                 )}
-                {!isEditing && (
-                  <Button size="sm" variant="ghost" onClick={() => startEdit(n)}>
-                    <Pencil className="w-3.5 h-3.5" />
-                  </Button>
-                )}
-                {isEditing && (
-                  <>
+                
+                {/* Action buttons */}
+                {!bulkMode && isEditing && (
+                  <div className="flex items-center gap-1 opacity-100">
                     <Button size="sm" variant="ghost" disabled={saving} onClick={() => commitEdit(n.id)}>
                       <Save className="w-3.5 h-3.5" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => cancelEdit(n.id)}>
                       <X className="w-3.5 h-3.5" />
                     </Button>
-                  </>
+                  </div>
                 )}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  disabled={deletingId === n.id}
-                  onClick={() => handleDelete(n.id)}
-                >
-                  {deletingId === n.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                </Button>
-                {/* دکمه ایجاد زیرپوشه */}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setInlineCreate(prev => ({ ...prev, [n.id]: prev[n.id] ?? '' }))}
-                >
-                  <FolderPlus className="w-3.5 h-3.5" />
-                </Button>
+                
+                {!bulkMode && !isEditing && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 transition-opacity"
+                      >
+                        <MoreVertical className="w-3.5 h-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => startEdit(n)}>
+                        <Pencil className="w-4 h-4 mr-2" />
+                        ویرایش نام
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setInlineCreate(prev => ({ ...prev, [n.id]: prev[n.id] ?? '' }))}
+                      >
+                        <FolderPlus className="w-4 h-4 mr-2" />
+                        افزودن زیرپوشه
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => handleDelete(n.id)}
+                        disabled={deletingId === n.id}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        {deletingId === n.id ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 mr-2" />
+                        )}
+                        حذف پوشه
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
             {/* فرم ایجاد سریع زیرپوشه */}
-            {inlineCreate[n.id] !== undefined && (
+            {!bulkMode && inlineCreate[n.id] !== undefined && (
               <div className="flex items-center gap-2 ms-6 mt-1">
                 <Input
                   value={inlineCreate[n.id]}
@@ -227,7 +456,9 @@ export default function FolderManagerPage() {
                 <SelectContent>
                   <SelectItem value="root">[ریشه]</SelectItem>
                   {allFolders.map(f => (
-                    <SelectItem key={f.id} value={String(f.id)}>{'— '.repeat(f.depth)}{f.name}</SelectItem>
+                    <SelectItem key={f.id} value={String(f.id)}>
+                      {'— '.repeat(f.depth)}{f.name} ({f.questions_count} سوال)
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -243,7 +474,56 @@ export default function FolderManagerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>ساختار پوشه‌ها</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>ساختار پوشه‌ها</CardTitle>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={bulkMode ? "default" : "outline"}
+                size="sm"
+                onClick={toggleBulkMode}
+              >
+                {bulkMode ? "لغو انتخاب گروهی" : "انتخاب گروهی"}
+              </Button>
+              {bulkMode && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={selectAllFolders}
+                    disabled={selectedFolders.size === allFolders.length}
+                  >
+                    انتخاب همه
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={clearSelection}
+                    disabled={selectedFolders.size === 0}
+                  >
+                    لغو انتخاب
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleBulkDelete}
+                    disabled={selectedFolders.size === 0 || bulkDeleting}
+                  >
+                    {bulkDeleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                        در حال حذف...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        حذف انتخاب شده‌ها ({selectedFolders.size})
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -251,8 +531,34 @@ export default function FolderManagerPage() {
           ) : tree.length === 0 ? (
             <p className="text-sm text-muted-foreground">هیچ پوشه‌ای هنوز ایجاد نشده است.</p>
           ) : (
-            <div className="max-h-[600px] overflow-auto pr-2">
-              {renderTree(tree)}
+            <div className="relative">
+              {moving && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 rounded">
+                  <div className="flex items-center gap-2 text-sm bg-background px-3 py-2 rounded-lg shadow-lg border">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    در حال انتقال پوشه...
+                  </div>
+                </div>
+              )}
+              <div className="max-h-[600px] overflow-auto pr-2">
+                {!bulkMode && (
+                  <div className="text-xs text-muted-foreground mb-2 p-2 bg-primary/5 rounded border-l-4 border-primary/30">
+                    💡 برای انتقال پوشه، آن را بگیرید و روی پوشه مقصد رها کنید. برای انتقال به ریشه، روی فضای خالی رها کنید.
+                  </div>
+                )}
+                <div 
+                  className="min-h-[400px]"
+                  onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+                  onDrop={handleDropToRoot}
+                >
+                  {renderTree(tree)}
+                  {draggedFolder && (
+                    <div className="mt-4 p-2 border-2 border-dashed border-muted-foreground/30 rounded text-center text-sm text-muted-foreground">
+                      اینجا رها کنید تا به ریشه منتقل شود
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </CardContent>

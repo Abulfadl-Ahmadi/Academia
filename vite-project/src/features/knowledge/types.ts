@@ -113,6 +113,7 @@ export interface Folder {
   depth: number;
   path_ids: number[];
   children?: Folder[];
+  questions_count: number;
 }
 
 export interface CreateSubjectData {
