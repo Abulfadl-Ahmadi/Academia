@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FolderTreeSelector } from '@/components/FolderTreeSelector';
 
 interface FilterOptions {
@@ -13,6 +14,7 @@ interface FilterOptions {
   publicIdSearch: string;
   difficulty: string;
   folders: number[];
+  questionCollections: number[];
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   isActive: string;
@@ -21,6 +23,7 @@ interface FilterOptions {
   hasImages: string;
   dateFrom: string;
   dateTo: string;
+  hasNoCollection: boolean;
 }
 
 interface QuestionFiltersProps {
@@ -43,6 +46,7 @@ interface QuestionFiltersProps {
       without_images: number;
     };
     folders: Array<{id: string; name: string; parent__name?: string}>;
+    question_collections: Array<{id: number; name: string; total_questions: number}>;
   };
 }
 
@@ -52,6 +56,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     publicIdSearch: '',
     difficulty: '',
     folders: [],
+    questionCollections: [],
     sortBy: 'created_at',
     sortOrder: 'desc',
     isActive: '',
@@ -60,6 +65,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     hasImages: '',
     dateFrom: '',
     dateTo: '',
+    hasNoCollection: false,
   });
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -89,7 +95,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     onFiltersChange(filters);
   }, [filters, onFiltersChange]);
 
-  const handleFilterChange = (key: keyof FilterOptions, value: string | number[]) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: string | number[] | boolean) => {
     // Convert "all" to empty string for API compatibility
     const actualValue = value === 'all' ? '' : value;
     setFilters(prev => ({ ...prev, [key]: actualValue }));
@@ -101,6 +107,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
       publicIdSearch: '',
       difficulty: '',
       folders: [],
+      questionCollections: [],
       sortBy: 'created_at',
       sortOrder: 'desc',
       isActive: '',
@@ -109,6 +116,7 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
       hasImages: '',
       dateFrom: '',
       dateTo: '',
+      hasNoCollection: false,
     });
     setSearchDebounce('');
     setPublicIdSearchDebounce('');
@@ -120,12 +128,14 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
     if (filters.publicIdSearch) count++;
     if (filters.difficulty) count++;
     if (filters.folders.length > 0) count++;
+    if (filters.questionCollections.length > 0) count++;
     if (filters.isActive) count++;
     if (filters.source) count++;
     if (filters.hasSolution) count++;
     if (filters.hasImages) count++;
     if (filters.dateFrom) count++;
     if (filters.dateTo) count++;
+    if (filters.hasNoCollection) count++;
     return count;
   };
 
@@ -226,6 +236,52 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
                       maxHeight="max-h-64"
                       showSelectedCount={false}
                     />
+                  </div>
+
+                  {/* Question Collections Filter */}
+                  <div className="space-y-2 col-span-1 md:col-span-2 lg:col-span-3">
+                    <label className="text-sm font-medium">مجموعه‌های سوال</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 space-x-reverse">
+                        <Checkbox
+                          id="hasNoCollection"
+                          checked={filters.hasNoCollection}
+                          onCheckedChange={(checked) => handleFilterChange('hasNoCollection', checked as boolean)}
+                        />
+                        <label htmlFor="hasNoCollection" className="text-sm font-medium">
+                          سوالات بدون مجموعه
+                        </label>
+                      </div>
+                      
+                      {stats?.question_collections && stats.question_collections.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-32 overflow-y-auto border rounded p-2">
+                          {stats.question_collections.map((collection) => (
+                            <div key={collection.id} className="flex items-center space-x-2 space-x-reverse">
+                              <Checkbox
+                                id={`collection-${collection.id}`}
+                                checked={filters.questionCollections.includes(collection.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFilters(prev => ({
+                                      ...prev,
+                                      questionCollections: [...prev.questionCollections, collection.id]
+                                    }));
+                                  } else {
+                                    setFilters(prev => ({
+                                      ...prev,
+                                      questionCollections: prev.questionCollections.filter(id => id !== collection.id)
+                                    }));
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`collection-${collection.id}`} className="text-sm">
+                                {collection.name} ({collection.total_questions})
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Active Status Filter */}
@@ -404,6 +460,26 @@ export function QuestionFilters({ onFiltersChange, stats }: QuestionFiltersProps
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => handleFilterChange('folders', [])}
+                />
+              </Badge>
+            )}
+
+            {filters.questionCollections.length > 0 && (
+              <Badge variant="secondary" className="gap-1">
+                مجموعه‌ها: {filters.questionCollections.length} انتخاب شده
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('questionCollections', [])}
+                />
+              </Badge>
+            )}
+
+            {filters.hasNoCollection && (
+              <Badge variant="secondary" className="gap-1">
+                بدون مجموعه
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange('hasNoCollection', false)}
                 />
               </Badge>
             )}

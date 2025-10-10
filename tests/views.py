@@ -12,14 +12,16 @@ import json
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
     StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage,
-    TestContentType
+    QuestionCollection, TestContentType
 )
 from knowledge.models import Folder
 from .serializers import (
     TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
     TestCollectionSerializer, TestCollectionDetailSerializer, StudentProgressSerializer,
     QuestionSerializer, QuestionCreateSerializer, OptionSerializer, QuestionImageSerializer,
-    QuestionTestCreateSerializer, QuestionTestUpdateSerializer, QuestionTestListSerializer
+    QuestionTestCreateSerializer, QuestionTestUpdateSerializer, QuestionTestListSerializer,
+    QuestionCollectionSerializer, QuestionCollectionDetailSerializer, 
+    QuestionCollectionCreateSerializer, QuestionCollectionUpdateSerializer
 )
 from rest_framework.exceptions import ValidationError
 import pytz
@@ -963,6 +965,17 @@ class QuestionViewSet(viewsets.ModelViewSet):
         difficulty = self.request.query_params.get('difficulty', None)
         if difficulty:
             queryset = queryset.filter(difficulty_level=difficulty)
+
+        # فیلتر بر اساس مجموعه سوالات
+        collection_ids = self.request.query_params.getlist('collections', [])
+        has_no_collection = self.request.query_params.get('has_no_collection', None)
+        if collection_ids and has_no_collection:
+            # اگر هر دو تنظیم شده باشند، اتحاد نتایج (OR)
+            queryset = queryset.filter(Q(collections__id__in=collection_ids) | Q(collections__isnull=True)).distinct()
+        elif collection_ids:
+            queryset = queryset.filter(collections__id__in=collection_ids).distinct()
+        elif has_no_collection is not None and has_no_collection.lower() == 'true':
+            queryset = queryset.filter(collections__isnull=True)
         
         # جستجوی متنی
         search = self.request.query_params.get('search', None)
@@ -1053,6 +1066,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
     def stats(self, request):
         """آمار کلی سوالات برای نمایش در فیلترها"""
         from django.db.models import Q
+        from .models import QuestionCollection
         
         # Use the same filtered queryset as get_queryset() to respect all filters
         filtered_queryset = self.get_queryset()
@@ -1081,6 +1095,14 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 ).distinct().count(),
             },
             'folders': list(Folder.objects.filter(questions__in=filtered_queryset).distinct().values('id', 'name', 'parent__name')),
+            'question_collections': [
+                {
+                    'id': c.id,
+                    'name': c.name,
+                    'total_questions': c.questions.count(),
+                }
+                for c in QuestionCollection.objects.all().order_by('-created_at')
+            ],
         }
         return Response(stats)
 
@@ -1346,5 +1368,131 @@ class QuestionImageViewSet(viewsets.ModelViewSet):
         if user.role == 'teacher':
             return QuestionImage.objects.filter(question__created_by=user)
         return QuestionImage.objects.filter(question__is_active=True)
+
+
+class QuestionCollectionViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing QuestionCollection
+    Supports CRUD operations with proper permissions
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.role == 'teacher':
+            # Teachers can only see their own question collections
+            return QuestionCollection.objects.filter(created_by=user)
+        elif user.role == 'admin':
+            # Admins can see all question collections
+            return QuestionCollection.objects.all()
+        else:
+            # Students and others can only see active collections
+            # (you might want to restrict this further based on your business logic)
+            return QuestionCollection.objects.filter(is_active=True)
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return QuestionCollectionCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return QuestionCollectionUpdateSerializer
+        elif self.action == 'retrieve':
+            return QuestionCollectionDetailSerializer
+        else:
+            return QuestionCollectionSerializer
+    
+    def perform_create(self, serializer):
+        # Ensure only teachers can create question collections
+        if self.request.user.role != 'teacher':
+            raise PermissionDenied("فقط معلمان می‌توانند مجموعه سوال ایجاد کنند")
+        serializer.save()
+    
+    def perform_update(self, serializer):
+        # Ensure only the creator or admin can update
+        if (self.request.user.role != 'admin' and 
+            serializer.instance.created_by != self.request.user):
+            raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را ویرایش کند")
+        serializer.save()
+    
+    def perform_destroy(self, instance):
+        # Ensure only the creator or admin can delete
+        if (self.request.user.role != 'admin' and 
+            instance.created_by != self.request.user):
+            raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را حذف کند")
+        instance.delete()
+    
+    @action(detail=True, methods=['post'])
+    def add_questions(self, request, pk=None):
+        """Add questions to the collection"""
+        collection = self.get_object()
+        
+        # Check permissions
+        if (request.user.role != 'admin' and 
+            collection.created_by != request.user):
+            raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال اضافه کند")
+        
+        question_ids = request.data.get('question_ids', [])
+        if not question_ids:
+            return Response(
+                {'error': 'لیست شناسه سوالات الزامی است'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate questions exist and are active
+        questions = Question.objects.filter(id__in=question_ids, is_active=True)
+        if questions.count() != len(question_ids):
+            return Response(
+                {'error': 'برخی از سوالات معتبر نیستند'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Add questions to collection
+        collection.questions.add(*questions)
+        
+        return Response({
+            'message': f'{questions.count()} سوال به مجموعه اضافه شد',
+            'total_questions': collection.get_total_questions()
+        })
+    
+    @action(detail=True, methods=['post'])
+    def remove_questions(self, request, pk=None):
+        """Remove questions from the collection"""
+        collection = self.get_object()
+        
+        # Check permissions
+        if (request.user.role != 'admin' and 
+            collection.created_by != request.user):
+            raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال حذف کند")
+        
+        question_ids = request.data.get('question_ids', [])
+        if not question_ids:
+            return Response(
+                {'error': 'لیست شناسه سوالات الزامی است'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Remove questions from collection
+        questions = Question.objects.filter(id__in=question_ids)
+        collection.questions.remove(*questions)
+        
+        return Response({
+            'message': f'{questions.count()} سوال از مجموعه حذف شد',
+            'total_questions': collection.get_total_questions()
+        })
+    
+    @action(detail=True, methods=['get'])
+    def questions(self, request, pk=None):
+        """Get questions in the collection with pagination"""
+        collection = self.get_object()
+        questions = collection.questions.filter(is_active=True).order_by('-created_at')
+        
+        # Apply pagination
+        page = self.paginate_queryset(questions)
+        if page is not None:
+            serializer = QuestionSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
         
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)

@@ -184,6 +184,22 @@ export function TeacherSidebar({
         ],
       },
       {
+        title: "مجموعه‌های سوال",
+        url: "/panel/question-collections",
+        icon: Library,
+        items: [
+          {
+            title: "لیست مجموعه‌های سوال",
+            url: "/panel/question-collections",
+          },
+          {
+            title: "ایجاد مجموعه سوال",
+            url: "/panel/question-collections/create",
+            description: "ایجاد مجموعه جدید برای سازماندهی سوالات"
+          },
+        ],
+      },
+      {
         title: "مدیریت وبلاگ",
         url: "/panel/blog",
         icon: PenTool,

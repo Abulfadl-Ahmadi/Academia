@@ -702,3 +702,32 @@ class DetailedSolutionImage(models.Model):
     def __str__(self):
         return f"تصویر پاسخ تشریحی برای {self.question.question_text[:30]}"
  
+
+class QuestionCollection(models.Model):
+    """مجموعه سوالات برای مدیریت بهتر"""
+    name = models.CharField(max_length=255, verbose_name="نام مجموعه سوال")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    questions = models.ManyToManyField(Question, related_name='collections', verbose_name="سوالات")
+    created_by = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='created_question_collections',
+        limit_choices_to={"role": "teacher"},
+        verbose_name="ایجاد شده توسط"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ آخرین بروزرسانی")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+
+    class Meta:
+        verbose_name = "مجموعه سوال"
+        verbose_name_plural = "مجموعه‌های سوال"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+    def get_total_questions(self):
+        """تعداد کل سوالات در این مجموعه"""
+        return self.questions.count()
+

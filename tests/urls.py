@@ -15,6 +15,7 @@ from .views import (
     QuestionViewSet,
     OptionViewSet,
     QuestionImageViewSet,
+    QuestionCollectionViewSet,
     ListCreateQuestionTestView,
     QuestionTestDetailView,
 )
@@ -29,6 +30,7 @@ router = DefaultRouter()
 router.register(r'test-collections', TestCollectionViewSet, basename='test-collections')
 router.register(r'topic-tests', TopicTestViewSet, basename='topic-tests')
 router.register(r'questions', QuestionViewSet, basename='questions')
+router.register(r'question-collections', QuestionCollectionViewSet, basename='question-collections')
 router.register(r'options', OptionViewSet, basename='options')
 router.register(r'question-images', QuestionImageViewSet, basename='question-images')
 

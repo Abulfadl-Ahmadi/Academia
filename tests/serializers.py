@@ -11,7 +11,7 @@ from contents.models import File
 from .models import (
     Test, PrimaryKey, StudentTestSession, StudentAnswer,
     TestCollection, StudentProgress, Question, Option, QuestionImage, DetailedSolutionImage,
-    TestType, TestContentType
+    QuestionCollection, TestType, TestContentType
 )
 from courses.models import Course
 from accounts.models import User
@@ -1043,5 +1043,129 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
                 pass
 
         print("=== QUESTION UPDATE COMPLETE ===")
+        return instance
+
+
+class QuestionCollectionSerializer(serializers.ModelSerializer):
+    """Serializer for listing and basic operations on QuestionCollection"""
+    total_questions = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = QuestionCollection
+        fields = [
+            'id', 'name', 'description', 'is_active', 
+            'created_at', 'updated_at', 'total_questions', 'created_by_name'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'total_questions', 'created_by_name']
+    
+    def get_total_questions(self, obj):
+        return obj.get_total_questions()
+    
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None
+
+
+class QuestionCollectionDetailSerializer(serializers.ModelSerializer):
+    """Detailed serializer for QuestionCollection with questions"""
+    questions = QuestionSerializer(many=True, read_only=True)
+    total_questions = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = QuestionCollection
+        fields = [
+            'id', 'name', 'description', 'is_active',
+            'created_at', 'updated_at', 'questions', 'total_questions', 'created_by_name'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'questions', 'total_questions', 'created_by_name']
+    
+    def get_total_questions(self, obj):
+        return obj.get_total_questions()
+    
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None
+
+
+class QuestionCollectionCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating QuestionCollection"""
+    question_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of question IDs to add to this collection"
+    )
+    
+    class Meta:
+        model = QuestionCollection
+        fields = ['name', 'description', 'is_active', 'question_ids']
+    
+    def create(self, validated_data):
+        question_ids = validated_data.pop('question_ids', [])
+        
+        # Set created_by from request user
+        validated_data['created_by'] = self.context['request'].user
+        
+        collection = QuestionCollection.objects.create(**validated_data)
+        
+        # Add questions if provided
+        if question_ids:
+            questions = Question.objects.filter(id__in=question_ids, is_active=True)
+            collection.questions.set(questions)
+        
+        return collection
+
+
+class QuestionCollectionUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating QuestionCollection"""
+    question_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of question IDs to replace current questions"
+    )
+    add_question_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of question IDs to add to current questions"
+    )
+    remove_question_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of question IDs to remove from current questions"
+    )
+    
+    class Meta:
+        model = QuestionCollection
+        fields = ['name', 'description', 'is_active', 'question_ids', 'add_question_ids', 'remove_question_ids']
+    
+    def update(self, instance, validated_data):
+        question_ids = validated_data.pop('question_ids', None)
+        add_question_ids = validated_data.pop('add_question_ids', None)
+        remove_question_ids = validated_data.pop('remove_question_ids', None)
+        
+        # Update basic fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Handle question operations
+        if question_ids is not None:
+            # Replace all questions
+            questions = Question.objects.filter(id__in=question_ids, is_active=True)
+            instance.questions.set(questions)
+        else:
+            # Add questions
+            if add_question_ids:
+                questions_to_add = Question.objects.filter(id__in=add_question_ids, is_active=True)
+                instance.questions.add(*questions_to_add)
+            
+            # Remove questions
+            if remove_question_ids:
+                questions_to_remove = Question.objects.filter(id__in=remove_question_ids)
+                instance.questions.remove(*questions_to_remove)
+        
         return instance
 

@@ -21,6 +21,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  DrawerDescription,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -33,7 +34,7 @@ import {
   FileText,
   Plus,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as React from "react";
 import {
   Tooltip,
@@ -162,6 +163,14 @@ interface Test {
   };
 }
 
+interface QuestionCollection {
+  id: number;
+  name: string;
+  description?: string;
+  total_questions: number;
+  is_active: boolean;
+}
+
 interface QuestionCardProps {
   question: Question;
   onEdit?: (questionId: number) => void;
@@ -186,10 +195,15 @@ export function QuestionCard({
   const [showSolutionDialog, setShowSolutionDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showAddToExamDrawer, setShowAddToExamDrawer] = useState(false);
+  const [showAddToCollectionDrawer, setShowAddToCollectionDrawer] = useState(false);
   const [tests, setTests] = useState<Test[]>([]);
   const [selectedTests, setSelectedTests] = useState<number[]>([]);
   const [loadingTests, setLoadingTests] = useState(false);
   const [testsWithQuestion, setTestsWithQuestion] = useState<number[]>([]);
+  const [collections, setCollections] = useState<QuestionCollection[]>([]);
+  const [selectedCollections, setSelectedCollections] = useState<number[]>([]);
+  const [loadingCollections, setLoadingCollections] = useState(false);
+  const [collectionsWithQuestion, setCollectionsWithQuestion] = useState<number[]>([]);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -202,7 +216,7 @@ export function QuestionCard({
     return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
-  const fetchTests = async () => {
+  const fetchTests = useCallback(async () => {
     try {
       setLoadingTests(true);
       const response = await axiosInstance.get("/tests/");
@@ -229,8 +243,8 @@ export function QuestionCard({
           const testData = testResponse.data;
           
           // Get current question IDs - handle both array of IDs and array of objects
-          const currentQuestionIds = (testData.questions || []).map(q => 
-            typeof q === 'object' && q !== null ? q.id : q
+          const currentQuestionIds = (testData.questions || []).map((q: { id: number } | number) => 
+            typeof q === 'object' && q !== null ? (q as { id: number }).id : (q as number)
           );
           
           if (currentQuestionIds.includes(question.id)) {
@@ -252,7 +266,7 @@ export function QuestionCard({
     } finally {
       setLoadingTests(false);
     }
-  };
+  }, [question.id]);
 
   const addQuestionToTests = async () => {
     try {
@@ -267,8 +281,8 @@ export function QuestionCard({
         const currentTest = testResponse.data;
         
         // Get current question IDs - handle both array of IDs and array of objects
-        const currentQuestionIds = (currentTest.questions || []).map(q => 
-          typeof q === 'object' && q !== null ? q.id : q
+        const currentQuestionIds = (currentTest.questions || []).map((q: { id: number } | number) => 
+          typeof q === 'object' && q !== null ? (q as { id: number }).id : (q as number)
         );
         
         const isSelected = selectedTests.includes(testId);
@@ -284,7 +298,7 @@ export function QuestionCard({
           );
         } else if (!isSelected && isCurrentlyIncluded) {
           // Remove question from test
-          const updatedQuestionIds = currentQuestionIds.filter(id => id !== question.id);
+          const updatedQuestionIds = currentQuestionIds.filter((id: number) => id !== question.id);
           promises.push(
             axiosInstance.patch(`/tests/${testId}/update`, {
               questions: updatedQuestionIds
@@ -322,7 +336,7 @@ export function QuestionCard({
     if (checked) {
       setSelectedTests(prev => [...prev, testId]);
     } else {
-      setSelectedTests(prev => prev.filter(id => id !== testId));
+  setSelectedTests((prev: number[]) => prev.filter((id: number) => id !== testId));
     }
   };
 
@@ -330,7 +344,127 @@ export function QuestionCard({
     if (showAddToExamDrawer) {
       fetchTests();
     }
-  }, [showAddToExamDrawer]);
+  }, [showAddToExamDrawer, fetchTests]);
+
+  const fetchCollections = useCallback(async () => {
+    try {
+      setLoadingCollections(true);
+      const response = await axiosInstance.get("/question-collections/");
+      
+      let collectionsData: QuestionCollection[] = [];
+      if (Array.isArray(response.data)) {
+        collectionsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        collectionsData = response.data.results;
+      } else {
+        console.warn("Unexpected API response structure:", response.data);
+        collectionsData = [];
+      }
+      
+      setCollections(collectionsData);
+
+      // Check which collections already contain this question
+      const collectionsContainingQuestion: number[] = [];
+      
+      for (const collection of collectionsData) {
+        try {
+          const collectionResponse = await axiosInstance.get(`/question-collections/${collection.id}/`);
+          const collectionData = collectionResponse.data;
+          
+          // Get current question IDs
+          const currentQuestionIds = (collectionData.questions || []).map((q: { id: number } | number) => 
+            typeof q === 'object' && q !== null ? (q as { id: number }).id : (q as number)
+          );
+          
+          if (currentQuestionIds.includes(question.id)) {
+            collectionsContainingQuestion.push(collection.id);
+          }
+        } catch (error) {
+          console.error(`Error checking collection ${collection.id}:`, error);
+        }
+      }
+      
+      setCollectionsWithQuestion(collectionsContainingQuestion);
+      // Set collections that already contain the question as selected
+      setSelectedCollections(collectionsContainingQuestion);
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      toast.error("خطا در بارگیری مجموعه‌های سوال");
+      setCollections([]);
+      setCollectionsWithQuestion([]);
+    } finally {
+      setLoadingCollections(false);
+    }
+  }, [question.id]);
+
+  useEffect(() => {
+    if (showAddToCollectionDrawer) {
+      fetchCollections();
+    }
+  }, [showAddToCollectionDrawer, fetchCollections]);
+
+  // Safety: reset body pointer-events when overlays are closed
+  useEffect(() => {
+    const anyOverlayOpen = showAddToExamDrawer || showAddToCollectionDrawer || showSolutionDialog;
+    if (!anyOverlayOpen && typeof document !== 'undefined') {
+      const body = document.body;
+      if (body && body.style.pointerEvents === 'none') {
+        body.style.pointerEvents = 'auto';
+      }
+    }
+  }, [showAddToExamDrawer, showAddToCollectionDrawer, showSolutionDialog]);
+
+
+
+  const addQuestionToCollections = async () => {
+    try {
+      const promises: Promise<unknown>[] = [];
+      
+      // Get all collections that need to be updated
+      const allRelevantCollections = [...new Set([...selectedCollections, ...collectionsWithQuestion])];
+      
+      for (const collectionId of allRelevantCollections) {
+        const isSelected = selectedCollections.includes(collectionId);
+        const isCurrentlyIncluded = collectionsWithQuestion.includes(collectionId);
+        
+        if (isSelected && !isCurrentlyIncluded) {
+          // Add question to collection
+          promises.push(
+            axiosInstance.post(`/question-collections/${collectionId}/add_questions/`, {
+              question_ids: [question.id]
+            })
+          );
+        } else if (!isSelected && isCurrentlyIncluded) {
+          // Remove question from collection
+          promises.push(
+            axiosInstance.post(`/question-collections/${collectionId}/remove_questions/`, {
+              question_ids: [question.id]
+            })
+          );
+        }
+      }
+
+      await Promise.all(promises);
+      
+      const addedCount = selectedCollections.filter(id => !collectionsWithQuestion.includes(id)).length;
+      const removedCount = collectionsWithQuestion.filter(id => !selectedCollections.includes(id)).length;
+      
+      if (addedCount > 0 && removedCount > 0) {
+        toast.success(`سوال به ${addedCount} مجموعه اضافه و از ${removedCount} مجموعه حذف شد`);
+      } else if (addedCount > 0) {
+        toast.success(`سوال با موفقیت به ${addedCount} مجموعه اضافه شد`);
+      } else if (removedCount > 0) {
+        toast.success(`سوال با موفقیت از ${removedCount} مجموعه حذف شد`);
+      } else {
+        toast.info("تغییری اعمال نشد");
+      }
+      
+      setShowAddToCollectionDrawer(false);
+    } catch (error) {
+      console.error("Error updating question in collections:", error);
+      toast.error("خطا در به‌روزرسانی مجموعه‌های سوال");
+    }
+  };
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
@@ -599,6 +733,10 @@ export function QuestionCard({
                   <Plus className="h-4 w-4 ml-2" />
                   افزودن به آزمون
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowAddToCollectionDrawer(true)}>
+                  <Plus className="h-4 w-4 ml-2" />
+                  <p dir="rtl">افزودن به مجموعه سوال</p>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -682,11 +820,13 @@ export function QuestionCard({
         </div>
       </CardContent>
     </Card>
-    <Drawer direction="left" open={showAddToExamDrawer} onOpenChange={setShowAddToExamDrawer}>
-      <DrawerContent className="h-screen flex flex-col">
-        <DrawerHeader className="flex-shrink-0">
-          <DrawerTitle>افزودن به آزمون</DrawerTitle>
-        </DrawerHeader>
+    {showAddToExamDrawer && (
+      <Drawer direction="left" open={showAddToExamDrawer} onOpenChange={setShowAddToExamDrawer}>
+        <DrawerContent className="h-screen flex flex-col">
+          <DrawerHeader className="flex-shrink-0">
+            <DrawerTitle>افزودن به آزمون</DrawerTitle>
+            <DrawerDescription>سوال را به آزمون‌های دلخواه اضافه یا حذف کنید</DrawerDescription>
+          </DrawerHeader>
         <div className="p-4 flex-1 flex flex-col min-h-0">
           <div className="space-y-4 flex-1 flex flex-col min-h-0">
             <div className="flex-shrink-0">
@@ -795,8 +935,136 @@ export function QuestionCard({
             })()}
           </div>
         </div>
-      </DrawerContent>
-    </Drawer>
+        </DrawerContent>
+      </Drawer>
+    )}
+
+    {/* Add to Question Collection Drawer */}
+    {showAddToCollectionDrawer && (
+      <Drawer direction="left" open={showAddToCollectionDrawer} onOpenChange={setShowAddToCollectionDrawer}>
+        <DrawerContent className="h-screen flex flex-col">
+          <DrawerHeader className="flex-shrink-0">
+            <DrawerTitle>افزودن به مجموعه سوال</DrawerTitle>
+            <DrawerDescription>این سوال را به مجموعه‌های انتخاب شده اضافه یا حذف کنید</DrawerDescription>
+          </DrawerHeader>
+        <div className="p-4 flex-1 flex flex-col min-h-0">
+          <div className="space-y-4 flex-1 flex flex-col min-h-0">
+            <div className="flex-shrink-0">
+              <h4 className="font-medium text-sm mb-2">سوال انتخاب شده:</h4>
+              <div className="p-3 bg-muted/50 rounded border text-sm">
+                <MathPreview text={question.question_text} />
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col min-h-0">
+              <h4 className="font-medium text-sm mb-2 flex-shrink-0">انتخاب مجموعه‌های سوال:</h4>
+              {loadingCollections ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-sm text-muted-foreground mt-2">در حال بارگیری مجموعه‌ها...</p>
+                </div>
+              ) : !Array.isArray(collections) || collections.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {Array.isArray(collections) && collections.length === 0 ? "هیچ مجموعه‌ای یافت نشد" : "خطا در بارگیری مجموعه‌ها"}
+                </p>
+              ) : (
+                <ScrollArea className="flex-1 w-full border rounded-md min-h-0">
+                  <div className="p-2 space-y-2">
+                    {(collections || []).map((collection) => {
+                      const isAlreadyIncluded = collectionsWithQuestion.includes(collection.id);
+                      return (
+                        <div 
+                          key={collection.id} 
+                          className={`flex items-start space-x-reverse p-2 rounded border transition-colors hover:bg-muted/50 ${
+                            isAlreadyIncluded ? 'bg-muted/30' : 'bg-background'
+                          }`}
+                        >
+                          <Checkbox
+                            id={`collection-${collection.id}`}
+                            checked={selectedCollections.includes(collection.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedCollections(prev => [...prev, collection.id]);
+                              } else {
+                                setSelectedCollections((prev: number[]) => prev.filter((id: number) => id !== collection.id));
+                              }
+                            }}
+                            className="mt-0.5 ml-3"
+                          />
+                          <label
+                            htmlFor={`collection-${collection.id}`}
+                            className={`text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1 ${
+                              isAlreadyIncluded ? 'text-muted-foreground' : ''
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{collection.name}</span>
+                                {isAlreadyIncluded && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    شامل این سوال
+                                  </Badge>
+                                )}
+                                <Badge variant="outline" className="text-xs">
+                                  {collection.total_questions} سوال
+                                </Badge>
+                              </div>
+                              {collection.description && (
+                                <div className="text-xs text-muted-foreground leading-normal">
+                                  {collection.description}
+                                </div>
+                              )}
+                              <div className="text-xs text-muted-foreground">
+                                وضعیت: {collection.is_active ? 'فعال' : 'غیرفعال'}
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              )}
+            </div>
+
+            {(() => {
+              const hasChanges = selectedCollections.some(id => !collectionsWithQuestion.includes(id)) || 
+                                collectionsWithQuestion.some(id => !selectedCollections.includes(id));
+              
+              if (!hasChanges) return null;
+              
+              const addedCount = selectedCollections.filter(id => !collectionsWithQuestion.includes(id)).length;
+              const removedCount = collectionsWithQuestion.filter(id => !selectedCollections.includes(id)).length;
+              
+              let statusText = '';
+              if (addedCount > 0 && removedCount > 0) {
+                statusText = `${addedCount} اضافه، ${removedCount} حذف`;
+              } else if (addedCount > 0) {
+                statusText = `${addedCount} مجموعه برای اضافه شدن`;
+              } else if (removedCount > 0) {
+                statusText = `${removedCount} مجموعه برای حذف شدن`;
+              }
+              
+              return (
+                <div className="pt-4 border-t flex-shrink-0">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {statusText}
+                  </p>
+                  <Button
+                    onClick={addQuestionToCollections}
+                    className="w-full"
+                    disabled={loadingCollections}
+                  >
+                    اعمال تغییرات
+                  </Button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+        </DrawerContent>
+      </Drawer>
+    )}
   </>
 );
 }

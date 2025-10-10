@@ -82,6 +82,8 @@ import TeacherBlogEditPage from '@/app/teacher-dashboard/blog/[slug]/edit/page'
 import GalleryPage from '@/app/teacher-dashboard/gallery/page'
 import UploadGalleryPage from '@/app/teacher-dashboard/gallery/upload/page'
 import EditGalleryPage from '@/app/teacher-dashboard/gallery/edit/[id]/page'
+import QuestionCollectionsPage from "@/app/teacher-dashboard/question-collections/page"
+import CreateQuestionCollectionPage from "@/app/teacher-dashboard/question-collections/create"
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -202,6 +204,9 @@ export default function PanelRoute() {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/gallery/upload" element={<UploadGalleryPage />} />
         <Route path="/gallery/edit/:id" element={<EditGalleryPage />} />
+
+        <Route path="/question-collections" element={<QuestionCollectionsPage />} />
+        <Route path="/question-collections/create" element={<CreateQuestionCollectionPage />} />
       </Route>
     </Routes>
   )

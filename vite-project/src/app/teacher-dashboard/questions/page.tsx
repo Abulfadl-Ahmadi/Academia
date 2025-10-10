@@ -19,6 +19,7 @@ interface FilterOptions {
   publicIdSearch: string;
   difficulty: string;
   folders: number[];
+  questionCollections: number[];
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   isActive: string;
@@ -27,6 +28,7 @@ interface FilterOptions {
   hasImages: string;
   dateFrom: string;
   dateTo: string;
+  hasNoCollection: boolean;
 }
 
 interface Question {
@@ -99,6 +101,7 @@ interface StatsResponse {
     without_images: number;
   };
   folders: Array<{id: string; name: string; parent__name?: string}>;
+  question_collections: Array<{id: number; name: string; total_questions: number}>;
 }
 
 export default function QuestionsListPage() {
@@ -138,6 +141,7 @@ export default function QuestionsListPage() {
     publicIdSearch: '',
     difficulty: '',
     folders: [],
+    questionCollections: [],
     sortBy: 'created_at',
     sortOrder: 'desc',
     isActive: '',
@@ -146,6 +150,7 @@ export default function QuestionsListPage() {
     hasImages: '',
     dateFrom: '',
     dateTo: '',
+    hasNoCollection: false,
   });
 
   // Build API URL with filters
@@ -168,6 +173,15 @@ export default function QuestionsListPage() {
       filters.folders.forEach(folderId => {
         params.append('folders', folderId.toString());
       });
+    }
+    // Question collections filter
+    if (filters.questionCollections && filters.questionCollections.length > 0) {
+      filters.questionCollections.forEach(cid => {
+        params.append('collections', cid.toString());
+      });
+    }
+    if (filters.hasNoCollection) {
+      params.append('has_no_collection', 'true');
     }
     if (filters.isActive) {
       params.append('is_active', filters.isActive);
