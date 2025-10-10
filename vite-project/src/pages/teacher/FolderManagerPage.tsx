@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { knowledgeApi } from '@/features/knowledge/api';
-import type { Folder } from '@/features/knowledge/types';
+import type { Folder, QuestionStatistics } from '@/features/knowledge/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +29,8 @@ export default function FolderManagerPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [inlineCreate, setInlineCreate] = useState<{[parentId:number]: string}>({});
+  const [questionStats, setQuestionStats] = useState<QuestionStatistics | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
   
   // Bulk selection states
   const [selectedFolders, setSelectedFolders] = useState<Set<number>>(new Set());
@@ -53,7 +55,23 @@ export default function FolderManagerPage() {
     }
   };
 
-  useEffect(() => { loadTree(); }, []);
+  const loadQuestionStats = async () => {
+    try {
+      setStatsLoading(true);
+      const res = await knowledgeApi.getQuestionStatistics();
+      setQuestionStats(res.data);
+    } catch (e) {
+      console.error(e);
+      toast.error('خطا در بارگذاری آمار سوالات');
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  useEffect(() => { 
+    loadTree(); 
+    loadQuestionStats();
+  }, []);
 
   const flatten = (nodes: Folder[], acc: Folder[] = []) => {
     for (const n of nodes) {
@@ -73,6 +91,7 @@ export default function FolderManagerPage() {
       setParentId('root');
       toast.success('پوشه ایجاد شد');
       loadTree();
+      loadQuestionStats(); // Refresh stats after creating folder
     } catch (e) {
       console.error(e);
       toast.error('ایجاد پوشه ناموفق بود');
@@ -101,6 +120,7 @@ export default function FolderManagerPage() {
       await knowledgeApi.deleteFolder(id);
       toast.success('حذف شد');
       loadTree();
+      loadQuestionStats(); // Refresh stats after deleting folder
     } catch (e) { console.error(e); toast.error('حذف ناموفق بود'); }
     finally { setDeletingId(null); }
   };
@@ -178,6 +198,7 @@ export default function FolderManagerPage() {
       setSelectedFolders(new Set());
       setBulkMode(false);
       loadTree();
+      loadQuestionStats(); // Refresh stats after bulk delete
     } catch (e) {
       console.error(e);
       toast.error('خطا در حذف برخی پوشه‌ها');
@@ -437,6 +458,58 @@ export default function FolderManagerPage() {
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
+
+      {/* Question Statistics Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            آمار کلی سوالات
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={loadQuestionStats} 
+              disabled={statsLoading}
+            >
+              <RefreshCw className={`w-3 h-3 ${statsLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {statsLoading ? (
+            <div className="flex items-center gap-2 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              در حال بارگذاری آمار...
+            </div>
+          ) : questionStats ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-primary/5 rounded-lg border">
+                <div className="text-2xl font-bold text-primary">
+                  {questionStats.total_questions.toLocaleString('fa-IR')}
+                </div>
+                <div className="text-sm text-muted-foreground">تعداد کل سوالات</div>
+              </div>
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                  {questionStats.questions_without_folders.toLocaleString('fa-IR')}
+                </div>
+                <div className="text-sm text-red-600/70 dark:text-red-400/70">
+                  سوالات بدون پوشه ({questionStats.percentage_without_folders}%)
+                </div>
+              </div>
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {questionStats.questions_with_folders.toLocaleString('fa-IR')}
+                </div>
+                <div className="text-sm text-green-600/70 dark:text-green-400/70">سوالات دارای پوشه</div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              خطا در بارگذاری آمار سوالات
+            </div>
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>ایجاد پوشه جدید</CardTitle>

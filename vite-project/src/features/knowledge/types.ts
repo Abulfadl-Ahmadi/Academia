@@ -176,3 +176,10 @@ export interface CreateTopicTestData {
     answer: number;
   }>;
 }
+
+export interface QuestionStatistics {
+  total_questions: number;
+  questions_without_folders: number;
+  questions_with_folders: number;
+  percentage_without_folders: number;
+}

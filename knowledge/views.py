@@ -258,6 +258,32 @@ class FolderViewSet(viewsets.ModelViewSet):
         data = FolderSerializer(roots, many=True).data
         return Response(data)
 
+    @action(detail=False, methods=['get'])
+    def question_statistics(self, request):
+        """آمار کلی سوالات و سوالات بدون پوشه"""
+        from tests.models import Question
+        
+        # تعداد کل سوالات فعال
+        total_questions = Question.objects.filter(is_active=True).count()
+        
+        # تعداد سوالاتی که هیچ پوشه‌ای ندارند
+        questions_without_folders = Question.objects.filter(
+            is_active=True,
+            folders__isnull=True
+        ).count()
+        
+        # تعداد سوالاتی که حداقل یک پوشه دارند
+        questions_with_folders = total_questions - questions_without_folders
+        
+        return Response({
+            'total_questions': total_questions,
+            'questions_without_folders': questions_without_folders,
+            'questions_with_folders': questions_with_folders,
+            'percentage_without_folders': round(
+                (questions_without_folders / total_questions * 100) if total_questions > 0 else 0, 2
+            )
+        })
+
 
 class KnowledgeTreeView(APIView):
     """View برای نمایش کامل درخت دانش"""

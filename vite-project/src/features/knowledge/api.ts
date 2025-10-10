@@ -16,7 +16,8 @@ import type {
   CreateTopicCategoryData,
   CreateTopicData,
   CreateTopicTestData,
-  Folder
+  Folder,
+  QuestionStatistics
 } from './types';
 
 export const knowledgeApi = {
@@ -116,6 +117,8 @@ export const knowledgeApi = {
     axiosInstance.patch<Folder>(`/knowledge/folders/${id}/`, data),
   deleteFolder: (id: number) =>
     axiosInstance.delete(`/knowledge/folders/${id}/`),
+  getQuestionStatistics: () =>
+    axiosInstance.get<QuestionStatistics>('/knowledge/folders/question_statistics/'),
 
   // Knowledge Tree
   getKnowledgeTree: () =>
