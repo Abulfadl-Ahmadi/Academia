@@ -15,25 +15,25 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <LogoSvg className="h-24 w-auto" />
             </div>
-              {/* <div>
+            {/* <div>
                 <div className="text-xl font-bold">{BRAND.name}</div>
                 <div className="text-sm text-muted-foreground">آکادمی آنلاین</div>
               </div> */}
             <p className="text-muted-foreground leading-relaxed">
-                آموزش تخصصی ریاضی، آمار و احتمال و ریاضیات گسسته.
-                همراه شما در مسیر موفقیت تحصیلی و کنکور.
+              آموزش تخصصی ریاضی، آمار و احتمال و ریاضیات گسسته. همراه شما در
+              مسیر موفقیت تحصیلی و کنکور.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-blue-400" />
                 <span>{BRAND.email}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              {/* <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 text-blue-400" />
                 <span dir="ltr">{BRAND.phone}</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 text-blue-400" />
                 <span>تهران، ایران</span>
@@ -47,11 +47,11 @@ export function Footer() {
             <div className="space-y-3">
               {[
                 { label: "صفحه اصلی", href: "/" },
-                { label: "دوره‌ها", href: "/courses" },
-                { label: "درباره ما", href: "/about" },
-                { label: "تماس با ما", href: "/contact" },
+                { label: "دوره‌ها", href: "/shop" },
+                { label: "درباره ما", href: "/" },
+                { label: "تماس با ما", href: "/" },
                 { label: "بلاگ", href: "/blog" },
-                { label: "سوالات متداول", href: "/faq" }
+                { label: "سوالات متداول", href: "/" },
               ].map((link, index) => (
                 <a
                   key={index}
@@ -92,7 +92,7 @@ export function Footer() {
             <p className="text-muted-foreground text-sm">
               برای دریافت آخرین اخبار و تخفیف‌های ویژه در خبرنامه ما عضو شوید
             </p>
-            
+
             {/* Newsletter Signup */}
             <div className="space-y-3">
               <div className="flex gap-2">
@@ -112,24 +112,24 @@ export function Footer() {
               <h4 className="font-semibold">شبکه‌های اجتماعی</h4>
               <div className="flex gap-4">
                 {[
-                  { 
-                    icon: Instagram, 
-                    href: "https://instagram.com/ariantafazzolizadeh", 
+                  {
+                    icon: Instagram,
+                    href: "https://instagram.com/ariantafazzolizadeh",
                     label: "Instagram",
-                    color: "hover:text-pink-400"
+                    color: "hover:text-pink-400",
                   },
-                  { 
-                    icon: Send, 
-                    href: "https://t.me/ariantafazzolizadehmath", 
+                  {
+                    icon: Send,
+                    href: "https://t.me/ariantafazzolizadehmath",
                     label: "Telegram",
-                    color: "hover:text-blue-400"
+                    color: "hover:text-blue-400",
                   },
-                  { 
-                    icon: Youtube, 
-                    href: "https://www.aparat.com/ArianTafazolizadeh", 
+                  {
+                    icon: Youtube,
+                    href: "https://www.aparat.com/ArianTafazolizadeh",
                     label: "YouTube",
-                    color: "hover:text-red-400"
-                  }
+                    color: "hover:text-red-400",
+                  },
                 ].map((social, index) => (
                   <a
                     key={index}
@@ -142,8 +142,26 @@ export function Footer() {
                     <social.icon className="h-5 w-5" />
                   </a>
                 ))}
-              </div>
+            <div>
+            <a
+              referrerpolicy="origin"
+              target="_blank"
+              href="https://trustseal.enamad.ir/?id=648110&Code=WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
+            >
+              <img
+                referrerpolicy="origin"
+                // src="https://trustseal.enamad.ir/logo.aspx?id=648110&Code=WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
+                src="https://woocommerce.ir/wp-content/uploads/enamad.png"
+                alt="بب"
+                style={{ cursor: "pointer" }}
+                code="WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
+              />
+            </a>
             </div>
+            </div>
+              </div>
+
+
           </div>
         </div>
       </div>
@@ -153,19 +171,26 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-center md:text-right">
-              <p className="text-muted-foreground text-sm">
-                {BRAND.copyright}
-              </p>
+              <p className="text-muted-foreground text-sm">{BRAND.copyright}</p>
             </div>
 
             <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-              <a href="/privacy" className="hover:text-foreground  transition-colors">
+              <a
+                href="/privacy"
+                className="hover:text-foreground  transition-colors"
+              >
                 حریم خصوصی
               </a>
-              <a href="/terms" className="hover:text-foreground transition-colors">
+              <a
+                href="/terms"
+                className="hover:text-foreground transition-colors"
+              >
                 قوانین و مقررات
               </a>
-              <a href="/support" className="hover:text-foreground transition-colors">
+              <a
+                href="/support"
+                className="hover:text-foreground transition-colors"
+              >
                 پشتیبانی
               </a>
             </div>
