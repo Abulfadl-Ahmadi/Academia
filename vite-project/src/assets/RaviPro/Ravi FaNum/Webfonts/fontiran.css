@@ -50,8 +50,8 @@ This set of fonts are used in this project under the license: (.....)
 	font-style: normal;
 	font-weight: 500;
 	font-display: swap;
-	src: url('woff/Ravi FaNum-Medium.woff') format('woff'),   
-	url('woff2/Ravi FaNum-Medium.woff2') format('woff2');		 
+	src: url('woff/RaviFaNum-Medium.woff') format('woff'),   
+	url('woff2/RaviFaNum-Medium.woff2') format('woff2');		 
 }
 
 @font-face {
@@ -74,14 +74,14 @@ This set of fonts are used in this project under the license: (.....)
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: 900;
-	src: url('woff/Ravi FaNum-Black.woff') format('woff'),   
-	url('woff2/Ravi FaNum-Black.woff2') format('woff2');		 
+	src: url('woff/RaviFaNum-Black.woff') format('woff'),   
+	url('woff2/RaviFaNum-Black.woff2') format('woff2');		 
 }
 
 @font-face {
 	font-family: Ravi FaNum;
 	font-style: normal;
 	font-weight: 950;
-	src: url('woff/Ravi FaNum-ExtraBlack.woff') format('woff'),   
-	url('woff2/Ravi FaNum-ExtraBlack.woff2') format('woff2');		 
+	src: url('woff/RaviFaNum-ExtraBlack.woff') format('woff'),   
+	url('woff2/RaviFaNum-ExtraBlack.woff2') format('woff2');		 
 }

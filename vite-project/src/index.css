@@ -455,6 +455,7 @@ div .katex {
 .katex .mclose {
   direction: ltr !important;
 }
+*/
 
 /* فونت پیش‌فرض KaTeX برای همه عناصر ریاضی */
 .katex {
@@ -479,7 +480,7 @@ div .katex {
   font-family: "Ravi FaNum", "IRANSansX", sans-serif !important;
 }
 
-*/
+
 
 
 

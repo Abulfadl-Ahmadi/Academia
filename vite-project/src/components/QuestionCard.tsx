@@ -603,9 +603,9 @@ export function QuestionCard({
           </div>
 
           {/* Difficulty */}
-          <div className="flex items-center gap-2">
-            <Badge variant={"secondary"}><MathPreview text={question.publish_date || "N/A"}></MathPreview></Badge>
-            <Badge variant={"secondary"}><MathPreview text={question.source || "N/A"}></MathPreview></Badge>
+          <div className="flex items-center gap-2 persian-number">
+            <Badge variant={"secondary"}>{question.publish_date || "N/A"}</Badge>
+            <Badge variant={"secondary"}>{question.source || "N/A"}</Badge>
             <Badge
               className={`text-xs ${getDifficultyColor(
                 question.difficulty_level
