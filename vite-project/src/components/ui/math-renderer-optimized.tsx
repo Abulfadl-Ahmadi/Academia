@@ -43,6 +43,8 @@ const preprocessMathContent = (content: string): string => {
 export const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
   // Process the content to handle any remaining issues
   const processedContent = preprocessMathContent(content);
+
+  
   
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none" dir="rtl">
@@ -66,7 +68,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
               </pre>
             );
           },
-          p: (props) => <p className="mb-4 leading-relaxed" {...props} />,
+          p: (props) => <p className="mb-0 leading-relaxed" {...props} />,
           h1: (props) => <h1 className="text-2xl font-bold mt-6 mb-3 text-foreground" {...props} />,
           h2: (props) => <h2 className="text-xl font-bold mt-5 mb-3 text-foreground" {...props} />,
           h3: (props) => <h3 className="text-lg font-bold mt-4 mb-2 text-foreground" {...props} />,

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
+import { MathRenderer } from '@/components/ui/math-renderer-optimized';
 import 'katex/dist/katex.min.css';
 import { convertNumbersToFarsi } from '@/utils/mathUtils';
 
@@ -9,6 +10,7 @@ interface MathPreviewProps {
 }
 
 export function MathPreview({ text, className = '' }: MathPreviewProps) {
+  return <MathRenderer content={text} />;
   const containerRef = useRef<HTMLDivElement>(null);
 
   // اعمال فونت Ravi به اعداد فارسی - بهتر و پایدارتر

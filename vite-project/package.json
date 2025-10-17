@@ -60,7 +60,7 @@
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jalaali-js": "^1.2.8",
-    "katex": "^0.16.22",
+    "katex": "^0.16.25",
     "lexical": "^0.36.1",
     "lucide-react": "^0.525.0",
     "moment": "^2.30.1",
