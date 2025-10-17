@@ -15,8 +15,8 @@ const preprocessMathContent = (content: string): string => {
   textarea.innerHTML = content;
   let processed = textarea.value;
   
-  console.log('Original content:', content);
-  console.log('After HTML decode:', processed);
+  // console.log('Original content:', content);
+  // console.log('After HTML decode:', processed);
   
   // Only minimal processing needed since AI should format correctly
   // Convert HTML entities to proper characters
@@ -43,12 +43,10 @@ const preprocessMathContent = (content: string): string => {
 export const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
   // Process the content to handle any remaining issues
   const processedContent = preprocessMathContent(content);
-
   
-  
-  return (
-    <div className="prose prose-slate dark:prose-invert max-w-none" dir="rtl">
-      <ReactMarkdown 
+return (
+  <div className="prose prose-slate dark:prose-invert max-w-none" dir="rtl">
+    <ReactMarkdown 
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{

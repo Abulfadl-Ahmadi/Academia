@@ -1,0 +1,7 @@
+
+/* کمی فضای عمودی بین ردیف‌های ماتریس‌ها */
+.katex .mtable .vlist > span {
+  margin-top: 0.175em;
+}
+
+

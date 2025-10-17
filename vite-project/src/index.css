@@ -306,6 +306,7 @@ html.font-ravi {
 }
 
 /* KaTeX Math Display Styles */
+/*
 .katex-display {
   margin: 1.5em 0;
   text-align: center !important;
@@ -344,66 +345,6 @@ div[class*="math-display"] {
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
-}
-
-/* Smooth scrolling for messages container */
-#messages-container {
-  scroll-behavior: smooth;
-}
-
-/* Better scroll styling */
-#messages-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-#messages-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#messages-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-#messages-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.dark #messages-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.dark #messages-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Prevent page scroll for AI conversation pages */
-.ai-conversation-page {
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Ensure chat container takes full height */
-.chat-container {
-  height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
-}
-
-/* Prevent body scroll when in AI conversation */
-body:has(.ai-conversation-detail) {
-  overflow: hidden;
-  height: 100vh;
-}
-
-/* Alternative approach for body scroll prevention */
-html, body {
-  overflow-x: hidden;
-}
-
-body.ai-conversation-active {
-  overflow: hidden !important;
-  height: 100vh !important;
 }
 
 .katex-inline {
@@ -538,6 +479,10 @@ div .katex {
   font-family: "Ravi FaNum", "IRANSansX", sans-serif !important;
 }
 
+*/
+
+
+
 /* Responsive Table Styles */
 .responsive-table-container {
   max-width: 100%;
@@ -580,4 +525,64 @@ div .katex {
   .table-cell-truncate {
     max-width: 120px;
   }
+}
+
+/* Smooth scrolling for messages container */
+#messages-container {
+  scroll-behavior: smooth;
+}
+
+/* Better scroll styling */
+#messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+#messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#messages-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark #messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark #messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Prevent page scroll for AI conversation pages */
+.ai-conversation-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Ensure chat container takes full height */
+.chat-container {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Prevent body scroll when in AI conversation */
+body:has(.ai-conversation-detail) {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Alternative approach for body scroll prevention */
+html, body {
+  overflow-x: hidden;
+}
+
+body.ai-conversation-active {
+  overflow: hidden !important;
+  height: 100vh !important;
 }
