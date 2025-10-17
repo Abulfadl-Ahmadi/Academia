@@ -51,12 +51,8 @@ export function AIConversationList() {
     try {
       setLoading(true);
       const response = await axiosInstance.get('/support/ai/conversations/');
-      const payload = response.data;
-      const data = Array.isArray(payload)
-        ? payload
-        : Array.isArray(payload?.results)
-          ? payload.results
-          : [];
+      // اطمینان از اینکه response.data یک آرایه است
+      const data = Array.isArray(response.data) ? response.data : [];
       setConversations(data);
     } catch (error) {
       console.error('خطا در دریافت گفتگوها:', error);
@@ -355,7 +351,7 @@ export function AIConversationDetail() {
 
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
-      <Card className="flex flex-col h-full overflow-hidden pb-0">
+      <Card className="flex flex-col h-full overflow-hidden">
         <CardHeader className="shrink-0 border-b">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <div className="flex items-center">
@@ -427,7 +423,7 @@ export function AIConversationDetail() {
                     rounded-lg p-2 sm:p-3 mb-3
                     ${message.role === 'user' 
                       ? 'bg-primary/5 border ml-2 sm:ml-6 border-primary/20 shadow-sm' 
-                      : 'm-2'}
+                      : 'mr-2 sm:mr-6 bg-muted/30'}
                   `}>
                     <div className="flex items-center gap-2 mb-2">
                       {message.role === 'user' ? (
