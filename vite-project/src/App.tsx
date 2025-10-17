@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Navbar from "./components/navbar";
 import { UserProvider } from "@/context/UserContext";
@@ -11,6 +11,7 @@ import { Worker } from "@react-pdf-viewer/core";
 import { Footer } from "@/components/Footer";
 import ProfileGuard from "@/components/ProfileGuard";
 import { Toaster } from "@/components/ui/sonner";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 // PDF styles are loaded from index.html
 import "@/utils/pdf-styles";
 
@@ -79,11 +80,13 @@ function PreApp() {
 
 function App() {
   const { user } = useUser();
+  const location = useLocation();
+  const showMobileNav = location.pathname.startsWith("/panel");
   if (user) {
     console.log(user);
   }
   return (
-    <div>
+    <div className={showMobileNav ? "pb-20 md:pb-0" : ""}>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -230,6 +233,7 @@ function App() {
         </Routes>
       </Suspense>
       <Toaster />
+      {showMobileNav ? <MobileBottomNav /> : null}
     </div>
   );
 }

@@ -1,13 +1,13 @@
 {
   "name": "آکادمی آرین تفضلی‌زاده",
-  "short_name": "آکادمی",
+  "short_name": "آرین تفضلی‌زاده",
   "description": "آموزش حرفه‌ای ریاضیات برای رشته‌های ریاضی و تجربی",
   "theme_color": "#4c51bf",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/panel",
   "icons": [
     {
       "src": "pwa-icons/pwa-icon.svg",

@@ -1,5 +1,5 @@
 import { useUser } from "@/context/UserContext"
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import StudentList from "./StudentList"
 import TeacherProfilePage from "@/app/teacher-dashboard/profile/pages"
 import FilesPage from "@/app/teacher-dashboard/files/page"
@@ -93,7 +93,8 @@ export default function PanelRoute() {
 
   if (loading) return <div>در حال بارگذاریه...</div>
 
-  // if (!user) return <Navigate to="/login" />
+  if (!user){
+     return <Navigate to="/login" />}
   if (!user) {
   // const logout = useLogout()
 
