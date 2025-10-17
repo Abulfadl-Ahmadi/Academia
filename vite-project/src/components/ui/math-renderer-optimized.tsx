@@ -25,11 +25,25 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
         let lineKey = 0;
         const flushLine = () => {
           if (line.length > 0) {
-            blocks.push(
-              <p key={`p-${pIdx}-${lineKey++}`} className="flex flex-row flex-wrap items-center mb-0 leading-relaxed" dir="rtl">
-                {line}
-              </p>
-            );
+            // Check if line contains only one InlineMath
+            if (
+              line.length === 1 &&
+              React.isValidElement(line[0]) &&
+              (line[0] as any).type &&
+              (line[0] as any).type.displayName === 'InlineMath'
+            ) {
+              blocks.push(
+                <p key={`p-${pIdx}-${lineKey++}`} className="flex flex-row flex-wrap items-center mb-0 leading-relaxed ltr text-left" dir="ltr">
+                  {line}
+                </p>
+              );
+            } else {
+              blocks.push(
+                <p key={`p-${pIdx}-${lineKey++}`} className="flex flex-row flex-wrap items-center mb-0 leading-relaxed" dir="rtl">
+                  {line}
+                </p>
+              );
+            }
             line = [];
           }
         };
@@ -41,7 +55,10 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
           } else if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
             // Inline math
             const math = convertNumbersToFarsi(part.slice(1, -1));
-            line.push(<InlineMath key={`im-${pIdx}-${idx}`} math={math} />);
+            const el = <InlineMath key={`im-${pIdx}-${idx}`} math={math} />;
+            // Set displayName for detection
+            (el.type as any).displayName = 'InlineMath';
+            line.push(el);
           } else if (part.length > 0) {
             // Markdown text
             line.push(
