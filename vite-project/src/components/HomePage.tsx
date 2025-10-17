@@ -189,8 +189,10 @@ const mockBlogPosts = [
   {
     id: 1,
     title: "راهکارهای مؤثر برای یادگیری ریاضی",
-    content: "ریاضی یکی از مهم‌ترین دروس دوران تحصیل است که با روش‌های مناسب می‌توان در آن موفق شد...",
-    excerpt: "روش‌های علمی و عملی برای بهبود یادگیری ریاضی و غلبه بر ترس از این درس",
+    content:
+      "ریاضی یکی از مهم‌ترین دروس دوران تحصیل است که با روش‌های مناسب می‌توان در آن موفق شد...",
+    excerpt:
+      "روش‌های علمی و عملی برای بهبود یادگیری ریاضی و غلبه بر ترس از این درس",
     author: {
       id: 1,
       user: {
@@ -213,8 +215,10 @@ const mockBlogPosts = [
   {
     id: 2,
     title: "نکات مهم برای آمادگی کنکور ریاضی",
-    content: "کنکور ریاضی نیازمند آمادگی ویژه و برنامه‌ریزی دقیق است. در این مقاله به نکات کلیدی می‌پردازیم...",
-    excerpt: "راهنمای جامع برای آمادگی کنکور ریاضی با نکات عملی و استراتژی‌های مؤثر",
+    content:
+      "کنکور ریاضی نیازمند آمادگی ویژه و برنامه‌ریزی دقیق است. در این مقاله به نکات کلیدی می‌پردازیم...",
+    excerpt:
+      "راهنمای جامع برای آمادگی کنکور ریاضی با نکات عملی و استراتژی‌های مؤثر",
     author: {
       id: 1,
       user: {
@@ -237,7 +241,8 @@ const mockBlogPosts = [
   {
     id: 3,
     title: "اهمیت هندسه در ریاضیات",
-    content: "هندسه یکی از شاخه‌های مهم ریاضی است که کاربردهای فراوانی در زندگی روزمره دارد...",
+    content:
+      "هندسه یکی از شاخه‌های مهم ریاضی است که کاربردهای فراوانی در زندگی روزمره دارد...",
     excerpt: "بررسی جایگاه و اهمیت هندسه در ریاضیات و زندگی روزمره",
     author: {
       id: 1,
@@ -273,7 +278,7 @@ export default function HomePage() {
   const [textRef, isVisible] = useScrollTrigger();
 
   // Target date: September 20, 2025 at 8:00 PM
-  const targetDate = useMemo(() => new Date('2025-10-17T20:00:00'), []);
+  const targetDate = useMemo(() => new Date("2025-10-17T20:00:00"), []);
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -284,13 +289,15 @@ export default function HomePage() {
     const interval = setInterval(() => {
       const now = new Date();
       const difference = Math.max(0, targetDate.getTime() - now.getTime());
-      
+
       // Calculate days, hours, minutes, seconds
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      
+
       setDays(days);
       setHours(hours);
       setMinutes(minutes);
@@ -304,10 +311,10 @@ export default function HomePage() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch all products from shop API
         const response = await axiosInstance.get("/shop/products/");
-        
+
         // Handle both array and pagination format
         let productsData = [];
         if (Array.isArray(response.data)) {
@@ -318,13 +325,16 @@ export default function HomePage() {
           console.warn("Products data is not an array:", response.data);
           productsData = [];
         }
-        
+
         // Sort by popularity (students_count) and take top 3
         const popularProducts = productsData
           .filter((product: any) => product.is_active !== false) // Only active products
-          .sort((a: any, b: any) => (b.students_count || 0) - (a.students_count || 0))
+          .sort(
+            (a: any, b: any) =>
+              (b.students_count || 0) - (a.students_count || 0)
+          )
           .slice(0, 3);
-        
+
         setCourses(popularProducts);
         setError(null);
       } catch (err) {
@@ -345,10 +355,10 @@ export default function HomePage() {
     const fetchBlogPosts = async () => {
       try {
         setBlogLoading(true);
-        
+
         // Fetch recent blog posts
         const response = await axiosInstance.get("/blog/posts/");
-        
+
         // Handle both array and pagination format
         let postsData = [];
         if (Array.isArray(response.data)) {
@@ -359,13 +369,17 @@ export default function HomePage() {
           console.warn("Blog posts data is not an array:", response.data);
           postsData = [];
         }
-        
+
         // Filter published posts, sort by date and take top 3
         const recentPosts = postsData
           .filter((post: any) => post.is_published !== false) // Only published posts
-          .sort((a: any, b: any) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime())
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.published_at || b.created_at).getTime() -
+              new Date(a.published_at || a.created_at).getTime()
+          )
           .slice(0, 3);
-        
+
         setBlogPosts(recentPosts);
         setBlogError(null);
       } catch (err) {
@@ -386,10 +400,10 @@ export default function HomePage() {
     const fetchGalleryImages = async () => {
       try {
         setGalleryLoading(true);
-        
+
         // Fetch published gallery images
         const response = await axiosInstance.get("/gallery/images/");
-        
+
         // Handle both array and pagination format
         let imagesData = [];
         if (Array.isArray(response.data)) {
@@ -400,12 +414,12 @@ export default function HomePage() {
           console.warn("Gallery images data is not an array:", response.data);
           imagesData = [];
         }
-        
+
         // Filter published images and sort by order
         const publishedImages = imagesData
           .filter((image: any) => image.is_published !== false)
           .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-        
+
         setGalleryImages(publishedImages);
         setGalleryError(null);
       } catch (err) {
@@ -423,31 +437,31 @@ export default function HomePage() {
   // Helper function to format date for blog posts
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) {
-      return 'تاریخ نامشخص';
+      return "تاریخ نامشخص";
     }
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
-        return 'تاریخ نامعتبر';
+        return "تاریخ نامعتبر";
       }
       return new Intl.DateTimeFormat("fa-IR", {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       }).format(date);
     } catch (error) {
-      console.error('Error formatting date:', error);
-      return 'تاریخ نامعتبر';
+      console.error("Error formatting date:", error);
+      return "تاریخ نامعتبر";
     }
   };
 
   // Helper function to get reading time estimate
   const getReadingTime = (content: string | undefined) => {
-    if (!content || typeof content !== 'string') {
-      return '۱ دقیقه مطالعه'; // Default reading time
+    if (!content || typeof content !== "string") {
+      return "۱ دقیقه مطالعه"; // Default reading time
     }
     const wordsPerMinute = 200; // Average reading speed in Persian
-    const wordCount = content.split(' ').length;
+    const wordCount = content.split(" ").length;
     const readingTime = Math.ceil(wordCount / wordsPerMinute);
     return `${readingTime} دقیقه مطالعه`;
   };
@@ -456,22 +470,22 @@ export default function HomePage() {
   const getProductTypeBadge = (course: Course) => {
     const productType = course.product_type;
     switch (productType) {
-      case 'course':
-        return 'دوره آموزشی';
-      case 'file':
-        return 'فایل/جزوه';
-      case 'test':
-        return 'آزمون';
-      case 'book':
-        return 'کتاب';
-      case 'notebook':
-        return 'دفتر';
-      case 'pamphlet':
-        return 'جزوه';
-      case 'stationery':
-        return 'لوازم تحریر';
+      case "course":
+        return "دوره آموزشی";
+      case "file":
+        return "فایل/جزوه";
+      case "test":
+        return "آزمون";
+      case "book":
+        return "کتاب";
+      case "notebook":
+        return "دفتر";
+      case "pamphlet":
+        return "جزوه";
+      case "stationery":
+        return "لوازم تحریر";
       default:
-        return 'محصول';
+        return "محصول";
     }
   };
 
@@ -491,17 +505,22 @@ export default function HomePage() {
   const formatPrice = (course: Course) => {
     const price = course.current_price || course.price || 0;
     // Ensure we have a clean number by parsing it
-    const cleanPrice = typeof price === 'string' ? parseFloat(price.replace(/[^\d.-]/g, '')) : Number(price);
-    return new Intl.NumberFormat("fa-IR").format(isNaN(cleanPrice) ? 0 : cleanPrice);
+    const cleanPrice =
+      typeof price === "string"
+        ? parseFloat(price.replace(/[^\d.-]/g, ""))
+        : Number(price);
+    return new Intl.NumberFormat("fa-IR").format(
+      isNaN(cleanPrice) ? 0 : cleanPrice
+    );
   };
 
   return (
     <div className="min-h-screen w-full my-10">
       <ImagePreloader />
       {/* Countdown Section */}
-      <div className="flex flex-col items-center justify-center gap-6 mb-16 py-12 px-6 max-w-3xl mx-auto relative overflow-hidden">
-        {/* Decorative Glass Shapes */}
-        <div className="absolute inset-0 pointer-events-none">
+      {/* <div className="flex flex-col items-center justify-center gap-6 mb-16 py-12 px-6 max-w-3xl mx-auto relative overflow-hidden"> */}
+      {/* Decorative Glass Shapes */}
+      {/* <div className="absolute inset-0 pointer-events-none">
           <img 
             src="/Glass_shapes_optimized/1.webp" 
             alt="" 
@@ -530,9 +549,9 @@ export default function HomePage() {
             loading="lazy"
             decoding="async"
           />
-        </div>
-        
-        <div className="flex flex-col items-center gap-6 relative z-10" dir="ltr">
+        </div> */}
+
+      {/* <div className="flex flex-col items-center gap-6 relative z-10" dir="ltr">
           <div className="flex items-center gap-4 sm:gap-6 font-mono">
             <div className="flex flex-col items-center">
               <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">
@@ -567,43 +586,43 @@ export default function HomePage() {
             <p className="text-lg sm:text-2xl font-bold leading-relaxed">تا شروع سفری تازه در دنیای ریاضی چیزی باقی نمانده</p>
             <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 mt-3 px-4">منتظر یک تجربه آموزشی متفاوت باشید</p>
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {/* Hero Section */}
       <div className="relative">
         {/* Background Glass Shapes for Hero */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <img 
-            src="/Glass_shapes_optimized/5.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/5.webp"
+            alt=""
             className="absolute top-1/4 left-10 w-16 h-16 sm:w-24 sm:h-24 opacity-20"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/14.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/14.webp"
+            alt=""
             className="absolute top-1/3 right-16 w-12 h-12 sm:w-20 sm:h-20 opacity-25"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/36.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/36.webp"
+            alt=""
             className="absolute bottom-1/4 left-1/4 w-10 h-10 sm:w-16 sm:h-16 opacity-20"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/39.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/39.webp"
+            alt=""
             className="absolute bottom-1/3 right-1/3 w-12 h-12 sm:w-18 sm:h-18 opacity-25"
             loading="lazy"
             decoding="async"
           />
         </div>
-        
+
         <HeroGeometric
           title1="به آکادمی "
           title2="آرین تفضلی‌زاده خوش آمدید"
@@ -611,8 +630,7 @@ export default function HomePage() {
         />
       </div>
 
-      <section className="2xl:px-[10%] overflow-hidden">
-        <div className="absolute inset-0"></div>
+      <section className="2xl:px-[10%] overflow-hidden relative">
         <div className="relative container mx-auto px-4">
           <div className="grid lg:grid-cols-2 items-center ">
             <div className="inline-block relative lg:hidden mr-10">
@@ -668,7 +686,10 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center ">
-                <Button size="lg" onClick={() => window.location.href="/register"}>
+                <Button
+                  size="lg"
+                  onClick={() => (window.location.href = "/register")}
+                >
                   <PlayCircle className="h-5 w-5" />
                   <TextShimmer
                     duration={1.2}
@@ -677,12 +698,47 @@ export default function HomePage() {
                     شروع یاد گیری
                   </TextShimmer>{" "}
                 </Button>
-                <Button variant="outline" size="lg" onClick={() => window.location.href="/shop"}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => (window.location.href = "/shop")}
+                >
                   مشاهده دوره‌ها
                 </Button>
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="/Glass_shapes_optimized/1.webp"
+            alt=""
+            className="absolute top-10 left-10 w-12 h-12 sm:w-16 sm:h-16 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/17.webp"
+            alt=""
+            className="absolute top-20 right-20 w-8 h-8 sm:w-12 sm:h-12 opacity-30"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/24.webp"
+            alt=""
+            className="absolute bottom-10 left-20 w-10 h-10 sm:w-14 sm:h-14 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/30.webp"
+            alt=""
+            className="absolute bottom-20 right-10 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </section>
 
@@ -692,36 +748,36 @@ export default function HomePage() {
       <section className="2xl:px-[10%] py-20 relative overflow-hidden">
         {/* Background Glass Shapes for Products Section */}
         <div className="absolute inset-0 pointer-events-none">
-          <img 
-            src="/Glass_shapes_optimized/7.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/7.webp"
+            alt=""
             className="absolute top-10 left-8 w-10 h-10 sm:w-16 sm:h-16 opacity-18"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/9.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/9.webp"
+            alt=""
             className="absolute top-1/4 right-12 w-12 h-12 sm:w-20 sm:h-20 opacity-22"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/26.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/26.webp"
+            alt=""
             className="absolute bottom-1/3 left-1/3 w-8 h-8 sm:w-14 sm:h-14 opacity-20"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/40.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/40.webp"
+            alt=""
             className="absolute bottom-10 right-8 w-10 h-10 sm:w-18 sm:h-18 opacity-25"
             loading="lazy"
             decoding="async"
           />
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -809,10 +865,12 @@ export default function HomePage() {
                                       "fa-IR"
                                     )
                                   : "0"}{" "}
-                                {course.product_type === 'course' ? 'دانشجو' : 'خریدار'}
+                                {course.product_type === "course"
+                                  ? "دانشجو"
+                                  : "خریدار"}
                               </div>
                               <div className="flex items-center gap-1">
-                                {course.product_type === 'course' ? (
+                                {course.product_type === "course" ? (
                                   <>
                                     <Clock className="h-4 w-4" />
                                     {course.sessions_count
@@ -822,7 +880,11 @@ export default function HomePage() {
                                 ) : course.requires_shipping ? (
                                   <>
                                     <Clock className="h-4 w-4" />
-                                    موجودی: {course.stock_quantity && course.stock_quantity > 0 ? course.stock_quantity : 'ناموجود'}
+                                    موجودی:{" "}
+                                    {course.stock_quantity &&
+                                    course.stock_quantity > 0
+                                      ? course.stock_quantity
+                                      : "ناموجود"}
                                   </>
                                 ) : (
                                   <>
@@ -847,10 +909,12 @@ export default function HomePage() {
                               <Button
                                 size="sm"
                                 onClick={() =>
-                                  window.location.href = `/shop/${course.id}`
+                                  (window.location.href = `/shop/${course.id}`)
                                 }
                               >
-                                {course.product_type === 'course' ? 'مشاهده دوره' : 'خرید محصول'}
+                                {course.product_type === "course"
+                                  ? "مشاهده دوره"
+                                  : "خرید محصول"}
                               </Button>
                             </div>
                           </CardContent>
@@ -871,7 +935,7 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => window.location.href = "/shop"}
+              onClick={() => (window.location.href = "/shop")}
             >
               مشاهده همه محصولات در فروشگاه
             </Button>
@@ -880,7 +944,7 @@ export default function HomePage() {
       </section>
 
       {/* Recent Blog Posts Section */}
-      <section className="2xl:px-[10%] py-20">
+      <section className="2xl:px-[10%] py-20 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -937,7 +1001,10 @@ export default function HomePage() {
                               </div>
                             )}
                             {post.category && (
-                              <Badge className="absolute top-3 right-3" variant="secondary">
+                              <Badge
+                                className="absolute top-3 right-3"
+                                variant="secondary"
+                              >
                                 {post.category.name}
                               </Badge>
                             )}
@@ -947,7 +1014,9 @@ export default function HomePage() {
                             <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {formatDate(post.published_at || post.created_at)}
+                                {formatDate(
+                                  post.published_at || post.created_at
+                                )}
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
@@ -958,7 +1027,10 @@ export default function HomePage() {
                               {post.title}
                             </CardTitle>
                             <CardDescription className="text-sm leading-relaxed line-clamp-3">
-                              {post.excerpt || (post.content ? post.content.substring(0, 150) + "..." : "خلاصه‌ای در دسترس نیست")}
+                              {post.excerpt ||
+                                (post.content
+                                  ? post.content.substring(0, 150) + "..."
+                                  : "خلاصه‌ای در دسترس نیست")}
                             </CardDescription>
                           </CardHeader>
 
@@ -967,12 +1039,14 @@ export default function HomePage() {
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 {post.author && post.author.user && (
                                   <span>
-                                    {post.author.user.first_name} {post.author.user.last_name}
+                                    {post.author.user.first_name}{" "}
+                                    {post.author.user.last_name}
                                   </span>
                                 )}
                                 {post.views_count && (
                                   <span>
-                                    • {post.views_count.toLocaleString("fa-IR")} بازدید
+                                    • {post.views_count.toLocaleString("fa-IR")}{" "}
+                                    بازدید
                                   </span>
                                 )}
                               </div>
@@ -980,7 +1054,9 @@ export default function HomePage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  window.location.href = `/blog/${post.slug || post.id}`
+                                  (window.location.href = `/blog/${
+                                    post.slug || post.id
+                                  }`)
                                 }
                               >
                                 ادامه مطلب
@@ -1005,16 +1081,47 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => window.location.href = "/blog"}
+              onClick={() => (window.location.href = "/blog")}
             >
               مشاهده همه مقالات وبلاگ
             </Button>
           </div>
         </div>
+
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="/Glass_shapes_optimized/5.webp"
+            alt=""
+            className="absolute top-10 left-10 w-12 h-12 sm:w-16 sm:h-16 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/14.webp"
+            alt=""
+            className="absolute top-20 right-20 w-8 h-8 sm:w-12 sm:h-12 opacity-30"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/23.webp"
+            alt=""
+            className="absolute bottom-10 left-30 w-10 h-10 sm:w-14 sm:h-14 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/39.webp"
+            alt=""
+            className="absolute bottom-30 right-10 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </section>
 
       {/* Photo Gallery Section */}
-      <section className="2xl:px-[10%] py-20">
+      <section className="2xl:px-[10%] py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -1044,41 +1151,70 @@ export default function HomePage() {
             </div>
           ) : galleryImages.length === 0 ? (
             <div className="text-center py-20">
-              <p>
-                تصویری در گالری موجود نیست
-              </p>
+              <p>تصویری در گالری موجود نیست</p>
             </div>
           ) : (
             <div className="flex flex-row gap-6">
               {galleryImages.map((image) => (
                 // <Card key={image.id} className="group overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={image.image_url || image.image}
-                      alt={image.title}
-                      className="w-auto h-74 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
-                  </div>
-                  // {(image.title || image.description) && (
-                  //   <CardContent className="p-4">
-                  //     {image.title && (
-                  //       <h3 className="font-semibold text-sm mb-1 line-clamp-1">
-                  //         {image.title}
-                  //       </h3>
-                  //     )}
-                  //     {image.description && (
-                  //       <p className="text-xs text-muted-foreground line-clamp-2">
-                  //         {image.description}
-                  //       </p>
-                  //     )}
-                  //   </CardContent>
-                  // )}
+                <div className="relative aspect-square overflow-hidden">
+                  <img
+                    src={image.image_url || image.image}
+                    alt={image.title}
+                    className="w-auto h-74 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+                </div>
+                // {(image.title || image.description) && (
+                //   <CardContent className="p-4">
+                //     {image.title && (
+                //       <h3 className="font-semibold text-sm mb-1 line-clamp-1">
+                //         {image.title}
+                //       </h3>
+                //     )}
+                //     {image.description && (
+                //       <p className="text-xs text-muted-foreground line-clamp-2">
+                //         {image.description}
+                //       </p>
+                //     )}
+                //   </CardContent>
+                // )}
                 // </Card>
               ))}
             </div>
           )}
+        </div>
+
+                <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="/Glass_shapes_optimized/33.webp"
+            alt=""
+            className="absolute top-10 left-25 w-12 h-12 sm:w-16 sm:h-16 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/26.webp"
+            alt=""
+            className="absolute top-20 right-20 w-8 h-8 sm:w-12 sm:h-12 opacity-30"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/27.webp"
+            alt=""
+            className="absolute bottom-10 left-30 w-10 h-10 sm:w-14 sm:h-14 opacity-25"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="/Glass_shapes_optimized/40.webp"
+            alt=""
+            className="absolute bottom-30 right-30 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </section>
 
@@ -1086,36 +1222,36 @@ export default function HomePage() {
       <section className="2xl:px-[10%] py-20 relative overflow-hidden">
         {/* Background Glass Shapes for About Section */}
         <div className="absolute inset-0 pointer-events-none">
-          <img 
-            src="/Glass_shapes_optimized/6.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/6.webp"
+            alt=""
             className="absolute top-20 left-5 w-12 h-12 sm:w-20 sm:h-20 opacity-20"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/23.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/23.webp"
+            alt=""
             className="absolute top-1/3 right-10 w-10 h-10 sm:w-16 sm:h-16 opacity-25"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/27.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/27.webp"
+            alt=""
             className="absolute bottom-20 left-1/4 w-12 h-12 sm:w-18 sm:h-18 opacity-20"
             loading="lazy"
             decoding="async"
           />
-          <img 
-            src="/Glass_shapes_optimized/33.webp" 
-            alt="" 
+          <img
+            src="/Glass_shapes_optimized/33.webp"
+            alt=""
             className="absolute bottom-1/4 right-5 w-14 h-14 sm:w-22 sm:h-22 opacity-22"
             loading="lazy"
             decoding="async"
           />
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-1 gap-12 items-center">
             <div ref={textRef} className="space-y-6">
@@ -1124,53 +1260,50 @@ export default function HomePage() {
               </h2>
               <div className="space-y-4 text-lg text-muted-foreground  leading-relaxed">
                 <TextEffect preset="blur" trigger={isVisible}>
-مدرس ریاضیات
+                  مدرس ریاضیات
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-دانش آموخته جبرمحض  
-دانشگاه علم و صنعت ایران
+                  دانش آموخته جبرمحض دانشگاه علم و صنعت ایران
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-دانش آموخته دکتری مدیریت کسب و کار از TBS
-                </TextEffect>
-
-
-                <TextEffect preset="blur" trigger={isVisible}>
-۱۴ سال سابقه تدریس 
-در مدارس بهارستان ، علامه طباطبایی،ندای کوثر،
-ممتاز حنان ،تلاش،بهار علم آموزان، شوق پرواز، اوج و …
+                  دانش آموخته دکتری مدیریت کسب و کار از TBS
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
- و آموزشگاه های  کنکور هدف ،ماهان، 
-راه اندیشه، انرژی و …
+                  ۱۴ سال سابقه تدریس در مدارس بهارستان ، علامه طباطبایی،ندای
+                  کوثر، ممتاز حنان ،تلاش،بهار علم آموزان، شوق پرواز، اوج و …
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-مدرس مدرسه آنلاین پرش
+                  و آموزشگاه های کنکور هدف ،ماهان، راه اندیشه، انرژی و …
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-مؤلف کتاب لقمه هندسه۳ مهر و ماه
-مؤلف کتاب  فرموتست ریاضیات  تجربی (گاج)
+                  مدرس مدرسه آنلاین پرش
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-عضو انجمن ریاضیات ایران
+                  مؤلف کتاب لقمه هندسه۳ مهر و ماه مؤلف کتاب فرموتست ریاضیات
+                  تجربی (گاج)
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-عضو دپارتمان ریاضیات تعاونی سنجش
+                  عضو انجمن ریاضیات ایران
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-عضو دپارتمان ریاضیات کانون فرهنگی آموزش 
+                  عضو دپارتمان ریاضیات تعاونی سنجش
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-نویسنده حوزه توسعه فردی در روزنامه ها و وبسایت های هنرمند ،خوب و …
+                  عضو دپارتمان ریاضیات کانون فرهنگی آموزش
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+                  نویسنده حوزه توسعه فردی در روزنامه ها و وبسایت های هنرمند ،خوب
+                  و …
                 </TextEffect>
               </div>
             </div>
