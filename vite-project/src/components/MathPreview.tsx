@@ -10,7 +10,7 @@ interface MathPreviewProps {
 }
 
 export function MathPreview({ text, className = '' }: MathPreviewProps) {
-  return <MathRenderer content={text} />;
+  return <div className='persian-number'><MathRenderer content={text} /></div>;
   const containerRef = useRef<HTMLDivElement>(null);
 
   // اعمال فونت Ravi به اعداد فارسی - بهتر و پایدارتر
