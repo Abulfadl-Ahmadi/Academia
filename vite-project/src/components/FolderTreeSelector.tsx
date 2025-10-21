@@ -137,9 +137,9 @@ export const FolderTreeSelector: React.FC<FolderTreeSelectorProps> = ({
 
   return (
     <div className={className}>
-      <div className="text-xs text-muted-foreground mb-2">
+      {/* <div className="text-xs text-muted-foreground mb-2">
         {required ? 'یک پوشه را انتخاب کنید.' : 'پوشه‌ها جایگزین ساختار قدیمی (کتاب، فصل، ... ) شده‌اند.'}
-      </div>
+      </div> */}
       <div className={`${maxHeight} overflow-auto pr-2 border rounded p-3`}>
         {folderLoading && <p className="text-sm">در حال بارگذاری...</p>}
         {!folderLoading && folderTree.length === 0 && <p className="text-sm text-muted-foreground">هیچ پوشه‌ای ایجاد نشده است.</p>}

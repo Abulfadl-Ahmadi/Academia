@@ -121,7 +121,7 @@ export function TopicTestManager() {
             <span className="sm:hidden">فیلتر</span>
           </Button>
           
-          <Button onClick={() => navigate('/panel/topic-tests/create')} className="flex items-center justify-center gap-2" size="sm">
+          <Button onClick={() => navigate('/panel/tests/create?type=topic_based&content=pdf')} className="flex items-center justify-center gap-2" size="sm">
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">آزمون جدید</span>
             <span className="sm:hidden">جدید</span>
@@ -190,7 +190,7 @@ export function TopicTestManager() {
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-2">هیچ آزمونی وجود ندارد</h3>
               <p className="text-gray-600 mb-4">اولین آزمون مبحثی خود را ایجاد کنید</p>
-              <Button onClick={() => navigate('/panel/topic-tests/create')}>
+              <Button onClick={() => navigate('/panel/tests/create?type=topic_based&content=pdf')}>
                 <Plus className="w-4 h-4 mr-2" />
                 ایجاد آزمون اول
               </Button>

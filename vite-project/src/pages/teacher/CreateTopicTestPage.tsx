@@ -480,7 +480,7 @@ export default function CreateTopicTestPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
-              {editing ? 'پوشه‌های مرتبط' : 'انتخاب پوشه‌ها *'}
+              {editing ? 'مباحث مرتبط' : 'انتخاب مباحث *'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -612,7 +612,7 @@ export default function CreateQuestionTestPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
-              انتخاب پوشه‌ها *
+              انتخاب مباحث *
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

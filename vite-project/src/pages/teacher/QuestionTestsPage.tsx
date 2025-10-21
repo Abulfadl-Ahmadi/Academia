@@ -137,7 +137,7 @@ export default function QuestionTestsPage() {
           <h1 className="text-2xl font-bold">آزمون‌های سوالی</h1>
           <p className="text-muted-foreground">مدیریت آزمون‌های ساخته شده با سوالات تایپ شده</p>
         </div>
-        <Button onClick={() => navigate('/panel/question-tests/create')} className="flex items-center gap-2">
+  <Button onClick={() => navigate('/panel/tests/create?type=practice&content=typed_question')} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           آزمون جدید
         </Button>
@@ -152,7 +152,7 @@ export default function QuestionTestsPage() {
             <p className="text-muted-foreground text-center mb-4">
               هنوز هیچ آزمون سوالی ایجاد نکرده‌اید. برای شروع، آزمون جدیدی بسازید.
             </p>
-            <Button onClick={() => navigate('/panel/question-tests/create')}>
+            <Button onClick={() => navigate('/panel/tests/create?type=practice&content=typed_question')}>
               <Plus className="w-4 h-4 mr-2" />
               ایجاد آزمون اول
             </Button>

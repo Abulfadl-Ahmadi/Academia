@@ -103,9 +103,9 @@ export const FolderSelector: React.FC<FolderSelectorProps> = ({
 
   return (
     <div className={className}>
-      <div className="text-xs text-muted-foreground">
+      {/* <div className="text-xs text-muted-foreground">
         پوشه‌ها جایگزین ساختار قدیمی (کتاب، فصل، ... ) شده‌اند. {required ? 'حداقل یک پوشه را انتخاب کنید.' : 'پوشه‌ها را انتخاب کنید.'}
-      </div>
+      </div> */}
       <div className={`${maxHeight} overflow-auto pr-2 border rounded p-3 mt-2`}>
         {folderLoading && <p className="text-sm">در حال بارگذاری...</p>}
         {!folderLoading && folderTree.length === 0 && <p className="text-sm text-muted-foreground">هیچ پوشه‌ای ایجاد نشده است.</p>}

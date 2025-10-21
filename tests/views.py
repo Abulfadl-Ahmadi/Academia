@@ -12,7 +12,7 @@ import json
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
     StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage,
-    QuestionCollection, TestContentType
+    QuestionCollection, TestContentType, TestType
 )
 from knowledge.models import Folder
 from .serializers import (
@@ -37,20 +37,49 @@ class ListCreateTestView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
 
+        queryset = Test.objects.all()
+
         if user.role == "student":
-            # دانش‌آموزان فقط آزمون‌های مجموعه‌های قابل دسترس را می‌بینند
             accessible_collections = []
             for collection in TestCollection.objects.filter(is_active=True):
                 if user in collection.get_accessible_students():
                     accessible_collections.append(collection.id)
-            return Test.objects.filter(test_collection__id__in=accessible_collections)
+
+            student_filter = Q(test_type=TestType.TOPIC_BASED)
+            if accessible_collections:
+                student_filter |= Q(test_collection__id__in=accessible_collections)
+
+            queryset = queryset.filter(student_filter, is_active=True)
 
         elif user.role == "teacher":
-            # teacher should only see tests they created
-            return Test.objects.filter(teacher=user)
+            queryset = queryset.filter(teacher=user)
 
-        # fallback (e.g. admin)
-        return Test.objects.all()
+        test_type_param = self.request.query_params.get('test_type')
+        if test_type_param:
+            queryset = queryset.filter(test_type=test_type_param)
+
+        content_type_param = self.request.query_params.get('content_type')
+        if content_type_param:
+            queryset = queryset.filter(content_type=content_type_param)
+
+        is_active_param = self.request.query_params.get('is_active')
+        if isinstance(is_active_param, str):
+            normalized = is_active_param.strip().lower()
+            if normalized in {"true", "1", "yes"}:
+                queryset = queryset.filter(is_active=True)
+            elif normalized in {"false", "0", "no"}:
+                queryset = queryset.filter(is_active=False)
+
+        folder_param = self.request.query_params.get('folder')
+        if folder_param:
+            try:
+                folder_id = int(folder_param)
+            except (TypeError, ValueError):
+                folder_id = None
+            if folder_id:
+                queryset = queryset.filter(folders__id=folder_id)
+
+        return queryset.distinct().order_by('-created_at')
 
 
 
@@ -201,9 +230,33 @@ class EnterTestView(views.APIView):
                 "redirect_to": f"/panel/tests/result/{test_id}/"
             }, status=403)
 
+        if not test.is_active:
+            return Response({
+                "error": "inactive",
+                "message": "این آزمون در حال حاضر غیرفعال است."
+            }, status=403)
+
         now = timezone.now()
-        if now < test.start_time or now > test.end_time:
-            return Response({"error": "You are not allowed to enter at this time."}, status=403)
+        if test.test_type == TestType.SCHEDULED:
+            if not test.start_time or not test.end_time:
+                return Response({
+                    "error": "schedule_missing",
+                    "message": "برنامه زمانی این آزمون به درستی تنظیم نشده است."
+                }, status=400)
+
+            if now < test.start_time:
+                return Response({
+                    "error": "not_started",
+                    "message": "زمان شروع آزمون هنوز نرسیده است.",
+                    "starts_at": test.start_time.isoformat()
+                }, status=403)
+
+            if now > test.end_time:
+                return Response({
+                    "error": "ended",
+                    "message": "زمان برگزاری این آزمون به پایان رسیده است.",
+                    "ended_at": test.end_time.isoformat()
+                }, status=403)
 
         session, created = StudentTestSession.objects.get_or_create(
             user=user, test=test,

@@ -145,3 +145,83 @@ class GalleryImage(models.Model):
         ordering = ['order', '-created_at']
         verbose_name = _("Gallery Image")
         verbose_name_plural = _("Gallery Images")
+
+
+
+class Grade(models.TextChoices):
+    TEN = 'ten', 'دهم'
+    ELEVEN = 'eleven', 'یازدهم'
+    TWELVE = 'twelve', 'دوازدهم'
+
+class Subject(models.TextChoices):
+    MATHEMATICS = 'mathematics', 'ریاضی'
+    EXPERIMENTAL_SCIENCES = 'experimental_sciences', 'علوم تجربی'
+    HUMANITIES = 'humanities', 'علوم انسانی'
+    FOREIGN_LANGUAGES = 'foreign_languages', 'زبان‌های خارجی'
+
+class OfficialBook(models.Model):
+    """Model for official books associated with courses"""
+    
+    title = models.CharField(
+        max_length=255,
+        help_text="Title of the official book",
+        verbose_name=_("Title")
+    )
+     
+    publication_year = models.PositiveIntegerField(
+        help_text="Year the book was published",
+        verbose_name=_("Publication Year")
+    )
+
+    cover_image = models.ImageField(
+        upload_to='official_books/covers/',
+        storage=PublicMediaStorage(),
+        help_text="Cover image of the book",
+        verbose_name=_("Cover Image")
+    )
+    
+    pdf_file = models.FileField(
+        upload_to='official_books/pdfs/',
+        storage=PublicMediaStorage(),
+        help_text="PDF file of the book",
+        verbose_name=_("PDF File"),
+        blank=True,
+        null=True
+    )
+    
+    file_url = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+    
+    grade = models.CharField(
+        max_length=20,
+        choices=Grade.choices,
+        default=Grade.TEN,
+        verbose_name="نوع آزمون"
+    )
+    
+    subject = models.CharField(
+        max_length=50,
+        choices=Subject.choices,
+        default=Subject.MATHEMATICS,
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def delete(self, *args, **kwargs):
+        if self.cover_image:
+            default_storage.delete(self.cover_image.name)
+        if self.pdf_file:
+            default_storage.delete(self.pdf_file.name)
+        super().delete(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.title} by {self.author}"
+    
+    class Meta:
+        ordering = ['-publication_year', 'title']
+        verbose_name = _("Official Book")
+        verbose_name_plural = _("Official Books")

@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import File, GalleryImage
+from .models import File, GalleryImage, OfficialBook
 from .serializers import (
     FileSerializer, FileUploadSerializer, VideoInitUploadSerializer, 
-    VideoFinalizeSerializer, GalleryImageSerializer, PublicGalleryImageSerializer
+    VideoFinalizeSerializer, GalleryImageSerializer, PublicGalleryImageSerializer,
+    OfficialBookSerializer
 )
 from utils.vod import upload_video_file, create_video, create_upload_url, get_video, get_video_player_url
 from utils.vod2 import create_upload_url as create_presigned_upload_url
@@ -227,3 +228,19 @@ class PublicGalleryImageDetailView(generics.RetrieveAPIView):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+
+class OfficialBookViewSet(viewsets.ModelViewSet):
+    queryset = OfficialBook.objects.all().order_by('-publication_year', 'title')
+    serializer_class = OfficialBookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        grade = self.request.query_params.get('grade')
+        subject = self.request.query_params.get('subject')
+        if grade:
+            queryset = queryset.filter(grade=grade)
+        if subject:
+            queryset = queryset.filter(subject=subject)
+        return queryset

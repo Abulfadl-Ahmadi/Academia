@@ -136,6 +136,22 @@ export function TeacherSidebar({
         ],
       },
       {
+        title: "آزمون‌ها",
+        url: "/panel/tests",
+        icon: Target,
+        items: [
+          {
+            title: "لیست آزمون‌ها",
+            url: "/panel/tests",
+          },
+          {
+            title: "ایجاد آزمون جدید",
+            url: "/panel/tests/create",
+            description: "فرم یکپارچه برای همه انواع آزمون"
+          },
+        ],
+      },
+      {
         title: "آزمون‌های مبحثی",
         url: "/panel/topic-tests",
         icon: Target,
@@ -146,7 +162,7 @@ export function TeacherSidebar({
           },
           {
             title: "ایجاد آزمون مبحثی",
-            url: "/panel/topic-tests/create",
+            url: "/panel/tests/create?type=topic_based&content=pdf",
             description: "آزمون‌های آزاد مرتبط با مباحث درخت دانش"
           },
         ],
@@ -162,7 +178,7 @@ export function TeacherSidebar({
           },
           {
             title: "ایجاد آزمون سوالی",
-            url: "/panel/question-tests/create",
+            url: "/panel/tests/create?type=practice&content=typed_question",
             description: "آزمون با سوالات تایپ شده انتخابی"
           },
         ],
@@ -276,6 +292,21 @@ export function TeacherSidebar({
             title: "پاسخ خودکار (هوش مصنوعی)",
             url: "/panel/support/ask-ai",
             description: "مشاوره با هوش مصنوعی"
+          },
+        ],
+      },
+      {
+        title: "کتاب‌های درسی",
+        url: "/panel/books",
+        icon: Library,
+        items: [
+          {
+            title: "لیست کتاب‌ها",
+            url: "/panel/books",
+          },
+          {
+            title: "افزودن کتاب جدید",
+            url: "/panel/books/create",
           },
         ],
       },

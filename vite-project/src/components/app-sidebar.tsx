@@ -101,6 +101,10 @@ const data = {
           url: "/panel/tests/active",
         },
         {
+          title: "آزمون‌ ساز",
+          url: "/panel/tests/topic-by-folder",
+        },
+        {
           title: "تاریخچه آزمون‌ها",
           url: "/panel/tests/history",
         },
@@ -156,6 +160,17 @@ const data = {
         {
           title: "هوش مصنوعی",
           url: "/panel/support/ask-ai",
+        },
+      ],
+    },
+    {
+      title: "کتاب‌های درسی",
+      url: "/panel/books",
+      icon: FileText,
+      items: [
+        {
+          title: "لیست کتاب‌ها",
+          url: "/panel/books",
         },
       ],
     },

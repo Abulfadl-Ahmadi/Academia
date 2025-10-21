@@ -2,7 +2,8 @@ from django.urls import path, include
 from .views import (
     FileListCreateView, FileRetrieveUpdateDeleteView, VideoUploadView, 
     VideoInitUploadView, VideoFinalizeUploadView,
-    GalleryImageViewSet, PublicGalleryImageListView, PublicGalleryImageDetailView
+    GalleryImageViewSet, PublicGalleryImageListView, PublicGalleryImageDetailView,
+    OfficialBookViewSet
 )
 from rest_framework.routers import DefaultRouter
 
@@ -10,6 +11,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'files', FileListCreateView, basename='files')
 router.register(r'gallery-images', GalleryImageViewSet, basename='gallery-images')
+router.register(r'official-books', OfficialBookViewSet, basename='official-books')
 
 
 

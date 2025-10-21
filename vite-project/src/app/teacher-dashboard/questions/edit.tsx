@@ -595,7 +595,7 @@ export default function EditQuestionPage() {
         {/* Folder Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>انتخاب پوشه</CardTitle>
+            <CardTitle>انتخاب مبحث</CardTitle>
           </CardHeader>
           <CardContent>
             <FolderSelector

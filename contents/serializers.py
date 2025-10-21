@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import File, GalleryImage
+from .models import File, GalleryImage, OfficialBook
 from utils.vod import create_upload_url
 from utils.vod import get_video_player_url
 from botocore.exceptions import ClientError
@@ -155,4 +155,26 @@ class PublicGalleryImageSerializer(serializers.ModelSerializer):
         if obj.image:
             # Use the storage's URL method which will return a clean public URL
             return obj.image.url
+        return None
+
+
+class OfficialBookSerializer(serializers.ModelSerializer):
+    cover_image_url = serializers.SerializerMethodField()
+    pdf_file_url = serializers.SerializerMethodField()
+    class Meta:
+        model = OfficialBook
+        fields = [
+            'id', 'title', 'publication_year', 'cover_image', 'cover_image_url',
+            'pdf_file', 'pdf_file_url', 'file_url', 'grade', 'subject', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'cover_image_url', 'pdf_file_url', 'created_at', 'updated_at']
+
+    def get_cover_image_url(self, obj):
+        if obj.cover_image:
+            return obj.cover_image.url
+        return None
+
+    def get_pdf_file_url(self, obj):
+        if obj.pdf_file:
+            return obj.pdf_file.url
         return None

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from datetime import timedelta
+from django.utils.dateparse import parse_duration
 import base64
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -76,27 +77,45 @@ class CourseNestedSerializer(serializers.ModelSerializer):
 
 class TestCreateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
-    pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    pdf_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST),
+        required=False,
+        allow_null=True
+    )
     answers_file = serializers.PrimaryKeyRelatedField(
         queryset=File.objects.filter(content_type=File.ContentType.TEST),
         required=False,
         allow_null=True
     )
-    status = serializers.SerializerMethodField()
+    folders = serializers.PrimaryKeyRelatedField(
+        queryset=Folder.objects.all(),
+        many=True,
+        required=False
+    )
+    questions = serializers.PrimaryKeyRelatedField(
+        queryset=Question.objects.all(),
+        many=True,
+        required=False
+    )
     test_collection = serializers.PrimaryKeyRelatedField(
         queryset=TestCollection.objects.all(),
-        required=True
+        required=False,
+        allow_null=True
     )
-
+    test_type = serializers.ChoiceField(choices=TestType.choices, required=False)
+    content_type = serializers.ChoiceField(choices=TestContentType.choices, required=False)
+    is_active = serializers.BooleanField(required=False, default=True)
+    status = serializers.SerializerMethodField()
     test_collection_detail = serializers.SerializerMethodField()
     course_detail = serializers.SerializerMethodField()
 
     class Meta:
         model = Test
         fields = [
-            "id", 'name', 'status', 'test_collection_detail', 'course_detail',
-            'description', 'test_collection', 'pdf_file', 'answers_file',
-            'start_time', 'end_time', 'duration', 'frequency', 'keys'
+            "id", 'name', 'description', 'test_type', 'content_type', 'is_active',
+            'status', 'test_collection', 'test_collection_detail', 'course_detail',
+            'pdf_file', 'answers_file', 'start_time', 'end_time', 'duration',
+            'frequency', 'folders', 'questions', 'keys'
         ]
         read_only_fields = ['teacher']
 
@@ -109,9 +128,7 @@ class TestCreateSerializer(serializers.ModelSerializer):
         return None
 
     def get_course_detail(self, obj):
-        # Get course information through test_collection
         if obj.test_collection and obj.test_collection.courses.exists():
-            # Return the first course (or you can modify this logic as needed)
             course = obj.test_collection.courses.first()
             return {
                 'id': course.id,
@@ -119,37 +136,112 @@ class TestCreateSerializer(serializers.ModelSerializer):
             }
         return None
 
+    def _parse_duration(self, value):
+        if value is None or value == "":
+            return timedelta(minutes=60)
+        if isinstance(value, timedelta):
+            return value
+        if isinstance(value, (int, float)):
+            return timedelta(minutes=float(value))
+        if isinstance(value, str):
+            parsed = parse_duration(value)
+            if parsed is not None:
+                return parsed
+            raise serializers.ValidationError({'duration': 'فرمت مدت زمان نامعتبر است'})
+        raise serializers.ValidationError({'duration': 'فرمت مدت زمان نامعتبر است'})
+
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user if request else None
 
-        keys_data = validated_data.pop('keys', None)
-        
-        # تبدیل duration از دقیقه به timedelta
-        if 'duration' in validated_data:
-            duration_minutes = validated_data['duration']
-            if isinstance(duration_minutes, (int, float)):
-                validated_data['duration'] = timedelta(minutes=duration_minutes)
-        
-        test = Test.objects.create(teacher=user, **validated_data)
+        keys_data = validated_data.pop('keys', [])
+        folders = validated_data.pop('folders', [])
+        questions = validated_data.pop('questions', [])
 
-        for key in keys_data:
-            PrimaryKey.objects.create(test=test, **key)
+        test_type = validated_data.get('test_type') or TestType.SCHEDULED
+        content_type = validated_data.get('content_type') or TestContentType.PDF
+        validated_data['test_type'] = test_type
+        validated_data['content_type'] = content_type
+        validated_data['is_active'] = validated_data.get('is_active', True)
+
+        # Normalize duration
+        validated_data['duration'] = self._parse_duration(validated_data.get('duration'))
+
+        # Validate scheduling requirements
+        if test_type == TestType.SCHEDULED:
+            if not validated_data.get('start_time') or not validated_data.get('end_time'):
+                raise serializers.ValidationError({
+                    'start_time': 'برای آزمون زمان‌بندی شده تعیین زمان شروع و پایان الزامی است'
+                })
+        else:
+            # در صورت عدم نیاز، مقادیر خالی را ذخیره نکنیم
+            validated_data['start_time'] = validated_data.get('start_time')
+            validated_data['end_time'] = validated_data.get('end_time')
+
+        # Validate content-specific requirements
+        if content_type == TestContentType.PDF:
+            if not validated_data.get('pdf_file'):
+                raise serializers.ValidationError({
+                    'pdf_file': 'برای آزمون PDF انتخاب فایل آزمون الزامی است'
+                })
+            # اجازه می‌دهیم questions خالی باشد
+            questions = []
+        else:
+            validated_data['pdf_file'] = None
+            validated_data['answers_file'] = validated_data.get('answers_file') or None
+            if not questions:
+                raise serializers.ValidationError({
+                    'questions': 'برای آزمون سوالی انتخاب سوال الزامی است'
+                })
+
+        validated_data['teacher'] = user
+
+        test_instance = Test(**validated_data)
+
+        if (
+            test_type == TestType.TOPIC_BASED
+            and not getattr(test_instance, "topic", None)
+            and not getattr(test_instance, "knowledge_path", None)
+            and folders
+        ):
+            # Allow model.clean to pass when we only have folders for a topic based test
+            setattr(test_instance, "_pending_folders", list(folders))
+
+        test_instance.save()
+        test = test_instance
+
+        if folders:
+            test.folders.set(folders)
+        if questions:
+            test.questions.set(questions)
+
+        if keys_data and content_type == TestContentType.PDF:
+            for key in keys_data:
+                PrimaryKey.objects.create(
+                    test=test,
+                    question_number=int(key['question_number']),
+                    answer=int(key['answer'])
+                )
         return test
 
     def get_status(self, obj):
         request = self.context.get('request')
-        user = request.user
-        sessions = StudentTestSession.objects.filter(user=user, test=obj.id).order_by("-id")
-        if len(sessions) == 0:
+        user = getattr(request, 'user', None)
+        if not user or not user.is_authenticated:
             return ""
-        else:
-            return sessions.first().status
+        sessions = StudentTestSession.objects.filter(user=user, test=obj.id).order_by("-id")
+        if not sessions:
+            return ""
+        return sessions.first().status
 
 
 class TestUpdateSerializer(serializers.ModelSerializer):
     keys = PrimaryKeySerializer(many=True, required=False)
-    pdf_file = serializers.PrimaryKeyRelatedField(queryset=File.objects.filter(content_type=File.ContentType.TEST))
+    pdf_file = serializers.PrimaryKeyRelatedField(
+        queryset=File.objects.filter(content_type=File.ContentType.TEST),
+        required=False,
+        allow_null=True
+    )
     answers_file = serializers.PrimaryKeyRelatedField(
         queryset=File.objects.filter(content_type=File.ContentType.TEST),
         required=False,
@@ -160,43 +252,72 @@ class TestUpdateSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
+    folders = serializers.PrimaryKeyRelatedField(
+        queryset=Folder.objects.all(),
+        many=True,
+        required=False
+    )
+    is_active = serializers.BooleanField(required=False)
 
     class Meta:
         model = Test
-        fields = ['name', 'description', 'test_collection', 'pdf_file', 'answers_file', 'start_time', 'end_time', 'duration', 'frequency', 'keys', 'questions']
+        fields = [
+            'name', 'description', 'test_collection', 'pdf_file', 'answers_file',
+            'start_time', 'end_time', 'duration', 'frequency', 'keys', 'questions',
+            'folders', 'is_active'
+        ]
+
+    def _parse_duration(self, value):
+        if value is None or value == "":
+            return None
+        if isinstance(value, timedelta):
+            return value
+        if isinstance(value, (int, float)):
+            return timedelta(minutes=float(value))
+        if isinstance(value, str):
+            if value.startswith('PT'):
+                # ISO 8601 duration
+                hours = minutes = seconds = 0
+                import re
+                match = re.fullmatch(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", value)
+                if match:
+                    hours = int(match.group(1) or 0)
+                    minutes = int(match.group(2) or 0)
+                    seconds = int(match.group(3) or 0)
+                    return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+            parts = value.split(':')
+            if len(parts) >= 2:
+                hours = int(parts[0])
+                minutes = int(parts[1])
+                seconds = int(parts[2]) if len(parts) > 2 else 0
+                return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        raise serializers.ValidationError({'duration': 'فرمت مدت زمان نامعتبر است'})
 
     def update(self, instance, validated_data):
         keys_data = validated_data.pop('keys', None)
         questions_data = validated_data.pop('questions', None)
+        folders_data = validated_data.pop('folders', None)
 
-        # تبدیل duration از string به timedelta
         if 'duration' in validated_data:
-            duration_str = validated_data['duration']
-            if isinstance(duration_str, str):
-                # فرمت: "HH:MM:SS"
-                parts = duration_str.split(':')
-                hours = int(parts[0])
-                minutes = int(parts[1])
-                seconds = int(parts[2]) if len(parts) > 2 else 0
-                validated_data['duration'] = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+            parsed_duration = self._parse_duration(validated_data['duration'])
+            if parsed_duration is not None:
+                validated_data['duration'] = parsed_duration
 
-        # ابتدا خود آزمون رو آپدیت کن
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # بروزرسانی سوالات آزمون
+        if folders_data is not None:
+            instance.folders.set(folders_data)
+
         if questions_data is not None:
             instance.questions.set(questions_data)
 
         if keys_data is not None:
-            # حذف کلیدهای قبلی
             PrimaryKey.objects.filter(test=instance).delete()
-
-            # کلیدهای جدید رو ذخیره کن
             for key in keys_data:
                 PrimaryKey.objects.update_or_create(
-                    test=instance, 
+                    test=instance,
                     question_number=key["question_number"],
                     defaults={"answer": key["answer"]}
                 )
@@ -307,7 +428,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Test
-        fields = ["id", 'name', 'description', 'test_collection', 'pdf_file', 'answers_file', 
+        fields = ["id", 'name', 'description', 'test_collection', 'test_type', 'pdf_file', 'answers_file', 
                  'pdf_file_url', 'answers_file_url', 'start_time', 'end_time', 'duration', 'duration_formatted', 'frequency', 'content_type',
                  'collection', 'questions_count', 'folders_count', 'total_questions', 'time_limit', 'is_active', 'created_at', 'keys', 'questions', 'folders']
         read_only_fields = ['teacher']
