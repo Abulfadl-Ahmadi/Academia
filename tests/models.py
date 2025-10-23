@@ -9,6 +9,9 @@ import secrets
 import hmac
 import hashlib
 from django.conf import settings
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 import uuid
 
 # Base62 character set for secure ID generation
@@ -83,6 +86,8 @@ class TestCollection(models.Model):
         verbose_name="دوره‌های مرتبط"
     )
     
+    students = models.ManyToManyField(User, blank=True, related_name='test_collections', verbose_name="دانش‌آموزان مرتبط")
+    
     created_by = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
@@ -106,14 +111,20 @@ class TestCollection(models.Model):
         دانش‌آموزانی که به این مجموعه آزمون دسترسی دارند
         (دانش‌آموزان دوره‌های متصل + محصولات خریداری شده)
         """
-        # دانش‌آموزان دوره‌های متصل
-        course_students = User.objects.filter(
+        # Explicitly assigned students (ids)
+        explicit_ids = set(self.students.values_list('id', flat=True))
+
+        # Students enrolled in related courses (ids)
+        course_student_ids = set(User.objects.filter(
             enrolled_courses__in=self.courses.all(),
             role='student'
-        ).distinct()
-        
-        # اینجا بعداً دانش‌آموزان محصولات خریداری شده را اضافه خواهیم کرد
-        return course_students
+        ).distinct().values_list('id', flat=True))
+
+        # Union IDs and return a single queryset to avoid combining incompatible QuerySets
+        all_ids = list(explicit_ids.union(course_student_ids))
+        if not all_ids:
+            return User.objects.none()
+        return User.objects.filter(id__in=all_ids)
 
     def get_total_tests(self):
         """تعداد کل آزمون‌های این مجموعه"""
@@ -133,6 +144,48 @@ class TestCollection(models.Model):
             return 0
         completed = self.get_completed_tests_for_student(student)
         return (completed / total) * 100
+
+    def sync_students_from_courses(self):
+        """
+        Ensure students M2M contains all students enrolled in the collection's courses.
+        This is idempotent and safe to call after create/update/save.
+        """
+        course_student_qs = User.objects.filter(
+            enrolled_courses__in=self.courses.all(),
+            role='student'
+        ).distinct()
+        if course_student_qs.exists():
+            self.students.add(*course_student_qs)
+
+
+# Signal: when courses are added to a TestCollection, sync enrolled students into the collection's students M2M
+@receiver(m2m_changed, sender=TestCollection.courses.through)
+def sync_collection_students_on_course_change(sender, instance, action, pk_set, **kwargs):
+    """
+    When courses are added to a TestCollection, add enrolled students of those courses
+    into the TestCollection.students M2M. We intentionally do NOT auto-remove students
+    when courses are removed to avoid accidentally removing students who were
+    explicitly assigned by a teacher.
+    """
+    if action == 'post_add' and pk_set:
+        # Collect students enrolled in the newly added courses
+        students_to_add = User.objects.filter(enrolled_courses__in=pk_set, role='student').distinct()
+        if students_to_add.exists():
+            instance.students.add(*students_to_add)
+
+
+@receiver(post_save, sender=TestCollection)
+def sync_collection_students_on_save(sender, instance, created, **kwargs):
+    """
+    Ensure that after a TestCollection is saved (create or update) we sync students
+    from related courses. This helps catch edits made via admin or API where M2M
+    signals might not have fired or where courses were already present.
+    """
+    try:
+        instance.sync_students_from_courses()
+    except Exception:
+        # Don't let syncing break saves; fail silently but log if needed
+        pass
 
 
 class TestType(models.TextChoices):

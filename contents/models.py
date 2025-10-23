@@ -1,9 +1,12 @@
 from django.db import models
+from accounts.models import User
 from django.core.files.storage import default_storage
 from django.utils.translation import gettext_lazy as _
 from courses.models import Course, CourseSession
 from PIL import Image
 from api.storage import PublicMediaStorage
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class File(models.Model):
@@ -53,7 +56,7 @@ class File(models.Model):
         null=True,
         blank=True
     )
-
+    
     session = models.ForeignKey(
         CourseSession,
         on_delete=models.CASCADE,
@@ -61,6 +64,14 @@ class File(models.Model):
         blank=True,
         related_name='files',
         help_text="The specific course session, if applicable"
+    )
+
+    # Optional explicit students who should have access to this file
+    students = models.ManyToManyField(
+        User,
+        blank=True,
+        related_name='files_explicit',
+        verbose_name="دانش‌آموزان مرتبط"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,10 +86,31 @@ class File(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_file_type_display()})"
 
+    def sync_students_from_course(self):
+        """
+        Ensure the File.students M2M contains students enrolled in the linked course.
+        This adds enrolled students but does not remove any explicitly-assigned students.
+        """
+        if not self.course:
+            return
+        students_qs = User.objects.filter(enrolled_courses=self.course, role='student').distinct()
+        if students_qs.exists():
+            self.students.add(*students_qs)
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = "File"
         verbose_name_plural = "Files"
+
+
+# After saving a File, sync students from the linked course (if any)
+@receiver(post_save, sender=File)
+def sync_file_students_on_save(sender, instance, created, **kwargs):
+    try:
+        instance.sync_students_from_course()
+    except Exception:
+        # keep save operation safe
+        pass
 
 
 class GalleryImage(models.Model):

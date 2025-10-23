@@ -3,7 +3,7 @@ from accounts.models import User
 from django.utils.translation import gettext_lazy as _
 from contents.models import File
 from courses.models import Course
-from tests.models import Test
+from tests.models import TestCollection
 from django.utils import timezone
 
 
@@ -31,7 +31,7 @@ class Product(models.Model):
     # Digital product relations
     file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, blank=True)
+    test = models.ForeignKey(TestCollection, on_delete=models.CASCADE, null=True, blank=True)
     
     # Physical product fields
     weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Weight in grams")

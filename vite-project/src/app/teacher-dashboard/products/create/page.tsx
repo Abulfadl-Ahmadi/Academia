@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,9 @@ const PRODUCT_TYPES = [
 export default function CreateProductPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  interface TestCollection { id: number | string; title?: string; name?: string }
+  const [collections, setCollections] = useState<TestCollection[]>([]);
+  const [collectionsLoading, setCollectionsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<CreateProductForm>({
     title: "",
     description: "",
@@ -67,7 +70,7 @@ export default function CreateProductPage() {
     shipping_cost: 0,
   });
 
-  const handleInputChange = (field: keyof CreateProductForm, value: any) => {
+  const handleInputChange = <K extends keyof CreateProductForm>(field: K, value: CreateProductForm[K]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -171,9 +174,14 @@ export default function CreateProductPage() {
       // Navigate back to products list
       navigate("/panel/products");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating product:", error);
-      const errorMessage = error.response?.data?.message || "خطا در ایجاد محصول";
+      let errorMessage = "خطا در ایجاد محصول";
+      if (typeof error === 'object' && error !== null) {
+        const e = error as { response?: { data?: { message?: string } }; message?: string };
+        if (e.response?.data?.message) errorMessage = e.response.data.message;
+        else if (e.message) errorMessage = e.message;
+      }
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -189,6 +197,34 @@ export default function CreateProductPage() {
     const productType = PRODUCT_TYPES.find(pt => pt.value === type);
     return productType ? productType.label : 'نامشخص';
   };
+
+  const fetchCollections = useCallback(async () => {
+    try {
+      setCollectionsLoading(true);
+      const response = await axiosInstance.get("/test-collections/");
+      // Handle both array and pagination format
+      let collectionsData: TestCollection[] = [];
+      if (Array.isArray(response.data)) {
+        collectionsData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        collectionsData = response.data.results;
+      } else {
+        console.warn("Test collections data is not an array:", response.data);
+        collectionsData = [];
+      }
+      setCollections(collectionsData);
+    } catch (error) {
+      console.error("Error fetching test collections:", error);
+      toast.error("خطا در دریافت مجموعه آزمون‌ها");
+      setCollections([]);
+    } finally {
+      setCollectionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCollections();
+  }, [fetchCollections]);
 
   return (
     <div className="space-y-6">
@@ -389,10 +425,17 @@ export default function CreateProductPage() {
                     <SelectValue placeholder="انتخاب آزمون" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* This would need to fetch tests from API */}
-                    <SelectItem value="1">آزمون میان‌ترم ریاضی</SelectItem>
-                    <SelectItem value="2">آزمون نهایی فیزیک</SelectItem>
-                    <SelectItem value="3">آزمون هفتگی شیمی</SelectItem>
+                    {collectionsLoading ? (
+                      <SelectItem value="">در حال بارگذاری...</SelectItem>
+                    ) : collections.length === 0 ? (
+                      <SelectItem value="">هیچ آزمونی یافت نشد</SelectItem>
+                    ) : (
+                      collections.map(col => (
+                        <SelectItem key={String(col.id)} value={String(col.id)}>
+                          {col.title || col.name || `آزمون ${col.id}`}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>

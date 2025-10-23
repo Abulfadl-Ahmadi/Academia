@@ -129,7 +129,7 @@ class TestCollectionAdmin(admin.ModelAdmin):
             'fields': ('name', 'description', 'is_active', 'created_by')
         }),
         ('اتصالات', {
-            'fields': ('courses',)
+            'fields': ('courses', 'students')
         }),
         ('زمان‌بندی', {
             'fields': ('created_at', 'updated_at'),
@@ -137,6 +137,8 @@ class TestCollectionAdmin(admin.ModelAdmin):
         }),
     )
     
+    filter_horizontal = ('courses', 'students')
+
     def tests_count(self, obj):
         return obj.get_total_tests()
     tests_count.short_description = 'تعداد آزمون'

@@ -1,0 +1,233 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | پنل مدیریت Academia{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">پنل مدیریت Academia</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* راست‌چین کردن کل صفحه */
+    body, html {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Tahoma', 'Vazir', 'IranSans', sans-serif;
+    }
+
+    /* راست‌چین کردن متن‌ها و برچسب‌ها */
+    body, p, span, label, div, li, td, th, input, textarea, select {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن فرم‌ها */
+    .form-row, .form-group, form {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن جدول‌ها */
+    table, thead, tbody, tr, th, td {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* تنظیم هدر جدول */
+    #result_list th {
+        text-align: right;
+    }
+
+    /* راست‌چین کردن منوها */
+    #header, #branding, .breadcrumbs {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن sidebar */
+    .module, .sidebar {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* تنظیم دکمه‌ها */
+    .submit-row input, .button, input[type="submit"] {
+        float: left;
+        margin-left: 5px;
+        margin-right: 0;
+    }
+
+    /* راست‌چین کردن لینک‌ها در جدول */
+    #result_list a {
+        text-align: right;
+    }
+
+    /* تنظیم آیکون‌های sortable */
+    th.sortable {
+        text-align: right;
+    }
+
+    th.sortable a {
+        padding-right: 0;
+        padding-left: 13px;
+    }
+
+    /* راست‌چین کردن فیلترها */
+    #changelist-filter {
+        right: auto;
+        left: 0;
+    }
+
+    #changelist {
+        padding-right: 0;
+        padding-left: 280px;
+    }
+
+    /* راست‌چین کردن breadcrumbs */
+    .breadcrumbs a {
+        margin-left: 5px;
+        margin-right: 0;
+    }
+
+    /* راست‌چین کردن پیام‌های موفقیت */
+    .success, .info, .warning, .error {
+        text-align: right;
+        direction: rtl;
+    }
+
+    /* راست‌چین کردن فرم‌های inline */
+    .inline-group, .inline-related {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن fieldset */
+    fieldset {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن help text */
+    .help, .help-block, p.help {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* تنظیم checkbox و radio button */
+    input[type="checkbox"], input[type="radio"] {
+        margin-left: 5px;
+        margin-right: 0;
+    }
+
+    /* راست‌چین کردن متن داخل input */
+    input[type="text"], input[type="password"], input[type="email"], 
+    input[type="number"], input[type="url"], textarea {
+        text-align: right;
+        direction: rtl;
+    }
+
+    /* تنظیم select2 اگر استفاده می‌شود */
+    .select2-container {
+        direction: rtl;
+    }
+
+    /* راست‌چین کردن object-tools */
+    .object-tools {
+        float: left;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .object-tools li {
+        float: right;
+        margin-left: 5px;
+        margin-right: 0;
+    }
+
+    /* راست‌چین کردن pagination */
+    .paginator {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* تنظیم aligned form */
+    .aligned label {
+        float: right;
+        text-align: left;
+        width: 12em;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .aligned .form-row input, .aligned .form-row textarea, 
+    .aligned .form-row select {
+        margin-right: 12.5em;
+        margin-left: 0;
+    }
+
+    /* تنظیم dashboard */
+    #content-main {
+        direction: rtl;
+    }
+
+    .dashboard .module table {
+        direction: rtl;
+    }
+
+    /* راست‌چین کردن action bar */
+    .actions {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .actions label {
+        margin-right: 5px;
+        margin-left: 0;
+    }
+
+    /* تنظیم errornote */
+    .errornote {
+        direction: rtl;
+        text-align: right;
+    }
+
+    /* راست‌چین کردن calendar widget */
+    .calendarbox, .clockbox {
+        direction: rtl;
+    }
+
+    /* تنظیم related-widget-wrapper */
+    .related-widget-wrapper {
+        direction: rtl;
+    }
+
+    /* بهبود خوانایی فونت فارسی */
+    body {
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    /* تنظیم header برای متن فارسی */
+    #header {
+        background: #417690;
+        color: #ffffff;
+    }
+
+    #branding h1 {
+        color: #f5dd5d;
+        font-weight: bold;
+    }
+
+    /* تنظیم دکمه‌های اصلی */
+    .button, input[type="submit"], input[type="button"], .submit-row input {
+        background: #417690;
+        color: white;
+    }
+
+    .button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+        background: #315b75;
+    }
+</style>
+{% endblock %}

@@ -351,7 +351,7 @@ export default function TestCollectionDetail() {
                               variant="outline" 
                               size="sm"
                               onClick={() => window.open(test.answers_file_url, '_blank')}
-                            >
+                              >
                               <CheckCircle className="h-4 w-4 ml-1" />
                               پاسخنامه
                             </Button>
@@ -375,7 +375,8 @@ export default function TestCollectionDetail() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => handleShareTest(test)}
+                            // onClick={() => handleShareTest(test)}
+                            onClick={() => window.open(`/test-poster/${test.id}`, '_blank')}
                             title="اشتراک‌گذاری آزمون"
                           >
                             <Share2 className="h-4 w-4" />

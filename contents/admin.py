@@ -4,18 +4,18 @@ from .models import File, GalleryImage
 
 @admin.register(File)
 class FileAdmin(admin.ModelAdmin):
-    list_display = ('title', 'file_type', 'content_type', 'course', 'session', 'has_file', 'has_arvan_url', 'created_at')
+    list_display = ('title', 'file_type', 'content_type', 'course', 'session', 'has_file', 'has_arvan_url', 'students_count', 'created_at')
     list_filter = ('file_type', 'content_type', 'created_at', 'course')
     search_fields = ('title', 'file_id', 'course__title', 'session__title')
     readonly_fields = ('created_at',)
     list_per_page = 25
-    
+    filter_horizontal = ('students',)
     fieldsets = (
         ('Basic Information', {
             'fields': ('title', 'file_type', 'content_type')
         }),
         ('Content', {
-            'fields': ('course', 'session', 'file', 'file_id', 'arvan_url')
+            'fields': ('course', 'session', 'file', 'file_id', 'arvan_url', 'students')
         }),
         ('Metadata', {
             'fields': ('created_at',),
@@ -32,6 +32,10 @@ class FileAdmin(admin.ModelAdmin):
         return bool(obj.arvan_url)
     has_arvan_url.boolean = True
     has_arvan_url.short_description = 'Has Arvan URL'
+
+    def students_count(self, obj):
+        return obj.students.count()
+    students_count.short_description = 'دانش‌آموزان'
 
 
 @admin.register(GalleryImage)

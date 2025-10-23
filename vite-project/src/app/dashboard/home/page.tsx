@@ -31,7 +31,7 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-6 h-6" />
-                خوش آمدید، {user?.username}!
+                خوش آمدید، {user?.first_name} {user?.last_name}!
               </CardTitle>
             </CardHeader>
             <CardContent>

@@ -26,6 +26,8 @@ interface StudentCourse {
   progress_percentage: number;
   teacher: {
     username: string;
+    first_name: string;
+    last_name: string;
   };
 }
 
@@ -203,7 +205,7 @@ function StudentCourseCard({ course, onView }: StudentCourseCardProps) {
         {/* Teacher */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
           <Users className="w-4 h-4" />
-          <span>مدرس: {course.teacher.username}</span>
+          <span>مدرس: {course.teacher.first_name} {course.teacher.last_name}</span>
         </div>
 
         {/* Stats */}
