@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -174,6 +174,9 @@ export default function StudentProgressList() {
               <TrendingUp className="h-5 w-5" />
               خلاصه پیشرفت
             </CardTitle>
+            <CardDescription>
+              آمار کلی عملکرد شما در این مجموعه آزمون
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -191,12 +194,20 @@ export default function StudentProgressList() {
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <div className="text-sm text-muted-foreground">
+              آخرین فعالیت: {new Date(studentProgress.last_activity).toLocaleDateString('fa-IR')}
+            </div>
+          </CardFooter>
         </Card>
 
         {/* نمودار پیشرفت با Chart Line */}
         <Card>
           <CardHeader>
             <CardTitle>نمودار پیشرفت در آزمون‌ها</CardTitle>
+            <CardDescription>
+              روند عملکرد شما در آزمون‌های مختلف مجموعه
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {testResults.length > 0 ? (
@@ -256,9 +267,10 @@ export default function StudentProgressList() {
                 </div>
               </div>
             )}
-            
+          </CardContent>
+          <CardFooter>
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
               <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                 <div className="text-lg font-bold text-blue-600">
                   {testResults.length}
@@ -284,13 +296,16 @@ export default function StudentProgressList() {
                 <div className="text-xs text-muted-foreground">کمترین نمره</div>
               </div>
             </div>
-          </CardContent>
+          </CardFooter>
         </Card>
 
         {/* جدول نتایج تفصیلی */}
         <Card>
           <CardHeader>
             <CardTitle>نتایج تفصیلی آزمون‌ها</CardTitle>
+            <CardDescription>
+              جزئیات کامل عملکرد شما در هر آزمون
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -350,61 +365,63 @@ export default function StudentProgressList() {
         <div className="grid gap-4">
           {progress.map((student) => (
             <Card key={student.id}>
-              <CardContent className="p-6">
+              <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
                       <Users className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">{student.student_name}</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <CardTitle className="text-lg">{student.student_name}</CardTitle>
+                      <CardDescription>
                         آخرین فعالیت: {new Date(student.last_activity).toLocaleDateString('fa-IR')}
-                      </p>
+                      </CardDescription>
                     </div>
                   </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold">{student.completed_tests}</div>
+                    <div className="text-sm text-muted-foreground">آزمون تکمیل شده</div>
+                  </div>
                   
-                  <div className="flex items-center gap-6">
-                    <div className="text-center">
-                      <div className="text-lg font-bold">{student.completed_tests}</div>
-                      <div className="text-sm text-muted-foreground">آزمون تکمیل شده</div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold">
+                      {student.average_score ? student.average_score.toFixed(1) : 'ندارد'}
                     </div>
-                    
-                    <div className="text-center">
-                      <div className="text-lg font-bold">
-                        {student.average_score ? student.average_score.toFixed(1) : 'ندارد'}
-                      </div>
-                      <div className="text-sm text-muted-foreground">میانگین نمره</div>
+                    <div className="text-sm text-muted-foreground">میانگین نمره</div>
+                  </div>
+                  
+                  <div className="w-32">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm">پیشرفت</span>
+                      <span className="text-sm font-medium">{(student.progress_percentage || 0).toFixed(1)}%</span>
                     </div>
-                    
-                    <div className="w-32">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm">پیشرفت</span>
-                        <span className="text-sm font-medium">{(student.progress_percentage || 0).toFixed(1)}%</span>
-                      </div>
-                      <Progress value={student.progress_percentage || 0} className="h-2" />
-                    </div>
-                    
-                    <Badge 
-                      variant={student.is_completed ? "default" : student.completed_tests > 0 ? "secondary" : "outline"}
-                    >
-                      {student.is_completed ? (
-                        <>
-                          <CheckCircle className="ml-1 h-3 w-3" />
-                          تکمیل شده
-                        </>
-                      ) : student.completed_tests > 0 ? (
-                        <>
-                          <Clock className="ml-1 h-3 w-3" />
-                          در حال انجام
-                        </>
-                      ) : (
-                        'شروع نشده'
-                      )}
-                    </Badge>
+                    <Progress value={student.progress_percentage || 0} className="h-2" />
                   </div>
                 </div>
               </CardContent>
+              <CardFooter>
+                <Badge 
+                  variant={student.is_completed ? "default" : student.completed_tests > 0 ? "secondary" : "outline"}
+                >
+                  {student.is_completed ? (
+                    <>
+                      <CheckCircle className="ml-1 h-3 w-3" />
+                      تکمیل شده
+                    </>
+                  ) : student.completed_tests > 0 ? (
+                    <>
+                      <Clock className="ml-1 h-3 w-3" />
+                      در حال انجام
+                    </>
+                  ) : (
+                    'شروع نشده'
+                  )}
+                </Badge>
+              </CardFooter>
             </Card>
           ))}
         </div>

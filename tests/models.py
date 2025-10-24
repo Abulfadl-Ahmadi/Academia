@@ -593,7 +593,19 @@ class StudentProgress(models.Model):
         )
         
         self.completed_tests = completed_sessions.count()
-        self.total_score = sum(session.final_score for session in completed_sessions if session.final_score)
+        
+        # Calculate total score by summing individual session scores
+        self.total_score = 0
+        for session in completed_sessions:
+            correct_answers = 0
+            total_questions = session.test.primary_keys.count()
+            for answer in session.answers.all():
+                primary_key = session.test.primary_keys.filter(question_number=answer.question_number).first()
+                if primary_key and primary_key.answer == answer.answer:
+                    correct_answers += 1
+            if total_questions > 0:
+                score = (correct_answers / total_questions) * 100
+                self.total_score += score
         
         # چک کردن تکمیل کامل
         if self.completed_tests >= self.test_collection.tests.count():

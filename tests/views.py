@@ -727,10 +727,24 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         for test in tests:
             sessions = test.studenttestsession_set.all()
             participated = sessions.count()
-            completed = sessions.filter(status='completed').count()
-            avg_score = sessions.filter(status='completed').aggregate(
-                avg_score=Avg('final_score')
-            )['avg_score'] or 0
+            completed_sessions = sessions.filter(status='completed')
+            completed = completed_sessions.count()
+            
+            # Calculate average score manually since final_score field doesn't exist
+            avg_score = 0
+            if completed > 0:
+                total_score = 0
+                for session in completed_sessions:
+                    correct_answers = 0
+                    total_questions = test.primary_keys.count()
+                    for answer in session.answers.all():
+                        primary_key = test.primary_keys.filter(question_number=answer.question_number).first()
+                        if primary_key and primary_key.answer == answer.answer:
+                            correct_answers += 1
+                    if total_questions > 0:
+                        score = (correct_answers / total_questions) * 100
+                        total_score += score
+                avg_score = total_score / completed
             
             test_stats.append({
                 'test_id': test.id,

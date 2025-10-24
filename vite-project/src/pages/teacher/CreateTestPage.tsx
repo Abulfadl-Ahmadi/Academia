@@ -190,15 +190,15 @@ const AnswerKeyGrid = ({
   );
 };
 
-const durationHoursOptions = Array.from({ length: 5 }, (_, idx) => idx.toString());
-const durationMinutesOptions = ["0", "15", "30", "45"];
-
 const frequencyOptions = [
   { value: "once", label: "یک بار" },
   { value: "daily", label: "روزانه" },
   { value: "weekly", label: "هفتگی" },
   { value: "monthly", label: "ماهانه" },
 ];
+
+const durationHoursOptions = Array.from({ length: 24 }, (_, i) => i.toString());
+const durationMinutesOptions = Array.from({ length: 60 }, (_, i) => i.toString());
 
 interface CreateTestPageProps {
   mode?: "create" | "edit";
@@ -776,10 +776,10 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
 
   return (
     <div className="mx-auto w-full space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={() => navigate("/panel/tests")}> 
-          <ArrowRight className="ml-2 h-4 w-4" />
-          بازگشت
+      <div className="flex items-center gap-2">
+        <Button className="mb-auto" variant="outline" size="sm" onClick={() => navigate("/panel/tests")}> 
+          <ArrowRight className="h-4 w-4" />
+          {/* بازگشت */}
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{pageTitle}</h1>
@@ -848,30 +848,26 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
               <div className="space-y-2">
                 <Label>مدت زمان آزمون</Label>
                 <div className="flex items-center gap-2">
-                  <Select value={durationHour} onValueChange={setDurationHour}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="ساعت" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationHoursOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option} ساعت
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={durationMinute} onValueChange={setDurationMinute}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="دقیقه" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationMinutesOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option} دقیقه
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex-1">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={durationHour}
+                      onChange={(e) => setDurationHour(e.target.value)}
+                      placeholder="ساعت"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={durationMinute}
+                      onChange={(e) => setDurationMinute(e.target.value)}
+                      placeholder="دقیقه"
+                    />
+                  </div>
                 </div>
               </div>
 

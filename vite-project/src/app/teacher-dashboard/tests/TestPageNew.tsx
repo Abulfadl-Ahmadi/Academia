@@ -397,9 +397,9 @@ const TestPageRedesigned: React.FC = () => {
   };
 
   const getTimeColor = () => {
-    if (timeLeft < 300) return "text-red-500";
+    if (timeLeft < 300) return "text-destructive";
     if (timeLeft < 600) return "text-orange-500";
-    return "text-green-500";
+    return "text-green-600";
   };
 
   // Navigation functions
@@ -436,7 +436,7 @@ const TestPageRedesigned: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">در حال بارگیری آزمون...</p>
@@ -447,11 +447,11 @@ const TestPageRedesigned: React.FC = () => {
 
   if (error || !test) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold">خطا در بارگیری آزمون</h3>
-          <p className="mb-6 text-gray-600 dark:text-gray-300">{error}</p>
+          <p className="mb-6 text-muted-foreground">{error}</p>
           <Button onClick={() => navigateToTestSource()}>
             بازگشت به لیست آزمون‌ها
           </Button>
@@ -463,37 +463,37 @@ const TestPageRedesigned: React.FC = () => {
   // Question-based test interface
   if (test?.content_type === 'typed_question') {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b sticky top-0 z-10">
+        <div className="bg-card border-b sticky top-0 z-10">
           <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setConfirmExit(true)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 flex-shrink-0"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   خروج
                 </Button>
-                <div>
-                  <h1 className="text-lg font-bold">{test.name}</h1>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-lg font-bold truncate">{test.name}</h1>
                   {test.description && (
-                    <p className="text-sm text-muted-foreground">{test.description}</p>
+                    <p className="text-sm text-muted-foreground truncate">{test.description}</p>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                 <div className={`flex items-center gap-2 text-lg font-mono ${getTimeColor()}`}>
                   <Clock className="w-5 h-5" />
                   {formatTime(timeLeft)}
                 </div>
                 <Button
                   onClick={() => setConfirmFinish(true)}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 flex-shrink-0"
                   size="sm"
                 >
                   پایان آزمون
@@ -504,7 +504,7 @@ const TestPageRedesigned: React.FC = () => {
 
           {/* Progress Bar */}
           <div className="max-w-4xl mx-auto px-4 pb-4">
-            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-muted-foreground mb-2 gap-1">
               <span>سوال {currentQuestionIndex + 1} از {test.questions?.length || 0}</span>
               <span>{Math.round(((currentQuestionIndex + 1) / (test.questions?.length || 1)) * 100)}% تکمیل شده</span>
             </div>
@@ -513,12 +513,12 @@ const TestPageRedesigned: React.FC = () => {
         </div>
 
         {/* Main Content with Sidebar */}
-        <div className="flex flex-1">
+        <div className="flex flex-1 flex-col md:flex-row">
           {/* Sidebar - Question Navigator */}
-          <div className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-gray-50 dark:bg-gray-800 border-l overflow-hidden`}>
-            <div className="p-4">
+          <div className={`${sidebarOpen ? 'h-64 md:h-auto md:w-80' : 'h-0 md:w-0'} transition-all duration-300 bg-muted border-b md:border-b-0 md:border-r overflow-hidden`}>
+            <div className="p-4 h-full md:h-auto">
               <h3 className="font-semibold mb-4">سوالات آزمون</h3>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2 md:grid-cols-5">
                 {test.questions?.map((question, index) => {
                   const selectedAnswer = answers[index + 1];
                   const selectedOptionIndex = selectedAnswer ? 
@@ -530,10 +530,10 @@ const TestPageRedesigned: React.FC = () => {
                         onClick={() => goToQuestion(index)}
                         className={`p-2 text-sm font-medium rounded border transition-colors w-full ${
                           index === currentQuestionIndex
-                            ? 'bg-blue-500 text-white border-blue-500'
+                            ? 'bg-primary text-primary-foreground border-primary'
                             : answers[index + 1]
-                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-300'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-300 dark:border-green-600'
+                            : 'bg-card text-card-foreground border-border hover:bg-muted'
                         }`}
                       >
                         {index + 1}
@@ -551,19 +551,19 @@ const TestPageRedesigned: React.FC = () => {
           </div>
 
           {/* Question Content */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 md:p-6">
             {test.questions && test.questions[currentQuestionIndex] && (
               <Card className="max-w-4xl mx-auto">
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded text-sm font-mono">
+                  <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded text-sm font-mono">
                       سوال {currentQuestionIndex + 1}
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setSidebarOpen(!sidebarOpen)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 w-full sm:w-auto"
                     >
                       <Menu className="w-4 h-4" />
                       {sidebarOpen ? 'بستن' : 'باز کردن'} ناوبری
@@ -572,7 +572,7 @@ const TestPageRedesigned: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Question Text */}
-                  <div className="text-lg">
+                  <div className="text-base md:text-lg">
                     <MathPreview text={test.questions[currentQuestionIndex].question_text} />
                   </div>
 
@@ -587,17 +587,17 @@ const TestPageRedesigned: React.FC = () => {
                         <RadioGroup.Item
                           value={option.id.toString()}
                           id={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
-                          className="w-5 h-5 mt-0.5"
+                          className="w-5 h-5 mt-0.5 flex-shrink-0"
                         />
                         <Label
                           htmlFor={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
                           className={`flex-1 cursor-pointer text-base leading-relaxed p-3 rounded-lg border transition-all ${
                             answers[currentQuestionIndex + 1] === option.id.toString()
-                              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 shadow-sm'
-                              : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-800'
+                              ? 'bg-primary/5 border-primary/20 shadow-sm'
+                              : 'border-transparent hover:bg-muted'
                           }`}
                         >
-                          <span className="font-medium text-gray-600 dark:text-gray-400 mr-2">
+                          <span className="font-medium text-muted-foreground mr-2">
                             {['۱)', '۲)', '۳)', '۴)'][optionIndex] || `${optionIndex + 1})`}
                           </span>
                           <MathPreview text={option.option_text} />
@@ -607,18 +607,18 @@ const TestPageRedesigned: React.FC = () => {
                   </RadioGroup.Root>
 
                   {/* Navigation Buttons */}
-                  <div className="flex justify-between items-center pt-6 border-t">
+                  <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-6 border-t">
                     <Button
                       variant="outline"
                       onClick={goToPreviousQuestion}
                       disabled={currentQuestionIndex === 0}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 justify-center"
                     >
                       <ChevronRight className="w-4 h-4" />
                       سوال قبلی
                     </Button>
 
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground text-center sm:text-left">
                       {currentQuestionIndex + 1} از {test.questions.length}
                     </div>
 
@@ -626,7 +626,7 @@ const TestPageRedesigned: React.FC = () => {
                       variant="outline"
                       onClick={goToNextQuestion}
                       disabled={currentQuestionIndex === (test.questions.length - 1)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 justify-center"
                     >
                       سوال بعدی
                       <ChevronLeft className="w-4 h-4" />
@@ -682,7 +682,7 @@ const TestPageRedesigned: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
       {/* Confirmation Dialogs */}
       <Dialog open={confirmFinish} onOpenChange={setConfirmFinish}>
         <DialogContent>
@@ -693,7 +693,7 @@ const TestPageRedesigned: React.FC = () => {
             </DialogTitle>
             <DialogDescription>
               آیا از اتمام آزمون و ثبت پاسخ‌های خود اطمینان دارید؟
-              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+              <div className="mt-2 p-3 bg-primary/5 rounded-lg">
                 <div className="flex justify-between text-sm">
                   <span>پاسخ داده شده:</span>
                   <span className="font-mono">{answeredCount} از {maxQuestions}</span>
@@ -713,7 +713,7 @@ const TestPageRedesigned: React.FC = () => {
             <Button onClick={handleFinishTest} disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
                   در حال ثبت...
                 </>
               ) : (
@@ -761,35 +761,36 @@ const TestPageRedesigned: React.FC = () => {
       </Dialog>
 
       {/* Top Navigation Bar */}
-      <div className="bg-white dark:bg-gray-800 border-b shadow-sm px-4 py-2">
-        <div className="flex items-center justify-between">
+      <div className="bg-card border-b shadow-sm px-4 py-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           {/* Left side - Test info and timer */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto overflow-hidden">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="flex-shrink-0"
             >
               {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
             
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium text-sm">{test.name}</span>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium text-sm truncate">{test.name}</span>
             </div>
             
-            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-lg">
+            <div className={`flex items-center gap-2 bg-muted px-3 py-1 rounded-lg flex-shrink-0 ${getTimeColor()}`}>
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className={`font-mono font-bold ${getTimeColor()}`}>
+              <span className="font-mono font-bold text-sm">
                 {formatTime(timeLeft)}
               </span>
             </div>
           </div>
 
-          {/* Center - PDF Controls */}
-          <div className="flex items-center gap-2">
+          {/* Center - PDF Controls - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-2">
             <TooltipProvider>
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -852,7 +853,7 @@ const TestPageRedesigned: React.FC = () => {
                 </Tooltip>
               </div>
 
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -901,13 +902,14 @@ const TestPageRedesigned: React.FC = () => {
           </div>
 
           {/* Right side - Action buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={toggleFullscreen}
+                  className="hidden sm:flex"
                 >
                   {isFullscreen ? (
                     <Minimize className="h-4 w-4" />
@@ -925,6 +927,7 @@ const TestPageRedesigned: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => setConfirmExit(true)}
+              className="flex-1 sm:flex-none"
             >
               <Pause className="h-4 w-4 mr-1" />
               خروج موقت
@@ -933,7 +936,7 @@ const TestPageRedesigned: React.FC = () => {
             <Button
               size="sm"
               onClick={() => setConfirmFinish(true)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
             >
               <Send className="h-4 w-4 mr-1" />
               اتمام آزمون
@@ -946,17 +949,17 @@ const TestPageRedesigned: React.FC = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Answer Sheet Sidebar */}
         <div
-          className={`bg-white dark:bg-gray-800 border-r shadow-lg transition-all duration-300 flex flex-col ${
+          className={`bg-card border-r shadow-lg transition-all duration-300 flex flex-col ${
             sidebarOpen ? "w-80" : "w-0"
           } overflow-hidden`}
         >
           {sidebarOpen && (
             <>
               {/* Progress Header */}
-              <div className="p-4 border-b bg-blue-50 dark:bg-blue-950/20">
-                <div className="flex justify-between items-center mb-3">
+              <div className="p-4 border-b bg-primary/5">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
                   <h3 className="font-semibold text-lg">پاسخ‌برگ</h3>
-                  <Badge variant="secondary" className="font-mono">
+                  <Badge variant="secondary" className="font-mono self-start sm:self-auto">
                     {answeredCount}/{maxQuestions}
                   </Badge>
                 </div>
@@ -965,7 +968,7 @@ const TestPageRedesigned: React.FC = () => {
                   <span>پیشرفت شما</span>
                   <span>{Math.round(progressPercentage)}%</span>
                 </div>
-                <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 p-2 rounded border">
+                <div className="mt-2 text-xs text-muted-foreground bg-card p-2 rounded border">
                   💡 برای لغو انتخاب، دوباره روی همان گزینه کلیک کنید
                 </div>
               </div>
@@ -992,15 +995,15 @@ const TestPageRedesigned: React.FC = () => {
                               className={`p-2 rounded-lg border transition-all ${
                                 isAnswered
                                   ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
-                                  : "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                                  : "border-border bg-card"
                               }`}
                             >
-                              <div className="flex items-center justify-between mb-2">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                 <span className="text-sm font-medium">
                                   سوال {questionNumber}
                                 </span>
                                 {isAnswered && currentAnswer && (
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge variant="outline" className="text-xs self-start sm:self-auto">
                                     {currentAnswer}
                                   </Badge>
                                 )}
@@ -1017,7 +1020,7 @@ const TestPageRedesigned: React.FC = () => {
                                     onMouseDown={() =>
                                       handleAnswer(questionNumber, option.value)
                                     }
-                                    className="h-8 flex items-center justify-center text-xs border rounded transition-all hover:bg-gray-100 dark:hover:bg-gray-700 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white data-[state=checked]:border-blue-600 cursor-pointer"
+                                    className="h-8 flex items-center justify-center text-xs border rounded transition-all hover:bg-muted data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary cursor-pointer"
                                   >
                                     {option.label}
                                   </RadioGroup.Item>
@@ -1036,7 +1039,7 @@ const TestPageRedesigned: React.FC = () => {
         </div>
 
         {/* PDF Viewer */}
-        <div className="flex-1 bg-gray-100 dark:bg-gray-700">
+        <div className="flex-1 bg-muted">
           {test.pdf_file_url && (
             <Viewer
               fileUrl={test.pdf_file_url}
