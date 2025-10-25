@@ -111,7 +111,8 @@ def generate_ai_response(question, context_messages=None, max_retries=2):
                     context = []
                     for msg in context_messages:
                         context.append(f"{msg['role']}: {msg['content']}")
-                    prompt += f"با توجه به گفتگوی قبلی:\n\n{'\n'.join(context)}\n\nسوال جدید: {question}"
+                    context_text = '\n'.join(context)
+                    prompt += f"با توجه به گفتگوی قبلی:\n\n{context_text}\n\nسوال جدید: {question}"
                 else:
                     prompt += f"سوال: {question}"
                 

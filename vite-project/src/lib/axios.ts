@@ -56,10 +56,35 @@ axiosInstance.interceptors.response.use(
           withCredentials: true,
         });
 
+        // Broadcast token update to other tabs
+        if (typeof BroadcastChannel !== 'undefined') {
+          const channel = new BroadcastChannel('auth_channel');
+          channel.postMessage({
+            type: 'TOKEN_UPDATED',
+            timestamp: Date.now()
+          });
+          channel.close();
+        }
+        
+        // Also use localStorage event
+        localStorage.setItem('auth_token_updated', Date.now().toString());
+        localStorage.removeItem('auth_token_updated');
+
         return axiosInstance(originalRequest); // Retry original request
       } catch (err) {
         markLoggedOut();
         localStorage.removeItem("access_token"); // In case it's still used somewhere
+        
+        // Broadcast logout to other tabs
+        if (typeof BroadcastChannel !== 'undefined') {
+          const channel = new BroadcastChannel('auth_channel');
+          channel.postMessage({
+            type: 'TOKEN_EXPIRED',
+            timestamp: Date.now()
+          });
+          channel.close();
+        }
+        
         return Promise.reject(err);
       }
     }

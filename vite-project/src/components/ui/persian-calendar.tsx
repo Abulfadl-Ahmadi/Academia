@@ -109,8 +109,9 @@ export function PersianCalendar({ selected, onSelect, className }: PersianCalend
     const firstDay = persianToGregorian(currentDate.year, currentDate.month, 1);
     const firstDayOfWeek = firstDay.getDay(); // 0 = Sunday, 6 = Saturday
     
-    // Adjust for Persian week (Saturday = 0)
-    const adjustedFirstDay = firstDayOfWeek === 6 ? 0 : firstDayOfWeek + 1;
+    // Persian week starts on Saturday (0), so we need to adjust
+    // Sunday (0) -> 1, Monday (1) -> 2, ..., Friday (5) -> 6, Saturday (6) -> 0
+    const adjustedFirstDay = (firstDayOfWeek + 1) % 7;
     
     const days = [];
     

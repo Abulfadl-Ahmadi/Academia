@@ -473,11 +473,136 @@ div .katex {
 /* کلاس خاص برای اعداد فارسی */
 .persian-number {
   font-family: "Ravi FaNum", serif !important;
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
 }
 
 /* استفاده از فونت FaNum برای متن‌های غیرریاضی */
 .text-fanum {
   font-family: "Ravi FaNum", "IRANSansX", sans-serif !important;
+}
+
+/* Persian text with proper number handling */
+.persian-text {
+  direction: rtl;
+  text-align: justify;
+  unicode-bidi: embed;
+}
+
+/* Persian numbers with proper boundaries */
+.persian-number {
+  font-family: "Ravi FaNum", "IRANSansX", serif !important;
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0 1px;
+}
+
+/* Mixed content (Persian text with numbers) */
+.persian-mixed {
+  direction: rtl;
+  unicode-bidi: embed;
+}
+
+.persian-mixed .persian-number {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+  margin: 0 2px;
+}
+
+/* Mathematical expressions with Persian numbers */
+.math-persian {
+  direction: ltr;
+  font-family: "Ravi FaNum", "KaTeX_Main", serif !important;
+}
+
+/* Question text with proper Persian number handling */
+.question-text {
+  direction: rtl;
+  text-align: justify;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap;
+}
+
+.question-text .persian-number {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+  font-family: "Ravi FaNum", serif !important;
+  margin: 0 1px;
+}
+
+/* Question editor specific styles */
+.question-editor {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap;
+  direction: rtl;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.question-editor .persian-number {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0 1px;
+  font-family: "Ravi FaNum", serif !important;
+}
+
+/* Fix for text wrapping in question preview */
+.question-preview {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap;
+  direction: rtl;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.question-preview .persian-number {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0 1px;
+  font-family: "Ravi FaNum", serif !important;
+}
+
+/* Fractions and mathematical expressions */
+.math-fraction {
+  direction: ltr;
+  font-family: "Ravi FaNum", "KaTeX_Main", serif !important;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Ensure proper spacing for Persian numbers in text */
+p, div, span {
+  word-spacing: normal;
+  letter-spacing: normal;
+}
+
+/* Fix for overlapping text and numbers */
+.text-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.text-content .persian-number {
+  white-space: nowrap;
+  display: inline-block;
+  margin: 0 1px;
 }
 
 

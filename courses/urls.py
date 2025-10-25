@@ -13,5 +13,15 @@ router.register(r'schedules', views.CourseScheduleViewSet, basename='schedules')
 
 urlpatterns = [
     path('', include(router.urls)),
+    # Student Dashboard API endpoints
+    path('student/active-courses/', views.StudentActiveCoursesView.as_view(), name='student-active-courses'),
+    path('student/purchased-courses/', views.StudentPurchasedCoursesView.as_view(), name='student-purchased-courses'),
+    path('student/downloadable-files/', views.StudentDownloadableFilesView.as_view(), name='student-downloadable-files'),
+    path('student/dashboard-stats/', views.StudentDashboardStatsView.as_view(), name='student-dashboard-stats'),
+    # Teacher Dashboard API endpoints
+    path('teacher/analytics/', views.TeacherAnalyticsView.as_view(), name='teacher-analytics'),
+    path('teacher/due-activities/', views.TeacherDueActivitiesView.as_view(), name='teacher-due-activities'),
+    path('teacher/schedule/', views.TeacherScheduleView.as_view(), name='teacher-schedule'),
+    path('teacher/quick-stats/', views.TeacherQuickStatsView.as_view(), name='teacher-quick-stats'),
     # path('courses/<int:course_id>/tests/', views.CourseTestViewSet.as_view(), name='course-tests'),
 ]

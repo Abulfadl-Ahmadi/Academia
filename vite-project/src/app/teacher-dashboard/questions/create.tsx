@@ -407,7 +407,7 @@ export default function CreateQuestionPage() {
                 id="question_text"
                 placeholder="متن سوال خود را وارد کنید..."
                 {...register("question_text")}
-                className="min-h-[100px]"
+                className="min-h-[100px] question-editor"
               />
               {errors.question_text && (
                 <p className="text-red-500 text-sm mt-1">
@@ -419,7 +419,7 @@ export default function CreateQuestionPage() {
             {watchedQuestionText && (
               <div>
                 <Label>پیش‌نمایش:</Label>
-                <div className="border rounded p-3">
+                <div className="border rounded p-3 question-preview">
                   <MathPreview text={watchedQuestionText} />
                 </div>
               </div>

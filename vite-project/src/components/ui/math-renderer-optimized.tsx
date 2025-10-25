@@ -17,7 +17,7 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
   const splitParts = (text: string) => text.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g);
 
   return (
-    <div className={`prose prose-slate dark:prose-invert max-w-none persian-number ${className}`} dir="rtl">
+    <div className={`prose prose-slate dark:prose-invert max-w-none question-text ${className}`} dir="rtl">
       {paragraphs.map((para, pIdx) => {
         const parts = splitParts(para);
         const blocks: React.ReactNode[] = [];
@@ -33,13 +33,13 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
               (line[0] as any).type.displayName === 'InlineMath'
             ) {
               blocks.push(
-                <p key={`p-${pIdx}-${lineKey++}`} className="flex flex-row flex-wrap items-center mb-0 leading-relaxed ltr text-left" dir="ltr">
+                <p key={`p-${pIdx}-${lineKey++}`} className="question-text ltr text-left" dir="ltr">
                   {line}
                 </p>
               );
             } else {
               blocks.push(
-                <p key={`p-${pIdx}-${lineKey++}`} className="flex flex-row flex-wrap items-center mb-0 leading-relaxed" dir="rtl">
+                <p key={`p-${pIdx}-${lineKey++}`} className="question-text" dir="rtl">
                   {line}
                 </p>
               );

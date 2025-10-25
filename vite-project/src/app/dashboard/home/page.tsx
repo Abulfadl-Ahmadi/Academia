@@ -2,15 +2,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/context/UserContext"
 import { useCart } from "@/context/CartContext"
-import { BookOpen, FileText, Play, User, Mail, GraduationCap } from "lucide-react"
+import { BookOpen, FileText, Play, User, Mail, GraduationCap, Loader2 } from "lucide-react"
 import DashboardCart from "@/components/dashboard-cart"
 import { useNavigate } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import axiosInstance from "@/lib/axios"
 
 export default function Home() {
   const { user } = useUser();
   const { restorePendingCart } = useCart();
   const navigate = useNavigate();
+  
+  // State for dashboard data
+  const [dashboardStats, setDashboardStats] = useState({
+    total_courses: 0,
+    active_courses: 0,
+    total_sessions: 0,
+    total_files: 0,
+    recent_activity: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/courses/student/dashboard-stats/');
+        setDashboardStats(response.data);
+      } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
+        setError('خطا در بارگذاری اطلاعات داشبورد');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
 
   // Check for pending cart restoration on page load
   useEffect(() => {
@@ -72,7 +104,13 @@ export default function Home() {
                   <BookOpen className="w-5 h-5 text-blue-600" />
                   <span className="text-sm font-medium">دوره‌های فعال</span>
                 </div>
-                <div className="text-2xl font-bold mt-2">0</div>
+                <div className="text-2xl font-bold mt-2">
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  ) : (
+                    dashboardStats.active_courses
+                  )}
+                </div>
               </CardContent>
             </Card>
             
@@ -82,7 +120,13 @@ export default function Home() {
                   <FileText className="w-5 h-5 text-green-600" />
                   <span className="text-sm font-medium">فایل‌های قابل دانلود</span>
                 </div>
-                <div className="text-2xl font-bold mt-2">0</div>
+                <div className="text-2xl font-bold mt-2">
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  ) : (
+                    dashboardStats.total_files
+                  )}
+                </div>
               </CardContent>
             </Card>
             
@@ -90,9 +134,15 @@ export default function Home() {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
                   <Play className="w-5 h-5 text-purple-600" />
-                  <span className="text-sm font-medium">آزمون‌های موجود</span>
+                  <span className="text-sm font-medium">جلسات آموزشی</span>
                 </div>
-                <div className="text-2xl font-bold mt-2">0</div>
+                <div className="text-2xl font-bold mt-2">
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  ) : (
+                    dashboardStats.total_sessions
+                  )}
+                </div>
               </CardContent>
             </Card>
             
@@ -100,12 +150,52 @@ export default function Home() {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-5 h-5 text-orange-600" />
-                  <span className="text-sm font-medium">پایه تحصیلی</span>
+                  <span className="text-sm font-medium">کل دوره‌ها</span>
                 </div>
-                <div className="text-2xl font-bold mt-2">-</div>
+                <div className="text-2xl font-bold mt-2">
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  ) : (
+                    dashboardStats.total_courses
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* Error Display */}
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-6">
+                <div className="text-red-600 text-sm">{error}</div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Recent Activity */}
+          {dashboardStats.recent_activity.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>فعالیت‌های اخیر</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {dashboardStats.recent_activity.slice(0, 5).map((activity: any, index: number) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                      <Play className="w-4 h-4 text-blue-600" />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{activity.title}</div>
+                        <div className="text-xs text-muted-foreground">{activity.course_name}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(activity.created_at).toLocaleDateString('fa-IR')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Shopping Cart */}
           <DashboardCart />
