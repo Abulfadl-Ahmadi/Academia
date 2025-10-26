@@ -8,6 +8,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 
@@ -35,8 +36,74 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Cross-tab synchronization for authentication
   useEffect(() => {
+    // Listen for storage events (cross-tab communication)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth_token_updated') {
+        console.log('Auth token updated in another tab, refreshing user state');
+        fetchUser();
+      }
+    };
+
+    // Listen for broadcast channel messages (modern browsers)
+    let authChannel: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== 'undefined') {
+      authChannel = new BroadcastChannel('auth_channel');
+      authChannel.onmessage = (event) => {
+        if (event.data.type === 'TOKEN_UPDATED') {
+          console.log('Token updated via broadcast channel, refreshing user state');
+          fetchUser();
+        } else if (event.data.type === 'TOKEN_EXPIRED') {
+          console.log('Token expired in another tab, logging out');
+          setUser(null);
+          markLoggedOut();
+        }
+      };
+    }
+
+    // Listen for focus events to check auth status when tab becomes active
+    const handleFocus = () => {
+      // Only fetch if we have a user and it's been more than 30 seconds since last fetch
+      if (user) {
+        const lastFetch = localStorage.getItem('last_user_fetch');
+        const now = Date.now();
+        if (!lastFetch || (now - parseInt(lastFetch)) > 30000) {
+          fetchUser();
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+
+    // Initial fetch
     fetchUser();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      if (authChannel) {
+        authChannel.close();
+      }
+    };
+  }, []); // Remove [user] dependency to prevent infinite loop
+
+  // Function to broadcast token updates to other tabs
+  const broadcastTokenUpdate = useCallback(() => {
+    // Use localStorage event for cross-tab communication
+    localStorage.setItem('auth_token_updated', Date.now().toString());
+    localStorage.removeItem('auth_token_updated'); // Trigger storage event
+    
+    // Use BroadcastChannel for modern browsers
+    if (typeof BroadcastChannel !== 'undefined') {
+      const channel = new BroadcastChannel('auth_channel');
+      channel.postMessage({
+        type: 'TOKEN_UPDATED',
+        timestamp: Date.now()
+      });
+      channel.close();
+    }
   }, []);
 
   const fetchUser = async () => {
@@ -85,6 +152,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       });
       console.log("User set successfully:", { username, first_name, last_name, email, role, id });
       markLoggedIn();
+      
+      // Store last fetch timestamp to prevent excessive calls
+      localStorage.setItem('last_user_fetch', Date.now().toString());
     } catch (err) {
       console.error("Failed to fetch user:", err);
       setUser(null);
@@ -97,6 +167,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const login = async () => {
     // Just fetch user — assumes HttpOnly cookie already set by server after login
     await fetchUser();
+    // Broadcast login to other tabs
+    broadcastTokenUpdate();
   };
 
   const logout = async () => {
@@ -109,6 +181,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       markLoggedOut();
+      // Broadcast logout to other tabs
+      broadcastTokenUpdate();
       window.location.href = "/login";
     }
   };

@@ -324,6 +324,17 @@ export default function ShopPage() {
         setTimeout(() => {
           window.open(response.data.payment_url, '_self')
         }, 1500)
+      } else if (response.data.free_purchase) {
+        // Free purchase - no payment needed
+        toast.success(response.data.message || "محصولات رایگان با موفقیت خریداری شد")
+        // Clear cart immediately for free purchases
+        await clearCart()
+        setAppliedDiscount(null)
+        setDiscountCode('')
+        // Optionally redirect to purchased products page
+        setTimeout(() => {
+          navigate('/panel') // or wherever purchased products are shown
+        }, 2000)
       } else {
         toast.success(response.data.message || "سفارش شما با موفقیت ثبت شد")
         // Only clear cart if no payment_url (immediate success)

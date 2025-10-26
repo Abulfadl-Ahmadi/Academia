@@ -116,11 +116,11 @@ const data = {
       icon: FileText,
       items: [
         {
-          title: "جزوه‌ها",
+          title: "فایل‌های دوره",
           url: "/panel/files",
         },
         {
-          title: "فایل‌های دانلود شده",
+          title: "فایل‌های خریداری شده",
           url: "/panel/files/downloaded",
         }
       ],

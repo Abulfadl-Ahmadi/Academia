@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { ShoppingCart, CreditCard, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('fa-IR').format(price);
@@ -36,6 +37,11 @@ export default function CheckoutPage() {
       if (response.status === 200 || response.status === 201) {
         setOrderSuccess(true);
         await clearCart();
+        
+        // Show success message for free purchases
+        if (response.data.free_purchase) {
+          toast.success(response.data.message || "محصولات رایگان با موفقیت خریداری شد");
+        }
         
         // بعد از 3 ثانیه به صفحه محصولات کاربر می‌رویم
         setTimeout(() => {

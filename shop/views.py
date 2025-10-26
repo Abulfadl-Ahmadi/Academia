@@ -447,13 +447,59 @@ class PurchaseView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
         
-        if total_amount <= 0:
+        if total_amount < 0:
             return Response(
                 {"error": "Invalid total amount"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # ZarinPal minimum amount is 1000 Tomans
+        # Handle free products (total_amount = 0)
+        if total_amount == 0:
+            # Create order with PAID status for free products
+            order = Order.objects.create(
+                user=request.user,
+                total_amount=total_amount,
+                status=Order.OrderStatus.PAID
+            )
+            
+            # Create order items
+            for item_data in order_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item_data['product'],
+                    quantity=item_data['quantity'],
+                    price=item_data['price'],
+                    discount_amount=item_data['discount_amount']
+                )
+            
+            # Grant access to digital products immediately
+            from finance.models import UserAccess
+            for item_data in order_items:
+                if item_data['product'].is_digital_product:
+                    UserAccess.objects.create(
+                        user=request.user,
+                        product=item_data['product'],
+                        order=order
+                    )
+            
+            # Create transaction record for free purchase
+            from finance.models import Transaction
+            Transaction.objects.create(
+                order=order,
+                amount=0,
+                transaction_type=Transaction.TransactionType.PURCHASE,
+                payment_method=Transaction.PaymentMethod.CASH,  # Free purchase
+                description="خرید رایگان محصول",
+                created_by=request.user
+            )
+            
+            return Response({
+                'message': 'محصولات رایگان با موفقیت خریداری شد',
+                'order': OrderSerializer(order).data,
+                'free_purchase': True
+            }, status=status.HTTP_201_CREATED)
+        
+        # ZarinPal minimum amount is 1000 Tomans for paid products
         if total_amount < 1000:
             return Response(
                 {"error": "حداقل مبلغ پرداخت 1000 تومان است"}, 

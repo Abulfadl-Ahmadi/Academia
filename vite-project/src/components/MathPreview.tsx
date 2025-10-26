@@ -69,21 +69,23 @@ export function MathPreview({ text, className = '' }: MathPreviewProps) {
     return parts.map((part, index) => {
       if (part.startsWith('$$') && part.endsWith('$$')) {
         // Block math - تبدیل اعداد به فارسی
-        const math = convertNumbersToFarsi(part.slice(2, -2));
+        // const math = convertNumbersToFarsi(part.slice(2, -2));
+        const math = part.slice(2, -2);
         return <BlockMath 
           key={index} 
           math={math}
         />;
       } else if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
         // Inline math - تبدیل اعداد به فارسی
-        const math = convertNumbersToFarsi(part.slice(1, -1));
+        // const math = convertNumbersToFarsi(part.slice(1, -1));
+        const math = part.slice(1, -1);
         return <InlineMath 
           key={index} 
           math={math}
         />;
       } else {
-        // Regular text - تبدیل اعداد به فارسی
-        return <span key={index} className="text-fanum">{convertNumbersToFarsi(part)}</span>;
+        // Regular text - keep original Latin numbers
+        return <span key={index}>{part}</span>;
       }
     });
   };

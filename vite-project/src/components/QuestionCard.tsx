@@ -630,7 +630,7 @@ export function QuestionCard({
                           variant="outline"
                           className="h-6 px-2 text-xs"
                         >
-                          <FileText className="h-3 w-3 ml-1" />
+                          <FileText className="h-3 w-3 mr-1" />
                           نمایش پاسخ
                         </Button>
                       </DialogTrigger>

@@ -92,8 +92,8 @@ export function AIConversationList() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden">
-      <Card className="h-full overflow-hidden flex flex-col">
+    <div className="h-[calc(100vh-4rem)]">
+      <Card className="h-full flex flex-col">
         <CardHeader className="p-3 sm:p-6 shrink-0">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -354,8 +354,8 @@ export function AIConversationDetail() {
   }, [sending]);
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden">
-      <Card className="flex flex-col h-full overflow-hidden pb-0">
+    <div className="h-[calc(100vh-4rem)]">
+      <Card className="flex flex-col h-full pb-0">
         <CardHeader className="shrink-0 border-b">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <div className="flex items-center">

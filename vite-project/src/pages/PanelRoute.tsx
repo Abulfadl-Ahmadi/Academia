@@ -96,6 +96,7 @@ import UploadGalleryPage from "@/app/teacher-dashboard/gallery/upload/page";
 import EditGalleryPage from "@/app/teacher-dashboard/gallery/edit/[id]/page";
 import QuestionCollectionsPage from "@/app/teacher-dashboard/question-collections/page";
 import CreateQuestionCollectionPage from "@/app/teacher-dashboard/question-collections/create";
+import TeacherDashboardHome from "@/app/teacher-dashboard/home/page";
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -178,8 +179,7 @@ export default function PanelRoute() {
     return (
       <Routes>
         <Route path="/" element={<TeacherLayout />}>
-          {/* <Route index element={<div>پنل معلم</div>} /> */}
-          <Route index element={<LiveStream />} />
+          <Route index element={<TeacherDashboardHome />} />
           <Route path="students" element={<StudentList />} />
           <Route path="courses" element={<CoursesList />} />
           <Route path="courses/create" element={<CreateCoursePage />} />
