@@ -5,6 +5,7 @@ from contents.models import File
 from courses.models import Course
 from tests.models import TestCollection
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 class Product(models.Model):
@@ -75,7 +76,12 @@ class Product(models.Model):
         """Check if this is a digital product"""
         return not self.is_physical_product
     
+    def clean(self):
+        if self.price < 0:
+            raise ValidationError("قیمت محصول نمی‌تواند منفی باشد")
+    
     def save(self, *args, **kwargs):
+        self.full_clean()  # Run validation before saving
         # Auto-set requires_shipping for physical products
         if self.is_physical_product:
             self.requires_shipping = True

@@ -421,7 +421,7 @@ class StudentDownloadableFilesView(APIView):
                 'file_type': file.file_type,
                 'file_size': file.file_size,
                 'download_url': file.file.url if file.file else None,
-                'course_name': file.course.name if file.course else None,
+                'course_name': file.course.title if file.course else None,
                 'created_at': file.created_at,
             })
         
@@ -462,7 +462,7 @@ class StudentDashboardStatsView(APIView):
             recent_activity.append({
                 'id': session.id,
                 'title': session.title,
-                'course_name': session.course.name,
+                'course_name': session.course.title,
                 'created_at': session.created_at,
                 'type': 'session'
             })
@@ -513,7 +513,7 @@ class TeacherAnalyticsView(APIView):
             recent_activity.append({
                 'id': session.id,
                 'title': session.title,
-                'course_name': session.course.name,
+                'course_name': session.course.title,
                 'created_at': session.created_at,
                 'type': 'session'
             })
@@ -527,7 +527,7 @@ class TeacherAnalyticsView(APIView):
         for course in popular_courses:
             popular_courses_data.append({
                 'id': course.id,
-                'name': course.name,
+                'name': course.title,
                 'student_count': course.student_count,
                 'description': course.description
             })
@@ -567,30 +567,32 @@ class TeacherDueActivitiesView(APIView):
         now = timezone.now()
         next_week = now + timedelta(days=7)
         
+        # Since CourseSession doesn't have scheduled_time, get published sessions
+        # that were created recently (as a proxy for "upcoming")
         upcoming_sessions = CourseSession.objects.filter(
             course__in=courses,
-            scheduled_time__gte=now,
-            scheduled_time__lte=next_week
-        ).select_related('course').order_by('scheduled_time')
+            is_published=True,
+            created_at__gte=now - timedelta(days=30)  # Sessions created in last 30 days
+        ).select_related('course').order_by('-created_at')[:10]  # Limit to 10 most recent
         
         for session in upcoming_sessions:
             due_activities.append({
                 'id': session.id,
                 'title': session.title,
-                'course_name': session.course.name,
-                'scheduled_time': session.scheduled_time,
+                'course_name': session.course.title,
+                'scheduled_time': session.created_at,  # Use created_at as proxy for scheduled time
                 'type': 'session',
-                'priority': 'high' if session.scheduled_time.date() == now.date() else 'medium'
+                'priority': 'medium'  # Default priority since we don't have actual scheduling
             })
         
         # Get tests that need grading (if any)
+        # Note: Grading system not yet implemented, counting completed sessions as needing grading
         from tests.models import Test, StudentTestSession
         tests_to_grade = Test.objects.filter(
             test_collection__courses__in=courses
         ).annotate(
             pending_sessions=Count('studenttestsession', filter=Q(
-                studenttestsession__status='completed',
-                studenttestsession__is_graded=False
+                studenttestsession__status='completed'
             ))
         ).filter(pending_sessions__gt=0)
         
@@ -598,7 +600,7 @@ class TeacherDueActivitiesView(APIView):
             due_activities.append({
                 'id': test.id,
                 'title': f"Grade {test.title}",
-                'course_name': test.test_collection.courses.first().name if test.test_collection.courses.exists() else 'Unknown',
+                'course_name': test.test_collection.courses.first().title if test.test_collection.courses.exists() else 'Unknown',
                 'pending_count': test.pending_sessions,
                 'type': 'grading',
                 'priority': 'high'
@@ -634,18 +636,19 @@ class TeacherScheduleView(APIView):
         today = timezone.now().date()
         today_sessions = CourseSession.objects.filter(
             course__in=courses,
-            scheduled_time__date=today
-        ).select_related('course').order_by('scheduled_time')
+            is_published=True,  # Use published sessions as proxy
+            created_at__date=today  # Use created_at date as proxy
+        ).select_related('course').order_by('-created_at')
         
         today_classes = []
         for session in today_sessions:
             today_classes.append({
                 'id': session.id,
                 'title': session.title,
-                'course_name': session.course.name,
-                'scheduled_time': session.scheduled_time,
-                'duration': session.duration,
-                'is_live': session.is_live
+                'course_name': session.course.title,
+                'scheduled_time': session.created_at,  # Use created_at as proxy
+                'duration': None,  # Not available in current model
+                'is_live': session.course.is_live  # Use course's live status
             })
         
         # Get this week's schedule
@@ -655,20 +658,21 @@ class TeacherScheduleView(APIView):
         
         week_sessions = CourseSession.objects.filter(
             course__in=courses,
-            scheduled_time__date__gte=week_start,
-            scheduled_time__date__lte=week_end
-        ).select_related('course').order_by('scheduled_time')
+            is_published=True,  # Use published sessions
+            created_at__date__gte=week_start,
+            created_at__date__lte=week_end
+        ).select_related('course').order_by('-created_at')
         
         week_schedule = []
         for session in week_sessions:
             week_schedule.append({
                 'id': session.id,
                 'title': session.title,
-                'course_name': session.course.name,
-                'scheduled_time': session.scheduled_time,
-                'duration': session.duration,
-                'is_live': session.is_live,
-                'day_of_week': session.scheduled_time.strftime('%A')
+                'course_name': session.course.title,
+                'scheduled_time': session.created_at,  # Use created_at as proxy
+                'duration': None,  # Not available
+                'is_live': session.course.is_live,  # Use course's live status
+                'day_of_week': session.created_at.strftime('%A')  # Use created_at day
             })
         
         schedule = {
@@ -713,13 +717,13 @@ class TeacherQuickStatsView(APIView):
             created_at__gte=thirty_days_ago
         ).count()
         
-        # Get upcoming sessions (next 7 days)
+        # Get upcoming sessions (next 7 days) - using published sessions as proxy
         from datetime import timedelta
         next_week = timezone.now() + timedelta(days=7)
         upcoming_sessions = CourseSession.objects.filter(
             course__in=courses,
-            scheduled_time__gte=timezone.now(),
-            scheduled_time__lte=next_week
+            is_published=True,
+            created_at__lte=next_week
         ).count()
         
         stats = {

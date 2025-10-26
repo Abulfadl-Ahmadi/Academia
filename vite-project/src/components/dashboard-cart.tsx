@@ -47,7 +47,17 @@ export default function DashboardCart() {
         setTimeout(() => {
           window.open(response.data.payment_url, '_self')
         }, 1500)
+      } else if (response.data.free_purchase) {
+        // Free purchase - no payment needed
+        toast.success(response.data.message || "محصولات رایگان با موفقیت خریداری شد")
+        // Clear cart immediately for free purchases
+        await clearCart()
+        // Optionally redirect to purchased products page or dashboard
+        setTimeout(() => {
+          navigate('/panel') // or wherever purchased products are shown
+        }, 2000)
       } else {
+        // Other success cases (shouldn't happen with current logic)
         toast.success(response.data.message || "سفارش شما با موفقیت ثبت شد")
         // Only clear cart if no payment_url (immediate success)
         await clearCart()

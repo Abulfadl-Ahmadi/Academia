@@ -33,15 +33,15 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
               (line[0] as any).type.displayName === 'InlineMath'
             ) {
               blocks.push(
-                <p key={`p-${pIdx}-${lineKey++}`} className="question-text ltr text-left" dir="ltr">
+                <span key={`p-${pIdx}-${lineKey++}`} className="question-text ltr text-left" dir="ltr">
                   {line}
-                </p>
+                </span>
               );
             } else {
               blocks.push(
-                <p key={`p-${pIdx}-${lineKey++}`} className="question-text" dir="rtl">
+                <span key={`p-${pIdx}-${lineKey++}`} className="question-text" dir="rtl">
                   {line}
-                </p>
+                </span>
               );
             }
             line = [];
@@ -50,17 +50,19 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
         parts.forEach((part, idx) => {
           if (part.startsWith('$$') && part.endsWith('$$')) {
             flushLine();
-            const math = convertNumbersToFarsi(part.slice(2, -2));
+            // const math = convertNumbersToFarsi(part.slice(2, -2));
+            const math = (part.slice(2, -2));
             blocks.push(<BlockMath key={`bm-${pIdx}-${idx}`} math={math} />);
           } else if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
             // Inline math
-            const math = convertNumbersToFarsi(part.slice(1, -1));
+            // const math = convertNumbersToFarsi(part.slice(1, -1));
+            const math = (part.slice(1, -1));
             const el = <InlineMath key={`im-${pIdx}-${idx}`} math={math} />;
             // Set displayName for detection
             (el.type as any).displayName = 'InlineMath';
             line.push(el);
           } else if (part.length > 0) {
-            // Markdown text
+            // Markdown text - keep original numbers (don't convert to Persian)
             line.push(
               <ReactMarkdown
                 key={`md-${pIdx}-${idx}`}
@@ -71,7 +73,7 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
                   ),
                 }}
               >
-                {convertNumbersToFarsi(part)}
+                {part}
               </ReactMarkdown>
             );
           }

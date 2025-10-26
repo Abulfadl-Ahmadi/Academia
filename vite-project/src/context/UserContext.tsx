@@ -64,15 +64,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Listen for focus events to check auth status when tab becomes active
     const handleFocus = () => {
+      // Only fetch if we have a user and it's been more than 30 seconds since last fetch
       if (user) {
-        // Check if user is still authenticated when tab becomes active
-        fetchUser();
+        const lastFetch = localStorage.getItem('last_user_fetch');
+        const now = Date.now();
+        if (!lastFetch || (now - parseInt(lastFetch)) > 30000) {
+          fetchUser();
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('focus', handleFocus);
 
+    // Initial fetch
     fetchUser();
 
     return () => {
@@ -82,7 +87,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         authChannel.close();
       }
     };
-  }, [user]);
+  }, []); // Remove [user] dependency to prevent infinite loop
 
   // Function to broadcast token updates to other tabs
   const broadcastTokenUpdate = useCallback(() => {
@@ -147,6 +152,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       });
       console.log("User set successfully:", { username, first_name, last_name, email, role, id });
       markLoggedIn();
+      
+      // Store last fetch timestamp to prevent excessive calls
+      localStorage.setItem('last_user_fetch', Date.now().toString());
     } catch (err) {
       console.error("Failed to fetch user:", err);
       setUser(null);
