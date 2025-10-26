@@ -408,8 +408,7 @@ class StudentDownloadableFilesView(APIView):
         
         # Get files from courses where student is enrolled
         files = File.objects.filter(
-            course__students=request.user,
-            is_downloadable=True
+            course__students=request.user
         ).select_related('course').order_by('-created_at')[:10]  # Limit to 10 most recent
         
         # Simple serializer for file data
@@ -447,8 +446,7 @@ class StudentDashboardStatsView(APIView):
             is_published=True
         ).count()
         total_files = File.objects.filter(
-            course__students=request.user,
-            is_downloadable=True
+            course__students=request.user
         ).count()
         
         # Get recent activity (last 5 sessions)
