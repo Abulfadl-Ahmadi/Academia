@@ -13,6 +13,8 @@ from requests.exceptions import RequestException, ConnectionError
 
 from .models import AIConversation, AIMessage
 from .serializers import AIConversationSerializer, AIConversationListSerializer, AIMessageSerializer
+from accounts.models import AIAccess
+from django.utils import timezone
 
 # گرفتن API Keys
 GOOGLE_API_KEY = getattr(settings, 'GOOGLE_API_KEY', os.getenv('GOOGLE_API_KEY', ''))
@@ -38,6 +40,26 @@ else:
     client = None
     USE_LIARA = False
     print("No API key configured")
+
+def check_ai_access(user):
+    """
+    چک کردن دسترسی کاربر به هوش مصنوعی
+    """
+    try:
+        ai_access = AIAccess.objects.get(user=user)
+    except AIAccess.DoesNotExist:
+        # اگر دسترسی وجود ندارد، پیش‌فرض ایجاد کن
+        ai_access = AIAccess.objects.create(user=user)
+    
+    # چک کردن مدت زمان دسترسی
+    if not ai_access.is_active:
+        return False, "مدت زمان دسترسی شما به هوش مصنوعی پایان یافته است. لطفاً با پشتیبانی تماس بگیرید.", ai_access
+    
+    # چک کردن تعداد سوالات
+    if ai_access.get_remaining_questions() <= 0:
+        return False, "تعداد سوالات مجاز شما به پایان رسیده است. لطفاً با پشتیبانی تماس بگیرید.", ai_access
+    
+    return True, None, ai_access
 
 def generate_ai_response(question, context_messages=None, max_retries=2):
     """
@@ -146,12 +168,22 @@ class GeminiAIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # چک کردن دسترسی کاربر به AI
+        access_allowed, access_error, ai_access = check_ai_access(request.user)
+        if not access_allowed:
+            return Response(
+                {'error': access_error},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         try:
             answer = generate_ai_response(question)
             return Response({
                 'answer': answer,
                 'generated_by_ai': True,
-                'provider': 'Liara' if USE_LIARA else 'Google'
+                'provider': 'Liara' if USE_LIARA else 'Google',
+                'remaining_questions': ai_access.get_remaining_questions(),
+                'total_questions': ai_access.questions_limit
             })
             
         except ConnectionError as e:
@@ -201,6 +233,14 @@ class AIConversationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # چک کردن دسترسی کاربر به AI
+        access_allowed, access_error, ai_access = check_ai_access(request.user)
+        if not access_allowed:
+            return Response(
+                {'error': access_error},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         # ایجاد پیام کاربر
         user_message = AIMessage.objects.create(
             conversation=conversation,
@@ -235,7 +275,9 @@ class AIConversationViewSet(viewsets.ModelViewSet):
             return Response({
                 'user_message': AIMessageSerializer(user_message).data,
                 'ai_message': AIMessageSerializer(ai_message).data,
-                'provider': 'Liara' if USE_LIARA else 'Google'
+                'provider': 'Liara' if USE_LIARA else 'Google',
+                'remaining_questions': ai_access.get_remaining_questions(),
+                'total_questions': ai_access.questions_limit
             })
             
         except ConnectionError as e:

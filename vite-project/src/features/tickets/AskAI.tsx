@@ -14,6 +14,8 @@ export default function AskAI() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
+  const [totalQuestions, setTotalQuestions] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,10 +34,13 @@ export default function AskAI() {
       });
       
       setAnswer(response.data.answer);
+      setRemainingQuestions(response.data.remaining_questions);
+      setTotalQuestions(response.data.total_questions);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting AI response:', error);
-      toast.error('خطا در دریافت پاسخ از هوش مصنوعی');
+      const errorMessage = error.response?.data?.error || 'خطا در دریافت پاسخ از هوش مصنوعی';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -61,7 +66,14 @@ export default function AskAI() {
               <Bot size={20} />
               <div>
                 <CardTitle className="text-2xl">پرسش از هوش مصنوعی</CardTitle>
-                <CardDescription>سوال خود را بپرسید و پاسخ فوری دریافت کنید</CardDescription>
+                <CardDescription>
+                  سوال خود را بپرسید و پاسخ فوری دریافت کنید
+                  {remainingQuestions !== null && totalQuestions !== null && (
+                    <div className="mt-1 text-sm">
+                      سوالات باقی مانده: {remainingQuestions} / {totalQuestions}
+                    </div>
+                  )}
+                </CardDescription>
               </div>
             </div>
             <Button variant="outline" onClick={() => navigate('/panel/support/ask-ai')}>

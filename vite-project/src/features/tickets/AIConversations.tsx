@@ -196,6 +196,8 @@ export function AIConversationDetail() {
   const [messageInput, setMessageInput] = useState('');
   const [titleEditing, setTitleEditing] = useState(false);
   const [titleInput, setTitleInput] = useState('');
+  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
+  const [totalQuestions, setTotalQuestions] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const fetchConversation = useCallback(async () => {
@@ -233,19 +235,20 @@ export function AIConversationDetail() {
   const sendMessage = async () => {
     if (!messageInput.trim() || !id) return;
     
+    const currentInput = messageInput.trim();
+    const userMessage = {
+      id: Date.now(), // یک ID موقت
+      conversation_id: Number(id),
+      role: 'user' as const,
+      content: currentInput,
+      created_at: new Date().toISOString()
+    };
+    
     try {
       setSending(true);
       // ابتدا پیام کاربر را نشان بده تا تجربه کاربری بهتری داشته باشد
-      const userMessage = {
-        id: Date.now(), // یک ID موقت
-        conversation_id: Number(id),
-        role: 'user',
-        content: messageInput.trim(),
-        created_at: new Date().toISOString()
-      };
       
       setMessages(prevMessages => [...prevMessages, userMessage]);
-      const currentInput = messageInput.trim();
       setMessageInput('');
       
       // اسکرول به پایین صفحه بعد از اضافه کردن پیام کاربر
@@ -270,6 +273,10 @@ export function AIConversationDetail() {
         ];
       });
       
+      // بروزرسانی تعداد سوالات
+      setRemainingQuestions(response.data.remaining_questions);
+      setTotalQuestions(response.data.total_questions);
+      
       // اسکرول به پایین صفحه بعد از دریافت پاسخ
       setTimeout(() => {
         const messagesContainer = document.getElementById('messages-container');
@@ -278,7 +285,7 @@ export function AIConversationDetail() {
         }
       }, 200);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('خطا در ارسال پیام:', error);
       
       // حذف پیام موقت کاربر در صورت خطا
@@ -287,6 +294,8 @@ export function AIConversationDetail() {
       // نمایش خطای مناسب
       if (error?.response?.status === 503) {
         toast.error('سرویس هوش مصنوعی در حال حاضر در دسترس نیست. لطفا بعدا تلاش کنید.');
+      } else if (error?.response?.status === 403 && error?.response?.data?.error) {
+        toast.error(error.response.data.error);
       } else {
         toast.error('خطا در ارسال پیام. لطفا دوباره تلاش کنید.');
       }
@@ -354,7 +363,7 @@ export function AIConversationDetail() {
   }, [sending]);
 
   return (
-    <div className="h-[calc(100vh-4rem)]">
+    <div className="h-[calc(100vh-6.5rem)]">
       <Card className="flex flex-col h-full pb-0">
         <CardHeader className="shrink-0 border-b">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
@@ -389,6 +398,11 @@ export function AIConversationDetail() {
                 {/* <CardDescription className="text-xs sm:text-sm">پرسش و پاسخ با هوش مصنوعی</CardDescription> */}
               </div>
             </div>
+            {remainingQuestions !== null && totalQuestions !== null && (
+              <div className="text-sm text-muted-foreground mr-4">
+                سوالات باقی مانده: {remainingQuestions} / {totalQuestions}
+              </div>
+            )}
             <Button variant="outline" size="sm" onClick={() => navigate('/panel/support/ask-ai')} className="w-full sm:w-auto mt-1 sm:mt-0">
               <Archive size={14} className="ml-1" />
               همه گفتگوها
@@ -484,9 +498,9 @@ export function AIConversationDetail() {
                 )}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            {/* <p className="text-xs text-muted-foreground mt-1">
               برای ارسال از <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> استفاده کنید
-            </p>
+            </p> */}
           </div>
         </CardContent>
       </Card>

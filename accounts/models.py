@@ -16,6 +16,10 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        
+        # ایجاد دسترسی AI برای کاربر جدید
+        AIAccess.objects.create(user=user)
+        
         return user
 
     def create_superuser(self, username, password=None, **extra_fields):
@@ -183,6 +187,34 @@ class UserAddress(models.Model):
     def formatted_address(self):
         """Return formatted address for display"""
         return f"{self.address_line}, {self.city}, {self.province} - {self.postal_code}"
+
+
+class AIAccess(models.Model):
+    """مدل دسترسی به هوش مصنوعی برای هر کاربر"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='ai_access', verbose_name='کاربر')
+    questions_limit = models.PositiveIntegerField(default=50, verbose_name='محدودیت تعداد سوالات')
+    access_duration = models.DateTimeField(default=timezone.now() + timedelta(days=365), verbose_name='مدت زمان دسترسی')
+    model = models.CharField(max_length=50, default='gemini', verbose_name='مدل زبانی')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    
+    class Meta:
+        verbose_name = 'دسترسی هوش مصنوعی'
+        verbose_name_plural = 'دسترسی‌های هوش مصنوعی'
+    
+    def __str__(self):
+        return f'دسترسی AI برای {self.user.username}'
+    
+    @property
+    def is_active(self):
+        """چک کردن فعال بودن دسترسی"""
+        return timezone.now() <= self.access_duration
+    
+    def get_remaining_questions(self):
+        """محاسبه تعداد سوالات باقی مانده"""
+        from tickets.models import AIMessage
+        used_questions = AIMessage.objects.filter(conversation__user=self.user).count()
+        return max(0, self.questions_limit - used_questions)
     
 
 
