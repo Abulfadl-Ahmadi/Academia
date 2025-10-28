@@ -15,9 +15,12 @@ from .serializers import (
     VerifyEmailSerializer,
     VerifyPhoneSerializer,
     CompleteRegistrationSerializer,
-    UserAddressSerializer
+    UserAddressSerializer,
+    SendResetPasswordCodeSerializer,
+    VerifyResetPasswordCodeSerializer,
+    ResetPasswordSerializer
 )
-from .utils import send_verification_email, send_verification_sms
+from .utils import send_verification_email, send_verification_sms, send_reset_password_sms
 from django.core.cache import cache
 
 
@@ -85,6 +88,13 @@ class SendPhoneVerificationCodeView(APIView):
         serializer = SendPhoneVerificationCodeSerializer(data=request.data)
         if serializer.is_valid():
             phone_number = serializer.validated_data['phone_number']
+            
+            # Check if phone number is already registered
+            if UserProfile.objects.filter(phone_number=phone_number).exists():
+                return Response(
+                    {"error": "این شماره موبایل قبلاً ثبت‌نام کرده است. لطفاً وارد شوید."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
             VerificationCode.objects.filter(phone_number=phone_number).delete()
             # Create verification code
@@ -618,4 +628,151 @@ class UserAddressView(APIView):
                 {"message": "آدرس کاربر یافت نشد"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class SendResetPasswordCodeView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """
+        Send reset password verification code to phone number
+        """
+        serializer = SendResetPasswordCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            
+            # Check if phone number exists in user profiles
+            try:
+                user_profile = UserProfile.objects.get(phone_number=phone_number)
+            except UserProfile.DoesNotExist:
+                return Response(
+                    {"error": "شماره موبایل یافت نشد. لطفاً ابتدا ثبت‌نام کنید."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Delete any existing unused reset codes for this phone
+            VerificationCode.objects.filter(phone_number=phone_number, type=VerificationCode.PHONE).delete()
+            
+            # Create verification code
+            verification_code = VerificationCode.create_for_phone(phone_number)
+            
+            # Send SMS with reset password template
+            sms_sent = send_reset_password_sms(phone_number, verification_code.code)
+            print("\n\n",20*"-", "reset password sms_sent:", sms_sent)
+
+            if sms_sent:
+                return Response({
+                    "message": "کد تایید ریست رمز عبور به شماره موبایل شما ارسال شد",
+                    "phone_number": phone_number
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"error": "خطا در ارسال پیامک. لطفاً دوباره تلاش کنید"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyResetPasswordCodeView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """
+        Verify reset password code
+        """
+        serializer = VerifyResetPasswordCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            code = serializer.validated_data['code']
+            
+            # Find the verification code
+            try:
+                verification_code = VerificationCode.objects.get(
+                    phone_number=phone_number,
+                    code=code,
+                    type=VerificationCode.PHONE,
+                    is_used=False
+                )
+                
+                if verification_code.is_valid():
+                    verification_code.is_used = True
+                    verification_code.save()
+                    
+                    return Response({
+                        "message": "کد تایید صحیح است. اکنون می‌توانید رمز عبور جدید خود را تنظیم کنید.",
+                        "phone_number": phone_number
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        {"error": "کد تایید منقضی شده است"}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    
+            except VerificationCode.DoesNotExist:
+                return Response(
+                    {"error": "کد تایید نامعتبر است"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        """
+        Reset password with verified code
+        """
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            code = serializer.validated_data['code']
+            new_password = serializer.validated_data['new_password']
+            
+            # Verify the code is valid and recent
+            try:
+                verification_code = VerificationCode.objects.get(
+                    phone_number=phone_number,
+                    code=code,
+                    type=VerificationCode.PHONE,
+                    is_used=True
+                )
+                
+                # Check if code was used recently (within last 10 minutes)
+                from django.utils import timezone
+                from datetime import timedelta
+                time_threshold = timezone.now() - timedelta(minutes=10)
+                
+                if verification_code.created_at < time_threshold:
+                    return Response(
+                        {"error": "کد تایید منقضی شده است. لطفاً دوباره درخواست کد دهید."}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Get user profile and update password
+                try:
+                    user_profile = UserProfile.objects.get(phone_number=phone_number)
+                    user = user_profile.user
+                    user.set_password(new_password)
+                    user.save()
+                    
+                    return Response({
+                        "message": "رمز عبور با موفقیت تغییر یافت. اکنون می‌توانید وارد شوید."
+                    }, status=status.HTTP_200_OK)
+                    
+                except UserProfile.DoesNotExist:
+                    return Response(
+                        {"error": "کاربر یافت نشد"}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    
+            except VerificationCode.DoesNotExist:
+                return Response(
+                    {"error": "کد تایید نامعتبر است"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

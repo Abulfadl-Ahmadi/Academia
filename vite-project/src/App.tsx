@@ -19,6 +19,7 @@ import "@/utils/pdf-styles";
 const LoginPage = lazy(() => import("./app/login/page"));
 const LogoutPage = lazy(() => import("@/pages/logout"));
 const RegisterPage = lazy(() => import("./app/register/page"));
+const ForgotPasswordPage = lazy(() => import("./app/forgot-password/page"));
 const ProfileCompletePage = lazy(() => import("./app/complete-profile/page"));
 const PanelRoute = lazy(() => import("./pages/PanelRoute"));
 const TeacherKnowledgePanel = lazy(() =>
@@ -91,6 +92,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/complete-profile" element={<ProfileCompletePage />} />
           <Route
             path="/tests/:testId/info"

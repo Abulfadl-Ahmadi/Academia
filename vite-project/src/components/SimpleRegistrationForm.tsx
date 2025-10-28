@@ -11,6 +11,7 @@ interface RegistrationData {
   email: string;
   username: string;
   password: string;
+  password_confirm: string;
 }
 
 interface SimpleRegistrationFormProps {
@@ -24,7 +25,8 @@ export default function SimpleRegistrationForm({
   const [formData, setFormData] = useState<RegistrationData>({
     email: '',
     username: '',
-    password: ''
+    password: '',
+    password_confirm: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,6 +44,20 @@ export default function SimpleRegistrationForm({
     setLoading(true);
     setError('');
 
+    // Validate passwords match
+    if (formData.password !== formData.password_confirm) {
+      setError('رمز عبور و تکرار آن با هم مطابقت ندارند');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('رمز عبور باید حداقل 6 کاراکتر باشد');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Use your existing register endpoint with the expected structure
       const response = await fetch(baseURL+'/register/', {
@@ -54,6 +70,7 @@ export default function SimpleRegistrationForm({
             username: formData.username,
             email: formData.email,
             password: formData.password,
+            password_confirm: formData.password_confirm,
             first_name: '', // Empty string for simple registration
             last_name: '', // Empty string for simple registration
             role: 'student'
@@ -140,6 +157,18 @@ export default function SimpleRegistrationForm({
                       value={formData.password}
                       onChange={(e) => handleInputChange('password', e.target.value)}
                       placeholder="رمز عبور"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="password_confirm">تکرار رمز عبور *</Label>
+                    <Input
+                      id="password_confirm"
+                      type="password"
+                      value={formData.password_confirm}
+                      onChange={(e) => handleInputChange('password_confirm', e.target.value)}
+                      placeholder="تکرار رمز عبور"
                       required
                     />
                   </div>

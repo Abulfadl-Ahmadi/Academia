@@ -194,6 +194,16 @@ export function RegisterForm({
       return
     }
     
+    if (formData.password.length < 6) {
+      setError("گذرواژه باید حداقل 6 کاراکتر باشد")
+      return
+    }
+    
+    if (formData.password !== formData.passwordConfirm) {
+      setError("گذرواژه‌ها با هم مطابقت ندارند")
+      return
+    }
+    
     setError("")
     setLoading(true)
 
@@ -211,8 +221,16 @@ export function RegisterForm({
     } catch (err: unknown) {
       console.error("Send verification error:", err)
       if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: Record<string, unknown> } }
+        const axiosError = err as { response?: { status?: number; data?: Record<string, unknown> } }
+        const status = axiosError.response?.status
         const errorData = axiosError.response?.data
+        
+        if (status === 400 && errorData?.error === "این شماره موبایل قبلاً ثبت‌نام کرده است. لطفاً وارد شوید.") {
+          // User already registered, show message
+          setError("این شماره موبایل قبلاً ثبت‌نام کرده است. لطفاً وارد شوید.")
+          return;
+        }
+        
         if (errorData && typeof errorData === 'object') {
           const errorMessages = Object.values(errorData).flat()
           setError(errorMessages.join(', '))
@@ -310,7 +328,7 @@ export function RegisterForm({
             />
           </div>
 
-          {/* <div className="grid gap-3">
+          <div className="grid gap-3">
             <Label htmlFor="firstName">نام</Label>
             <Input
               id="firstName"
@@ -330,7 +348,7 @@ export function RegisterForm({
               onChange={(e) => handleInputChange('lastName', e.target.value)}
               placeholder="نام خانوادگی"
             />
-          </div> */}
+          </div>
 
             {/* <div className="grid gap-3">
               <Label htmlFor="email">ایمیل (اختیاری)</Label>
@@ -532,20 +550,20 @@ export function RegisterForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
-        <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden p-0 w-full md:max-w-md mx-auto">
+        <CardContent className="grid p-0">
           <div className="p-6 md:p-8">
             {step === 'form' && renderFormStep()}
             {step === 'verification' && renderVerificationStep()}
             {step === 'complete' && renderCompleteStep()}
           </div>
-          <div className="bg-muted relative hidden md:block">
+          {/* <div className="bg-muted relative hidden md:block">
             <img
               src="https://c242950.parspack.net/c242950/media/login.jpg"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6]"
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">

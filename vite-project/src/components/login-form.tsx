@@ -4,9 +4,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUser } from "@/context/UserContext"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axiosInstance from "@/lib/axios"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { markLoggedIn } from "@/lib/axios";
 
 export function LoginForm({
@@ -17,11 +17,22 @@ export function LoginForm({
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 // inside LoginForm.tsx
 const { login, user } = useUser()
 console.log(user)
+
+  useEffect(() => {
+    // Check for success message from navigation state
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message)
+      // Clear the state to prevent showing message again on refresh
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [location, navigate])
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
@@ -63,8 +74,8 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
-        <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden p-0 w-full md:max-w-md mx-auto">
+        <CardContent className="grid p-0">
           <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
@@ -78,14 +89,18 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <p className="text-red-500 text-center text-sm">{error}</p>
               )}
 
+              {successMessage && (
+                <p className="text-green-500 text-center text-sm">{successMessage}</p>
+              )}
+
               <div className="grid gap-3">
-                <Label htmlFor="email">نام‌کاربری</Label>
+                <Label htmlFor="email">شماره تلفن</Label>
                 <Input
                   id="email"
                   type="string"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="john"
+                  placeholder="09123456789"
                   disabled={isLoading}
                   required
                 />
@@ -162,15 +177,21 @@ const handleSubmit = async (e: React.FormEvent) => {
                   عضویت
                 </a>
               </div>
+              <div className="text-center text-sm">
+                رمز عبور را فراموش کرده‌اید؟ {" "}
+                <a href="/forgot-password" className="underline underline-offset-4">
+                  بازیابی رمز عبور
+                </a>
+              </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          {/* <div className="bg-muted relative hidden md:block">
             <img
               src="https://c242950.parspack.net/c242950/media/login.jpg"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6]"
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">

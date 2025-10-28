@@ -36,10 +36,12 @@ def send_verification_email(email, verification_code, user_name):
         return False
 
 
-def send_verification_sms(phone_number, verification_code):
+def send_verification_sms(phone_number, verification_code, template_id=334868):
     """
     Send verification SMS using sms.ir API
+    template_id: 334868 for register, 752245 for reset-password
     """
+    
     if not settings.SMS_IR_API_KEY:
         print("SMS_IR_API_KEY not configured")
         return False
@@ -53,7 +55,7 @@ def send_verification_sms(phone_number, verification_code):
         }
         payload = {
             "mobile": phone_number,
-            "templateId": 334868,
+            "templateId": template_id,
             "parameters": [
                 {
                     "name": "Code",
@@ -81,3 +83,10 @@ def send_verification_sms(phone_number, verification_code):
     except Exception as e:
         print(f"Error sending SMS: {e}")
         return False
+
+
+def send_reset_password_sms(phone_number, verification_code):
+    """
+    Send reset password SMS using templateId 752245
+    """
+    return send_verification_sms(phone_number, verification_code, template_id=752245)

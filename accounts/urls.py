@@ -13,7 +13,10 @@ from .views import (
     VerifyPhoneView,
     CompleteRegistrationView,
     UserDetailView,
-    UserAddressView
+    UserAddressView,
+    SendResetPasswordCodeView,
+    VerifyResetPasswordCodeView,
+    ResetPasswordView
 )
 
 router = DefaultRouter()
@@ -32,4 +35,7 @@ urlpatterns += [
     path('logout/', LogoutView.as_view()),
     path('user/', UserDetailView.as_view()),
     path('address/', UserAddressView.as_view()),
+    path('send-reset-password/', SendResetPasswordCodeView.as_view()),
+    path('verify-reset-password/', VerifyResetPasswordCodeView.as_view()),
+    path('reset-password/', ResetPasswordView.as_view()),
 ]
