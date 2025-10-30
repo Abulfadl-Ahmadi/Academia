@@ -581,12 +581,17 @@ class TestCollectionSerializer(serializers.ModelSerializer):
     tests_count = serializers.SerializerMethodField()
     students_count = serializers.SerializerMethodField()
     courses_info = CourseNestedSerializer(source='courses', many=True, read_only=True)
+    courses = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Course.objects.all(),
+        required=False
+    )
     
     class Meta:
         model = TestCollection
         fields = [
-            'id', 'name', 'description', 'is_active',
-            'tests_count', 'students_count', 'courses_info',
+            'id', 'name', 'description', 'is_active', 'is_public',
+            'tests_count', 'students_count', 'courses', 'courses_info',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']
@@ -616,7 +621,7 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'courses', 'course_details',
             'created_by', 'created_by_name', 'total_tests', 'student_count',
-            'tests', 'created_at', 'updated_at', 'is_active'
+            'tests', 'created_at', 'updated_at', 'is_active', 'is_public'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']
     

@@ -117,7 +117,7 @@ class StudentAnswerAdmin(admin.ModelAdmin):
 
 @admin.register(TestCollection)
 class TestCollectionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_active', 'created_by', 'tests_count', 'students_count', 'created_at')
+    list_display = ('name', 'is_active', 'created_by', 'tests_count', 'students_count', 'created_at', 'is_public')
     list_filter = ('is_active', 'created_by', 'created_at')
     search_fields = ('name', 'description', 'created_by__username')
     filter_horizontal = ('courses',)
@@ -126,7 +126,7 @@ class TestCollectionAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('اطلاعات پایه', {
-            'fields': ('name', 'description', 'is_active', 'created_by')
+            'fields': ('name', 'description', 'is_active', 'created_by', 'is_public')
         }),
         ('اتصالات', {
             'fields': ('courses', 'students')

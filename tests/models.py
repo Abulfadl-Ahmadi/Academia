@@ -77,6 +77,7 @@ class TestCollection(models.Model):
     name = models.CharField(max_length=255, verbose_name="نام مجموعه آزمون")
     description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
+    is_public = models.BooleanField(default=False, verbose_name="دسترسی عمومی")
     
     # اتصال به دوره‌ها (یک مجموعه آزمون می‌تواند به چندین دوره متصل باشد)
     courses = models.ManyToManyField(
@@ -109,8 +110,12 @@ class TestCollection(models.Model):
     def get_accessible_students(self):
         """
         دانش‌آموزانی که به این مجموعه آزمون دسترسی دارند
-        (دانش‌آموزان دوره‌های متصل + محصولات خریداری شده)
+        (دانش‌آموزان دوره‌های متصل + محصولات خریداری شده + همه کاربران اگر عمومی باشد)
         """
+        if self.is_public:
+            # اگر عمومی باشد، همه دانش‌آموزان دسترسی دارند
+            return User.objects.filter(role='student')
+        
         # Explicitly assigned students (ids)
         explicit_ids = set(self.students.values_list('id', flat=True))
 

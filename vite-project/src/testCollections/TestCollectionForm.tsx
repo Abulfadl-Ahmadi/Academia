@@ -16,6 +16,7 @@ import {
   X,
   Edit
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 interface Course {
@@ -27,6 +28,7 @@ interface FormData {
   name: string;
   description: string;
   courses: number[];
+  is_public: boolean;
 }
 
 export default function TestCollectionForm() {
@@ -52,7 +54,8 @@ export default function TestCollectionForm() {
     return {
       name: "",
       description: "",
-      courses: courseIdParam ? [parseInt(courseIdParam)] : []
+      courses: courseIdParam ? [parseInt(courseIdParam)] : [],
+      is_public: false
     };
   });
 
@@ -107,7 +110,8 @@ export default function TestCollectionForm() {
       setFormData({
         name: response.data.name || "",
         description: response.data.description || "",
-        courses: courseIds
+        courses: courseIds,
+        is_public: response.data.is_public || false
       });
     } catch (error) {
       console.error("Error fetching collection details:", error);
@@ -318,6 +322,20 @@ export default function TestCollectionForm() {
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="توضیحات مجموعه آزمون را وارد کنید"
                   rows={3}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="space-y-1">
+                  <Label htmlFor="is_public">دسترسی عمومی</Label>
+                  <p className="text-sm text-muted-foreground">
+                    اگر فعال باشد، همه دانش‌آموزان می‌توانند به این مجموعه آزمون دسترسی داشته باشند
+                  </p>
+                </div>
+                <Switch
+                  id="is_public"
+                  checked={formData.is_public}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
                 />
               </div>
 

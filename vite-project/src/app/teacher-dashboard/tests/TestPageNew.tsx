@@ -363,12 +363,16 @@ const TestPageRedesigned: React.FC = () => {
   const handleAnswer = useCallback(
     async (questionNumber: number, value: string) => {
       if (!sessionId) return;
-      
       const previousAnswer = answers[questionNumber];
-      
       // If clicking on the same answer, deselect it
       const newValue = previousAnswer === value ? "" : value;
-      const newAnswers = { ...answers, [questionNumber]: newValue };
+      // Remove the answer if deselected, otherwise set
+      const newAnswers = { ...answers };
+      if (newValue === "") {
+        delete newAnswers[questionNumber];
+      } else {
+        newAnswers[questionNumber] = newValue;
+      }
       setAnswers(newAnswers);
 
       try {
@@ -581,28 +585,37 @@ const TestPageRedesigned: React.FC = () => {
                     onValueChange={(value) => handleAnswer(currentQuestionIndex + 1, value)}
                     className="space-y-4"
                   >
-                    {test.questions[currentQuestionIndex].options.map((option, optionIndex) => (
-                      <div key={option.id} className="flex items-start space-x-3 space-x-reverse">
-                        <RadioGroup.Item
-                          value={option.id.toString()}
-                          id={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
-                          className="w-5 h-5 mt-0.5 flex-shrink-0"
-                        />
-                        <Label
-                          htmlFor={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
-                          className={`flex-1 cursor-pointer text-base leading-relaxed p-3 rounded-lg border transition-all ${
-                            answers[currentQuestionIndex + 1] === option.id.toString()
-                              ? 'bg-primary/5 border-primary/20 shadow-sm'
-                              : 'border-transparent hover:bg-muted'
-                          }`}
-                        >
-                          <span className="font-medium text-muted-foreground mr-2">
-                            {['۱)', '۲)', '۳)', '۴)'][optionIndex] || `${optionIndex + 1})`}
-                          </span>
-                          <MathPreview text={option.option_text} />
-                        </Label>
-                      </div>
-                    ))}
+                    {test.questions[currentQuestionIndex].options.map((option, optionIndex) => {
+                      const isSelected = answers[currentQuestionIndex + 1] === option.id.toString();
+                      return (
+                        <div key={option.id} className="flex items-start space-x-3 space-x-reverse">
+                          <RadioGroup.Item
+                            value={option.id.toString()}
+                            id={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
+                            className="w-5 h-5 mt-0.5 flex-shrink-0"
+                          />
+                          <Label
+                            htmlFor={`q${test.questions[currentQuestionIndex].id}-o${option.id}`}
+                            className={`flex-1 cursor-pointer text-base leading-relaxed p-3 rounded-lg border transition-all ${
+                              isSelected
+                                ? 'bg-primary/5 border-primary/20 shadow-sm'
+                                : 'border-transparent hover:bg-muted'
+                            }`}
+                            onClick={e => {
+                              if (isSelected) {
+                                e.preventDefault();
+                                handleAnswer(currentQuestionIndex + 1, option.id.toString());
+                              }
+                            }}
+                          >
+                            <span className="font-medium text-muted-foreground mr-2">
+                              {['۱)', '۲)', '۳)', '۴)'][optionIndex] || `${optionIndex + 1})`}
+                            </span>
+                            <MathPreview text={option.option_text} />
+                          </Label>
+                        </div>
+                      );
+                    })}
                   </RadioGroup.Root>
 
                   {/* Navigation Buttons */}

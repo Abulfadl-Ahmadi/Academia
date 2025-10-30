@@ -686,9 +686,9 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role == "student":
-            # دانش‌آموز فقط مجموعه‌هایی را می‌بیند که به آن‌ها دسترسی دارد
+            # دانش‌آموز مجموعه‌هایی را می‌بیند که به آن‌ها دسترسی دارد یا عمومی هستند
             return TestCollection.objects.filter(
-                courses__students=user
+                Q(courses__students=user) | Q(is_public=True)
             ).distinct()
         elif user.role == "teacher":
             # معلم تمام مجموعه‌های فعال را می‌بیند
@@ -699,6 +699,18 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+    
+    def perform_update(self, serializer):
+        """به‌روزرسانی مجموعه آزمون با مدیریت مناسب فیلد courses"""
+        instance = serializer.instance
+        
+        # ذخیره فیلدهای اصلی
+        serializer.save()
+        
+        # مدیریت رابطه many-to-many courses
+        if 'courses' in serializer.validated_data:
+            courses_data = serializer.validated_data['courses']
+            instance.courses.set(courses_data)
     
     @action(detail=True, methods=['get'])
     def statistics(self, request, pk=None):

@@ -89,8 +89,8 @@ export default function CreateProductPage() {
       return;
     }
 
-    if (formData.price <= 0) {
-      toast.error("قیمت محصول باید بیشتر از صفر باشد");
+    if (formData.price < 0) {
+      toast.error("قیمت محصول نمی‌تواند منفی باشد");
       return;
     }
 
@@ -331,7 +331,7 @@ export default function CreateProductPage() {
                     min="0"
                     value={formData.price}
                     onChange={(e) => handleInputChange("price", parseInt(e.target.value) || 0)}
-                    placeholder="قیمت به تومان"
+                    placeholder="قیمت به تومان (۰ برای رایگان)"
                     required
                     className="pr-8"
                   />
@@ -639,7 +639,7 @@ export default function CreateProductPage() {
                   <div className="flex items-center gap-4 mt-3 text-sm flex-wrap">
                     <span className="text-muted-foreground">نوع: {getProductTypeLabel(formData.product_type)}</span>
                     <span className="text-primary font-medium">
-                      قیمت: {formData.price.toLocaleString()} تومان
+                      قیمت: {formData.price === 0 ? 'رایگان' : `${formData.price.toLocaleString()} تومان`}
                     </span>
                     {['book', 'notebook', 'pamphlet', 'stationery'].includes(formData.product_type) && (
                       <>
