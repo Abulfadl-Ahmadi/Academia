@@ -11,7 +11,6 @@ import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { 
   ArrowRight, 
-  ArrowRight, 
   Menu, 
   X, 
   LogOut, 
