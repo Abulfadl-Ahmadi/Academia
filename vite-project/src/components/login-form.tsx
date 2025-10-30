@@ -8,6 +8,82 @@ import { useState, useEffect } from "react"
 import axiosInstance from "@/lib/axios"
 import { useNavigate, useLocation } from "react-router-dom"
 import { markLoggedIn } from "@/lib/axios";
+import { LogoSvg } from "../components/LogoSvg";
+
+
+// Floating Shapes Component
+const FloatingShapes = () => {
+  const [floatingShapes, setFloatingShapes] = useState<Array<{
+    id: number;
+    src: string;
+    x: number;
+    y: number;
+    size: number;
+    animationDelay: number;
+    animationDuration: number;
+  }>>([]);
+
+  useEffect(() => {
+    const shapes = [
+      '1.webp', '14.webp', '17.webp', '23.webp', '24.webp', '26.webp',
+      '27.webp', '30.webp', '33.webp', '36.webp', '39.webp', '40.webp',
+      '5.webp', '6.webp', '7.webp', '9.webp'
+    ];
+
+    const generateShapes = () => {
+      const newShapes = shapes.slice(0, 10).map((shape, index) => {
+        // Generate x position avoiding the center area (40%-60%)
+        let x;
+        if (Math.random() < 0.5) {
+          // Left side: 5% to 35%
+          x = Math.random() * 30 + 5;
+        } else {
+          // Right side: 65% to 95%
+          x = Math.random() * 30 + 65;
+        }
+
+        return {
+          id: index,
+          src: `/Glass_shapes_optimized/${shape}`,
+          x: x,
+          y: Math.random() * 80 + 7, // 5-95% to avoid edges
+          size: (Math.random() + 0.01) * 55 + 20, // 30-70px
+          animationDelay: Math.random() * 3, // 0-3s delay
+          animationDuration: Math.random() * 8 + 12, // 12-20s duration
+        };
+      });
+      setFloatingShapes(newShapes);
+    };
+
+    generateShapes();
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {floatingShapes.map((shape) => (
+        <div
+          key={shape.id}
+          className={`absolute floating-shape shape-${shape.id % 3}`}
+          style={{
+            left: `${shape.x}%`,
+            top: `${shape.y}%`,
+            width: `${shape.size}px`,
+            height: `${shape.size}px`,
+            animationDelay: `${shape.animationDelay}s`,
+            animationDuration: `${shape.animationDuration}s`,
+          }}
+        >
+          <img
+            src={shape.src}
+            alt={`Floating shape ${shape.id}`}
+            className="w-full h-full object-contain floating-image"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export function LoginForm({
   className,
@@ -77,11 +153,13 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0 w-full md:max-w-md mx-auto">
+      <FloatingShapes />
+      <Card className="overflow-hidden p-0 w-full md:max-w-md mx-auto relative z-10">
         <CardContent className="grid p-0">
           <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
+                <LogoSvg className="w-32 mb-4" />
                 <h1 className="text-2xl font-bold">خوش آمدید!</h1>
                 <p className="text-muted-foreground text-balance">
                   وارد شوید و سفر یادگیری خود را ادامه دهید.
@@ -112,7 +190,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <div className="flex items-center">
                   <Label htmlFor="password">گذرواژه</Label>
                   <a
-                    href="#"
+                    href="/forgot-password"
                     className="mr-auto text-sm underline-offset-2 hover:underline"
                   >
                     گذرواژه را فراموشی کردید؟
@@ -180,12 +258,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                   عضویت
                 </a>
               </div>
-              <div className="text-center text-sm">
+              {/* <div className="text-center text-sm">
                 رمز عبور را فراموش کرده‌اید؟ {" "}
                 <a href="/forgot-password" className="underline underline-offset-4">
                   بازیابی رمز عبور
                 </a>
-              </div>
+              </div> */}
             </div>
           </form>
           {/* <div className="bg-muted relative hidden md:block">
