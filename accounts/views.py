@@ -421,8 +421,14 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+        if username[:2] != "09":
+            user = authenticate(username=username, password=password)
+        else:
+            user_by_username = UserProfile.objects.get(phone_number=username).user.username
+            user = authenticate(username=user_by_username, password=password)
 
-        user = authenticate(username=username, password=password)
+
+        # user = authenticate(username=username, password=password)
 
         if user is not None:
             refresh = RefreshToken.for_user(user)
