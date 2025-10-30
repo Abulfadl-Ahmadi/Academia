@@ -597,7 +597,7 @@ class TeacherDueActivitiesView(APIView):
         for test in tests_to_grade:
             due_activities.append({
                 'id': test.id,
-                'title': f"Grade {test.title}",
+                'title': f"Grade {test.name}",
                 'course_name': test.test_collection.courses.first().title if test.test_collection.courses.exists() else 'Unknown',
                 'pending_count': test.pending_sessions,
                 'type': 'grading',
