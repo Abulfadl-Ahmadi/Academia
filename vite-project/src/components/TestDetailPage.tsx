@@ -13,7 +13,6 @@ import {
   Calendar,
   AlertTriangle,
   PlayCircle,
-  ArrowRight,
   CheckCircle,
   Users,
   BookOpen,
