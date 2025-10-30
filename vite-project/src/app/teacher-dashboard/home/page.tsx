@@ -120,7 +120,7 @@ export default function TeacherDashboardHome() {
 
       {/* Error Display */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-500/20 bg-red-500/5">
           <CardContent className="pt-6">
             <div className="text-red-600 text-sm">{error}</div>
           </CardContent>
@@ -191,7 +191,7 @@ export default function TeacherDashboardHome() {
             <div className="space-y-3">
               {dueActivities.slice(0, 5).map((activity) => (
                 <div key={activity.id} className={`flex items-center gap-3 p-3 rounded-lg ${
-                  activity.priority === 'high' ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'
+                  activity.priority === 'high' ? 'bg-red-500/5 border border-red-500/20' : 'bg-yellow-500/5 border border-yellow-500/20'
                 }`}>
                   <div className={`w-2 h-2 rounded-full ${
                     activity.priority === 'high' ? 'bg-red-500' : 'bg-yellow-500'
@@ -206,7 +206,7 @@ export default function TeacherDashboardHome() {
                     </div>
                   )}
                   {activity.pending_count && (
-                    <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    <div className="text-xs bg-blue-500/5 text-blue-800 px-2 py-1 rounded">
                       {activity.pending_count} مورد
                     </div>
                   )}
@@ -229,7 +229,7 @@ export default function TeacherDashboardHome() {
           <CardContent>
             <div className="space-y-3">
               {schedule.today_classes.map((session) => (
-                <div key={session.id} className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div key={session.id} className="flex items-center gap-3 p-3 bg-blue-500/5 border border-blue-200 rounded-lg">
                   <Play className="w-4 h-4 text-blue-600" />
                   <div className="flex-1">
                     <div className="font-medium text-sm">{session.title}</div>
@@ -242,7 +242,7 @@ export default function TeacherDashboardHome() {
                     })}
                   </div>
                   {session.is_live && (
-                    <div className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                    <div className="text-xs bg-red-500/5 text-red-800 px-2 py-1 rounded">
                       زنده
                     </div>
                   )}
@@ -271,7 +271,7 @@ export default function TeacherDashboardHome() {
                     <div className="font-medium text-sm">{course.name}</div>
                     <div className="text-xs text-muted-foreground">{course.description}</div>
                   </div>
-                  <div className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                  <div className="text-xs bg-green-500/5 text-green-800 px-2 py-1 rounded">
                     {course.student_count} دانش‌آموز
                   </div>
                 </div>
