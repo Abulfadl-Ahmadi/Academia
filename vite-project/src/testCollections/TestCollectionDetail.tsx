@@ -260,11 +260,21 @@ export default function TestCollectionDetail() {
                 <div className="gap-2 space-y-2">
                   <div>
                     <Link
+                      to={`/panel/question-tests/${collection.id}/leaderboard`}
+                    >
+                      <Button className="w-full justify-start">
+                      <BarChart3 className="ml-2 h-4 w-4" />
+                      لیست نفرات برتر
+                    </Button>
+                    </Link>
+                  </div>
+                  <div>
+                    <Link
                       to={`/panel/test-collections/${collection.id}/statistics`}
                     >
                       <Button className="w-full justify-start">
                         <BarChart3 className="ml-2 h-4 w-4" />
-                        مشاهده آمار
+                        مشاهده آمار 
                       </Button>
                     </Link>
                   </div>

@@ -182,7 +182,7 @@ const TopPerformersLeaderboard = () => {
             return (
               <Card
                 key={session.session_id}
-                className={`shadow-lg border-0 transition-all duration-300 hover:shadow-xl ${
+                className={`p-0 shadow-lg border-0 transition-all duration-300 hover:shadow-xl ${
                   rank <= 3 ? 'bg-gradient-to-r from-white to-yellow-50 dark:from-gray-800 dark:to-yellow-900/20' : 'bg-white dark:bg-gray-800'
                 }`}
               >
@@ -192,35 +192,35 @@ const TopPerformersLeaderboard = () => {
                       <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700">
                         {getRankIcon(rank)}
                       </div>
-                      <div>
+                      <div className='mr-4'>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                           {session.user.first_name} {session.user.last_name}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400">@{session.user.username}</p>
+                        {/* <p className="text-gray-600 dark:text-gray-400">@{session.user.username}</p> */}
                       </div>
                     </div>
 
                     <div className="text-left">
                       <div className="flex items-center space-x-2 space-x-reverse mb-2">
-                        <Badge className={`${getRankBadgeColor(rank)} font-bold text-lg px-3 py-1`}>
+                        <Badge className={`${getRankBadgeColor(rank)} persian-number font-bold text-lg px-3 py-1`}>
                           رتبه {rank}
                         </Badge>
                       </div>
-                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      <div className=" persian-number text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {session.score.percentage.toFixed(1)}%
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {session.score.correct} از {session.score.total} سوال
-                      </div>
+                      {/* <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="persian-number">{session.score.correct}</span> از <span className="persian-number">{session.score.total}</span> سوال
+                      </div> */}
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  {/* <div className="mt-4">
                     <Progress
                       value={session.score.percentage}
                       className={`h-3 ${rank <= 3 ? 'bg-yellow-200' : ''}`}
                     />
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             );
