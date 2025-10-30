@@ -10,7 +10,7 @@ import axiosInstance from "@/lib/axios";
 import { 
   BookOpen, 
   Plus,
-  ArrowLeft,
+  ArrowRight,
   Users,
   Check,
   X,
@@ -231,7 +231,7 @@ export default function TestCollectionForm() {
             size="sm"
             onClick={() => navigate("/panel/test-collections")}
           >
-            <ArrowLeft className="h-4 w-4 ml-1" />
+            <ArrowRight className="h-4 w-4 ml-1" />
             بازگشت
           </Button>
           <div className="flex items-center gap-2">
@@ -261,7 +261,7 @@ export default function TestCollectionForm() {
           size="sm"
           onClick={() => navigate("/panel/test-collections")}
         >
-          <ArrowLeft className="h-4 w-4 ml-1" />
+          <ArrowRight className="h-4 w-4 ml-1" />
           بازگشت
         </Button>
         <div className="flex items-center gap-2">

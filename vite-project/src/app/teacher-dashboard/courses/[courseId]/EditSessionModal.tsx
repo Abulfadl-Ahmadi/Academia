@@ -278,7 +278,7 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
         lectureNotesFormData = new FormData();
         lectureNotesFormData.append('file', lectureNotesFile);
         try {
-          await axiosInstance.post('/contents/files/', lectureNotesFormData);
+          await axiosInstance.post('/files/', lectureNotesFormData);
           toast.success("جزوه با موفقیت آپلود شد");
         } catch (error) {
           console.error("Error uploading lecture notes:", error);

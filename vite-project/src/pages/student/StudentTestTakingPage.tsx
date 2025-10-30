@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, ChevronLeft, ChevronRight, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, Clock, ChevronLeft, ChevronRight, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -167,7 +167,7 @@ export default function StudentTestTakingPage() {
                   onClick={() => navigate('/tests')}
                   className="flex items-center gap-2"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" />
                   خروج
                 </Button>
                 <div>
@@ -233,7 +233,7 @@ export default function StudentTestTakingPage() {
                 onClick={() => navigate('/tests')}
                 className="flex items-center gap-2"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" />
                 خروج
               </Button>
               <div>

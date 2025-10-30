@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ShoppingCart, ArrowLeft, Star, Clock, FileText, BookOpen, FileCheck, Tag } from "lucide-react"
+import { ShoppingCart, ArrowRight, Star, Clock, FileText, BookOpen, FileCheck, Tag } from "lucide-react"
 import { toast } from "sonner"
 import { useCart } from "@/context/CartContext"
 import axiosInstance from "@/lib/axios"
@@ -119,7 +119,7 @@ export default function ProductDetailPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-muted-foreground mb-4">محصول یافت نشد</h2>
           <Button onClick={() => navigate('/shop')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowRight className="w-4 h-4 mr-2" />
             بازگشت به فروشگاه
           </Button>
         </div>
@@ -135,7 +135,7 @@ export default function ProductDetailPage() {
         onClick={() => navigate('/shop')}
         className="mb-6"
       >
-        <ArrowLeft className="w-4 h-4 mr-2" />
+        <ArrowRight className="w-4 h-4 mr-2" />
         بازگشت به فروشگاه
       </Button>
 

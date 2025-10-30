@@ -13,7 +13,7 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { cn } from '@/lib/utils';
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { ArrowRightIcon, ArrowRightIcon } from 'lucide-react';
 import { type ComponentProps, useCallback, useEffect, useState, useRef, createContext, useContext } from 'react';
 
 // Context to share carousel API with child components
@@ -202,7 +202,7 @@ export const InlineCitationCarouselPrev = ({
       type="button"
       {...props}
     >
-      <ArrowLeftIcon className="size-4 text-muted-foreground" />
+      <ArrowRightIcon className="size-4 text-muted-foreground" />
     </button>
   );
 };

@@ -17,7 +17,15 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import { BookOpen, Plus, X, Save, ArrowLeft } from "lucide-react";
+import { BookOpen, Plus, X, Save, ArrowRight, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface CourseSchedule {
   id?: number;
@@ -46,6 +54,7 @@ export default function EditCoursePage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [loading, setLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
     description: "",
@@ -70,17 +79,16 @@ export default function EditCoursePage() {
           title: course.title,
           description: course.description || "",
           is_active: course.is_active,
-          schedules: schedules.map((schedule: any) => ({
+          schedules: schedules.map((schedule: { id: number; day: number; time: string }) => ({
             id: schedule.id,
             day: schedule.day,
             time: schedule.time,
           })),
         });
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching course data:", error);
-        toast.error(
-          error.response?.data?.message || "خطا در دریافت اطلاعات دوره"
-        );
+        const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "خطا در دریافت اطلاعات دوره";
+        toast.error(errorMessage);
       }
     };
 
@@ -89,7 +97,7 @@ export default function EditCoursePage() {
     }
   }, [courseId]);
 
-  const handleInputChange = (field: keyof CourseData, value: any) => {
+  const handleInputChange = (field: keyof CourseData, value: string | boolean | CourseSchedule[]) => {
     setCourseData((prev) => ({
       ...prev,
       [field]: value,
@@ -113,7 +121,7 @@ export default function EditCoursePage() {
   const updateSchedule = (
     index: number,
     field: keyof Omit<CourseSchedule, "id">,
-    value: any
+    value: string | number
   ) => {
     setCourseData((prev) => ({
       ...prev,
@@ -121,6 +129,24 @@ export default function EditCoursePage() {
         i === index ? { ...schedule, [field]: value } : schedule
       ),
     }));
+  };
+
+  const handleDeleteCourse = async () => {
+    if (!courseId) return;
+
+    setLoading(true);
+    try {
+      await axiosInstance.delete(`/courses/${courseId}/`);
+      toast.success("دوره با موفقیت حذف شد");
+      navigate("/panel/courses");
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "خطا در حذف دوره";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,10 +187,9 @@ export default function EditCoursePage() {
 
       toast.success("دوره با موفقیت بروزرسانی شد");
       navigate(`/panel/courses/${courseId}`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating course:", error);
-      const errorMessage =
-        error.response?.data?.message || "خطا در بروزرسانی دوره";
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "خطا در بروزرسانی دوره";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -175,13 +200,23 @@ export default function EditCoursePage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={() => navigate(`/panel/courses/${courseId}`)}
-        >
-          <ArrowLeft className="ml-2 h-4 w-4" />
-          بازگشت
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/panel/courses/${courseId}`)}
+          >
+            <ArrowRight className="ml-2 h-4 w-4" />
+            بازگشت
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => setShowDeleteDialog(true)}
+            disabled={loading}
+          >
+            <Trash2 className="ml-2 h-4 w-4" />
+            حذف دوره
+          </Button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -309,6 +344,44 @@ export default function EditCoursePage() {
           </CardContent>
         </Card>
       </form>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>حذف دوره</DialogTitle>
+            <DialogDescription>
+              آیا مطمئن هستید که می‌خواهید این دوره را حذف کنید؟ این عمل قابل بازگشت نیست و تمام اطلاعات دوره از جمله جلسات، آزمون‌ها و دانشجویان حذف خواهند شد.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={loading}
+            >
+              انصراف
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCourse}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  در حال حذف...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  حذف دوره
+                </div>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

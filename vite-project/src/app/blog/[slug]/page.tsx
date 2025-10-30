@@ -5,7 +5,7 @@ import { blogApi, type BlogPostDetail } from '@/api/blog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, Tag, ArrowLeft, BookOpen } from 'lucide-react';
+import { Calendar, User, Tag, ArrowRight, BookOpen } from 'lucide-react';
 
 export default function PublicBlogDetailPage() {
   const { slug } = useParams();
@@ -59,7 +59,7 @@ export default function PublicBlogDetailPage() {
           <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
           <h1 className="text-2xl font-bold text-foreground mb-4">{error || 'مقاله یافت نشد'}</h1>
           <Button onClick={() => navigate('/blog')} variant="outline">
-            <ArrowLeft className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
             بازگشت به فهرست مقالات
           </Button>
         </div>
@@ -77,7 +77,7 @@ export default function PublicBlogDetailPage() {
             variant="ghost" 
             className="hover:bg-accent"
           >
-            <ArrowLeft className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
             بازگشت به فهرست مقالات
           </Button>
         </div>

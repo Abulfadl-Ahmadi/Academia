@@ -22,7 +22,7 @@ import {
   FileText,
   BookOpen,
   Save,
-  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
 
 interface CreateProductForm {
@@ -58,6 +58,10 @@ export default function CreateProductPage() {
   interface TestCollection { id: number | string; title?: string; name?: string }
   const [collections, setCollections] = useState<TestCollection[]>([]);
   const [collectionsLoading, setCollectionsLoading] = useState<boolean>(false);
+  const [courses, setCourses] = useState<{id: number; title?: string; name?: string}[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState<boolean>(false);
+  const [files, setFiles] = useState<{id: number; title?: string; name?: string; filename?: string}[]>([]);
+  const [filesLoading, setFilesLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<CreateProductForm>({
     title: "",
     description: "",
@@ -222,9 +226,59 @@ export default function CreateProductPage() {
     }
   }, []);
 
+  const fetchCourses = useCallback(async () => {
+    try {
+      setCoursesLoading(true);
+      const response = await axiosInstance.get("/courses/");
+      // Handle both array and pagination format
+      let coursesData: {id: number; title?: string; name?: string}[] = [];
+      if (Array.isArray(response.data)) {
+        coursesData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        coursesData = response.data.results;
+      } else {
+        console.warn("Courses data is not an array:", response.data);
+        coursesData = [];
+      }
+      setCourses(coursesData);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      toast.error("خطا در دریافت دوره‌ها");
+      setCourses([]);
+    } finally {
+      setCoursesLoading(false);
+    }
+  }, []);
+
+  const fetchFiles = useCallback(async () => {
+    try {
+      setFilesLoading(true);
+      const response = await axiosInstance.get("/files/");
+      // Handle both array and pagination format
+      let filesData: {id: number; title?: string; name?: string; filename?: string}[] = [];
+      if (Array.isArray(response.data)) {
+        filesData = response.data;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        filesData = response.data.results;
+      } else {
+        console.warn("Files data is not an array:", response.data);
+        filesData = [];
+      }
+      setFiles(filesData);
+    } catch (error) {
+      console.error("Error fetching files:", error);
+      toast.error("خطا در دریافت فایل‌ها");
+      setFiles([]);
+    } finally {
+      setFilesLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchCollections();
-  }, [fetchCollections]);
+    fetchCourses();
+    fetchFiles();
+  }, [fetchCollections, fetchCourses, fetchFiles]);
 
   return (
     <div className="space-y-6">
@@ -236,7 +290,7 @@ export default function CreateProductPage() {
             size="sm"
             onClick={() => navigate("/panel/products")}
           >
-            <ArrowLeft className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
             بازگشت
           </Button>
           <div>
@@ -392,10 +446,17 @@ export default function CreateProductPage() {
                     <SelectValue placeholder="انتخاب دوره" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* This would need to fetch courses from API */}
-                    <SelectItem value="1">ریاضی ۳</SelectItem>
-                    <SelectItem value="2">فیزیک ۲</SelectItem>
-                    <SelectItem value="3">شیمی ۱</SelectItem>
+                    {coursesLoading ? (
+                      <div className="p-2 text-sm text-muted-foreground">در حال بارگذاری...</div>
+                    ) : courses.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground">هیچ دوره‌ای یافت نشد</div>
+                    ) : (
+                      courses.map(course => (
+                        <SelectItem key={String(course.id)} value={String(course.id)}>
+                          {course.title || course.name || `دوره ${course.id}`}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -426,9 +487,9 @@ export default function CreateProductPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {collectionsLoading ? (
-                      <SelectItem value="">در حال بارگذاری...</SelectItem>
+                      <div className="p-2 text-sm text-muted-foreground">در حال بارگذاری...</div>
                     ) : collections.length === 0 ? (
-                      <SelectItem value="">هیچ آزمونی یافت نشد</SelectItem>
+                      <div className="p-2 text-sm text-muted-foreground">هیچ آزمونی یافت نشد</div>
                     ) : (
                       collections.map(col => (
                         <SelectItem key={String(col.id)} value={String(col.id)}>
@@ -465,10 +526,17 @@ export default function CreateProductPage() {
                     <SelectValue placeholder="انتخاب فایل" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* This would need to fetch files from API */}
-                    <SelectItem value="1">جزوه ریاضی پیش‌دانشگاهی</SelectItem>
-                    <SelectItem value="2">نمونه سوالات فیزیک</SelectItem>
-                    <SelectItem value="3">کتاب کمک درسی شیمی</SelectItem>
+                    {filesLoading ? (
+                      <div className="p-2 text-sm text-muted-foreground">در حال بارگذاری...</div>
+                    ) : files.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground">هیچ فایلی یافت نشد</div>
+                    ) : (
+                      files.map(file => (
+                        <SelectItem key={String(file.id)} value={String(file.id)}>
+                          {file.title || file.name || file.filename || `فایل ${file.id}`}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>

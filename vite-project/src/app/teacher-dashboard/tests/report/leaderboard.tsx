@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Trophy, Medal, Award, ArrowLeft } from 'lucide-react';
+import { Loader2, Trophy, Medal, Award, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 
@@ -108,7 +108,7 @@ const TopPerformersLeaderboard = () => {
             className="mt-4"
             onClick={() => navigate(`/panel/question-tests/${id}/results`)}
           >
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت به نتایج آزمون
           </Button>
         </CardContent>
@@ -162,7 +162,7 @@ const TopPerformersLeaderboard = () => {
           className="mb-6"
           onClick={() => navigate(`/panel/question-tests/${id}/results`)}
         >
-          <ArrowLeft className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-2 h-4 w-4" />
           بازگشت به نتایج آزمون
         </Button>
 

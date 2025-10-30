@@ -21,7 +21,7 @@ import {
   Plus,
   X,
   Save,
-  ArrowLeft,
+  ArrowRight,
   ShoppingCart,
   DollarSign,
   Image as ImageIcon
@@ -61,6 +61,11 @@ const DAYS = [
 export default function CreateCoursePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    course?: { title?: string };
+    product?: { title?: string; description?: string; price?: string };
+  }>({});
+
   const [courseForm, setCourseForm] = useState<CreateCourseForm>({
     title: "",
     description: "",
@@ -76,18 +81,45 @@ export default function CreateCoursePage() {
     create_product: true,
   });
 
-  const handleCourseInputChange = (field: keyof CreateCourseForm, value: any) => {
+  const handleCourseInputChange = (field: keyof CreateCourseForm, value: string | boolean | CourseSchedule[]) => {
     setCourseForm(prev => ({
       ...prev,
       [field]: value
     }));
+
+    // Clear validation error for this field
+    if (field === 'title' && validationErrors.course?.title) {
+      setValidationErrors(prev => ({
+        ...prev,
+        course: { ...prev.course, title: undefined }
+      }));
+    }
   };
 
-  const handleProductInputChange = (field: keyof CreateProductForm, value: any) => {
+  const handleProductInputChange = (field: keyof CreateProductForm, value: string | number | boolean | File | undefined) => {
     setProductForm(prev => ({
       ...prev,
       [field]: value
     }));
+
+    // Clear validation error for this field
+    if (validationErrors.product) {
+      const newProductErrors = { ...validationErrors.product };
+      if (field === 'title' && newProductErrors.title) {
+        newProductErrors.title = undefined;
+      }
+      if (field === 'description' && newProductErrors.description) {
+        newProductErrors.description = undefined;
+      }
+      if (field === 'price' && newProductErrors.price) {
+        newProductErrors.price = undefined;
+      }
+
+      setValidationErrors(prev => ({
+        ...prev,
+        product: newProductErrors
+      }));
+    }
   };
 
   const addSchedule = () => {
@@ -104,7 +136,7 @@ export default function CreateCoursePage() {
     }));
   };
 
-  const updateSchedule = (index: number, field: keyof CourseSchedule, value: any) => {
+  const updateSchedule = (index: number, field: keyof CourseSchedule, value: string | number) => {
     setCourseForm(prev => ({
       ...prev,
       schedules: prev.schedules.map((schedule, i) =>
@@ -113,21 +145,40 @@ export default function CreateCoursePage() {
     }));
   };
 
+  const validateForm = () => {
+    const errors: {
+      course?: { title?: string };
+      product?: { title?: string; description?: string; price?: string };
+    } = {};
+
+    // Validate course fields
+    if (!courseForm.title.trim()) {
+      errors.course = { ...errors.course, title: "عنوان دوره الزامی است" };
+    }
+
+    // Validate product fields if creating product
+    if (productForm.create_product) {
+      if (!productForm.title.trim()) {
+        errors.product = { ...errors.product, title: "عنوان محصول الزامی است" };
+      }
+      if (!productForm.description.trim()) {
+        errors.product = { ...errors.product, description: "توضیحات محصول الزامی است" };
+      }
+      if (productForm.price < 0) {
+        errors.product = { ...errors.product, price: "قیمت نمی‌تواند منفی باشد" };
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!courseForm.title.trim()) {
-      toast.error("عنوان دوره الزامی است");
-      return;
-    }
-
-    if (productForm.create_product && !productForm.title.trim()) {
-      toast.error("عنوان محصول الزامی است");
-      return;
-    }
-
-    if (productForm.create_product && productForm.price <= 0) {
-      toast.error("قیمت محصول باید بیشتر از صفر باشد");
+    // Validate form before submitting
+    if (!validateForm()) {
+      toast.error("لطفاً فیلدهای الزامی را تکمیل کنید");
       return;
     }
 
@@ -142,7 +193,23 @@ export default function CreateCoursePage() {
       });
 
       const courseId = courseResponse.data.id;
-      toast.success("دوره با موفقیت ایجاد شد");
+      
+      // Check VOD channel and stream status
+      if (courseResponse.data.vod_channel_created === false) {
+        toast.warning(courseResponse.data.vod_warning || "امکان آپلود ویدیو فعال نیست");
+      }
+      
+      if (courseResponse.data.stream_created === false) {
+        toast.warning(courseResponse.data.stream_warning || "امکان پخش زنده فعال نیست");
+      }
+      
+      if (courseResponse.data.vod_channel_created && courseResponse.data.stream_created) {
+        toast.success("دوره با تمام امکانات (ویدیو و پخش زنده) ایجاد شد");
+      } else if (courseResponse.data.vod_channel_created || courseResponse.data.stream_created) {
+        toast.success("دوره ایجاد شد");
+      } else {
+        toast.success("دوره ایجاد شد (بدون امکانات پیشرفته)");
+      }
 
       // Create schedules if any
       if (courseForm.schedules.length > 0) {
@@ -181,9 +248,9 @@ export default function CreateCoursePage() {
       // Navigate to the course detail page
       navigate(`/panel/courses/${courseId}`);
 
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating course:", error);
-      const errorMessage = error.response?.data?.message || "خطا در ایجاد دوره";
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "خطا در ایجاد دوره";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -204,7 +271,7 @@ export default function CreateCoursePage() {
             size="sm"
             onClick={() => navigate("/panel/courses")}
           >
-            <ArrowLeft className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
             بازگشت
           </Button>
           <div>
@@ -226,14 +293,20 @@ export default function CreateCoursePage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">عنوان دوره *</Label>
+                <Label htmlFor="title" className={validationErrors.course?.title ? "text-red-500" : ""}>
+                  عنوان دوره *
+                </Label>
                 <Input
                   id="title"
                   value={courseForm.title}
                   onChange={(e) => handleCourseInputChange("title", e.target.value)}
                   placeholder="مثال: ریاضی ۳"
+                  className={validationErrors.course?.title ? "border-red-500 focus:border-red-500" : ""}
                   required
                 />
+                {validationErrors.course?.title && (
+                  <p className="text-sm text-red-500">{validationErrors.course.title}</p>
+                )}
               </div>
             </div>
 
@@ -363,18 +436,26 @@ export default function CreateCoursePage() {
               <div className="space-y-4 pt-4 border-t">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="product_title">عنوان محصول *</Label>
+                    <Label htmlFor="product_title" className={validationErrors.product?.title ? "text-red-500" : ""}>
+                      عنوان محصول *
+                    </Label>
                     <Input
                       id="product_title"
                       value={productForm.title}
                       onChange={(e) => handleProductInputChange("title", e.target.value)}
                       placeholder="عنوان محصول برای فروشگاه"
+                      className={validationErrors.product?.title ? "border-red-500 focus:border-red-500" : ""}
                       required={productForm.create_product}
                     />
+                    {validationErrors.product?.title && (
+                      <p className="text-sm text-red-500">{validationErrors.product.title}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="product_price">قیمت (تومان) *</Label>
+                    <Label htmlFor="product_price" className={validationErrors.product?.price ? "text-red-500" : ""}>
+                      قیمت (تومان) *
+                    </Label>
                     <div className="relative">
                       <Input
                         id="product_price"
@@ -382,24 +463,37 @@ export default function CreateCoursePage() {
                         min="0"
                         value={productForm.price}
                         onChange={(e) => handleProductInputChange("price", parseInt(e.target.value) || 0)}
-                        placeholder="قیمت به تومان"
+                        placeholder="۰ برای رایگان"
+                        className={validationErrors.product?.price ? "border-red-500 focus:border-red-500 pr-8" : "pr-8"}
                         required={productForm.create_product}
-                        className="pr-8"
                       />
                       <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground " />
                     </div>
+                    {validationErrors.product?.price && (
+                      <p className="text-sm text-red-500">{validationErrors.product.price}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      برای محصول رایگان عدد ۰ را وارد کنید
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="product_description">توضیحات محصول</Label>
+                  <Label htmlFor="product_description" className={validationErrors.product?.description ? "text-red-500" : ""}>
+                    توضیحات محصول *
+                  </Label>
                   <Textarea
                     id="product_description"
                     value={productForm.description}
                     onChange={(e) => handleProductInputChange("description", e.target.value)}
                     placeholder="توضیحات محصول برای فروشگاه (می‌تواند متفاوت از توضیحات دوره باشد)"
                     rows={3}
+                    className={validationErrors.product?.description ? "border-red-500 focus:border-red-500" : ""}
+                    required={productForm.create_product}
                   />
+                  {validationErrors.product?.description && (
+                    <p className="text-sm text-red-500">{validationErrors.product.description}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

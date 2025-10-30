@@ -5,6 +5,10 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q, Prefetch, Avg
 from django.utils import timezone
+import logging
+import logging
+import threading
+import time
 from .models import Course, CourseSession, CourseSchedule, ClassCategory
 from .serializers import (
     CourseSerializer, CourseSessionSerializer, CourseScheduleSerializer,
@@ -14,11 +18,50 @@ from .serializers import (
 from accounts.models import User
 from tests.models import Test
 from tests.serializers import TestCreateSerializer
-from utils.vod import create_channel
+from utils.vod import create_channel, delete_channel, create_stream, delete_stream
 from contents.models import File
 from shop.models import Product
 from finance.models import Order, OrderItem
 from finance.models import Transaction
+
+logger = logging.getLogger(__name__)
+
+
+def create_stream_async(course_title, course_id, max_attempts=5):
+    """
+    Create live stream asynchronously with multiple attempts and delays.
+    """
+    def _create_stream_task():
+        for attempt in range(max_attempts):
+            try:
+                logger.info(f"Attempting to create stream for course '{course_title}' (attempt {attempt + 1}/{max_attempts})")
+                
+                stream_response = create_stream(course_title, course_id)
+                stream_id = stream_response.get('data', {}).get('id')
+                
+                # Update course with stream_id
+                from .models import Course
+                course = Course.objects.get(id=course_id)
+                course.stream_id = stream_id
+                course.save(update_fields=['stream_id'])
+                
+                logger.info(f"Successfully created live stream {stream_id} for course '{course_title}'")
+                return
+                
+            except Exception as e:
+                logger.warning(f"Failed to create live stream for course '{course_title}' (attempt {attempt + 1}): {str(e)}")
+                
+                if attempt < max_attempts - 1:
+                    # Wait before next attempt (increasing delay: 30s, 60s, 120s, 240s)
+                    delay = 30 * (2 ** attempt)
+                    logger.info(f"Waiting {delay} seconds before next attempt...")
+                    time.sleep(delay)
+                else:
+                    logger.error(f"Failed to create live stream for course '{course_title}' after {max_attempts} attempts")
+    
+    # Start the background task
+    thread = threading.Thread(target=_create_stream_task, daemon=True)
+    thread.start()
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -60,19 +103,75 @@ class CourseViewSet(viewsets.ModelViewSet):
                 return StudentCourseSerializer
         return CourseSerializer
 
-    def perform_create(self, serializer):
-        vod_channel_id = create_channel(serializer.validated_data)['data']['id']
+    def create(self, request, *args, **kwargs):
+        vod_channel_created = False
+        
+        # Store the original perform_create method
+        original_perform_create = self.perform_create
+        
+        def patched_perform_create(serializer):
+            nonlocal vod_channel_created
+            vod_channel_id = None
+            
+            # Try to create VOD channel, but don't fail if it doesn't work
+            try:
+                channel_response = create_channel(serializer.validated_data)
+                vod_channel_id = channel_response.get('data', {}).get('id')
+                vod_channel_created = True
+                logger.info(f"Successfully created VOD channel {vod_channel_id} for course {serializer.validated_data.get('title')}")
+            except Exception as e:
+                logger.warning(f"Failed to create VOD channel for course {serializer.validated_data.get('title')}: {str(e)}")
+                # Continue with course creation even if VOD channel creation fails
 
-        if self.request.user.role == 'teacher':
-            serializer.save(teacher=self.request.user, vod_channel_id=vod_channel_id)
-        else:
-            serializer.save(vod_channel_id=vod_channel_id)
+            if self.request.user.role == 'teacher':
+                course = serializer.save(teacher=self.request.user, vod_channel_id=vod_channel_id)
+            else:
+                course = serializer.save(vod_channel_id=vod_channel_id)
+            
+            # Start background task to create live stream
+            # This will retry multiple times with delays if ArvanCloud is temporarily unavailable
+            create_stream_async(course.title, course.id)
+            logger.info(f"Started background task to create live stream for course '{course.title}' (ID: {course.id})")
+        
+        # Temporarily replace perform_create
+        self.perform_create = patched_perform_create
+        
+        try:
+            response = super().create(request, *args, **kwargs)
+            # Add status to response
+            if isinstance(response.data, dict):
+                response.data['vod_channel_created'] = vod_channel_created
+                response.data['stream_pending'] = True
+                if not vod_channel_created:
+                    response.data['vod_warning'] = 'کانال VOD ایجاد نشد. امکان آپلود ویدیو وجود ندارد.'
+                response.data['stream_info'] = 'در حال تلاش برای ایجاد استریم زنده در پس‌زمینه. ممکن است چند دقیقه طول بکشد.'
+            return response
+        finally:
+            # Restore original perform_create
+            self.perform_create = original_perform_create
             
     def destroy(self, request, *args, **kwargs):
-        if self.get_object().vod_channel_id:
-            # If the course has a vod_channel_id, delete the channel
-            from utils.vod import delete_channel
-            delete_channel(self.get_object().vod_channel_id)
+        course = self.get_object()
+        
+        # Try to delete the VOD channel, but don't fail if it doesn't work
+        if course.vod_channel_id:
+            try:
+                from utils.vod import delete_channel
+                delete_channel(course.vod_channel_id)
+                logger.info(f"Successfully deleted VOD channel {course.vod_channel_id} for course {course.title}")
+            except Exception as e:
+                logger.warning(f"Failed to delete VOD channel {course.vod_channel_id} for course {course.title}: {str(e)}")
+                # Continue with course deletion even if VOD channel deletion fails
+        
+        # Try to delete the live stream, but don't fail if it doesn't work
+        if course.stream_id:
+            try:
+                delete_stream(course.stream_id)
+                logger.info(f"Successfully deleted live stream {course.stream_id} for course {course.title}")
+            except Exception as e:
+                logger.warning(f"Failed to delete live stream {course.stream_id} for course {course.title}: {str(e)}")
+                # Continue with course deletion even if stream deletion fails
+        
         return super().destroy(request, *args, **kwargs)
 
     @action(detail=True, methods=['get'])

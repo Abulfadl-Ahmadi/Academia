@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, X, Search } from "lucide-react";
+import { ArrowRight, Plus, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -217,7 +217,7 @@ export default function CreateQuestionCollectionPage() {
             size="icon"
             onClick={() => navigate("/panel/question-collections")}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4" />
           </Button>
           <div>
             <h1 className="text-3xl font-bold">ایجاد مجموعه سوال جدید</h1>

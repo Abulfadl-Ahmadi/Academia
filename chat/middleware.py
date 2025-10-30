@@ -49,7 +49,7 @@ class JWTAuthMiddleware(BaseMiddleware):
             scope['user'] = AnonymousUser()
         
         # Debug logging
-        print(f"[DEBUG] WebSocket scope user: {scope['user']}")
-        print(f"[DEBUG] Token found: {token is not None}")
+        # print(f"[DEBUG] WebSocket scope user: {scope['user']}")
+        # print(f"[DEBUG] Token found: {token is not None}")
         
         return await super().__call__(scope, receive, send)

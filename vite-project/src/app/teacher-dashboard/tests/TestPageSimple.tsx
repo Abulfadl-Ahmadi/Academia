@@ -10,7 +10,7 @@ import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { 
-  ArrowLeft, 
+  ArrowRight, 
   ArrowRight, 
   Menu, 
   X, 

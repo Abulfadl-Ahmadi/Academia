@@ -495,22 +495,24 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           <Card>
             <CardHeader>
               <CardTitle>دانش‌آموزان ثبت‌نام شده</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                لیست دانش‌آموزانی که در این دوره ثبت‌نام کرده‌اند
+              </p>
             </CardHeader>
             <CardContent>
               {students && students.length === 0 ? (
                 <div className="text-center py-12">
-                <Users className="w-16 h-16 text-muted-foreground  mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
-                <p className="text-muted-foreground">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
-              </div>
+                  <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
+                  <p className="text-muted-foreground">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
+                </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {students && students.map((student) => (
-                    <div key={student.id}>{student.username}</div>
+                    <StudentCard key={student.id} student={student} />
                   ))}
                 </div>
               )}
-
             </CardContent>
           </Card>
         </TabsContent>
@@ -829,6 +831,50 @@ function CollectionCard({ collection }: CollectionCardProps) {
               آمار
             </Button>
           </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface StudentCardProps {
+  student: Student;
+}
+
+function StudentCard({ student }: StudentCardProps) {
+  // Generate avatar color based on student ID
+  const getAvatarColor = (id: number) => {
+    const colors = [
+      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500',
+      'bg-indigo-500', 'bg-red-500', 'bg-yellow-500', 'bg-teal-500'
+    ];
+    return colors[id % colors.length];
+  };
+
+  // Get initials from username
+  const getInitials = (username: string) => {
+    return username.charAt(0).toUpperCase();
+  };
+
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="pt-4">
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div className={`w-10 h-10 rounded-full ${getAvatarColor(student.id)} flex items-center justify-center text-white font-medium text-sm`}>
+            {getInitials(student.username)}
+          </div>
+
+          {/* Student Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-sm truncate">{student.username}</h3>
+            <p className="text-xs text-muted-foreground">دانش‌آموز</p>
+          </div>
+
+          {/* Status Badge */}
+          <Badge variant="outline" className="text-xs">
+            فعال
+          </Badge>
         </div>
       </CardContent>
     </Card>

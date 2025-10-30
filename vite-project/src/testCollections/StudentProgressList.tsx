@@ -9,7 +9,7 @@ import axiosInstance from "@/lib/axios";
 import { 
   Users, 
   TrendingUp,
-  ArrowLeft,
+  ArrowRight,
   CheckCircle,
   Clock,
   Award
@@ -161,7 +161,7 @@ export default function StudentProgressList() {
             size="sm"
             onClick={() => navigate(`/panel/test-collections/${id}`)}
           >
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت
           </Button>
           <h1 className="text-2xl font-bold">پیشرفت من</h1>
@@ -344,7 +344,7 @@ export default function StudentProgressList() {
           size="sm"
           onClick={() => navigate(`/panel/test-collections/${id}`)}
         >
-          <ArrowLeft className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-2 h-4 w-4" />
           بازگشت
         </Button>
         <h1 className="text-2xl font-bold">پیشرفت دانش‌آموزان</h1>

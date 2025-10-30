@@ -10,7 +10,7 @@ import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { 
-  ArrowLeft, 
+  ArrowRight, 
   ArrowRight, 
   Menu, 
   X, 
@@ -475,7 +475,7 @@ const TestPageRedesigned: React.FC = () => {
                   onClick={() => setConfirmExit(true)}
                   className="flex items-center gap-2 flex-shrink-0"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" />
                   خروج
                 </Button>
                 <div className="min-w-0 flex-1">
@@ -846,7 +846,7 @@ const TestPageRedesigned: React.FC = () => {
                         }
                       }}
                     >
-                      <ArrowLeft className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>صفحه بعد</TooltipContent>

@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Navbar from "./components/navbar";
 import { UserProvider } from "@/context/UserContext";
@@ -82,12 +82,14 @@ function PreApp() {
 function App() {
   const { user } = useUser();
   const location = useLocation();
+
   const showMobileNav = location.pathname.startsWith("/panel");
   if (user) {
     console.log(user);
   }
   return (
     <div className={showMobileNav ? "pb-20 md:pb-0" : ""}>
+          <UserProvider>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -103,7 +105,7 @@ function App() {
                 <Footer />
               </ProfileGuard>
             }
-          />
+            />
           <Route path="/tests/:id/" element={<TestPage />} />
           <Route path="/tests/:id/detail" element={<TestPage />} />
           <Route path="/panel/*" element={<PanelRoute />} />
@@ -236,6 +238,7 @@ function App() {
       </Suspense>
       <Toaster />
       {showMobileNav ? <MobileBottomNav /> : null}
+              </UserProvider>
     </div>
   );
 }

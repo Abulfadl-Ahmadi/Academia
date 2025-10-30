@@ -25,13 +25,24 @@ def create_channel(req):
     }
 
     logger.debug(f"Creating channel with data: {data}")
-    response = requests.post(f"{VOD_BASE_URL}/channels", json=data, headers=headers)
-
-    if response.status_code == 201:
-        return response.json()
-    else:
-        logger.error(f"Failed to create channel: {response.status_code} - {response.text}")
-        raise Exception(f"Failed to create channel: {response.text}")
+    
+    try:
+        response = requests.post(f"{VOD_BASE_URL}/channels", json=data, headers=headers, timeout=30)
+        
+        if response.status_code == 201:
+            return response.json()
+        else:
+            logger.error(f"Failed to create channel: HTTP {response.status_code} - {response.text}")
+            raise Exception(f"Failed to create VOD channel: HTTP {response.status_code} - {response.reason}")
+    except requests.exceptions.Timeout:
+        logger.error("VOD API request timed out")
+        raise Exception("VOD service is temporarily unavailable (timeout)")
+    except requests.exceptions.ConnectionError:
+        logger.error("Failed to connect to VOD service")
+        raise Exception("Unable to connect to VOD service")
+    except Exception as e:
+        logger.error(f"Unexpected error creating VOD channel: {str(e)}")
+        raise Exception(f"VOD service error: {str(e)}")
 
 def delete_channel(channel_id):
     """
@@ -43,13 +54,24 @@ def delete_channel(channel_id):
     }
 
     logger.debug(f"Deleting channel: {channel_id}")
-    response = requests.delete(f"{VOD_BASE_URL}/channels/{channel_id}", headers=headers)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        logger.error(f"Failed to delete channel: {response.status_code} - {response.text}")
-        raise Exception(response.json())
+    
+    try:
+        response = requests.delete(f"{VOD_BASE_URL}/channels/{channel_id}", headers=headers, timeout=30)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to delete channel: HTTP {response.status_code} - {response.text}")
+            raise Exception(f"Failed to delete VOD channel: HTTP {response.status_code} - {response.reason}")
+    except requests.exceptions.Timeout:
+        logger.error("VOD API request timed out")
+        raise Exception("VOD service is temporarily unavailable (timeout)")
+    except requests.exceptions.ConnectionError:
+        logger.error("Failed to connect to VOD service")
+        raise Exception("Unable to connect to VOD service")
+    except Exception as e:
+        logger.error(f"Unexpected error deleting VOD channel: {str(e)}")
+        raise Exception(f"VOD service error: {str(e)}")
 
 def create_upload_url(channel_id, file_size, filename, file_type):
     """
@@ -189,3 +211,142 @@ def create_video(channel_id, file_id, title, convert_mode="auto"):
 def get_video_player_url(file_id):
     video = get_video(file_id)
     return video.get("data", {}).get("player_url", "") if video else ""
+
+
+def create_stream(course_title, course_id, max_retries=3):
+    """
+    Create a live stream for a course on ArvanCloud with retry logic.
+    """
+    headers = {
+        "Authorization": f"Apikey {VOD_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    
+    # Generate a unique slug for the stream
+    import re
+    slug = re.sub(r'[^a-zA-Z0-9]', '', course_title.lower())[:50] + f"_{course_id}"
+    if len(slug) > 50:
+        slug = slug[:50]
+    
+    data = {
+        "title": f"Live Stream - {course_title}",
+        "description": f"Live streaming for course: {course_title}",
+        "type": "normal",
+        "mode": "push",  # Push mode for RTMP streaming
+        "slug": slug,
+        "fps": 30,
+        "convert_info": [
+            {
+                "audio_bitrate": 128,
+                "video_bitrate": 1000,
+                "resolution_width": 1280,
+                "resolution_height": 720
+            }
+        ],
+        "archive_enabled": False,
+        "catchup_enabled": False,
+        "secure_link_enabled": False
+    }
+
+    logger.debug(f"Creating stream with data: {data}")
+    
+    import time
+    
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Attempting to create stream (attempt {attempt + 1}/{max_retries})")
+            
+            # Increase timeout for stream creation as it might take longer
+            response = requests.post(f"{VOD_BASE_URL}/streams", json=data, headers=headers, timeout=60)
+            
+            if response.status_code == 201:
+                stream_data = response.json()
+                logger.info(f"Successfully created stream {stream_data.get('data', {}).get('id')} for course {course_title}")
+                return stream_data
+            elif response.status_code == 504:
+                logger.warning(f"Gateway timeout on attempt {attempt + 1}: HTTP {response.status_code}")
+                if attempt < max_retries - 1:
+                    # Wait before retrying (exponential backoff)
+                    wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
+                    logger.info(f"Waiting {wait_time} seconds before retry...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    raise Exception(f"Failed to create live stream after {max_retries} attempts: HTTP {response.status_code} - Gateway Time-out")
+            else:
+                logger.error(f"Failed to create stream: HTTP {response.status_code} - {response.text}")
+                raise Exception(f"Failed to create live stream: HTTP {response.status_code} - {response.reason}")
+                
+        except requests.exceptions.Timeout:
+            logger.warning(f"Request timeout on attempt {attempt + 1}")
+            if attempt < max_retries - 1:
+                wait_time = (2 ** attempt) * 5
+                logger.info(f"Waiting {wait_time} seconds before retry...")
+                time.sleep(wait_time)
+                continue
+            else:
+                raise Exception("Stream service is temporarily unavailable (timeout after retries)")
+        except requests.exceptions.ConnectionError:
+            logger.error("Failed to connect to stream service")
+            raise Exception("Unable to connect to stream service")
+        except Exception as e:
+            logger.error(f"Unexpected error creating stream: {str(e)}")
+            raise Exception(f"Stream service error: {str(e)}")
+    
+    # This should not be reached, but just in case
+    raise Exception("Failed to create stream after all retries")
+
+
+def delete_stream(stream_id):
+    """
+    Delete a live stream from ArvanCloud.
+    """
+    headers = {
+        "Authorization": f"Apikey {VOD_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    logger.debug(f"Deleting stream: {stream_id}")
+    
+    try:
+        response = requests.delete(f"{VOD_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
+        
+        if response.status_code == 200:
+            logger.info(f"Successfully deleted stream {stream_id}")
+            return response.json()
+        else:
+            logger.error(f"Failed to delete stream: HTTP {response.status_code} - {response.text}")
+            raise Exception(f"Failed to delete live stream: HTTP {response.status_code} - {response.reason}")
+    except requests.exceptions.Timeout:
+        logger.error("Stream API request timed out")
+        raise Exception("Stream service is temporarily unavailable (timeout)")
+    except requests.exceptions.ConnectionError:
+        logger.error("Failed to connect to stream service")
+        raise Exception("Unable to connect to stream service")
+    except Exception as e:
+        logger.error(f"Unexpected error deleting stream: {str(e)}")
+        raise Exception(f"Stream service error: {str(e)}")
+
+
+def get_stream(stream_id):
+    """
+    Get stream details from ArvanCloud.
+    """
+    headers = {
+        "Authorization": f"Apikey {VOD_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    logger.debug(f"Getting stream: {stream_id}")
+    
+    try:
+        response = requests.get(f"{VOD_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to get stream: HTTP {response.status_code} - {response.text}")
+            return None
+    except Exception as e:
+        logger.error(f"Error getting stream {stream_id}: {str(e)}")
+        return None

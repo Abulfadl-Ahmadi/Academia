@@ -1,0 +1,1 @@
+# courses/management/__init__.py

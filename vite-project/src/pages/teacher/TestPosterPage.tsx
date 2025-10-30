@@ -5,7 +5,7 @@ import {
   Calendar,
   Clock,
   BookOpen,
-  ArrowLeft,
+  ArrowRight,
   Copy,
   Link,
 } from "lucide-react";
@@ -289,7 +289,7 @@ export default function TestPosterPage() {
           onClick={() => navigate("/panel/question-tests")}
           className="flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4" />
           بازگشت
         </Button>
 

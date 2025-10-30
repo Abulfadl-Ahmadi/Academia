@@ -20,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search, ArrowLeft, Download, Eye, Share } from 'lucide-react';
+import { Loader2, Search, ArrowRight, Download, Eye, Share } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -166,7 +166,7 @@ const TestReport = () => {
             className="mt-4"
             onClick={() => navigate('/panel/tests')}
           >
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت به لیست آزمون‌ها
           </Button>
         </CardContent>
@@ -194,7 +194,7 @@ const TestReport = () => {
         className="mb-4"
         onClick={() => navigate('/panel/question-tests')}
       >
-        <ArrowLeft className="ml-2 h-4 w-4" />
+        <ArrowRight className="ml-2 h-4 w-4" />
         بازگشت به لیست آزمون‌ها
       </Button>
 

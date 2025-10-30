@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 // import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 // @ts-expect-error moment-jalaali lacks proper TypeScript definitions
 import moment from 'moment-jalaali';
@@ -119,7 +119,7 @@ const TestResult = () => {
             className="mt-4"
             onClick={() => navigate('/panel/tests')}
           >
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت به لیست آزمون‌ها
           </Button>
         </CardContent>
@@ -140,7 +140,7 @@ const TestResult = () => {
             className="mt-4"
             onClick={() => navigate('/panel/tests')}
           >
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت به لیست آزمون‌ها
           </Button>
         </CardContent>
@@ -160,7 +160,7 @@ const TestResult = () => {
         className="mb-4"
         onClick={() => navigate('/panel/tests')}
       >
-        <ArrowLeft className="ml-2 h-4 w-4" />
+        <ArrowRight className="ml-2 h-4 w-4" />
         بازگشت به لیست آزمون‌ها
       </Button>
 

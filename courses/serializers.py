@@ -33,7 +33,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'description', 'teacher', 'students',
-            'vod_channel_id', 'created_at', 'updated_at', 'is_active',
+            'vod_channel_id', 'stream_id', 'created_at', 'updated_at', 'is_active',
             'students_count', 'sessions_count', 'tests_count'
         ]
         read_only_fields = ['created_at', 'updated_at']

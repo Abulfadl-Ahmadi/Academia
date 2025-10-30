@@ -21,7 +21,7 @@ import {
   BarChart3,
   TrendingUp,
   Edit,
-  ArrowLeft,
+  ArrowRight,
   FileText,
   PlayCircle,
   Clock,
@@ -142,7 +142,7 @@ export default function TestCollectionDetail() {
           onClick={() => navigate("/panel/test-collections")}
           className="mt-4"
         >
-          <ArrowLeft className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-2 h-4 w-4" />
           بازگشت به لیست
         </Button>
       </div>
@@ -157,7 +157,7 @@ export default function TestCollectionDetail() {
           size="sm"
           onClick={() => navigate("/panel/test-collections")}
         >
-          <ArrowLeft className="h-4 w-4 ml-1" />
+          <ArrowRight className="h-4 w-4 ml-1" />
           بازگشت
         </Button>
         <div className="flex items-center gap-2">

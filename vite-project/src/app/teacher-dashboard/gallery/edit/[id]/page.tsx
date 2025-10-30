@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { 
   Save, 
-  ArrowLeft, 
+  ArrowRight, 
   ImageIcon, 
   X,
   Loader2,
@@ -184,7 +184,7 @@ export default function EditGalleryPage() {
           size="sm"
           onClick={() => navigate(-1)}
         >
-          <ArrowLeft className="h-4 w-4 ml-2" />
+          <ArrowRight className="h-4 w-4 ml-2" />
           بازگشت
         </Button>
         <div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, FileText, Folder, Calendar } from 'lucide-react';
+import { ArrowRight, Clock, FileText, Folder, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -136,7 +136,7 @@ export default function QuestionTestDetailPage() {
             onClick={() => navigate('/panel/question-tests')}
             className="flex items-center gap-2"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
             بازگشت
           </Button>
           <div>

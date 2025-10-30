@@ -22,7 +22,7 @@ import {
   FileText,
   BookOpen,
   Save,
-  ArrowLeft,
+  ArrowRight,
   Loader2,
 } from "lucide-react";
 
@@ -307,7 +307,7 @@ export default function EditProductPage() {
             size="sm"
             onClick={() => navigate("/panel/products")}
           >
-            <ArrowLeft className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2" />
             بازگشت
           </Button>
           <div>

@@ -323,7 +323,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
           const pdfId = await uploadPDFToParsPack(lectureNotesFile);
           
           // Create File record for PDF
-          await axiosInstance.post('/contents/files/', {
+          await axiosInstance.post('/files/', {
             file_id: pdfId,
             file_type: 'application/pdf',
             content_type: 'note',

@@ -24,6 +24,9 @@ export function LoginForm({
 // inside LoginForm.tsx
 const { login, user } = useUser()
 console.log(user)
+if (user) {
+  navigate("/panel")
+}
 
   useEffect(() => {
     // Check for success message from navigation state

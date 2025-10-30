@@ -19,7 +19,7 @@ import {
   Users,
   CheckCircle,
   Target,
-  ArrowLeft,
+  ArrowRight,
   FileText,
   Award
 } from "lucide-react";
@@ -74,7 +74,7 @@ export default function TestCollectionStatistics() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" disabled>
-            <ArrowLeft className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" />
             بازگشت
           </Button>
           <div className="h-8 bg-muted rounded w-48 animate-pulse"></div>
@@ -116,7 +116,7 @@ export default function TestCollectionStatistics() {
           آمار این مجموعه آزمون در دسترس نیست.
         </p>
         <Button onClick={() => navigate(`/panel/test-collections/${id}`)} className="mt-4">
-          <ArrowLeft className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-2 h-4 w-4" />
           بازگشت به مجموعه آزمون
         </Button>
       </div>
@@ -131,7 +131,7 @@ export default function TestCollectionStatistics() {
           size="sm"
           onClick={() => navigate(`/panel/test-collections/${id}`)}
         >
-          <ArrowLeft className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-2 h-4 w-4" />
           بازگشت
         </Button>
         <div className="flex items-center gap-2">

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import { ArrowLeft, Radio, AlertCircle, MessageCircle } from "lucide-react";
+import { ArrowRight, Radio, AlertCircle, MessageCircle } from "lucide-react";
 import LiveChat from "./LiveChat";
 
 interface Course {
@@ -67,7 +67,7 @@ export default function LiveStreamPage() {
           دوره یافت نشد
         </h3>
         <Button onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowRight className="w-4 h-4 mr-2" />
           بازگشت
         </Button>
       </div>
@@ -85,7 +85,7 @@ export default function LiveStreamPage() {
           این کلاس در حال حاضر آنلاین نیست یا پخش زنده تنظیم نشده است
         </p>
         <Button onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowRight className="w-4 h-4 mr-2" />
           بازگشت
         </Button>
       </div>
@@ -102,7 +102,7 @@ export default function LiveStreamPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={() => navigate(-1)}>
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
                 <div>
                   <div className="flex items-center gap-2 mb-1">

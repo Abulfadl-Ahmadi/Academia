@@ -31,12 +31,13 @@ class Course(models.Model):
         limit_choices_to={"role": "teacher"},
     )
     vod_channel_id = models.CharField(max_length=100, blank=True, null=True)
+    stream_id = models.CharField(max_length=100, blank=True, null=True, help_text="ArvanCloud Stream ID for live streaming")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     rtmp_url = models.CharField(max_length=255,blank=True, null=True, default=None)
     rtmp_key = models.CharField(max_length=255, blank=True, null=True, default=None)
-    live_iframe = models.TextField(blank=True, null=True, help_text="کد iframe برای نمایش پخش زنده")
+    live_iframe = models.TextField(blank=True, null=True, help_text="کد iframe برای نمایش پخش زنده", default="")
     is_live = models.BooleanField(default=False)
     chat_mode = models.CharField(
         max_length=20, 

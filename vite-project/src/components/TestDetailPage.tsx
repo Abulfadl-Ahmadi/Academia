@@ -13,7 +13,7 @@ import {
   Calendar,
   AlertTriangle,
   PlayCircle,
-  ArrowLeft,
+  ArrowRight,
   CheckCircle,
   Users,
   BookOpen,
@@ -254,7 +254,7 @@ export default function TestDetailPage() {
           لطفاً لینک را بررسی کرده و دوباره تلاش کنید یا با مدرس خود تماس بگیرید.
         </p>
         <Button className="mt-4" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-4 w-4 ml-1" />
+          <ArrowRight className="h-4 w-4 ml-1" />
           بازگشت به صفحه قبل
         </Button>
       </div>

@@ -14,7 +14,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/scroll-mode/lib/styles/index.css";
 import "@react-pdf-viewer/page-navigation/lib/styles/index.css";
 import "@react-pdf-viewer/zoom/lib/styles/index.css";
-import { ArrowLeft, ArrowRight, Menu, X, LogOut, Check, Maximize, Minimize } from "lucide-react";
+import { ArrowRight, ArrowRight, Menu, X, LogOut, Check, Maximize, Minimize } from "lucide-react";
 import AnswerSheet from "./AnswerSheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -424,7 +424,7 @@ const TestDetailPage: React.FC = () => {
                       disabled={props.isDisabled}
                       onClick={props.onClick}
                     >
-                      <ArrowLeft className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </Button>
                   )}
                 </NextPageButton>

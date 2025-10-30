@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Calendar, Clock, BookOpen, ArrowLeft, Copy, Link } from "lucide-react";
+import { Calendar, Clock, BookOpen, ArrowRight, Copy, Link } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import { TextShimmer } from "../../components/motion-primitives/text-shimmer";
@@ -385,7 +385,7 @@ export default function PublicTestPosterPage() {
           onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4" />
           بازگشت به صفحه اصلی
         </Button>
 
