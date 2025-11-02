@@ -31,17 +31,16 @@ const FloatingShapes = () => {
     ];
 
     const generateShapes = () => {
-      const newShapes = shapes.slice(0, 10).map((shape, index) => {
-        // Generate x position avoiding the center area (40%-60%)
+      const count = 6;
+      const newShapes = shapes.slice(0, count).map((shape, index) => {
         let x;
-        if (Math.random() < 0.5) {
+        if (index < count / 2) {
           // Left side: 5% to 35%
           x = Math.random() * 30 + 5;
         } else {
           // Right side: 65% to 95%
           x = Math.random() * 30 + 65;
         }
-
         return {
           id: index,
           src: `/Glass_shapes_optimized/${shape}`,
