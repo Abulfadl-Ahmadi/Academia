@@ -78,8 +78,12 @@ export default function FolderManagerPage() {
     loadQuestionStats();
   }, []);
 
+  // Helper to sort folders by name (alphabetically, case-insensitive, Persian/English safe)
+  const sortFoldersByName = (folders: Folder[]) =>
+    [...folders].sort((a, b) => a.name.localeCompare(b.name, 'fa', { sensitivity: 'base' }));
+
   const flatten = (nodes: Folder[], acc: Folder[] = []) => {
-    for (const n of nodes) {
+    for (const n of sortFoldersByName(nodes)) {
       acc.push(n);
       if (n.children && n.children.length) flatten(n.children, acc);
     }
@@ -425,7 +429,7 @@ export default function FolderManagerPage() {
 
   const renderTree = (nodes: Folder[], depth = 0) => (
     <ul className={depth === 0 ? 'space-y-1' : 'space-y-1 mt-1'}>
-      {nodes.map(n => {
+      {sortFoldersByName(nodes).map(n => {
         const isEditing = !!editing[n.id];
         const hasChildren = !!n.children && n.children.length > 0;
         const isExpanded = expanded.has(n.id);
