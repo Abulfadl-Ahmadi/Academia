@@ -579,6 +579,21 @@ const TestPageRedesigned: React.FC = () => {
                     <MathPreview text={test.questions[currentQuestionIndex].question_text} />
                   </div>
 
+                  {/* Question Images */}
+                  {test.questions[currentQuestionIndex].images && test.questions[currentQuestionIndex].images.length > 0 && (
+                    <div className="flex flex-col gap-4">
+                      {test.questions[currentQuestionIndex].images.map((image, idx) => (
+                        <div key={image.id} className="flex justify-center">
+                          <img 
+                            src={image.image} 
+                            alt={image.alt_text || `سوال ${currentQuestionIndex + 1} - تصویر ${idx + 1}`}
+                            className="max-w-full h-auto rounded-lg border border-border shadow-sm"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Question Options */}
                   <RadioGroup.Root
                     value={answers[currentQuestionIndex + 1] || ""}
@@ -644,6 +659,40 @@ const TestPageRedesigned: React.FC = () => {
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
                   </div>
+
+                  {/* Detailed Solution Section */}
+                  {(test.questions[currentQuestionIndex].detailed_solution || 
+                    (test.questions[currentQuestionIndex].detailed_solution_images && 
+                     test.questions[currentQuestionIndex].detailed_solution_images.length > 0)) && (
+                    <div className="pt-6 border-t space-y-4">
+                      <details className="cursor-pointer group">
+                        <summary className="font-semibold text-base hover:text-primary transition-colors">
+                          📝 راه‌حل تفصیلی
+                        </summary>
+                        <div className="mt-4 space-y-4 pt-4 border-t">
+                          {test.questions[currentQuestionIndex].detailed_solution && (
+                            <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                              <MathPreview text={test.questions[currentQuestionIndex].detailed_solution} />
+                            </div>
+                          )}
+                          {test.questions[currentQuestionIndex].detailed_solution_images && 
+                           test.questions[currentQuestionIndex].detailed_solution_images.length > 0 && (
+                            <div className="flex flex-col gap-4">
+                              {test.questions[currentQuestionIndex].detailed_solution_images.map((image, idx) => (
+                                <div key={image.id} className="flex justify-center">
+                                  <img 
+                                    src={image.image} 
+                                    alt={image.alt_text || `راه‌حل ${idx + 1}`}
+                                    className="max-w-full h-auto rounded-lg border border-border shadow-sm"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

@@ -68,14 +68,18 @@ import CreateQuestionPage from "@/app/teacher-dashboard/questions/create";
 import EditQuestionPage from "@/app/teacher-dashboard/questions/edit";
 
 // Test Collection Components
+
 import TestCollectionList from "@/testCollections/TestCollectionList";
 import TestCollectionDetail from "@/testCollections/TestCollectionDetail";
 import TestCollectionStatistics from "@/testCollections/TestCollectionStatistics";
 import StudentProgressList from "@/testCollections/StudentProgressList";
-// Explicitly import the TypeScript version with extension
 import TestCollectionForm from "@/testCollections/TestCollectionForm.tsx";
 import CreateTestInCollection from "@/testCollections/CreateTestInCollection";
 import EditTestInCollection from "@/testCollections/EditTestInCollection";
+import TestStatisticsPage from "@/testCollections/TestStatisticsPage";
+import StudentTestResultPage from "@/testCollections/StudentTestResultPage";
+import TestAnswerSheetPage from "@/testCollections/TestAnswerSheetPage";
+import TestLeaderboardPage from "@/testCollections/TestLeaderboardPage";
 
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout";
@@ -150,6 +154,10 @@ export default function PanelRoute() {
           <Route
             path="/test-collections/:id/progress"
             element={<StudentProgressList />}
+          />
+          <Route
+            path="/tests/:testId/answer-sheet"
+            element={<TestAnswerSheetPage />}
           />
           <Route path="/tests/active" element={<ActiveTestsPage />} />
           <Route
@@ -232,6 +240,10 @@ export default function PanelRoute() {
           />
           <Route path="/tests" element={<TestsList />} />
           <Route path="/tests/result/:id" element={<TestResult />} />
+          <Route path="/tests/:testId/statistics" element={<TestStatisticsPage />} />
+          <Route path="/tests/:testId/leaderboard" element={<TestLeaderboardPage />} />
+          <Route path="/tests/:testId/student/:studentId/result" element={<StudentTestResultPage />} />
+          <Route path="/tests/:testId/answer-sheet" element={<TestAnswerSheetPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/transactions/new" element={<NewTransactionPage />} />
           <Route path="/products" element={<TeacherProducts />} />

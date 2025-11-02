@@ -26,7 +26,317 @@ from .serializers import (
 from rest_framework.exceptions import ValidationError
 import pytz
 import json
+from rest_framework.views import APIView
+from django.db.models import F, Count
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
 
+
+class TestStatisticsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, test_id):
+        try:
+            test = Test.objects.get(id=test_id)
+        except Test.DoesNotExist:
+            return Response({"error": "Test not found"}, status=404)
+
+        # جمع‌آوری لیست دانش‌آموزان و درصد هرکدام
+        sessions = StudentTestSession.objects.filter(test=test, status='completed').select_related('user')
+        students = []
+        total_percent = 0
+        
+        for s in sessions:
+            # محاسبه درصد دانش‌آموز
+            answers = StudentAnswer.objects.filter(session=s)
+            
+            if test.content_type == TestContentType.TYPED_QUESTION:
+                # For typed question tests
+                questions = test.questions.all()
+                total_questions = questions.count()
+                correct_answers = 0
+                
+                answer_map = {a.question_number: a for a in answers}
+                for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
+                    answer = answer_map.get(idx)
+                    if answer and answer.answer:
+                        is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
+                        if is_correct:
+                            correct_answers += 1
+            else:
+                # For PDF tests
+                total_questions = test.primary_keys.count()
+                correct_answers = 0
+                
+                answer_map = {a.question_number: a for a in answers}
+                for q_num in range(1, total_questions + 1):
+                    answer = answer_map.get(q_num)
+                    try:
+                        correct_key = test.primary_keys.get(question_number=q_num)
+                        if answer and answer.answer == correct_key.answer:
+                            correct_answers += 1
+                    except:
+                        pass
+            
+            # محاسبه درصد
+            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
+            percent = max(0, percent/3)  # حداقل صفر
+            total_percent += percent
+            
+            students.append({
+                "id": s.user.id,
+                "name": s.user.get_full_name() or s.user.username,
+                "percent": round(percent, 2),
+                "join_time": s.entry_time,
+            })
+
+        avg_percent = (total_percent / len(students)) if students else 0
+
+        data = {
+            "id": test.id,
+            "name": test.name,
+            "description": test.description,
+            "questions_count": test.questions.count() if test.content_type == TestContentType.TYPED_QUESTION else test.primary_keys.count(),
+            "student_count": sessions.count(),
+            "average_percent": round(avg_percent, 2),
+            "students": students,
+        }
+        return Response(data)
+
+
+class TestStatisticsExcelAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, test_id):
+
+        try:
+            test = Test.objects.get(id=test_id)
+        except Test.DoesNotExist:
+            return Response({"error": "Test not found"}, status=404)
+
+        # جمع‌آوری اطلاعات دانش‌آموزان
+        sessions = StudentTestSession.objects.filter(test=test, status='completed').select_related('user')
+        students_data = []
+        
+        for s in sessions:
+            answers = StudentAnswer.objects.filter(session=s)
+            
+            if test.content_type == TestContentType.TYPED_QUESTION:
+                questions = test.questions.all()
+                total_questions = questions.count()
+                correct_answers = 0
+                
+                answer_map = {a.question_number: a for a in answers}
+                for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
+                    answer = answer_map.get(idx)
+                    if answer and answer.answer:
+                        is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
+                        if is_correct:
+                            correct_answers += 1
+            else:
+                total_questions = test.primary_keys.count()
+                correct_answers = 0
+                
+                answer_map = {a.question_number: a for a in answers}
+                for q_num in range(1, total_questions + 1):
+                    answer = answer_map.get(q_num)
+                    try:
+                        correct_key = test.primary_keys.get(question_number=q_num)
+                        if answer and answer.answer == correct_key.answer:
+                            correct_answers += 1
+                    except:
+                        pass
+            
+            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
+            percent = max(0, percent/3)
+            
+            students_data.append({
+                "name": s.user.get_full_name() or s.user.username,
+                "username": s.user.username,
+                "email": s.user.email,
+                "correct": correct_answers,
+                "wrong": answers.count() - correct_answers,
+                "total": total_questions,
+                "percent": round(percent, 2),
+                "join_time": s.entry_time.strftime('%Y-%m-%d %H:%M'),
+            })
+
+        # ایجاد فایل Excel
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "آمار آزمون"
+
+        # تنظیم عرض ستون‌ها
+        ws.column_dimensions['A'].width = 20
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 20
+        ws.column_dimensions['D'].width = 10
+        ws.column_dimensions['E'].width = 10
+        ws.column_dimensions['F'].width = 10
+        ws.column_dimensions['G'].width = 12
+        ws.column_dimensions['H'].width = 20
+
+        # ایجاد header
+        headers = ["نام کامل", "نام کاربری", "ایمیل", "صحیح", "غلط", "کل", "درصد", "زمان شروع"]
+        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+        header_font = Font(bold=True, color="FFFFFF")
+
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col_num)
+            cell.value = header
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        # اضافه کردن داده‌ها
+        for row_num, student in enumerate(students_data, 2):
+            ws.cell(row=row_num, column=1).value = student["name"]
+            ws.cell(row=row_num, column=2).value = student["username"]
+            ws.cell(row=row_num, column=3).value = student["email"]
+            ws.cell(row=row_num, column=4).value = student["correct"]
+            ws.cell(row=row_num, column=5).value = student["wrong"]
+            ws.cell(row=row_num, column=6).value = student["total"]
+            ws.cell(row=row_num, column=7).value = student["percent"]
+            ws.cell(row=row_num, column=8).value = student["join_time"]
+
+            # تنظیم رنگ برای درصد
+            percent_cell = ws.cell(row=row_num, column=7)
+            if student["percent"] >= 70:
+                percent_cell.fill = PatternFill(start_color="70AD47", end_color="70AD47", fill_type="solid")
+            elif student["percent"] >= 50:
+                percent_cell.fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")
+            else:
+                percent_cell.fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+            percent_cell.font = Font(color="FFFFFF", bold=True)
+
+        # ایجاد پاسخ HTTP
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = f'attachment; filename="test_statistics_{test.id}.xlsx"'
+        wb.save(response)
+        return response
+
+
+class StudentTestResultAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, test_id, student_id):
+        try:
+            test = Test.objects.get(id=test_id)
+            session = StudentTestSession.objects.get(test=test, user_id=student_id, status='completed')
+        except Test.DoesNotExist:
+            return Response({"error": "Test not found"}, status=404)
+        except StudentTestSession.DoesNotExist:
+            return Response({"error": "Result not found"}, status=404)
+
+        # گرفتن تمام پاسخ‌های دانش‌آموز
+        answers = StudentAnswer.objects.filter(session=session)
+        
+        if test.content_type == TestContentType.TYPED_QUESTION:
+            # For typed question tests, use questions and their correct_option
+            questions = sorted(test.questions.all(), key=lambda q: q.id)
+            total_questions = len(questions)
+            correct_answers = 0
+            wrong_answers = 0
+            
+            answer_details = []
+            answer_map = {a.question_number: a for a in answers}
+            
+            for idx, question in enumerate(questions, 1):
+                answer = answer_map.get(idx)  # Use sequential number as key
+                
+                # Find the correct option's order
+                correct_option_order = None
+                student_answer_order = None
+                
+                if question.correct_option:
+                    correct_option_order = question.correct_option.order
+                
+                if answer and answer.answer:
+                    # Find the selected option's order
+                    try:
+                        selected_option = question.options.get(id=answer.answer)
+                        student_answer_order = selected_option.order
+                    except Option.DoesNotExist:
+                        student_answer_order = None
+                
+                if answer:
+                    is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
+                    if is_correct:
+                        correct_answers += 1
+                    else:
+                        wrong_answers += 1
+                    student_ans = student_answer_order  # Use option order instead of ID
+                else:
+                    # Student didn't answer
+                    is_correct = False
+                    student_ans = None
+
+                answer_details.append({
+                    "question_number": idx,
+                    "answer": student_ans,  # Option order (1, 2, 3, 4)
+                    "correct_answer": correct_option_order,  # Option order (1, 2, 3, 4)
+                    "is_correct": is_correct
+                })
+        else:
+            # For PDF tests, use primary_keys
+            correct_answers = 0
+            wrong_answers = 0
+            total_questions = test.primary_keys.count()
+            
+            # Calculate score
+            answer_details = []
+            answer_map = {a.question_number: a for a in answers}
+            for q_num in range(1, total_questions + 1):
+                answer = answer_map.get(q_num)
+                try:
+                    correct_key = test.primary_keys.get(question_number=q_num)
+                    if answer:
+                        is_correct = answer.answer == correct_key.answer
+                        if is_correct:
+                            correct_answers += 1
+                        else:
+                            wrong_answers += 1
+                        student_ans = answer.answer
+                    else:
+                        # دانش‌آموز پاسخی نداده
+                        is_correct = False
+                        student_ans = None
+
+                    answer_details.append({
+                        "question_number": q_num,
+                        "answer": student_ans,
+                        "correct_answer": correct_key.answer,
+                        "is_correct": is_correct
+                    })
+                except:
+                    answer_details.append({
+                        "question_number": q_num,
+                        "answer": answer.answer if answer else None,
+                        "correct_answer": None,
+                        "is_correct": False
+                    })
+
+        # Calculate score percentage
+        score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
+        score_percentage = score_percentage/3
+        
+        data = {
+            "id": session.id,
+            "student_name": session.user.get_full_name() or session.user.username,
+            "test_name": test.name,
+            "total_questions": total_questions,
+            "answered_questions": answers.exclude(answer__isnull=True).count(),
+            "correct_answers": correct_answers,
+            "wrong_answers": wrong_answers,
+            "percent": round(score_percentage, 2),
+            "entry_time": session.entry_time,
+            "exit_time": session.exit_time,
+            "status": session.status,
+            "answers": answer_details,
+        }
+        return Response(data)
 
 
 class ListCreateTestView(generics.ListCreateAPIView):
@@ -580,6 +890,31 @@ class CreateReport(views.APIView):
 
                     answer_details.append({
                         "question_number": idx,
+                        "question_text": question.question_text,
+                        "question_images": [
+                            {
+                                "id": img.id,
+                                "image": img.image.url if img.image else "",
+                                "alt_text": img.alt_text,
+                                "order": img.order
+                            } for img in question.images.all().order_by('order')
+                        ],
+                        "options": [
+                            {
+                                "id": opt.id,
+                                "order": opt.order,
+                                "option_text": opt.option_text
+                            } for opt in question.options.all().order_by('order')
+                        ],
+                        "detailed_solution": question.detailed_solution,
+                        "solution_images": [
+                            {
+                                "id": img.id,
+                                "image": img.image.url if img.image else "",
+                                "alt_text": img.alt_text,
+                                "order": img.order
+                            } for img in question.detailed_solution_images.all().order_by('order')
+                        ],
                         "student_answer": student_ans,  # Option order (1, 2, 3, 4)
                         "correct_answer": correct_option_order,  # Option order (1, 2, 3, 4)
                         "is_correct": is_correct
@@ -870,21 +1205,38 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                 answers = StudentAnswer.objects.filter(session=session)
                 correct_answers = 0
                 wrong_answers = 0
-                total_questions = test.get_total_questions()
+                total_questions = 0
                 
-                answer_map = {a.question_number: a for a in answers}
-                for q_num in range(1, total_questions + 1):
-                    answer = answer_map.get(q_num)
-                    try:
-                        correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer:
-                            is_correct = answer.answer == correct_key.answer
+                if test.content_type == TestContentType.TYPED_QUESTION:
+                    # For typed question tests
+                    questions = test.questions.all()
+                    total_questions = questions.count()
+                    
+                    answer_map = {a.question_number: a for a in answers}
+                    for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
+                        answer = answer_map.get(idx)
+                        if answer and answer.answer:
+                            is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                             if is_correct:
                                 correct_answers += 1
                             else:
                                 wrong_answers += 1
-                    except:
-                        continue
+                else:
+                    # For PDF tests
+                    total_questions = test.get_total_questions()
+                    answer_map = {a.question_number: a for a in answers}
+                    for q_num in range(1, total_questions + 1):
+                        answer = answer_map.get(q_num)
+                        try:
+                            correct_key = test.primary_keys.get(question_number=q_num)
+                            if answer:
+                                is_correct = answer.answer == correct_key.answer
+                                if is_correct:
+                                    correct_answers += 1
+                                else:
+                                    wrong_answers += 1
+                        except:
+                            continue
                 
                 # محاسبه درصد نمره
                 score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
@@ -902,13 +1254,14 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                 })
             else:
                 # اگر آزمون داده نشده، نمره صفر
+                total_questions = test.get_total_questions() if test.content_type != TestContentType.TYPED_QUESTION else test.questions.count()
                 results.append({
                     'test_name': test.name,
                     'test_id': test.id,
                     'score': 0,
                     'percentage': 0,
                     'date': None,
-                    'total_questions': test.get_total_questions(),
+                    'total_questions': total_questions,
                     'correct_answers': 0,
                     'wrong_answers': 0
                 })

@@ -46,7 +46,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 // Component for rendering images (handles both regular images and SVG)
-const ImageRenderer: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) => {
+export const ImageRenderer: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) => {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [isSvg, setIsSvg] = useState(false);
 

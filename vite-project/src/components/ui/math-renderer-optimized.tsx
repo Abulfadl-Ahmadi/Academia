@@ -10,6 +10,11 @@ interface MathRendererProps {
 }
 
 export function MathRenderer({ content, className = '' }: MathRendererProps) {
+  // Handle undefined or empty content
+  if (!content || typeof content !== 'string') {
+    return <div className={`prose prose-slate dark:prose-invert max-w-none question-text ${className}`} dir="rtl">-</div>;
+  }
+
   // Split into paragraphs by two or more newlines
   const paragraphs = content.split(/\n{2,}/g);
 

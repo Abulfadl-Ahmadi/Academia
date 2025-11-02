@@ -31,6 +31,7 @@ const TestPage = lazy(
   () => import("./app/teacher-dashboard/tests/TestPageNew")
 );
 const TestInfoPage = lazy(() => import("./components/TestDetailPage"));
+const TestStatisticsPage = lazy(() => import("@/testCollections/TestStatisticsPage"));
 const ShopPage = lazy(() => import("./app/shop/page"));
 const ProductDetailPage = lazy(() => import("./app/shop/[id]/page"));
 const GradeCalculatorPage = lazy(() => import("@/pages/GradeCalculatorPage"));

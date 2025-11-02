@@ -154,15 +154,15 @@ const TestResult = () => {
   const { test } = report;
 
   return (
-    <div className="container mx-auto">
-      <Button
+    <div className="container mx-auto persian-number">
+      {/* <Button
         variant="outline"
         className="mb-4"
         onClick={() => navigate('/panel/tests')}
       >
         <ArrowRight className="ml-2 h-4 w-4" />
         بازگشت به لیست آزمون‌ها
-      </Button>
+      </Button> */}
 
       <Card className="mb-8">
         <CardHeader>
@@ -175,25 +175,35 @@ const TestResult = () => {
               <h3 className="font-bold mb-2">اطلاعات آزمون</h3>
               <p>درس: {test.course || 'نامشخص'}</p>
               <p>مدت زمان: {test.duration || 0} دقیقه</p>
-              <p>شروع: {formatDate(test.start_time)}</p>
-              <p>پایان: {formatDate(test.end_time)}</p>
+              <p>شروع آزمون : {formatDate(test.start_time)}</p>
+              <p>پایان آزمون: {formatDate(test.end_time)}</p>
             </div>
             <div className="p-4 rounded-lg">
               <h3 className="font-bold mb-2">نتیجه شما</h3>
               <div className="mb-4">
                 <Progress value={session.score.percentage} className="h-2" />
               </div>
-              <p className="text-center font-bold text-xl">
+              <p className="text-center font-bold text-xl mb-3">
                 {session.score.percentage.toFixed(2)}%
               </p>
-              <p className="text-center">
+              <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+                <div className="p-2 bg-green-500/10 rounded text-center">
+                  <p className="text-green-600 font-bold">{session.score.correct}</p>
+                  <p className="text-xs">پاسخ صحیح</p>
+                </div>
+                <div className="p-2 bg-red-500/10 rounded text-center">
+                  <p className="text-red-600 font-bold">{session.score.total - session.score.correct}</p>
+                  <p className="text-xs">پاسخ غلط</p>
+                </div>
+              </div>
+              {/* <p className="text-center">
                 {session.score.correct} از {session.score.total} پاسخ صحیح
-              </p>
+              </p> */}
               <p className="text-center mt-2">
-                زمان شروع: {formatDate(session.start_time)}
+                زمان شروع جلسه: {formatDate(session.start_time)}
               </p>
               <p className="text-center">
-                زمان پایان:{' '}
+                زمان پایان جلسه:{' '}
                 {session.end_time
                   ? formatDate(session.end_time)
                   : 'هنوز پایان نیافته'}

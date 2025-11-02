@@ -29,9 +29,9 @@ import {
   CheckCircle,
   Share2,
   MoreHorizontal,
+  Trophy,
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import ShareTestModal from "@/components/ShareTestModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,11 +84,13 @@ export default function TestCollectionDetail() {
   const { user } = useUser();
   const [collection, setCollection] = useState<TestCollection | null>(null);
   const [loading, setLoading] = useState(true);
-  const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [selectedTest, setSelectedTest] = useState<Test | null>(null);
 
   const handleViewResult = (testId: number) => {
     navigate(`/panel/tests/result/${testId}`);
+  };
+
+  const handleViewAnswerSheet = (testId: number) => {
+    navigate(`/panel/tests/${testId}/answer-sheet`);
   };
 
   const handleEditTest = (testId: number) => {
@@ -96,13 +98,11 @@ export default function TestCollectionDetail() {
   };
 
   const handleTestStatistics = (testId: number) => {
-    // فعلاً به صفحه نتایج آزمون هدایت می‌کنیم
-    navigate(`/panel/tests/result/${testId}`);
+    navigate(`/panel/tests/${testId}/statistics`);
   };
 
-  const handleShareTest = (test: Test) => {
-    setSelectedTest(test);
-    setShareModalOpen(true);
+  const handleViewLeaderboard = (testId: number) => {
+    navigate(`/panel/tests/${testId}/leaderboard`);
   };
 
   const fetchCollection = useCallback(async () => {
@@ -409,6 +409,12 @@ export default function TestCollectionDetail() {
                                 آمار و نتایج
                               </DropdownMenuItem>
                               <DropdownMenuItem
+                                onClick={() => handleViewLeaderboard(test.id)}
+                              >
+                                <Trophy className="h-4 w-4 ml-2" />
+                                برترین‌ها
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
                                 onClick={() =>
                                   window.open(
                                     `/test-poster/${test.id}`,
@@ -421,12 +427,20 @@ export default function TestCollectionDetail() {
                               </DropdownMenuItem>
                             </>
                           ) : test.status === "completed" ? (
-                            <DropdownMenuItem
-                              onClick={() => handleViewResult(test.id)}
-                            >
-                              <CheckCircle className="h-4 w-4 ml-2" />
-                              مشاهده نتیجه
-                            </DropdownMenuItem>
+                            <>
+                              <DropdownMenuItem
+                                onClick={() => handleViewResult(test.id)}
+                              >
+                                <CheckCircle className="h-4 w-4 ml-2" />
+                                مشاهده نتیجه
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleViewAnswerSheet(test.id)}
+                              >
+                                <FileText className="h-4 w-4 ml-2" />
+                                مشاهده پاسخ‌نامه
+                              </DropdownMenuItem>
+                            </>
                           ) : (
                             <DropdownMenuItem
                               onClick={() => navigate(`/tests/${test.id}/info`)}
@@ -480,15 +494,26 @@ export default function TestCollectionDetail() {
                           برای عملیات بیشتر از منوی سه نقطه استفاده کنید
                         </div>
                       ) : test.status === "completed" ? (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleViewResult(test.id)}
-                          className="w-full"
-                        >
-                          <CheckCircle className="h-4 w-4 ml-1" />
-                          مشاهده نتیجه
-                        </Button>
+                        <div className="flex gap-2 w-full">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleViewResult(test.id)}
+                            className="flex-1"
+                          >
+                            <CheckCircle className="h-4 w-4 ml-1" />
+                            مشاهده نتیجه
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewAnswerSheet(test.id)}
+                            className="flex-1"
+                          >
+                            <FileText className="h-4 w-4 ml-1" />
+                            پاسخ‌نامه
+                          </Button>
+                        </div>
                       ) : (
                         <Button
                           size="sm"
@@ -527,17 +552,6 @@ export default function TestCollectionDetail() {
           )}
         </CardContent>
       </Card>
-
-      {/* Share Test Modal */}
-      {selectedTest && collection && (
-        <ShareTestModal
-          test={selectedTest}
-          collection={collection}
-          isOpen={shareModalOpen}
-          onOpenChange={setShareModalOpen}
-          shareUrl={`${window.location.origin}/test-collections/${collection.id}/tests/${selectedTest.id}`}
-        />
-      )}
     </div>
   );
 }

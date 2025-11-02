@@ -603,11 +603,29 @@ class StudentProgress(models.Model):
         self.total_score = 0
         for session in completed_sessions:
             correct_answers = 0
-            total_questions = session.test.primary_keys.count()
-            for answer in session.answers.all():
-                primary_key = session.test.primary_keys.filter(question_number=answer.question_number).first()
-                if primary_key and primary_key.answer == answer.answer:
-                    correct_answers += 1
+            total_questions = 0
+            
+            # Check test type
+            if session.test.content_type == TestContentType.TYPED_QUESTION:
+                # For typed question tests
+                questions = session.test.questions.all()
+                total_questions = questions.count()
+                
+                answer_map = {a.question_number: a for a in session.answers.all()}
+                for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
+                    answer = answer_map.get(idx)
+                    if answer and answer.answer:
+                        is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
+                        if is_correct:
+                            correct_answers += 1
+            else:
+                # For PDF tests
+                total_questions = session.test.primary_keys.count()
+                for answer in session.answers.all():
+                    primary_key = session.test.primary_keys.filter(question_number=answer.question_number).first()
+                    if primary_key and primary_key.answer == answer.answer:
+                        correct_answers += 1
+            
             if total_questions > 0:
                 score = (correct_answers / total_questions) * 100
                 self.total_score += score

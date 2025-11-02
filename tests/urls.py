@@ -1,3 +1,4 @@
+from .views import TestStatisticsAPIView, StudentTestResultAPIView, TestStatisticsExcelAPIView
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
@@ -39,6 +40,9 @@ urlpatterns = [
     path('tests/', ListCreateTestView.as_view(), name='create-test'),
     path('tests/<int:pk>/update', UpdateDeleteTestView.as_view(), name='update-delete-test'),
     path('tests/<int:test_id>/file/<str:file_type>/', SecureTestFileView.as_view(), name='secure-test-file'),
+    path('tests/<int:test_id>/statistics/', TestStatisticsAPIView.as_view(), name='test-statistics'),
+    path('tests/<int:test_id>/statistics/excel/', TestStatisticsExcelAPIView.as_view(), name='test-statistics-excel'),
+    path('tests/<int:test_id>/student/<int:student_id>/result/', StudentTestResultAPIView.as_view(), name='student-test-result'),
     
     # Public poster endpoint - must come before tests/<int:pk>/ pattern
     path('question-tests/<int:test_id>/poster/', test_poster_public, name='test-poster-public'),

@@ -473,9 +473,9 @@ div .katex {
 /* کلاس خاص برای اعداد فارسی */
 .persian-number {
   font-family: "Ravi FaNum", serif !important;
-  direction: ltr;
-  unicode-bidi: embed;
-  display: inline-block;
+  /* direction: ltr; */
+  /* unicode-bidi: embed; */
+  /* display: inline-block; */
 }
 
 /* استفاده از فونت FaNum برای متن‌های غیرریاضی */
@@ -493,11 +493,11 @@ div .katex {
 /* Persian numbers with proper boundaries */
 .persian-number {
   font-family: "Ravi FaNum", "IRANSansX", serif !important;
-  direction: ltr;
-  unicode-bidi: embed;
-  display: inline-block;
-  white-space: nowrap;
-  margin: 0 1px;
+  /* direction: ltr; */
+  /* unicode-bidi: embed; */
+  /* display: inline-block; */
+  /* white-space: nowrap; */
+  /* margin: 0 1px; */
 }
 
 /* Mixed content (Persian text with numbers) */

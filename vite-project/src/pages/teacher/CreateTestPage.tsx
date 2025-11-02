@@ -660,6 +660,10 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
         toast.error("زمان پایان باید بعد از زمان شروع باشد");
         return;
       }
+      if (testCollectionId === "none") {
+        toast.error("برای آزمون زمان‌بندی شده، انتخاب مجموعه آزمون الزامی است");
+        return;
+      }
     }
 
     if (testType === "topic_based" && selectedFolderIds.length === 0) {
