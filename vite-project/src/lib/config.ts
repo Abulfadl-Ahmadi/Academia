@@ -12,7 +12,7 @@ export const getFileAccessUrl = (testId: number, token: string | null): string =
   if (!token) {
     return '';
   }
-  return `${getApiBaseUrl()}/api/tests/${testId}/file/pdf/?token=${token}`;
+  return `${getApiBaseUrl()}/tests/${testId}/file/pdf/?token=${token}`;
 };
 
 export default API_BASE_URL;
