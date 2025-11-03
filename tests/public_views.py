@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Test
+from .models import Test, TestContentType
 
 
 @api_view(['GET'])
@@ -86,18 +86,25 @@ def test_detail_public(request, test_id):
         duration_parts = duration_str.split(':')
         time_limit_minutes = int(duration_parts[0]) * 60 + int(duration_parts[1])
         
+        # Calculate questions count based on content type
+        if test.content_type == TestContentType.PDF:
+            questions_count = test.primary_keys.count()
+        else:
+            questions_count = test.questions.count()
+        
         # Serialize test detail data
         test_data = {
             'id': test.id,
             'name': test.name,
             'description': test.description or '',
-            'questions_count': len(test.questions.all()),
+            'questions_count': questions_count,
             'time_limit': time_limit_minutes,
             'is_active': test.is_active,
             'created_at': test.created_at,
             'start_time': test.start_time,
             'end_time': test.end_time,
             'duration': duration_str,
+            'content_type': test.content_type,
             'collection': {
                 'id': test.test_collection.id,
                 'name': test.test_collection.name,
@@ -110,8 +117,8 @@ def test_detail_public(request, test_id):
                 }
                 for folder in test.folders.all()
             ],
-            'pdf_file_url': test.pdf_file.file.url if test.pdf_file else None,
-            'answers_file_url': test.answers_file.file.url if test.answers_file else None,
+            # در endpoint عمومی، URL فایل‌ها را برنمی‌گردانیم تا امنیت حفظ شود
+            # فایل‌ها فقط بعد از ورود دانش‌آموز به آزمون قابل دسترسی هستند
         }
         
         return Response(test_data, status=status.HTTP_200_OK)

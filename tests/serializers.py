@@ -461,13 +461,28 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return []  # برای دانش‌آموزان آرایه خالی برمی‌گردانیم
 
     def get_pdf_file_url(self, obj):
+        """فقط معلم‌ها یا دانش‌آموزان وارد شده به آزمون می‌توانند فایل PDF را ببینند"""
         request = self.context.get('request')
         if request:
-            # همیشه URL امن را برمی‌گردانیم، کنترل دسترسی در SecureTestFileView انجام می‌شود
-            from django.urls import reverse
-            return request.build_absolute_uri(
-                reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'pdf'})
-            )
+            # معلم‌ها همیشه می‌توانند فایل را ببینند
+            if request.user.role == 'teacher':
+                from django.urls import reverse
+                return request.build_absolute_uri(
+                    reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'pdf'})
+                )
+            # دانش‌آموزان فقط بعد از ورود به آزمون می‌توانند فایل را ببینند
+            elif request.user.role == 'student':
+                # بررسی اینکه آیا دانش‌آموز در آزمون شرکت کرده یا نه
+                from tests.models import StudentTestSession
+                if StudentTestSession.objects.filter(
+                    student=request.user, 
+                    test=obj,
+                    is_active=True
+                ).exists():
+                    from django.urls import reverse
+                    return request.build_absolute_uri(
+                        reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'pdf'})
+                    )
         return None
         
     def get_answers_file_url(self, obj):
@@ -573,12 +588,45 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return list(obj.folders.values_list('id', flat=True))
 
 
-class QuestionTestListSerializer(TestDetailSerializer):
-    """سریالایزر مخصوص لیست آزمون‌های سوالی - فقط ID سوالات را برمی‌گرداند"""
+class QuestionTestListSerializer(serializers.ModelSerializer):
+    """سریالایزر مخصوص لیست آزمون‌های سوالی - امنیت بالا، بدون URL فایل‌ها"""
+    collection = serializers.SerializerMethodField()
+    questions_count = serializers.SerializerMethodField()
+    time_limit = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
+    content_type = serializers.CharField(read_only=True)
     
-    def get_questions(self, obj):
-        """برای لیست view، فقط ID سوالات را برمی‌گرداند"""
-        return list(obj.questions.values_list('id', flat=True))
+    class Meta:
+        model = Test
+        fields = ["id", 'name', 'description', 'start_time', 'end_time', 'duration', 
+                 'collection', 'questions_count', 'time_limit', 'is_active', 'created_at', 'content_type']
+        read_only_fields = ['teacher']
+    
+    def get_collection(self, obj):
+        if obj.test_collection:
+            return {
+                'id': obj.test_collection.id,
+                'name': obj.test_collection.name,
+                'created_by_name': f"{obj.test_collection.created_by.first_name} {obj.test_collection.created_by.last_name}".strip() or obj.test_collection.created_by.username
+            }
+        return None
+
+    def get_questions_count(self, obj):
+        """تعداد سوالات آزمون را برمی‌گرداند"""
+        # برای آزمون‌های PDF، تعداد primary_keys
+        # برای آزمون‌های سوال تایپ شده، تعداد questions
+        if obj.content_type == TestContentType.PDF:
+            return obj.primary_keys.count()
+        else:
+            return obj.questions.count()
+
+    def get_time_limit(self, obj):
+        """زمان آزمون را به دقیقه برمی‌گرداند"""
+        if obj.duration:
+            # تبدیل duration به دقیقه
+            total_seconds = obj.duration.total_seconds()
+            return int(total_seconds / 60)
+        return 0
 
 
 class TestCollectionSerializer(serializers.ModelSerializer):
