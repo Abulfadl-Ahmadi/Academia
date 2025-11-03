@@ -492,7 +492,12 @@ class TestDetailSerializer(serializers.ModelSerializer):
 
     def get_questions_count(self, obj):
         """تعداد سوالات آزمون را برمی‌گرداند"""
-        return obj.questions.count()
+        # برای آزمون‌های PDF، تعداد primary_keys
+        # برای آزمون‌های سوال تایپ شده، تعداد questions
+        if obj.content_type == TestContentType.PDF:
+            return obj.primary_keys.count()
+        else:
+            return obj.questions.count()
 
     def get_folders_count(self, obj):
         """تعداد پوشه‌های آزمون را برمی‌گرداند"""
@@ -645,11 +650,17 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
         
         result = []
         for test in tests:
+            # تعداد سوالات بر اساس نوع آزمون
+            if test.content_type == TestContentType.PDF:
+                questions_count = test.primary_keys.count()
+            else:
+                questions_count = test.questions.count()
+            
             test_data = {
                 'id': test.id,
                 'name': test.name,
                 'description': test.description,
-                'questions_count': test.primary_keys.count(),  # Count questions based on primary keys
+                'questions_count': questions_count,
                 'time_limit': int(test.duration.total_seconds() / 60) if test.duration else 0,
                 'is_active': test.is_active,  
                 'created_at': test.created_at.isoformat(),

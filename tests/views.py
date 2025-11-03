@@ -9,6 +9,7 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 import re
 import json
+import secrets
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
     StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage,
@@ -596,6 +597,11 @@ class EnterTestView(views.APIView):
             session.status = "active"
             session.save()
 
+        # اطمینان از تولید توکن امنیتی برای دسترسی به فایل
+        if not session.file_access_token:
+            session.file_access_token = secrets.token_urlsafe(96)
+            session.save()
+
         # ثبت لاگ ورود
         StudentTestSessionLog.objects.create(
             session=session,
@@ -610,6 +616,7 @@ class EnterTestView(views.APIView):
             "session_id": session.id,
             "test_id": test.id,
             "pdf_file_url": request.build_absolute_uri(pdf_url) if pdf_url else None,
+            "file_access_token": session.file_access_token,
             "duration_minutes": int(test.duration.total_seconds() / 60),
             "entry_time": session.entry_time.isoformat(),
             "end_time": session.end_time.isoformat()
@@ -737,7 +744,8 @@ class GetAnswersView(views.APIView):
                 "test_id": session.test.id,
                 "entry_time": session.entry_time.isoformat(),
                 "end_time": session.end_time.isoformat(),
-                "status": session.status
+                "status": session.status,
+                "file_access_token": session.file_access_token
             }
         })
 
@@ -1272,51 +1280,59 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
 class SecureTestFileView(views.APIView):
     """
     View امن برای دسترسی به فایل‌های آزمون
-    فقط کاربران مجاز می‌توانند به فایل‌ها دسترسی داشته باشند
+    توکن امنیتی را از URL دریافت می‌کند و اعتبارسنجی می‌کند
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
+    authentication_classes = []
 
     def get(self, request, test_id, file_type):
+        # دریافت توکن از query parameter
+        token = request.query_params.get('token')
+        
+        if not token:
+            raise PermissionDenied("توکن امنیتی ارائه نشده است")
+        
         try:
             test = Test.objects.get(id=test_id)
         except Test.DoesNotExist:
             raise Http404("آزمون یافت نشد")
 
-        user = request.user
-
         # بررسی دسترسی برای فایل PDF سوالات
         if file_type == 'pdf':
-            # معلم همیشه می‌تواند فایل PDF را ببیند
-            if user.role == 'teacher' and test.teacher == user:
-                file_obj = test.pdf_file
-            # دانش‌آموز فقط در صورت داشتن session فعال یا غیرفعال (اما معتبر)
-            elif user.role == 'student':
-                active_session = StudentTestSession.objects.filter(
-                    user=user,
-                    test=test,
-                    status__in=['active', 'inactive']  # هم active و هم inactive قبول شود
-                ).first()
-                
-                if not active_session:
-                    raise PermissionDenied("برای دسترسی به سوالات باید ابتدا آزمون را شروع کنید")
-                
-                # بررسی اینکه آیا زمان آزمون هنوز تمام نشده
-                from django.utils import timezone
-                if timezone.now() > active_session.end_time:
-                    active_session.status = 'expired'
-                    active_session.save()
-                    raise PermissionDenied("زمان آزمون به پایان رسیده است")
-                    
-                file_obj = test.pdf_file
-            else:
-                raise PermissionDenied("شما مجاز به دسترسی به این فایل نیستید")
+            # پیدا کردن session با این token
+            session = StudentTestSession.objects.filter(
+                test=test,
+                file_access_token=token,
+                status__in=['active', 'inactive']
+            ).first()
+            
+            if not session:
+                raise PermissionDenied("توکن امنیتی معتبر نیست یا منقضی‌شده است")
+            
+            # بررسی اینکه آیا زمان آزمون هنوز تمام نشده
+            from django.utils import timezone
+            if timezone.now() > session.end_time:
+                session.status = 'expired'
+                session.save()
+                raise PermissionDenied("زمان آزمون به پایان رسیده است")
+            
+            file_obj = test.pdf_file
 
         # بررسی دسترسی برای فایل پاسخنامه
         elif file_type == 'answers':
+            # پیدا کردن session با این token
+            session = StudentTestSession.objects.filter(
+                test=test,
+                file_access_token=token,
+                status__in=['active', 'inactive', 'completed']
+            ).first()
+            
+            if not session:
+                raise PermissionDenied("توکن امنیتی معتبر نیست")
+            
             # فقط معلم می‌تواند پاسخنامه را ببیند
-            if user.role != 'teacher' or test.teacher != user:
-                raise PermissionDenied("فقط معلم آزمون می‌تواند پاسخنامه را ببیند")
-            file_obj = test.answers_file
+            # (توکن فقط برای دانش‌آموزان صادر می‌شود)
+            raise PermissionDenied("فقط معلم آزمون می‌تواند پاسخنامه را ببیند")
         else:
             raise Http404("نوع فایل نامعتبر")
 

@@ -74,6 +74,7 @@ export default function TestDetailPage() {
       setLoading(true);
       const response = await axiosInstance.get(`/question-tests/${testId}/detail/`);
       setTest(response.data);
+      console.log("Fetched test data:", response.data);
     } catch (err) {
       console.error("Error fetching test:", err);
       const error = err as AxiosError;
@@ -261,7 +262,7 @@ export default function TestDetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 p-6">
+    <div className="max-w-4xl mx-auto space-y-6 p-6 mt-20">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button 

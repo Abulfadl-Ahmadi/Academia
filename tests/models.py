@@ -477,6 +477,9 @@ class StudentTestSession(models.Model):
 
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
+    
+    # توکن امنیتی برای دسترسی به فایل‌های آزمون
+    file_access_token = models.CharField(max_length=128, unique=True, db_index=True, null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -500,6 +503,10 @@ class StudentTestSession(models.Model):
         if not self.end_time:
             # برای آزمون‌های مبحثی، زمان پایان بر اساس مدت زمان محاسبه می‌شود
             self.end_time = self.entry_time + self.test.duration
+        
+        # تولید توکن امنیتی اگر قبلاً تولید نشده باشد
+        if not self.file_access_token:
+            self.file_access_token = secrets.token_urlsafe(96)
         
         super().save(*args, **kwargs)
 

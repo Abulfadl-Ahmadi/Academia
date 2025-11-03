@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
+import { getFileAccessUrl } from "@/lib/config";
 import { 
   Viewer,
   SpecialZoomLevel,
@@ -122,6 +123,7 @@ const TestPageRedesigned: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [fileAccessToken, setFileAccessToken] = useState<string | null>(null);
 
   // Fullscreen
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -159,6 +161,12 @@ const TestPageRedesigned: React.FC = () => {
       if (response.data.session) {
         setSessionId(response.data.session.id);
         
+        // Extract file access token from existing session
+        if (response.data.session.file_access_token) {
+          setFileAccessToken(response.data.session.file_access_token);
+          console.log("File access token restored from existing session");
+        }
+        
         // محاسبه زمان باقی‌مانده
         const sessionStartTime = new Date(response.data.session.entry_time);
         const sessionEndTime = new Date(response.data.session.end_time);
@@ -193,6 +201,12 @@ const TestPageRedesigned: React.FC = () => {
       
       console.log("Session response:", response.data);
       setSessionId(response.data.session_id);
+      
+      // Capture the file access token
+      if (response.data.file_access_token) {
+        setFileAccessToken(response.data.file_access_token);
+        console.log("File access token set:", response.data.file_access_token);
+      }
       
       // محاسبه زمان باقی‌مانده بر اساس session
       const sessionStartTime = new Date(response.data.entry_time);
@@ -1007,12 +1021,20 @@ const TestPageRedesigned: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Overlay for mobile when sidebar is open */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
         {/* Answer Sheet Sidebar */}
         <div
-          className={`bg-card border-r shadow-lg transition-all duration-300 flex flex-col ${
+          className={`bg-card border-r shadow-lg transition-all duration-300 flex flex-col z-50 ${
             sidebarOpen ? "w-80" : "w-0"
-          } overflow-hidden`}
+          } overflow-hidden absolute md:relative h-screen md:h-auto top-0 right-0`}
         >
           {sidebarOpen && (
             <>
@@ -1100,10 +1122,10 @@ const TestPageRedesigned: React.FC = () => {
         </div>
 
         {/* PDF Viewer */}
-        <div className="flex-1 bg-muted">
-          {test.pdf_file_url && (
+        <div className="flex-1 bg-muted min-h-0">
+          {test && test.id && fileAccessToken ? (
             <Viewer
-              fileUrl={test.pdf_file_url}
+              fileUrl={getFileAccessUrl(test.id, fileAccessToken)}
               plugins={[
                 scrollModePluginInstance,
                 pageNavigationPluginInstance,
@@ -1117,6 +1139,10 @@ const TestPageRedesigned: React.FC = () => {
                 setCurrentPage(e.currentPage);
               }}
             />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">در حال بارگذاری PDF...</p>
+            </div>
           )}
         </div>
       </div>

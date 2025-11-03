@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
-// import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { getFileAccessUrl } from "@/lib/config";
 import { 
   Viewer,
   SpecialZoomLevel,
@@ -73,6 +73,7 @@ const TestDetailPage: React.FC = () => {
   const [test, setTest] = useState<Test | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [fileAccessToken, setFileAccessToken] = useState<string | null>(null);
   
   // Plugin instances
   const scrollModePluginInstance = scrollModePlugin();
@@ -110,6 +111,11 @@ const TestDetailPage: React.FC = () => {
       .finally(() => {
         setIsLoading(false);
       });
+    
+    // دریافت توکن امنیتی از session
+    if (session.file_access_token) {
+      setFileAccessToken(session.file_access_token);
+    }
       
     // Set up the beforeunload event
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -281,7 +287,7 @@ const TestDetailPage: React.FC = () => {
         }`}
       >
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-bold">پاسخ‌برگ</h2>
+          <h2 className="text-lg font-bold">پاسخ‌برگ آزمون</h2>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -485,9 +491,9 @@ const TestDetailPage: React.FC = () => {
             
             <div className="flex-1 overflow-auto">
               <div className="h-full flex-1 bg-gray-100 dark:bg-gray-800">
-                {test && test.file && (
+                {test && test.file && fileAccessToken ? (
                   <Viewer
-                    fileUrl={`http://localhost:8000${test.file}`}
+                    fileUrl={getFileAccessUrl(test.id, fileAccessToken)}
                     plugins={[
                       scrollModePluginInstance,
                       pageNavigationPluginInstance,
@@ -497,6 +503,10 @@ const TestDetailPage: React.FC = () => {
                     onPageChange={handlePageChange}
                     theme={fullscreenStatus ? 'dark' : 'light'}
                   />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500">در حال بارگذاری...</p>
+                  </div>
                 )}
               </div>
             </div>
