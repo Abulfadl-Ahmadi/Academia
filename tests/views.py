@@ -987,6 +987,9 @@ class CreateReport(views.APIView):
                     "total": total_questions,
                     "percentage": score_percentage
                 },
+                "test_content_type": test.content_type,
+                "test_pdf_file": test.pdf_file.file.url if test.pdf_file and test.pdf_file.file else None,
+                "answer_sheet_pdf": test.answers_file.file.url if test.answers_file and test.answers_file.file else None,
                 "answers": answer_details
             }
             

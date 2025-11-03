@@ -3,23 +3,16 @@ import { toast } from "sonner";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { getFileAccessUrl } from "@/lib/config";
+import { PDFViewer } from "./PDFViewer";
+import "@react-pdf-viewer/core";
 import { 
-  Viewer,
-  SpecialZoomLevel,
-} from "@react-pdf-viewer/core";
-import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
-import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
-import { zoomPlugin } from '@react-pdf-viewer/zoom';
-import { 
-  ArrowRight, 
+  ArrowRight,
   Menu, 
   X, 
   LogOut, 
   Check, 
   Maximize, 
   Minimize,
-  ZoomIn,
-  ZoomOut,
   Clock,
   FileText,
   Send,
@@ -33,7 +26,6 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +37,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useFullscreen } from "../../../hooks/useFullscreen";
@@ -115,15 +106,14 @@ const TestPageRedesigned: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [maxQuestions, setMaxQuestions] = useState(10); // پیش‌فرض کمتر، از test data تنظیم می‌شود
-  const [gotoPage, setGotoPage] = useState("");
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmExit, setConfirmExit] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [fileAccessToken, setFileAccessToken] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Fullscreen
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -136,12 +126,6 @@ const TestPageRedesigned: React.FC = () => {
       navigate("/panel/tests/");
     }
   }, [test, navigate]);
-
-  // PDF plugins
-  const scrollModePluginInstance = scrollModePlugin();
-  const pageNavigationPluginInstance = pageNavigationPlugin();
-  const zoomPluginInstance = zoomPlugin();
-  const { ZoomPopover } = zoomPluginInstance;
 
   const options = [
     { value: "1", label: "۱" },
@@ -435,16 +419,6 @@ const TestPageRedesigned: React.FC = () => {
   const goToQuestion = (index: number) => {
     if (test?.questions && index >= 0 && index < test.questions.length) {
       setCurrentQuestionIndex(index);
-    }
-  };
-
-  const handleGoToPage = () => {
-    const pageNum = parseInt(gotoPage);
-    if (pageNum >= 1 && pageNum <= totalPages) {
-      setCurrentPage(pageNum - 1);
-      setGotoPage("");
-    } else {
-      toast.error(`شماره صفحه باید بین 1 و ${totalPages} باشد`);
     }
   };
 
@@ -862,120 +836,6 @@ const TestPageRedesigned: React.FC = () => {
             </div>
           </div>
 
-          {/* Center - PDF Controls - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-2">
-            <TooltipProvider>
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const viewer = document.querySelector('.rpv-core__viewer');
-                        if (viewer) {
-                          const prevButton = viewer.querySelector('[data-testid="page-navigation__previous-button"]') as HTMLButtonElement;
-                          if (prevButton && !prevButton.disabled) {
-                            prevButton.click();
-                          }
-                        }
-                      }}
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>صفحه قبل</TooltipContent>
-                </Tooltip>
-
-                <div className="flex items-center gap-2 px-2">
-                  <Input
-                    type="number"
-                    value={gotoPage}
-                    onChange={(e) => setGotoPage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleGoToPage()}
-                    placeholder={`${currentPage + 1}`}
-                    className="w-16 h-8 text-center text-xs"
-                    min="1"
-                    max={totalPages}
-                  />
-                  <span className="text-xs text-muted-foreground">از {totalPages}</span>
-                  {gotoPage && (
-                    <Button size="sm" variant="ghost" onClick={handleGoToPage}>
-                      برو
-                    </Button>
-                  )}
-                </div>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const viewer = document.querySelector('.rpv-core__viewer');
-                        if (viewer) {
-                          const nextButton = viewer.querySelector('[data-testid="page-navigation__next-button"]') as HTMLButtonElement;
-                          if (nextButton && !nextButton.disabled) {
-                            nextButton.click();
-                          }
-                        }
-                      }}
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>صفحه بعد</TooltipContent>
-                </Tooltip>
-              </div>
-
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const viewer = document.querySelector('.rpv-core__viewer');
-                        if (viewer) {
-                          const zoomOutButton = viewer.querySelector('[data-testid="zoom__out-button"]') as HTMLButtonElement;
-                          if (zoomOutButton) {
-                            zoomOutButton.click();
-                          }
-                        }
-                      }}
-                    >
-                      <ZoomOut className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>کوچک‌نمایی</TooltipContent>
-                </Tooltip>
-
-                <ZoomPopover />
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const viewer = document.querySelector('.rpv-core__viewer');
-                        if (viewer) {
-                          const zoomInButton = viewer.querySelector('[data-testid="zoom__in-button"]') as HTMLButtonElement;
-                          if (zoomInButton) {
-                            zoomInButton.click();
-                          }
-                        }
-                      }}
-                    >
-                      <ZoomIn className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>بزرگ‌نمایی</TooltipContent>
-                </Tooltip>
-              </div>
-            </TooltipProvider>
-          </div>
-
           {/* Right side - Action buttons */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <Tooltip>
@@ -1124,20 +984,12 @@ const TestPageRedesigned: React.FC = () => {
         {/* PDF Viewer */}
         <div className="flex-1 bg-muted min-h-0">
           {test && test.id && fileAccessToken ? (
-            <Viewer
+            <PDFViewer
               fileUrl={getFileAccessUrl(test.id, fileAccessToken)}
-              plugins={[
-                scrollModePluginInstance,
-                pageNavigationPluginInstance,
-                zoomPluginInstance,
-              ]}
-              defaultScale={SpecialZoomLevel.PageFit}
-              onDocumentLoad={(e) => {
-                setTotalPages(e.doc.numPages);
-              }}
-              onPageChange={(e) => {
-                setCurrentPage(e.currentPage);
-              }}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              onDocumentLoad={setTotalPages}
             />
           ) : (
             <div className="flex items-center justify-center h-full">

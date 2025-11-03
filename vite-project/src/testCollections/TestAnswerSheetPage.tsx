@@ -114,6 +114,9 @@ interface StudentResult {
   exit_time: string;
   status: string;
   answers: Answer[];
+  test_content_type?: string;
+  test_pdf_file?: string;
+  answer_sheet_pdf?: string;
 }
 
 export default function TestAnswerSheetPage() {
@@ -152,6 +155,9 @@ export default function TestAnswerSheetPage() {
             exit_time: session.end_time,
             status: session.status,
             answers: session.answers,
+            test_content_type: session.test_content_type,
+            test_pdf_file: session.test_pdf_file,
+            answer_sheet_pdf: session.answer_sheet_pdf,
           });
         }
         setError(null);
@@ -276,10 +282,10 @@ export default function TestAnswerSheetPage() {
               <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
                 <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-base">نتیجه</h3>
                 <div className="mb-3 sm:mb-4">
-                  <Progress value={result.percent} className="h-2 sm:h-3" />
+                  <Progress value={Math.max(0, result.percent)} className="h-2 sm:h-3" />
                 </div>
                 <p className="text-center font-bold text-2xl sm:text-3xl mb-1 sm:mb-2">
-                  {Math.max(0, result.percent).toFixed(2)}%
+                  {result.percent.toFixed(2)}%
                 </p>
                 <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                   <div className="p-1.5 sm:p-2 bg-green-500/10 rounded text-center">
@@ -300,16 +306,59 @@ export default function TestAnswerSheetPage() {
           </CardContent>
         </Card>
 
-      <div>
-        <div>
-          <div className="text-lg font-bold flex items-center mb-4">
-            <FileText className="h-5 w-5" />
-            پاسخ‌نامه آزمون
+      {/* Show file downloads for PDF tests */}
+      {result.test_content_type === 'pdf' ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Question PDF */}
+            {result.test_pdf_file && (
+              <a
+                href={result.test_pdf_file}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-6 border-2 border-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8 text-blue-500" />
+                  <div>
+                    <p className="font-semibold text-blue-900 dark:text-blue-100">فایل سوالات</p>
+                    <p className="text-xs text-muted-foreground">دانلود فایل PDF سوالات</p>
+                  </div>
+                </div>
+              </a>
+            )}
+
+            {/* Answer Sheet PDF */}
+            {result.answer_sheet_pdf && (
+              <a
+                href={result.answer_sheet_pdf}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-6 border-2 border-green-500 rounded-lg hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8 text-green-500" />
+                  <div>
+                    <p className="font-semibold text-green-900 dark:text-green-100">پاسخ‌نامه</p>
+                    <p className="text-xs text-muted-foreground">دانلود فایل PDF پاسخ‌نامه</p>
+                  </div>
+                </div>
+              </a>
+            )}
           </div>
         </div>
+      ) : (
+        /* Show detailed answers for typed tests */
+        <div>
+          <div>
+            <div className="text-lg font-bold flex items-center mb-4">
+              <FileText className="h-5 w-5" />
+              پاسخ‌نامه آزمون
+            </div>
+          </div>
 
-        {/* Questions Navigation */}
-        {result.answers && result.answers.length > 0 && (
+          {/* Questions Navigation */}
+          {result.answers && result.answers.length > 0 && (
           <div ref={navigatorRef} className="sticky top-0 z-40 mb-4 p-3 bg-background border rounded-lg shadow-sm">
             <div className="flex flex-col gap-2">
               <p className="text-xs sm:text-sm font-semibold text-muted-foreground">پرش به سوال:</p>
@@ -533,7 +582,9 @@ export default function TestAnswerSheetPage() {
           </button>
         )}
       </div>
+      )}
       </div>
     </div>
   );
 }
+

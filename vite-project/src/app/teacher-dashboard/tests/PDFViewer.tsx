@@ -4,7 +4,7 @@ import { Worker, Viewer, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import '@/utils/pdf-styles';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
-import { ChevronRight, ChevronLeft, ZoomIn, ZoomOut, Maximize, Minimize } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ZoomIn as ZoomInIcon, ZoomOut as ZoomOutIcon, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -13,6 +13,7 @@ interface PDFViewerProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (pageNumber: number) => void;
+  onDocumentLoad?: (totalPages: number) => void;
 }
 
 export const PDFViewer: React.FC<PDFViewerProps> = ({
@@ -20,13 +21,14 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
   currentPage,
   totalPages,
   onPageChange,
+  onDocumentLoad,
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const zoomPluginInstance = zoomPlugin();
 
-  const { CurrentScale, ZoomIn: ZoomInButton, ZoomOut: ZoomOutButton } = zoomPluginInstance;
+  const { CurrentScale, ZoomIn, ZoomOut } = zoomPluginInstance;
   const { CurrentPageLabel, GoToNextPage, GoToPreviousPage } = pageNavigationPluginInstance;
 
   const toggleFullscreen = () => {
@@ -51,26 +53,25 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
     <div className="relative flex flex-col h-full">
       <div className="flex justify-between items-center p-3 border-b dark:border-gray-700">
         <div className="flex items-center space-x-2 space-x-reverse">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    GoToPreviousPage({});
-                    if (currentPage > 0) {
-                      onPageChange(currentPage - 1);
-                    }
-                  }}
-                  disabled={currentPage === 0}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>صفحه قبلی</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <GoToPreviousPage>
+            {(props) => (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={props.onClick}
+                      disabled={currentPage === 0}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>صفحه قبلی</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </GoToPreviousPage>
           
           <span className="font-medium text-sm mx-2">
             <CurrentPageLabel>
@@ -82,39 +83,42 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
             </CurrentPageLabel>
           </span>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    GoToNextPage({});
-                    if (currentPage < totalPages - 1) {
-                      onPageChange(currentPage + 1);
-                    }
-                  }}
-                  disabled={currentPage === totalPages - 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>صفحه بعدی</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <GoToNextPage>
+            {(props) => (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={props.onClick}
+                      disabled={currentPage === totalPages - 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>صفحه بعدی</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </GoToNextPage>
         </div>
 
         <div className="flex items-center space-x-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => ZoomOutButton({})}>
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>کوچک‌نمایی</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <ZoomOut>
+            {(props) => (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={props.onClick}>
+                      <ZoomOutIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>کوچک‌نمایی</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </ZoomOut>
           
           <CurrentScale>
             {(props) => (
@@ -124,16 +128,20 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
             )}
           </CurrentScale>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => ZoomInButton({})}>
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>بزرگ‌نمایی</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <ZoomIn>
+            {(props) => (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={props.onClick}>
+                      <ZoomInIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>بزرگ‌نمایی</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </ZoomIn>
           
           <TooltipProvider>
             <Tooltip>
@@ -152,11 +160,14 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
 
       <div className="flex-1 overflow-auto">
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-          <div style={{ height: '100%' }}>
+          <div className="h-full">
             <Viewer
               fileUrl={fileUrl}
               plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
               defaultScale={SpecialZoomLevel.PageFit}
+              onDocumentLoad={(e) => {
+                onDocumentLoad?.(e.doc.numPages);
+              }}
               onPageChange={(e) => {
                 onPageChange(e.currentPage);
               }}
