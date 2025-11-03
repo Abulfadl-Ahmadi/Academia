@@ -341,9 +341,14 @@ class StudentTestResultAPIView(APIView):
 
 
 class ListCreateTestView(generics.ListCreateAPIView):
-    serializer_class = TestCreateSerializer
     permission_classes = [IsAuthenticated]  # Only teachers in practice
     pagination_class = None  # Disable pagination for this view
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return TestCreateSerializer
+        # برای GET از QuestionTestListSerializer استفاده می‌کنیم که فیلدهای مناسب‌تری دارد
+        return QuestionTestListSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -1342,10 +1347,28 @@ class SecureTestFileView(views.APIView):
         if not file_obj or not file_obj.file:
             raise Http404("فایل یافت نشد")
 
-        # ارسال فایل
-        response = HttpResponse(file_obj.file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'inline; filename="{file_obj.file.name}"'
-        return response
+        # ارسال فایل - برای S3 از redirect استفاده می‌کنیم
+        try:
+            # گرفتن URL فایل
+            file_url = str(file_obj.file.url)
+            
+            # حذف signed parameters اگر وجود دارد (چون فایل‌ها public هستند)
+            if '?' in file_url and 'X-Amz-' in file_url:
+                file_url = file_url.split('?')[0]
+            
+            # redirect به URL تمیز
+            from django.shortcuts import redirect
+            return redirect(file_url)
+            
+        except Exception as e:
+            # fallback: سعی کنیم محتوا را بخوانیم
+            try:
+                file_content = file_obj.file.read()
+                response = HttpResponse(file_content, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="{file_obj.file.name}"'
+                return response
+            except Exception as read_error:
+                raise Http404(f"خطا در دسترسی به فایل: {str(read_error)}")
 
 
 from .pagination import CustomPageNumberPagination

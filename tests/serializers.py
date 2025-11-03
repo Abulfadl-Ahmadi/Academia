@@ -475,9 +475,9 @@ class TestDetailSerializer(serializers.ModelSerializer):
                 # بررسی اینکه آیا دانش‌آموز در آزمون شرکت کرده یا نه
                 from tests.models import StudentTestSession
                 if StudentTestSession.objects.filter(
-                    student=request.user, 
+                    user=request.user, 
                     test=obj,
-                    is_active=True
+                    status='active'
                 ).exists():
                     from django.urls import reverse
                     return request.build_absolute_uri(

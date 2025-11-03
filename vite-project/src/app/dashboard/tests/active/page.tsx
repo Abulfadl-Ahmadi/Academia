@@ -36,8 +36,28 @@ export default function ActiveTestsPage() {
     const fetchActiveTests = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("/question-tests/");
-        const activeTests = response.data.filter((test: Test) => test.is_active);
+        const response = await axiosInstance.get("/tests/");
+        
+        console.log("API Response:", response.data);
+        console.log("Response type:", typeof response.data);
+        console.log("Is array:", Array.isArray(response.data));
+        
+        // بررسی ساختار response
+        let testsData = [];
+        if (Array.isArray(response.data)) {
+          testsData = response.data;
+        } else if (response.data && Array.isArray(response.data.results)) {
+          // ساختار paginated
+          testsData = response.data.results;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          // ساختار wrapped
+          testsData = response.data.data;
+        } else {
+          console.error("Unexpected response structure:", response.data);
+          testsData = [];
+        }
+        
+        const activeTests = testsData.filter((test: Test) => test.is_active);
         setTests(activeTests);
         setError(null);
       } catch (err) {
@@ -72,7 +92,7 @@ export default function ActiveTestsPage() {
   };
 
   const handleStartTest = (testId: number) => {
-    navigate(`/question-tests/${testId}/info`);
+    navigate(`/tests/${testId}/info`);
   };
 
   const getTestStatus = (startTime: string, endTime: string) => {

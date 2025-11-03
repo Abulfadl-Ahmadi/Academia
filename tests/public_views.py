@@ -117,6 +117,9 @@ def test_detail_public(request, test_id):
                 }
                 for folder in test.folders.all()
             ],
+            
+            'pdf_file_url': test.pdf_file.file.url if test.pdf_file else None,
+            'answers_file_url': test.answers_file.file.url if test.answers_file else None,
             # در endpoint عمومی، URL فایل‌ها را برنمی‌گردانیم تا امنیت حفظ شود
             # فایل‌ها فقط بعد از ورود دانش‌آموز به آزمون قابل دسترسی هستند
         }
