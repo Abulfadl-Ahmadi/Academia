@@ -917,8 +917,8 @@ const TestPageRedesigned: React.FC = () => {
               </div>
 
               {/* Answer Grid */}
-              <div className="flex-1 overflow-auto p-4">
-                <div className="space-y-4">
+              <div className="flex-1 overflow-auto p-4 persian-number">
+                <div className="space-y-4 pb-64">
                   {Array.from({ length: Math.ceil(maxQuestions / 10) }).map((_, columnIndex) => (
                     <div key={columnIndex} className="">
                       <h4 className="text-sm font-medium text-muted-foreground mb-2 pb-1 border-b">
@@ -941,12 +941,12 @@ const TestPageRedesigned: React.FC = () => {
                                   : "border-border bg-card"
                               }`}
                             >
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                              <div className="flex flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                 <span className="text-sm font-medium">
                                   سوال {questionNumber}
                                 </span>
                                 {isAnswered && currentAnswer && (
-                                  <Badge variant="outline" className="text-xs self-start sm:self-auto">
+                                  <Badge className="w-6 pb-0 self-start">
                                     {currentAnswer}
                                   </Badge>
                                 )}
@@ -963,7 +963,7 @@ const TestPageRedesigned: React.FC = () => {
                                     onMouseDown={() =>
                                       handleAnswer(questionNumber, option.value)
                                     }
-                                    className="h-8 flex items-center justify-center text-xs border rounded transition-all hover:bg-muted data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary cursor-pointer"
+                                    className="h-7 flex items-center justify-center  text-xs border rounded transition-all hover:bg-muted data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary cursor-pointer"
                                   >
                                     {option.label}
                                   </RadioGroup.Item>
