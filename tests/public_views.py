@@ -27,6 +27,12 @@ def test_poster_public(request, test_id):
             # Convert "0:30:00" to "00:30:00"
             parts = duration_str.split(':')
             duration_str = f"{parts[0].zfill(2)}:{parts[1]}:{parts[2]}"
+            
+            
+        if test.content_type == TestContentType.PDF:
+            questions_count = test.primary_keys.count()
+        else:
+            questions_count = test.questions.count()
         
         # Serialize only the needed data for poster
         poster_data = {
@@ -36,7 +42,7 @@ def test_poster_public(request, test_id):
             'start_time': test.start_time,
             'end_time': test.end_time,
             'duration': duration_str,
-            'total_questions': len(test.questions.all()),  # Count actual questions
+            'total_questions': questions_count,  # Count actual questions
             'collection': {
                 'id': test.test_collection.id,
                 'name': test.test_collection.name,
