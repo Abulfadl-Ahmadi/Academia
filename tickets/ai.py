@@ -18,17 +18,18 @@ from django.utils import timezone
 
 # گرفتن API Keys
 GOOGLE_API_KEY = getattr(settings, 'GOOGLE_API_KEY', os.getenv('GOOGLE_API_KEY', ''))
-LIARA_API_KEY = getattr(settings, 'LIARA_API_KEY', os.getenv('LIARA_API_KEY', ''))
+LLM_API_KEY = getattr(settings, 'LLM_API_KEY', os.getenv('LLM_API_KEY', ''))
 
 # انتخاب مدل و کلاینت بر اساس API Key موجود
-if LIARA_API_KEY:
+if LLM_API_KEY:
     MODEL = "google/gemini-2.0-flash-001"
     client = OpenAI(
-        base_url="https://ai.liara.ir/api/v1/689c3350a8b1b6944da510b2",
-        api_key=LIARA_API_KEY,
+        # base_url="https://ai.liara.ir/api/v1/689c3350a8b1b6944da510b2",
+        base_url="https://arvancloudai.ir/gateway/models/Gemini-2.0-Flash-001/IrqBP9-EdacvJA55cDev8pv7DOrpOxIYmfR_5NZtLOsReNJMHWVPJgdF3vXjIwzytO5HB-j6XIMWN6LEyAd1z0k-7dCyFHZ3nT2L6jjMVniR4lWDfIOMZdYgg8bgSbJutok5rV2R_WHUH73RHUgd0Q2hsyco4JYWHsoRPTICYDeomDIo97qIBSsSDu6e5xgb4hDUxrDEsQBsje46KS9Yqg9mMveCK-LRFiqgIcE5pb4XtbDrqCiszIPPtg__pDkH8J58DUR1QzSmdNMUIIs/v1",
+        api_key=LLM_API_KEY,
     )
     USE_LIARA = True
-    print("Using Liara API")
+    print("Using ArvanClould API for LLM")
 elif GOOGLE_API_KEY:
     MODEL = "gemini-1.5-flash"
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -71,6 +72,7 @@ def generate_ai_response(question, context_messages=None, max_retries=2):
     # System prompt برای فرمت صحیح ریاضی
     math_formatting_instructions = """
 شما یک استاد ریاضی هستید. لطفاً در پاسخ‌هایتان قوانین زیر را رعایت کنید:
+اگر هر کسی ازت پرسید که کی هستی و خودتون معرفی کن بهش بگو من «خارزمی» هستم مدلی که مخصوص ریاضی توسط تیم G-CAT آموزش داده شده.
 
 **برای فرمول‌های ریاضی:**
 - برای فرمول‌های inline (درون متن): از $فرمول$ استفاده کنید
@@ -93,6 +95,7 @@ def generate_ai_response(question, context_messages=None, max_retries=2):
 - استفاده از HTML tags مثل <sub> یا <sup>
 - نوشتن فرمول بدون $ یا $$
 - استفاده از x² بجای $x^2$
+- استفاده از \\( \\) یا \\[ \\] برای فرمول‌ها، از اینجا نباید استفاده کنید و باید به جای آن از $...$ یا $$...$$ استفاده کنید.
 
 لطفاً هر پاسخ ریاضی‌تان را طبق این قوانین فرمت کنید.
 """

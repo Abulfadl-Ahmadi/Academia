@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Send, Bot, UserRound, Clock, Plus, Archive, MoreHorizontal } from 'lucide-react';
 import { Response } from "@/components/ui/shadcn-io/ai/response";
+import MathRenderer from '@/components/ui/math-renderer-optimized';
 
 
 // نوع برای گفتگوی هوش مصنوعی
@@ -461,8 +462,9 @@ export function AIConversationDetail() {
                       {message.role === 'user' ? (
                         <div className="whitespace-pre-wrap text-sm">{message.content}</div>
                       ) : (
-                        // <MathRenderer content={message.content} />
-                        <Response>{message.content}</Response>
+                        <MathRenderer content={message.content} />
+                        // <Response>{message.content}</Response>
+                        // <p>{message.content}</p>
                       )}
                     </div>
                   </div>

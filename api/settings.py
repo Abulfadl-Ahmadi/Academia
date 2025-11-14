@@ -361,9 +361,11 @@ try:
     load_dotenv(dotenv_path=env_path)
     GOOGLE_API_KEY = config('GOOGLE_API_KEY')
     LIARA_API_KEY = config('LIARA_API_KEY')
+    LLM_API_KEY = config('LLM_API_KEY')
 except (ImportError, UndefinedValueError):
     GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='')
     LIARA_API_KEY = config('LIARA_API_KEY', default='')
+    LLM_API_KEY = config('LLM_API_KEY', default='')
 
 # Logging Configuration
 LOGGING = {
