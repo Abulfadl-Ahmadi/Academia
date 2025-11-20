@@ -47,7 +47,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'user', 'national_id', 'phone_number', 'birth_date', 'grade']
+        fields = ['id', 'user', 'national_id', 'phone_number', 'birth_date', 'school', 'grade']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -98,6 +98,7 @@ class CompleteRegistrationSerializer(serializers.Serializer):
     national_id = serializers.CharField(required=False, allow_blank=True)
     email = serializers.EmailField(required=False, allow_blank=True)
     # birth_date = serializers.DateField(required=False)
+    school = serializers.CharField(required=False, allow_blank=True, max_length=200)
     grade = serializers.CharField(required=False, allow_blank=True)
     
     def validate_username(self, value):

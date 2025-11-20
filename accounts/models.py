@@ -137,6 +137,12 @@ class UserProfile(models.Model):
         null=True
     )
     birth_date = models.DateField(blank=True, null=True)
+    school = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name="مرکز آموزشی"
+    )
     grade = models.CharField(
         max_length=2,
         choices=[('10', '10'), ('11', '11'), ('12', '12')],

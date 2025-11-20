@@ -13,14 +13,16 @@ import {
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
-import { User, Mail, Phone, Calendar, GraduationCap, CreditCard, Save, Edit } from "lucide-react";
-import { DatePicker } from "@/components/ui/date-picker";
+import { School, User, Mail, Calendar as CalendarIcon, GraduationCap, CreditCard, Save, Edit, ChevronDownIcon, Phone } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { validateIranianNationalId } from "@/lib/nationalIdValidator";
 
 interface UserProfile {
   national_id: string;
   phone_number: string;
   birth_date: string;
+  school: string;
   grade: string;
 }
 
@@ -35,6 +37,7 @@ interface FormErrors {
   national_id?: string;
   phone_number?: string;
   birth_date?: string;
+  school?: string;
   grade?: string;
   username?: string;
   email?: string;
@@ -53,6 +56,7 @@ export default function ProfilePage() {
     national_id: "",
     phone_number: "",
     birth_date: "",
+    school: "",
     grade: "",
   });
   const [userData, setUserData] = useState<UserData>({
@@ -62,6 +66,7 @@ export default function ProfilePage() {
     last_name: "",
   });
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const translateBackendError = (error: string): string => {
     const errorTranslations: Record<string, string> = {
@@ -75,6 +80,7 @@ export default function ProfilePage() {
       "Ensure this field has at most 11 characters.": "این فیلد حداکثر ۱۱ کاراکتر مجاز است",
       "Ensure this field has at most 150 characters.": "این فیلد حداکثر ۱۵۰ کاراکتر مجاز است",
       "Ensure this field has at most 30 characters.": "این فیلد حداکثر ۳۰ کاراکتر مجاز است",
+      "Ensure this field has at most 200 characters.": "این فیلد حداکثر ۲۰۰ کاراکتر مجاز است",
     };
     
     return errorTranslations[error] || error;
@@ -201,6 +207,7 @@ export default function ProfilePage() {
           national_id: profileData.national_id || "",
           phone_number: profileData.phone_number || "",
           birth_date: profileData.birth_date || "",
+          school: profileData.school || "",
           grade: profileData.grade || "",
         });
         
@@ -275,6 +282,9 @@ export default function ProfilePage() {
       if (profile.birth_date.trim()) {
         profileData.birth_date = profile.birth_date.trim();
       }
+      if (profile.school.trim()) {
+        profileData.school = profile.school.trim();
+      }
       if (profile.grade.trim()) {
         profileData.grade = profile.grade.trim();
       }
@@ -288,8 +298,10 @@ export default function ProfilePage() {
       if (Object.keys(profileData).length > 0) {
         // Get current profile to find the ID
         const profileResponse = await axiosInstance.get("/profiles/");
-        if (profileResponse.data && profileResponse.data.length > 0) {
-          const profileId = profileResponse.data[0].id;
+        const profiles = profileResponse.data?.results || profileResponse.data || [];
+        
+        if (profiles.length > 0) {
+          const profileId = profiles[0].id;
           
           // Update using PATCH method with profile ID
           await axiosInstance.patch(`/profiles/${profileId}/`, profileData);
@@ -359,6 +371,12 @@ export default function ProfilePage() {
               : errorData.birth_date;
             backendErrors.birth_date = translateBackendError(errorMsg);
           }
+          if (errorData.school) {
+            const errorMsg = Array.isArray(errorData.school)
+              ? errorData.school[0]
+              : errorData.school;
+            backendErrors.school = translateBackendError(errorMsg);
+          }
           if (errorData.grade) {
             const errorMsg = Array.isArray(errorData.grade)
               ? errorData.grade[0]
@@ -424,13 +442,13 @@ export default function ProfilePage() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  نام کاربری
+                  <Phone className="w-4 h-4" />
+                  شماره تلفن
                 </Label>
                 <Input 
                   value={userData.username} 
                   onChange={(e) => handleUserInputChange("username", e.target.value)}
-                  disabled={!isEditing}
+                  disabled={true}
                   className={`${!isEditing ? "bg-gray-50" : ""} ${errors.username ? "border-red-500 focus:border-red-500" : ""}`}
                 />
                 {errors.username && (
@@ -486,7 +504,7 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4" />
                   نقش
@@ -495,7 +513,7 @@ export default function ProfilePage() {
                   value={user?.role === "student" ? "دانش‌آموز" : user?.role === "teacher" ? "معلم" : "ادمین"}
                   disabled
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Profile Actions */}
@@ -569,22 +587,21 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone_number" className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      شماره تلفن
+                    <Label htmlFor="school" className="flex items-center gap-2">
+                      <School className="w-4 h-4" />
+                      مرکز آموزشی
                     </Label>
                     <Input
-                      id="phone_number"
-                      type="tel"
-                      value={profile.phone_number}
-                      onChange={(e) => handleInputChange("phone_number", e.target.value)}
-                      placeholder=""
-                      maxLength={11}
+                      id="school"
+                      value={profile.school}
+                      onChange={(e) => handleInputChange("school", e.target.value)}
+                      placeholder="نام مدرسه یا مرکز آموزشی"
+                      maxLength={200}
                       disabled={!isEditing}
-                      className={`${!isEditing ? "bg-gray-50" : ""} ${errors.phone_number ? "border-red-500 focus:border-red-500" : ""}`}
+                      className={`${!isEditing ? "bg-gray-50" : ""} ${errors.school ? "border-red-500 focus:border-red-500" : ""}`}
                     />
-                    {errors.phone_number && (
-                      <p className="text-sm text-red-500 mt-1">{errors.phone_number}</p>
+                    {errors.school && (
+                      <p className="text-sm text-red-500 mt-1">{errors.school}</p>
                     )}
                   </div>
                 </div>
@@ -592,21 +609,36 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="birth_date" className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
+                      <CalendarIcon className="w-4 h-4" />
                       تاریخ تولد
                     </Label>
-                    <DatePicker
-                      date={birthDate}
-                      setDate={(date) => {
-                        setBirthDate(date);
-                        if (date) {
-                          handleInputChange("birth_date", date.toISOString().split('T')[0]);
-                        }
-                      }}
-                      placeholder="انتخاب تاریخ تولد"
-                      disabled={!isEditing}
-                      className={`${!isEditing ? "bg-gray-50" : ""} ${errors.birth_date ? "border-red-500" : ""}`}
-                    />
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          id="birth_date"
+                          className={`w-full justify-between font-normal ${!isEditing ? "bg-gray-50" : ""} ${errors.birth_date ? "border-red-500" : ""}`}
+                          disabled={!isEditing}
+                        >
+                          {birthDate ? birthDate.toLocaleDateString('fa-IR') : "انتخاب تاریخ تولد"}
+                          <ChevronDownIcon className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={birthDate}
+                          captionLayout="dropdown"
+                          onSelect={(date) => {
+                            setBirthDate(date);
+                            if (date) {
+                              handleInputChange("birth_date", date.toISOString().split('T')[0]);
+                            }
+                            setCalendarOpen(false);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
                     {errors.birth_date && (
                       <p className="text-sm text-red-500 mt-1">{errors.birth_date}</p>
                     )}
@@ -656,6 +688,16 @@ export default function ProfilePage() {
               </div>
               <Button variant="outline" size="sm">
                 تغییر رمز
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <h4 className="font-medium">تغییر شماره تلفن</h4>
+                <p className="text-sm text-muted-foreground">شماره تلفن خود را به‌روزرسانی کنید</p>
+              </div>
+              <Button variant="outline" size="sm">
+                تغییر شماره
               </Button>
             </div>
 
