@@ -105,6 +105,40 @@ export default function TestCollectionDetail() {
     navigate(`/panel/tests/${testId}/leaderboard`);
   };
 
+  const getTestStatus = (startTime: string, endTime: string) => {
+    const now = new Date();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (now < start) {
+      return { label: "آغاز نشده", variant: "secondary" as const, isActive: false };
+    } else if (now > end) {
+      return { label: "پایان یافته", variant: "destructive" as const, isActive: false };
+    } else {
+      return { label: "فعال", variant: "default" as const, isActive: true };
+    }
+  };
+
+  const formatTimeRemaining = (endTime: string) => {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end.getTime() - now.getTime();
+
+    if (diff <= 0) return "پایان یافته";
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (days > 0) {
+      return `${days} روز و ${hours} ساعت`;
+    } else if (hours > 0) {
+      return `${hours} ساعت و ${minutes} دقیقه`;
+    } else {
+      return `${minutes} دقیقه`;
+    }
+  };
+
   const fetchCollection = useCallback(async () => {
     try {
       setLoading(true);
@@ -354,19 +388,24 @@ export default function TestCollectionDetail() {
         <CardContent>
           {collection.tests && collection.tests.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-              {collection.tests.map((test) => (
+              {collection.tests.map((test) => {
+                const testStatus = getTestStatus(test.start_time, test.end_time);
+                const timeRemaining = formatTimeRemaining(test.end_time);
+                const canStartTest = testStatus.isActive;
+                
+                return (
                 <Card
                   key={test.id}
-                  className="hover:shadow-md transition-shadow"
+                  className={`hover:shadow-md transition-shadow ${!canStartTest ? 'opacity-75' : ''}`}
                 >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-lg">{test.name}</CardTitle>
                         <Badge
-                          variant={test.is_active ? "default" : "secondary"}
+                          variant={testStatus.variant}
                         >
-                          {test.is_active ? "فعال" : "غیرفعال"}
+                          {testStatus.label}
                         </Badge>
                       </div>
                       <DropdownMenu>
@@ -441,12 +480,48 @@ export default function TestCollectionDetail() {
                                 مشاهده پاسخ‌نامه
                               </DropdownMenuItem>
                             </>
-                          ) : (
+                          ) : testStatus.label === "پایان یافته" ? (
+                            <>
+                              {test.pdf_file_url && (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    window.open(test.pdf_file_url, "_blank")
+                                  }
+                                >
+                                  <FileText className="h-4 w-4 ml-2" />
+                                  مشاهده سوالات
+                                </DropdownMenuItem>
+                              )}
+                              {test.answers_file_url && (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    window.open(test.answers_file_url, "_blank")
+                                  }
+                                >
+                                  <CheckCircle className="h-4 w-4 ml-2" />
+                                  مشاهده پاسخنامه
+                                </DropdownMenuItem>
+                              )}
+                              {!test.pdf_file_url && (
+                                <DropdownMenuItem
+                                  onClick={() => navigate(`/tests/${test.id}/review`)}
+                                >
+                                  <FileText className="h-4 w-4 ml-2" />
+                                  مشاهده سوالات
+                                </DropdownMenuItem>
+                              )}
+                            </>
+                          ) : canStartTest ? (
                             <DropdownMenuItem
                               onClick={() => navigate(`/tests/${test.id}/info`)}
                             >
                               <PlayCircle className="h-4 w-4 ml-2" />
                               شروع آزمون
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              <Clock className="h-4 w-4 ml-2" />
+                              {testStatus.label}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -471,17 +546,26 @@ export default function TestCollectionDetail() {
                       <div className="flex items-center gap-2">
                         <PlayCircle className="h-4 w-4 text-green-600" />
                         <span>
-                          شروع: {formatPersianDateTime(test.start_time).date}
+                          شروع: {formatPersianDateTime(test.start_time).date} - {formatPersianDateTime(test.start_time).time}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-red-600" />
                         <span>
-                          پایان: {formatPersianDateTime(test.end_time).date}
+                          پایان: {formatPersianDateTime(test.end_time).date} - {formatPersianDateTime(test.end_time).time}
                         </span>
                       </div>
                     </div>
-                    <div className="mt-3 text-xs text-muted-foreground">
+                    <div className="mt-3 flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">
+                        باقیمانده: 
+                      </span>
+                      <span className={canStartTest ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+                        {timeRemaining}
+                      </span>
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground">
                       ایجاد شده در:{" "}
                       {formatPersianDateTime(test.created_at).date} -{" "}
                       {formatPersianDateTime(test.created_at).time}
@@ -514,20 +598,67 @@ export default function TestCollectionDetail() {
                             پاسخ‌نامه
                           </Button>
                         </div>
+                      ) : testStatus.label === "پایان یافته" ? (
+                        <div className="flex gap-2 w-full">
+                          {test.pdf_file_url ? (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(test.pdf_file_url, "_blank")}
+                                className="flex-1"
+                              >
+                                <FileText className="h-4 w-4 ml-1" />
+                                سوالات
+                              </Button>
+                              {test.answers_file_url && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(test.answers_file_url, "_blank")}
+                                  className="flex-1"
+                                >
+                                  <CheckCircle className="h-4 w-4 ml-1" />
+                                  پاسخنامه
+                                </Button>
+                              )}
+                            </>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/tests/${test.id}/review`)}
+                              className="w-full"
+                            >
+                              <FileText className="h-4 w-4 ml-1" />
+                              مشاهده سوالات
+                            </Button>
+                          )}
+                        </div>
                       ) : (
                         <Button
                           size="sm"
                           onClick={() => navigate(`/tests/${test.id}/info`)}
+                          disabled={!canStartTest}
                           className="w-full"
                         >
-                          <PlayCircle className="h-4 w-4 ml-1" />
-                          شروع آزمون
+                          {canStartTest ? (
+                            <>
+                              <PlayCircle className="h-4 w-4 ml-1" />
+                              شروع آزمون
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="h-4 w-4 ml-1" />
+                              {testStatus.label}
+                            </>
+                          )}
                         </Button>
                       )}
                     </div>
                   </CardFooter>
                 </Card>
-              ))}
+              )})}
             </div>
           ) : (
             <div className="text-center py-8">
