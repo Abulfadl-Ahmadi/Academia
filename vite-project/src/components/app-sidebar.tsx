@@ -13,6 +13,7 @@ import {
   FileText,
   LifeBuoy,
   Bot,
+  Sparkles,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -101,12 +102,23 @@ const data = {
           url: "/panel/tests/active",
         },
         {
-          title: "آزمون‌ ساز",
-          url: "/panel/tests/topic-by-folder",
-        },
-        {
           title: "تاریخچه آزمون‌ها",
           url: "/panel/tests/history",
+        },
+      ],
+    },
+    {
+      title: "آزمون‌ساز",
+      url: "/panel/test-maker",
+      icon: Sparkles,
+      items: [
+        {
+          title: "داشبورد",
+          url: "/panel/test-maker",
+        },
+        {
+          title: "ایجاد آزمون",
+          url: "/panel/test-maker/create",
         },
       ],
     },
