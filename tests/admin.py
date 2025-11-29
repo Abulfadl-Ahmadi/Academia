@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
     TestCollection, Test, PrimaryKey, StudentTestSession, 
-    StudentTestSessionLog, StudentAnswer, StudentProgress, Question, Option, QuestionImage
+    StudentTestSessionLog, StudentAnswer, StudentProgress, Question, Option, QuestionImage,
+    CustomTest, CustomTestSession, CustomTestAnswer
 )
 
 
@@ -227,3 +228,60 @@ class QuestionImageAdmin(admin.ModelAdmin):
     list_filter = ('question__difficulty_level',)
     search_fields = ('alt_text', 'question__question_text')
     list_per_page = 25
+
+
+@admin.register(CustomTest)
+class CustomTestAdmin(admin.ModelAdmin):
+    list_display = ('name', 'student', 'status', 'questions_count', 'score', 'created_at')
+    list_filter = ('status', 'difficulty_level', 'created_at')
+    search_fields = ('name', 'student__username', 'student__first_name', 'student__last_name')
+    readonly_fields = ('created_at', 'started_at', 'completed_at', 'score')
+    list_per_page = 25
+    
+    fieldsets = (
+        ('اطلاعات پایه', {
+            'fields': ('student', 'name', 'status')
+        }),
+        ('تنظیمات', {
+            'fields': ('folders', 'difficulty_level', 'questions_count', 'duration')
+        }),
+        ('نتایج', {
+            'fields': ('score', 'created_at', 'started_at', 'completed_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        """غیرفعال کردن افزودن دستی - باید از API ایجاد شود"""
+        return False
+
+
+@admin.register(CustomTestSession)
+class CustomTestSessionAdmin(admin.ModelAdmin):
+    list_display = ('custom_test', 'student', 'started_at', 'last_activity')
+    list_filter = ('started_at',)
+    search_fields = ('custom_test__name', 'student__username')
+    readonly_fields = ('started_at', 'last_activity')
+    list_per_page = 25
+    
+    def has_add_permission(self, request):
+        """غیرفعال کردن افزودن دستی"""
+        return False
+
+
+@admin.register(CustomTestAnswer)
+class CustomTestAnswerAdmin(admin.ModelAdmin):
+    list_display = ('custom_test', 'student', 'question', 'selected_option', 'is_correct', 'answered_at')
+    list_filter = ('answered_at', 'custom_test__status')
+    search_fields = ('custom_test__name', 'student__username', 'question__public_id')
+    readonly_fields = ('answered_at',)
+    list_per_page = 25
+    
+    def is_correct(self, obj):
+        return obj.is_correct()
+    is_correct.boolean = True
+    is_correct.short_description = 'صحیح'
+    
+    def has_add_permission(self, request):
+        """غیرفعال کردن افزودن دستی"""
+        return False

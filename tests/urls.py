@@ -26,10 +26,12 @@ from .topic_tests_views import (
     RandomTopicTestView,
     StudentTopicTestHistoryView
 )
+from .custom_test_views import CustomTestViewSet
 
 router = DefaultRouter()
 router.register(r'test-collections', TestCollectionViewSet, basename='test-collections')
 router.register(r'topic-tests', TopicTestViewSet, basename='topic-tests')
+router.register(r'custom-tests', CustomTestViewSet, basename='custom-tests')
 router.register(r'questions', QuestionViewSet, basename='questions')
 router.register(r'question-collections', QuestionCollectionViewSet, basename='question-collections')
 router.register(r'options', OptionViewSet, basename='options')

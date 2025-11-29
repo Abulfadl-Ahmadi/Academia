@@ -31,8 +31,14 @@ import CalendarPage from "@/app/shared/calendar/page";
 import CompletedCoursesPage from "@/app/dashboard/courses/completed/page";
 import ActiveTestsPage from "@/app/dashboard/tests/active/page";
 import TestHistoryPage from "@/app/dashboard/tests/history/page";
-import TopicTestsByFolderPage from "@/app/dashboard/tests/topic-by-folder/page";
 import TestResult from "@/app/dashboard/tests/result/[id]";
+
+// Test Maker Components
+import TestMakerDashboard from "@/app/dashboard/test-maker/page";
+import TestMakerCreate from "@/app/dashboard/test-maker/create/page";
+import CustomTestTake from "@/app/dashboard/test-maker/test/[id]/page";
+import CustomTestResults from "@/app/dashboard/test-maker/results/[id]/page";
+
 import StudentTestTakingPage from "@/pages/student/StudentTestTakingPage";
 import MyProducts from "@/app/dashboard/MyProducts";
 import TeacherProducts from "@/app/teacher-dashboard/products/page";
@@ -160,16 +166,17 @@ export default function PanelRoute() {
             element={<TestAnswerSheetPage />}
           />
           <Route path="/tests/active" element={<ActiveTestsPage />} />
-          <Route
-            path="/tests/topic-by-folder"
-            element={<TopicTestsByFolderPage />}
-          />
           <Route path="/tests/history" element={<TestHistoryPage />} />
           <Route path="/tests/result/:id" element={<TestResult />} />
           <Route
             path="/tests/:testId/detail"
             element={<StudentTestTakingPage />}
           />
+          {/* Test Maker routes for students */}
+          <Route path="/test-maker" element={<TestMakerDashboard />} />
+          <Route path="/test-maker/create" element={<TestMakerCreate />} />
+          <Route path="/test-maker/test/:id" element={<CustomTestTake />} />
+          <Route path="/test-maker/results/:id" element={<CustomTestResults />} />
           {/* Support Tickets routes for students */}
           <Route path="/support" element={<TicketsList />} />
           <Route path="/support/new" element={<NewTicket />} />

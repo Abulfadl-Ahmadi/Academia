@@ -826,3 +826,189 @@ class QuestionCollection(models.Model):
         """تعداد کل سوالات در این مجموعه"""
         return self.questions.count()
 
+
+class CustomTestStatus(models.TextChoices):
+    """وضعیت آزمون شخصی‌سازی شده"""
+    NOT_STARTED = 'not_started', 'شروع نشده'
+    IN_PROGRESS = 'in_progress', 'در حال انجام'
+    COMPLETED = 'completed', 'تکمیل شده'
+    EXPIRED = 'expired', 'منقضی شده'
+
+
+class CustomTest(models.Model):
+    """
+    آزمون شخصی‌سازی شده - آزمون‌هایی که دانش‌آموز با انتخاب فیلترها ایجاد می‌کند
+    این آزمون‌ها فقط برای دانش‌آموز سازنده قابل دسترسی هستند
+    """
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='custom_tests',
+        limit_choices_to={"role": "student"},
+        verbose_name="دانش‌آموز"
+    )
+    
+    name = models.CharField(max_length=255, verbose_name="نام آزمون")
+    
+    # فیلترهای انتخاب شده برای تولید سوالات
+    folders = models.ManyToManyField(
+        Folder,
+        blank=True,
+        related_name='custom_tests',
+        verbose_name="پوشه‌ها"
+    )
+    
+    difficulty_level = models.CharField(
+        max_length=10,
+        choices=Question.DIFFICULTY_CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="سطح دشواری"
+    )
+    
+    # سوالات تولید شده برای این آزمون
+    questions = models.ManyToManyField(
+        Question,
+        related_name='custom_tests',
+        verbose_name="سوالات"
+    )
+    
+    # تنظیمات آزمون
+    questions_count = models.PositiveIntegerField(verbose_name="تعداد سوالات")
+    duration = models.DurationField(verbose_name="مدت زمان آزمون")
+    
+    # وضعیت آزمون
+    status = models.CharField(
+        max_length=20,
+        choices=CustomTestStatus.choices,
+        default=CustomTestStatus.NOT_STARTED,
+        verbose_name="وضعیت"
+    )
+    
+    # زمان‌بندی
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    started_at = models.DateTimeField(null=True, blank=True, verbose_name="زمان شروع")
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="زمان تکمیل")
+    
+    # نمره
+    score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="نمره"
+    )
+    
+    class Meta:
+        verbose_name = "آزمون شخصی‌سازی شده"
+        verbose_name_plural = "آزمون‌های شخصی‌سازی شده"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['student', 'status']),
+            models.Index(fields=['created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} - {self.student.get_full_name()}"
+    
+    def is_expired(self):
+        """بررسی اینکه آیا آزمون منقضی شده است"""
+        if self.status != CustomTestStatus.IN_PROGRESS or not self.started_at:
+            return False
+        
+        elapsed_time = timezone.now() - self.started_at
+        return elapsed_time > self.duration
+    
+    def calculate_score(self):
+        """محاسبه نمره آزمون"""
+        total_questions = self.questions.count()
+        if total_questions == 0:
+            return 0
+        
+        # استفاده از CustomTestAnswer به جای StudentAnswer
+        correct_answers = 0
+        for answer in self.custom_answers.filter(student=self.student):
+            if answer.is_correct():
+                correct_answers += 1
+        
+        return (correct_answers / total_questions) * 100
+
+
+class CustomTestSession(models.Model):
+    """
+    جلسه آزمون شخصی‌سازی شده - برای ذخیره پاسخ‌های دانش‌آموز
+    """
+    custom_test = models.OneToOneField(
+        CustomTest,
+        on_delete=models.CASCADE,
+        related_name='session',
+        verbose_name="آزمون شخصی"
+    )
+    
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='custom_test_sessions',
+        verbose_name="دانش‌آموز"
+    )
+    
+    started_at = models.DateTimeField(auto_now_add=True, verbose_name="زمان شروع")
+    last_activity = models.DateTimeField(auto_now=True, verbose_name="آخرین فعالیت")
+    
+    class Meta:
+        verbose_name = "جلسه آزمون شخصی"
+        verbose_name_plural = "جلسات آزمون‌های شخصی"
+
+    def __str__(self):
+        return f"Session: {self.custom_test.name} - {self.student.get_full_name()}"
+
+
+class CustomTestAnswer(models.Model):
+    """
+    پاسخ‌های دانش‌آموز در آزمون شخصی‌سازی شده
+    """
+    custom_test = models.ForeignKey(
+        CustomTest,
+        on_delete=models.CASCADE,
+        related_name='custom_answers',
+        verbose_name="آزمون شخصی"
+    )
+    
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='custom_test_answers',
+        verbose_name="دانش‌آموز"
+    )
+    
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='custom_test_answers',
+        verbose_name="سوال"
+    )
+    
+    selected_option = models.ForeignKey(
+        Option,
+        on_delete=models.CASCADE,
+        verbose_name="گزینه انتخاب شده"
+    )
+    
+    answered_at = models.DateTimeField(auto_now_add=True, verbose_name="زمان پاسخ")
+    
+    class Meta:
+        verbose_name = "پاسخ آزمون شخصی"
+        verbose_name_plural = "پاسخ‌های آزمون شخصی"
+        unique_together = ['custom_test', 'student', 'question']
+        indexes = [
+            models.Index(fields=['custom_test', 'student']),
+            models.Index(fields=['question']),
+        ]
+
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.question.public_id}"
+    
+    def is_correct(self):
+        """بررسی صحت پاسخ"""
+        return self.selected_option == self.question.correct_option
+
