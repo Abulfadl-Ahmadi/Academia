@@ -33,9 +33,13 @@ interface Course {
 interface File {
   id: number;
   file_id: string;
+  course_id?: number | null;
+  session_id?: number | null;
   file_type: string;
   title: string;
+  file_url?: string;
   arvan_url?: string;
+  session_name?: string | null;
   created_at: string;
   player_url: string;
 }
@@ -58,6 +62,7 @@ interface StudentCourseDetailProps {
 export default function StudentCourseDetail({ courseId }: StudentCourseDetailProps) {
   const [course, setCourse] = useState<Course | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [courseFiles, setCourseFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
@@ -83,6 +88,15 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
       }
       
       setSessions(sessionsData);
+
+      const downloadableFilesResponse = await axiosInstance.get("/courses/student/downloadable-files/");
+      const downloadableFiles = Array.isArray(downloadableFilesResponse.data)
+        ? downloadableFilesResponse.data
+        : Array.isArray(downloadableFilesResponse.data?.results)
+          ? downloadableFilesResponse.data.results
+          : [];
+
+      setCourseFiles(downloadableFiles.filter((file: File) => file.course_id === courseId));
     } catch (error) {
       console.error("Error fetching course data:", error);
       toast.error("خطا در دریافت اطلاعات دوره");
@@ -133,8 +147,9 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
   const handleDownloadLectureNotes = (session: Session) => {
     const pdfFile = session.files.find(f => f.file_type === 'application/pdf');
     if (pdfFile) {
+      const downloadUrl = pdfFile.file_url || pdfFile.arvan_url || pdfFile.file_id;
       const link = document.createElement("a");
-      link.href = pdfFile.file_id; // This should be the download URL
+      link.href = downloadUrl;
       link.download = `lecture_notes_${session.session_number}.pdf`;
       document.body.appendChild(link);
       link.click();
@@ -167,6 +182,23 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
   const progressPercentage = publishedSessions.length > 0 
     ? Math.round((sessions.filter(s => s.is_watched).length / publishedSessions.length) * 100)
     : 0;
+  const sessionFiles = publishedSessions.flatMap((session) =>
+    session.files.map((file) => ({
+      ...file,
+      sessionId: session.id,
+      sessionTitle: session.title,
+      sessionNumber: session.session_number,
+    }))
+  );
+  const allFiles = [
+    ...courseFiles.map((file) => ({
+      ...file,
+      sessionId: file.session_id ?? 0,
+      sessionTitle: file.session_name || course?.title || "",
+      sessionNumber: publishedSessions.find((session) => session.id === file.session_id)?.session_number ?? 0,
+    })),
+    ...sessionFiles,
+  ].filter((file, index, self) => self.findIndex((item) => item.id === file.id) === index);
 
   return (
     <div className="space-y-6">
@@ -232,7 +264,7 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
       <Tabs defaultValue="sessions" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sessions">جلسات ({publishedSessions.length})</TabsTrigger>
-          <TabsTrigger value="lecture-notes">جزوات ({publishedSessions.filter(s => s.files.some(f => f.file_type === 'application/pdf')).length})</TabsTrigger>
+          <TabsTrigger value="lecture-notes">فایل‌ها و جزوه‌ها ({allFiles.length})</TabsTrigger>
         </TabsList>
 
         {/* Sessions Tab */}
@@ -268,26 +300,32 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
         <TabsContent value="lecture-notes" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>جزوات دوره</CardTitle>
+              <CardTitle>فایل‌ها و جزوات دوره</CardTitle>
             </CardHeader>
             <CardContent>
-              {publishedSessions.filter(s => s.files.some(f => f.file_type === 'application/pdf')).length === 0 ? (
+              {allFiles.length === 0 ? (
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز جزوه‌ای آپلود نشده است</h3>
-                  <p className="text-muted-foreground">لطفاً منتظر بمانید تا معلم جزوات را آپلود کند</p>
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز فایلی آپلود نشده است</h3>
+                  <p className="text-muted-foreground">لطفاً منتظر بمانید تا معلم فایل‌ها یا جزوات را آپلود کند</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {publishedSessions
-                    .filter(s => s.files.some(f => f.file_type === 'application/pdf'))
-                    .map((session) => (
-                      <LectureNotesCard 
-                        key={session.id} 
-                        session={session}
-                        onDownload={() => handleDownloadLectureNotes(session)}
-                      />
-                    ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {allFiles.map((file) => (
+                    <FileResourceCard
+                      key={`${file.sessionId}-${file.id}`}
+                      file={file}
+                      onDownload={() => {
+                        const downloadUrl = file.file_url || file.arvan_url || file.file_id;
+                        const link = document.createElement("a");
+                        link.href = downloadUrl;
+                        link.download = file.title || `file_${file.id}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    />
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -399,22 +437,49 @@ function StudentSessionCard({ session, onClick, onDownloadNotes }: StudentSessio
   );
 }
 
-interface LectureNotesCardProps {
-  session: Session;
+interface FileResourceCardProps {
+  file: File & {
+    sessionId: number;
+    sessionTitle: string;
+    sessionNumber: number;
+  };
   onDownload: () => void;
 }
 
-function LectureNotesCard({ session, onDownload }: LectureNotesCardProps) {
+function FileResourceCard({ file, onDownload }: FileResourceCardProps) {
+  const isPdf = file.file_type === 'application/pdf';
+  const isVideo = file.file_type.startsWith('video/');
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="pt-4">
-        <div className="text-center">
-          <FileText className="w-12 h-12 text-green-600 mx-auto mb-3" />
-          <h3 className="font-medium mb-2">جلسه {session.session_number}</h3>
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{session.title}</p>
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                {isPdf ? (
+                  <FileText className="w-5 h-5 text-green-600" />
+                ) : isVideo ? (
+                  <Play className="w-5 h-5 text-blue-600" />
+                ) : (
+                  <FileText className="w-5 h-5 text-muted-foreground" />
+                )}
+                <Badge variant="outline">جلسه {file.sessionNumber}</Badge>
+              </div>
+              <h3 className="font-medium">{file.title}</h3>
+              <p className="text-sm text-muted-foreground">{file.sessionTitle}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Badge variant={isPdf ? "default" : "secondary"}>
+              {isPdf ? "جزوه PDF" : isVideo ? "ویدیو" : file.file_type}
+            </Badge>
+          </div>
+
           <Button onClick={onDownload} className="w-full" size="sm">
             <Download className="w-4 h-4 ml-2" />
-            دانلود جزوه
+            دانلود
           </Button>
         </div>
       </CardContent>
@@ -497,8 +562,8 @@ function SessionDetailModal({ session, onClose }: SessionDetailModalProps) {
                   </div>
                   <Button onClick={() => {
                     const link = document.createElement("a");
-                    link.href = pdfFile.file_id;
-                    link.download = `lecture_notes_${session.session_number}.pdf`;
+                      link.href = pdfFile.file_url || pdfFile.arvan_url || pdfFile.file_id;
+                      link.download = pdfFile.title || `lecture_notes_${session.session_number}.pdf`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
