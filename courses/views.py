@@ -505,21 +505,27 @@ class StudentDownloadableFilesView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Get files from courses where student is enrolled
+        # Get files attached either directly to a course, to a session inside a course,
+        # or explicitly shared with the student.
         files = File.objects.filter(
-            course__students=request.user
-        ).select_related('course').order_by('-created_at')[:10]  # Limit to 10 most recent
+            Q(course__students=request.user) |
+            Q(session__course__students=request.user) |
+            Q(students=request.user)
+        ).select_related('course', 'session', 'session__course').distinct().order_by('-created_at')[:10]  # Limit to 10 most recent
         
         # Simple serializer for file data
         file_data = []
         for file in files:
+            course = file.course or (file.session.course if file.session else None)
             file_data.append({
                 'id': file.id,
-                'name': file.name,
+                'name': file.title,
+                'title': file.title,
                 'file_type': file.file_type,
-                'file_size': file.file_size,
-                'download_url': file.file.url if file.file else None,
-                'course_name': file.course.title if file.course else None,
+                'file_size': file.file.size if file.file else 0,
+                'download_url': file.file.url if file.file else file.arvan_url,
+                'course_name': course.title if course else None,
+                'session_name': file.session.title if file.session else None,
                 'created_at': file.created_at,
             })
         

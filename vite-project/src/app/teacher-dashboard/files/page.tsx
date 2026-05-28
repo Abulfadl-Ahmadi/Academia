@@ -25,12 +25,27 @@ import {
 // import { Label } from "@/components/ui/label"
 import FileCreateForm from "./FileCreateForm";
 
+type CourseSummary = {
+  id: number;
+  title: string;
+};
+
+type FileApiItem = {
+  file_id?: string;
+  file?: string;
+  title?: string;
+  course_info?: {
+    title?: string;
+  };
+  created_at?: string;
+  class_session?: string;
+};
+
 export default function FilesPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   // const token = localStorage.getItem("access_token")
-  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const [, setCourses] = useState<{ id: number; title: string }[]>([]);
 
   // Combobox form setup
@@ -54,9 +69,9 @@ export default function FilesPage() {
 
   useEffect(() => {
     axiosInstance
-      .get(baseURL + "/courses/") // This should return a list of groups
+      .get("/courses/") // This should return a list of groups
       .then((res) => {
-        const groupList = res.data.map((course: any) => ({
+        const groupList = (Array.isArray(res.data) ? res.data : []).map((course: CourseSummary) => ({
           id: course.id,
           title: course.title,
         }));
@@ -69,10 +84,10 @@ export default function FilesPage() {
 
   useEffect(() => {
     axiosInstance
-      .get(baseURL + "/files/")
+      .get("/files/")
       .then((res) => {
         // Handle both array and pagination format
-        let filesData = [];
+        let filesData: FileApiItem[] = [];
         if (Array.isArray(res.data)) {
           filesData = res.data;
         } else if (res.data && Array.isArray(res.data.results)) {
@@ -82,14 +97,14 @@ export default function FilesPage() {
           filesData = [];
         }
         
-        const data = filesData.map((file: any) => ({
-          file_id: file.file_id,
-          file: file.file,
-          title: file.title,
+        const data = filesData.map((file) => ({
+          file_id: file.file_id || "",
+          file: file.file || "",
+          title: file.title || "",
           // file_type: file.file_type || "—",
-          course: file.course_info.title || "",
-          create_at: file.created_at || 0,
-          course_session: file.class_session || 0,
+          st_group: file.course_info?.title || "",
+          create_at: file.created_at || "",
+          class_session: file.class_session || "",
         }));
         setFiles(data);
       })
