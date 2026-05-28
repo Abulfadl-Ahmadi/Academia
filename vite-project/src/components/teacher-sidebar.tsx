@@ -257,10 +257,6 @@ export function TeacherSidebar({
             title: "جزوه‌ها",
             url: "/panel/files",
           },
-          {
-            title: "آپلود فایل",
-            url: "/panel/files/upload",
-          },
         ],
       },
       {

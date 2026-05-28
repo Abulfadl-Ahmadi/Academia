@@ -27,7 +27,6 @@ import Home from "@/app/dashboard/home/page";
 import StudentFilesPage from "@/app/dashboard/files/StudentFilesPage";
 import TransactionsPage from "@/app/teacher-dashboard/transactions/page";
 import NewTransactionPage from "@/app/teacher-dashboard/transactions/new/page";
-import UploadFilePage from "@/app/teacher-dashboard/files/upload/page";
 import CalendarPage from "@/app/shared/calendar/page";
 import CompletedCoursesPage from "@/app/dashboard/courses/completed/page";
 import ActiveTestsPage from "@/app/dashboard/tests/active/page";
@@ -214,7 +213,6 @@ export default function PanelRoute() {
           <Route path="/books/:id/edit" element={<TeacherBookEditPage />} />
           <Route path="/books/create" element={<TeacherBookCreatePage />} />
           <Route path="/books" element={<TeacherBookListPage />} />
-          <Route path="/files/upload" element={<UploadFilePage />} />
           <Route path="/videos" element={<UploadVideo />} />
           {/* Test Collections routes - order is important */}
           <Route path="/test-collections" element={<TestCollectionList />} />
