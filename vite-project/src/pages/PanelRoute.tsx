@@ -24,6 +24,7 @@ import {
 } from "@/features/tickets/AIConversations";
 import ProfilePage from "@/app/dashboard/profile/page";
 import Home from "@/app/dashboard/home/page";
+import StudentFilesPage from "@/app/dashboard/files/StudentFilesPage";
 import TransactionsPage from "@/app/teacher-dashboard/transactions/page";
 import NewTransactionPage from "@/app/teacher-dashboard/transactions/new/page";
 import UploadFilePage from "@/app/teacher-dashboard/files/upload/page";
@@ -134,11 +135,11 @@ export default function PanelRoute() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/address" element={<AddressPage />} />
           <Route path="/products" element={<MyProducts />} />
-          <Route path="/files" element={<div>فایل‌های من</div>} />
+          <Route path="/files" element={<StudentFilesPage />} />
           <Route path="/books" element={<StudentBookListPage />} />
           <Route
             path="/files/downloaded"
-            element={<div>فایل‌های دانلود شده</div>}
+            element={<StudentFilesPage />}
           />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/courses" element={<StudentCoursesPage />} />

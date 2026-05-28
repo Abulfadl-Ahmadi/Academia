@@ -1,25 +1,18 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axiosInstance from "@/lib/axios"
 import { toast } from "sonner"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
 
 export const FormSchema = z.object({
   file: z.any().nullable(),
@@ -38,7 +31,6 @@ type FileFormProps = {
 }
 
 export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
-  const baseURL = import.meta.env.VITE_API_BASE_URL
   const [loading, setLoading] = useState(false)
   const [courses, setCourses] = useState<{ id: number; title: string }[]>([])
   
@@ -61,9 +53,15 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
 
   useEffect(() => {
     axiosInstance
-      .get(baseURL + "/courses/")
+      .get("/courses/")
       .then((res) => {
-        const groupList = res.data.map((course: any) => ({
+        const courseList = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.results)
+            ? res.data.results
+            : []
+
+        const groupList = courseList.map((course: any) => ({
           id: course.id,
           title: course.title,
         }))
@@ -119,82 +117,56 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
         }}
       />
 
-<div>
-  <Popover>
-    <PopoverTrigger asChild>
-      <Button
-        variant="outline"
-        role="combobox"
-        className="w-full justify-between"
+      <Select
+        value={form.watch("content_type")}
+        onValueChange={(value) => {
+          form.setValue("content_type", value as "book" | "test" | "note", {
+            shouldDirty: true,
+            shouldTouch: true,
+          })
+        }}
       >
-        {form.watch("content_type")
-          ? contentTypeOptions.find(opt => opt.value === form.watch("content_type"))?.label
-          : "انتخاب نوع محتوا"}
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent className="w-full p-0">
-      <Command>
-        <CommandInput placeholder="جستجو..." className="h-9" />
-        <CommandList>
-          <CommandEmpty>گزینه‌ای یافت نشد.</CommandEmpty>
-          <CommandGroup>
-            {contentTypeOptions.map((item) => (
-              <CommandItem
-                value={item.label}
-                key={item.value}
-                onSelect={() => {
-                  form.setValue("content_type", item.value as "book" | "test" | "note")
-                }}
-              >
-                {item.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    </PopoverContent>
-  </Popover>
-</div>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="انتخاب نوع محتوا" />
+        </SelectTrigger>
+        <SelectContent>
+          {contentTypeOptions.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <Input
         placeholder="شناسه جلسه کلاس (اختیاری)"
         {...form.register("course_session_id")}
       />
       <div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              className="w-full justify-between"
-            >
-              {form.watch("course_id")
-                ? courseOptions.find(opt => opt.value === form.watch("course_id"))?.label
-                : "انتخاب گروه"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="جستجوی گروه..." className="h-9" />
-              <CommandList>
-                <CommandEmpty>کلاسی یافت نشد.</CommandEmpty>
-                <CommandGroup>
-                  {courseOptions.map((course) => (
-                    <CommandItem
-                      value={course.label}
-                      key={course.value}
-                      onSelect={() => {
-                        form.setValue("course_id", course.value)
-                      }}
-                    >
-                      {course.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <Select
+          value={form.watch("course_id") ?? undefined}
+          onValueChange={(value) => {
+            form.setValue("course_id", value, {
+              shouldDirty: true,
+              shouldTouch: true,
+            })
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="انتخاب گروه" />
+          </SelectTrigger>
+          <SelectContent>
+            {courseOptions.length === 0 ? (
+              <div className="p-2 text-sm text-muted-foreground">کلاسی یافت نشد.</div>
+            ) : (
+              courseOptions.map((course) => (
+                <SelectItem key={course.value} value={course.value}>
+                  {course.label}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "در حال ایجاد..." : "ایجاد"}

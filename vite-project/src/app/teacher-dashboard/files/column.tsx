@@ -21,7 +21,7 @@ export type File = {
   title: string
   file: string
   // file_type: string
-  st_group: number
+  st_group: string
   create_at: string // Assuming this is the username of the teacher
   class_session: string // Assuming this is the username of the teacher
 }
