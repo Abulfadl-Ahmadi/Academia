@@ -592,6 +592,7 @@ class QuestionTestListSerializer(serializers.ModelSerializer):
     """سریالایزر مخصوص لیست آزمون‌های سوالی - امنیت بالا، بدون URL فایل‌ها"""
     collection = serializers.SerializerMethodField()
     questions_count = serializers.SerializerMethodField()
+    folders_count = serializers.SerializerMethodField()
     time_limit = serializers.SerializerMethodField()
     is_active = serializers.BooleanField(read_only=True)
     content_type = serializers.CharField(read_only=True)
@@ -599,7 +600,7 @@ class QuestionTestListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
         fields = ["id", 'name', 'description', 'start_time', 'end_time', 'duration', 
-                 'collection', 'questions_count', 'time_limit', 'is_active', 'created_at', 'content_type']
+                 'collection', 'questions_count', 'folders_count', 'time_limit', 'is_active', 'created_at', 'content_type']
         read_only_fields = ['teacher']
     
     def get_collection(self, obj):
@@ -619,6 +620,10 @@ class QuestionTestListSerializer(serializers.ModelSerializer):
             return obj.primary_keys.count()
         else:
             return obj.questions.count()
+
+    def get_folders_count(self, obj):
+        """تعداد پوشه‌های مرتبط با آزمون را برمی‌گرداند"""
+        return obj.folders.count()
 
     def get_time_limit(self, obj):
         """زمان آزمون را به دقیقه برمی‌گرداند"""

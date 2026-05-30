@@ -228,13 +228,11 @@ export default function QuestionTestsPage() {
                   </CardDescription>
                 )}
                 
-                {test.collection && (
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      مجموعه: {test.collection.name}
-                    </Badge>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    مجموعه: {test.collection?.name || 'بدون مجموعه'}
+                  </Badge>
+                </div>
               </CardHeader>
 
               <CardFooter className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground border-t">
