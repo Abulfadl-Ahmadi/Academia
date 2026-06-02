@@ -30,8 +30,8 @@ interface Course {
 const UploadVideo: React.FC = () => {
 
   // const channelId = "86515078-d523-4927-8233-2b6b3b022986";
-  const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
-  const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
+  const vodApiKey = import.meta.env.VITE_VOD_API_KEY || '';
+  const vodBaseUrl = import.meta.env.VITE_VOD_BASE_URL || 'https://napi.arvancloud.ir/vod/2.0';
 
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
@@ -107,20 +107,17 @@ const UploadVideo: React.FC = () => {
       const name = file.name;
       const type = file.type;
 
-      // 1️⃣ ایجاد فایل TUS
+      // Create TUS upload directly on Arvan
       const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
-      const fileCreateRes = await fetch(
-        `${vodBaseUrl}/channels/${channelId}/files`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Apikey ${vodApiKey}`,
-            'Tus-Resumable': '1.0.0',
-            'Upload-Length': String(size),
-            'Upload-Metadata': metadata,
-          },
-        }
-      );
+      const fileCreateRes = await fetch(`${vodBaseUrl}/channels/${channelId}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Apikey ${vodApiKey}`,
+          'Tus-Resumable': '1.0.0',
+          'Upload-Length': String(size),
+          'Upload-Metadata': metadata,
+        },
+      });
 
       if (fileCreateRes.status !== 201) {
         const text = await fileCreateRes.text();
@@ -132,15 +129,8 @@ const UploadVideo: React.FC = () => {
         throw new Error('Missing Location header in upload creation');
       }
 
-      // استخراج file_id از URL
-      const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
-      const fileId = fileIdMatch?.[1];
-      if (!fileId) {
-        throw new Error('Unable to parse file_id from upload URL');
-      }
+      const fileId = location.match(/\/files\/([^/?]+)/i)?.[1];
 
-
-      // 2️⃣ شروع آپلود TUS
       const upload = new tus.Upload(file, {
         uploadUrl: location,
         headers: { 'Authorization': `Apikey ${vodApiKey}` },
@@ -155,46 +145,34 @@ const UploadVideo: React.FC = () => {
         },
         onSuccess: async () => {
           console.log('TUS upload complete at', upload.url);
-          // 3️⃣ نهایی‌سازی ویدیو در ArvanCloud
+
+          // Finalize on Arvan
           const videoData = {
             title: title,
             file_id: fileId,
             convert_mode: 'auto',
-            // watermark_id: '1d16d576-61fb-482f-a3a6-2b44fbc788b3',
-            watermark_area: 'ANIMATE_LEFT_TO_RIGHT'
           };
-          const videoRes = await fetch(
-            `${vodBaseUrl}/channels/${channelId}/videos`,
-            {
-              method: 'POST',
-              headers: {
-                'Authorization': `Apikey ${vodApiKey}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(videoData),
-            }
-          );
 
-
+          const videoRes = await fetch(`${vodBaseUrl}/channels/${channelId}/videos`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Apikey ${vodApiKey}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(videoData),
+          });
 
           const json = await videoRes.json();
-          formData.append('file_id', json.data.id);
+          formData.append('file_id', json.data?.id || fileId);
           const response = await fetch(baseURL + '/videos/finalize/', {
             method: 'POST',
             body: formData,
-            credentials: 'include', // Include cookies for JWT authentication
+            credentials: 'include',
           });
 
           await response.json();
 
-
-          if (!videoRes.ok) {
-            throw new Error(
-              `Failed to finalize video: ${videoRes.status} ${JSON.stringify(json)}`
-            );
-          }
-          console.log('Video finalized', json);
           setUploading(false);
         },
         onError: (err) => {

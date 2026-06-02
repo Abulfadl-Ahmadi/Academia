@@ -1,13 +1,17 @@
 // src/app/panel/groups/columns.ts
 import { type ColumnDef } from "@tanstack/react-table"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { MoreHorizontal, Download, Edit, Trash2 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-// import { toJalaali } from 'jalaali-js'
-
-// function convertToJalali(isoDate: string): string {
-//   const date = new Date(isoDate)
-//   const j = toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate())
-//   return `${j.jy}/${j.jm.toString().padStart(2, '0')}/${j.jd.toString().padStart(2, '0')}`
-// }
 // @ts-ignore
 import moment from 'moment-jalaali'
 
@@ -17,6 +21,7 @@ function convertToJalali(isoDate: string): string {
 
 
 export type File = {
+  id: number
   file_id: string
   title: string
   file: string
@@ -27,10 +32,33 @@ export type File = {
 }
 
 export const columns: ColumnDef<File>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: "ID",
-  // },
+  {
+    id: "select",
+    header: ({ table }) => (
+      <div className="px-1">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="انتخاب همه"
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="px-1">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="انتخاب سطر"
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 50,
+  },
   {
     accessorKey: "name",
     header: "نام فایل",
@@ -40,7 +68,8 @@ export const columns: ColumnDef<File>[] = [
       return fileName ? (
         <a
           href={`${file}`}
-          className="text-blue-600 underline hover:text-blue-800"
+          className="text-blue-600 underline hover:text-blue-800 max-w-[200px] truncate block"
+          title={fileName}
         >
           {fileName}
         </a>
@@ -66,5 +95,60 @@ export const columns: ColumnDef<File>[] = [
   {
     accessorKey: "st_group",
     header: "کلاس",
+    cell: ({ row }) => {
+      return <span className="truncate max-w-[150px] block">{row.original.st_group || "—"}</span>;
+    },
+  },
+  {
+    accessorKey: "class_session",
+    header: "جلسه",
+    cell: ({ row }) => {
+      return <span className="truncate max-w-[150px] block">{row.original.class_session || "—"}</span>;
+    },
+  },
+  {
+    id: "actions",
+    header: "عملیات",
+    cell: ({ row, table }) => {
+      const file = row.original;
+      const meta = table.options.meta as { handleEdit?: (file: File) => void; handleDelete?: (id: number) => void } | undefined;
+      const handleEdit = meta?.handleEdit;
+      const handleDelete = meta?.handleDelete;
+      
+      return (
+        <div className="flex justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-6 w-6 p-0">
+                <span className="sr-only">منوی عملیات</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>عملیات</DropdownMenuLabel>
+              <DropdownMenuItem 
+                onClick={() => file.file && window.open(file.file, '_blank')}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" /> دانلود
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => handleEdit?.(file)}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" /> ویرایش
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => handleDelete?.(file.id)}
+                className="flex items-center gap-2 text-red-600"
+              >
+                <Trash2 className="h-4 w-4" /> حذف
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
+    },
   },
 ]

@@ -14,6 +14,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axiosInstance from "@/lib/axios"
 import { toast } from "sonner"
 
+type FileRecord = {
+  id: number
+  title?: string
+  file?: string
+  file_id?: string
+  file_type?: string
+  content_type?: "book" | "test" | "note"
+  course?: number | null
+  session?: number | null
+}
+
 export const FormSchema = z.object({
   file: z.any().nullable(),
   title: z.string().min(1, "title required"),
@@ -28,9 +39,11 @@ type FileFormProps = {
   onSuccess: (newFile: any) => void
   onClose?: () => void
   context?: "dialog" | "drawer"
+  mode?: "create" | "edit"
+  initialFile?: FileRecord | null
 }
 
-export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
+export default function FileCreateForm({ onSuccess, onClose, mode = "create", initialFile }: FileFormProps) {
   const [loading, setLoading] = useState(false)
   const [courses, setCourses] = useState<{ id: number; title: string }[]>([])
   
@@ -50,6 +63,16 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
       course_session_id: null,
     },
   })
+
+  useEffect(() => {
+    form.reset({
+      file: null,
+      title: initialFile?.title ?? "",
+      course_id: initialFile?.course != null ? String(initialFile.course) : null,
+      content_type: initialFile?.content_type ?? "book",
+      course_session_id: initialFile?.session != null ? String(initialFile.session) : null,
+    })
+  }, [form, initialFile])
 
   useEffect(() => {
     axiosInstance
@@ -79,24 +102,38 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
       if (data.file) formData.append("file", data.file)
       if (data.title) formData.append("title", data.title)
       if (data.course_id) formData.append("course", data.course_id)
-      if (data.course_session_id) formData.append("course_session_id", data.course_session_id)
+      if (data.course_session_id) formData.append("session", data.course_session_id)
       formData.append("file_type", "application/pdf")
       formData.append("content_type", data.content_type)
 
+      const request = mode === "edit" && initialFile?.id
+        ? axiosInstance.patch(`/files/${initialFile.id}/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+        : axiosInstance.post("/files/", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
 
-      const res = await axiosInstance.post("/files/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      const res = await request
 
       onSuccess(res.data)
-      form.reset()
+      form.reset({
+        file: null,
+        title: "",
+        course_id: null,
+        content_type: "book",
+        course_session_id: null,
+      })
       if (onClose) onClose()
+      toast.success(mode === "edit" ? "فایل با موفقیت ویرایش شد." : "فایل با موفقیت ایجاد شد.")
     } catch (error: any) {
       console.error("Error creating file:", error?.response?.data)
+      toast.error(mode === "edit" ? "خطا در ویرایش فایل" : "خطا در ایجاد فایل")
     } finally {
-      toast.success("فایل با موفقیت ایجاد شد.")
       setLoading(false)
     }
   }
@@ -110,12 +147,18 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
     >
       <Input placeholder="عنوان فایل" {...form.register("title")} />
       <Input
-        placeholder="آپلود فایل"
+        placeholder={mode === "edit" ? "آپلود فایل جدید (اختیاری)" : "آپلود فایل"}
         type="file"
         onChange={e => {
           form.setValue("file", e.target.files?.[0] ?? null)
         }}
       />
+
+      {mode === "edit" && initialFile?.file && (
+        <p className="text-xs text-muted-foreground break-all">
+          فایل فعلی: {initialFile.file}
+        </p>
+      )}
 
       <Select
         value={form.watch("content_type")}
@@ -169,7 +212,7 @@ export default function FileCreateForm({ onSuccess, onClose }: FileFormProps) {
         </Select>
       </div>
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "در حال ایجاد..." : "ایجاد"}
+        {loading ? (mode === "edit" ? "در حال ویرایش..." : "در حال ایجاد...") : (mode === "edit" ? "ویرایش" : "ایجاد")}
       </Button>
     </form>
   )

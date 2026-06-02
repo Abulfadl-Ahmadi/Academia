@@ -51,9 +51,9 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
   const videoInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
-  // Arvan Cloud Video Platform configuration
-  const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
-  const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
+  // Arvan Cloud Video Platform configuration (read from Vite env)
+  const vodApiKey = import.meta.env.VITE_VOD_API_KEY || '';
+  const vodBaseUrl = import.meta.env.VITE_VOD_BASE_URL || 'https://napi.arvancloud.ir/vod/2.0';
 
   // Fetch course data to get vod_channel_id
   useEffect(() => {
@@ -97,7 +97,8 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
     const file = event.target.files?.[0];
     if (file) {
       // Validate PDF file type
-      if (file.type !== 'application/pdf') {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
         toast.error("لطفاً یک فایل PDF انتخاب کنید");
         return;
       }
@@ -144,114 +145,102 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
   // };
 
   const uploadVideoToArvanCloud = async (file: File): Promise<string> => {
+    if (!course?.vod_channel_id) {
+      throw new Error("VOD channel ID not found");
+    }
+
+    const size = file.size;
+    const name = file.name;
+    const type = file.type;
+
+    // Create upload on Arvan directly
+    const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
+
+    const fileCreateRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Apikey ${vodApiKey}`,
+        'Tus-Resumable': '1.0.0',
+        'Upload-Length': String(size),
+        'Upload-Metadata': metadata,
+      },
+    });
+
+    if (fileCreateRes.status !== 201) {
+      const text = await fileCreateRes.text();
+      throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
+    }
+
+    const location = fileCreateRes.headers.get('Location');
+    if (!location) {
+      throw new Error('Missing Location header in upload creation');
+    }
+
+    // Extract file_id from URL
+    const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
+    const fileId = fileIdMatch?.[1];
+    if (!fileId) {
+      throw new Error('Unable to parse file_id from upload URL');
+    }
+
     return new Promise((resolve, reject) => {
-      if (!course?.vod_channel_id) {
-        reject(new Error("VOD channel ID not found"));
-        return;
-      }
-
-      const size = file.size;
-      const name = file.name;
-      const type = file.type;
-
-      // Create TUS upload
-      const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
-      
-      fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Apikey ${vodApiKey}`,
-          'Tus-Resumable': '1.0.0',
-          'Upload-Length': String(size),
-          'Upload-Metadata': metadata,
+      const upload = new tus.Upload(file, {
+        uploadUrl: location,
+        headers: { 'Authorization': `Apikey ${vodApiKey}` },
+        chunkSize: 1 * 1024 * 1024,
+        metadata: { filename: name, filetype: type },
+        onProgress: (uploaded, total) => {
+          const pct = Math.floor((uploaded / total) * 100);
+          setUploadProgress(pct);
         },
-      })
-      .then(async (fileCreateRes) => {
-        if (fileCreateRes.status !== 201) {
-          const text = await fileCreateRes.text();
-          throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
-        }
-
-        const location = fileCreateRes.headers.get('Location');
-        if (!location) {
-          throw new Error('Missing Location header in upload creation');
-        }
-
-        // Extract file_id from URL
-        const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
-        const fileId = fileIdMatch?.[1];
-        if (!fileId) {
-          throw new Error('Unable to parse file_id from upload URL');
-        }
-
-        // Start TUS upload
-        const upload = new tus.Upload(file, {
-          uploadUrl: location,
-          headers: { 'Authorization': `Apikey ${vodApiKey}` },
-          chunkSize: 1 * 1024 * 1024, // 1MB
-          metadata: {
-            filename: name,
-            filetype: type,
-          },
-          onProgress: (uploaded, total) => {
-            const pct = Math.floor((uploaded / total) * 100);
-            setUploadProgress(pct);
-          },
-          onSuccess: async () => {
-            console.log('TUS upload complete at', upload.url);
-            
-            // Finalize video in ArvanCloud
+        onSuccess: async () => {
+          try {
+            // Finalize video on Arvan
             const videoData = {
-              title: formData.title,
+              title: formData.title || name,
               file_id: fileId,
               convert_mode: 'auto',
-              watermark_area: 'ANIMATE_LEFT_TO_RIGHT'
+              watermark_area: 'ANIMATE_LEFT_TO_RIGHT',
             };
-            
-            try {
-              const videoRes = await fetch(
-                `${vodBaseUrl}/channels/${course.vod_channel_id}/videos`,
-                {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Apikey ${vodApiKey}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(videoData),
-                }
-              );
 
-              if (!videoRes.ok) {
-                const json = await videoRes.json();
-                throw new Error(`Failed to finalize video: ${videoRes.status} ${JSON.stringify(json)}`);
-              }
+            const videoRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/videos`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Apikey ${vodApiKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(videoData),
+            });
 
-              const json = await videoRes.json();
-              console.log('Video finalized', json);
-              resolve(json.data.id); // Return the video ID
-            } catch (error) {
-              reject(error);
+            if (!videoRes.ok) {
+              const json = await videoRes.text();
+              throw new Error(`Failed to finalize video: ${videoRes.status} ${json}`);
             }
-          },
-          onError: (err) => {
-            console.error('Upload TUS failed', err);
-            reject(err);
-          },
-        });
 
-        upload.start();
-      })
-      .catch(reject);
+            const json = await videoRes.json();
+            resolve(json.data.id || fileId);
+          } catch (err) {
+            reject(err);
+          }
+        },
+        onError: (err) => {
+          console.error('Upload TUS failed', err);
+          reject(err);
+        },
+      });
+
+      upload.start();
     });
   };
 
-  const uploadPDFToParsPack = async (file: File): Promise<string> => {
+  const uploadPDFToParsPack = async (file: File, sessionId: number): Promise<number> => {
     const formDataToSend = new FormData();
     formDataToSend.append('file', file);
     formDataToSend.append('title', `${formData.title}_lecture_notes`);
     formDataToSend.append('file_type', 'application/pdf');
     formDataToSend.append('content_type', 'note');
+    formDataToSend.append('session', sessionId.toString());
     formDataToSend.append('course', courseId.toString());
 
     const response = await axiosInstance.post('/files/', formDataToSend, {
@@ -260,7 +249,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
       },
     });
 
-    return response.data.file_id;
+    return response.data.id;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -320,17 +309,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
 
       if (lectureNotesFile) {
         try {
-          const pdfId = await uploadPDFToParsPack(lectureNotesFile);
-          
-          // Create File record for PDF
-          await axiosInstance.post('/files/', {
-            file_id: pdfId,
-            file_type: 'application/pdf',
-            content_type: 'note',
-            title: `${formData.title}_lecture_notes`,
-            course: courseId,
-            session: sessionId,
-          });
+          await uploadPDFToParsPack(lectureNotesFile, sessionId);
         } catch (error) {
           console.error("Error uploading PDF:", error);
           toast.error("خطا در آپلود جزوه");

@@ -120,11 +120,12 @@ class VideoInitUploadView(views.APIView):
         file_id = str(uuid.uuid4())
 
         try:
-            # upload_data = create_upload_url(channel_id=channel_id, filename=title,file_size=filesize, file_type="video/mp4")
+            filesize = serializer.validated_data.get('filesize')
             upload_data = create_presigned_upload_url(
                 channel_id=serializer.validated_data['channel_id'],
                 file_name=serializer.validated_data['title'],
-                file_type=serializer.validated_data['file_type']
+                file_type=serializer.validated_data['file_type'],
+                file_size=filesize
             )
             return Response({
                 # "upload_url": upload_data["location"],
@@ -167,6 +168,7 @@ class VideoFinalizeUploadView(views.APIView):
                 "video_id": video_data.get("id"),
                 "file_url": video_data.get("player_url"),
                 "embed_code": video_data.get("embed_code"),
+                "file_db_id": file.id,
             }, status=status.HTTP_201_CREATED)
         
         except Exception as e:

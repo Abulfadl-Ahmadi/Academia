@@ -46,6 +46,8 @@ interface Course {
 
 export default function EditSessionModal({ courseId, sessionId, onClose, onSessionUpdated }: EditSessionModalProps) {
   const [session, setSession] = useState<Session | null>(null);
+  const [existingVideoFile, setExistingVideoFile] = useState<any | null>(null);
+  const [existingNotesFile, setExistingNotesFile] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     session_number: "",
@@ -62,9 +64,9 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
   const videoInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
-  // Arvan Cloud Video Platform configuration
-  const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
-  const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
+  // Arvan Cloud Video Platform configuration (read from Vite env)
+  const vodApiKey = import.meta.env.VITE_VOD_API_KEY || '';
+  const vodBaseUrl = import.meta.env.VITE_VOD_BASE_URL || 'https://napi.arvancloud.ir/vod/2.0';
 
   // Fetch session and course data
   useEffect(() => {
@@ -83,6 +85,18 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
         // Fetch course data
         const courseResponse = await axiosInstance.get(`/courses/${courseId}/`);
         setCourse(courseResponse.data);
+        // Fetch files for this session (video, lecture notes)
+        try {
+          const filesRes = await axiosInstance.get(`/files/?session=${sessionId}`);
+          const files = filesRes.data || [];
+          const video = files.find((f: any) => f.file_type && f.file_type.includes('video'));
+          const pdf = files.find((f: any) => f.file_type && f.file_type.includes('pdf'));
+          setExistingVideoFile(video || null);
+          setExistingNotesFile(pdf || null);
+        } catch (err) {
+          // Non-fatal: just don't show files
+          console.warn('Failed to fetch session files', err);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("خطا در دریافت اطلاعات جلسه");
@@ -120,7 +134,8 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
     const file = event.target.files?.[0];
     if (file) {
       // Validate PDF file type
-      if (file.type !== 'application/pdf') {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
         toast.error("لطفاً یک فایل PDF انتخاب کنید");
         return;
       }
@@ -152,90 +167,88 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
   };
 
   const uploadVideoToArvanCloud = async (file: File): Promise<string> => {
+    if (!course?.vod_channel_id) {
+      throw new Error("VOD channel ID not found");
+    }
+
+    const size = file.size;
+    const name = file.name;
+    const type = file.type;
+
+    const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
+
+    const fileCreateRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Apikey ${vodApiKey}`,
+        'Tus-Resumable': '1.0.0',
+        'Upload-Length': String(size),
+        'Upload-Metadata': metadata,
+      },
+    });
+
+    if (fileCreateRes.status !== 201) {
+      const text = await fileCreateRes.text();
+      throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
+    }
+
+    const location = fileCreateRes.headers.get('Location');
+    if (!location) {
+      throw new Error('Missing Location header in upload creation');
+    }
+
+    const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
+    const fileId = fileIdMatch?.[1];
+    if (!fileId) {
+      throw new Error('Unable to parse file_id from upload URL');
+    }
+
     return new Promise((resolve, reject) => {
-      if (!course?.vod_channel_id) {
-        reject(new Error("VOD channel ID not found"));
-        return;
-      }
-
-      const size = file.size;
-      const name = file.name;
-      const type = file.type;
-
-      // Create TUS upload
-      const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
-      
-      fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Apikey ${vodApiKey}`,
-          'Tus-Resumable': '1.0.0',
-          'Upload-Length': String(size),
-          'Upload-Metadata': metadata,
+      const upload = new tus.Upload(file, {
+        uploadUrl: location,
+        headers: { 'Authorization': `Apikey ${vodApiKey}` },
+        chunkSize: 1 * 1024 * 1024,
+        metadata: { filename: name, filetype: type },
+        onProgress: (uploaded, total) => {
+          const pct = Math.floor((uploaded / total) * 100);
+          setUploadProgress(pct);
         },
-      })
-      .then(async (fileCreateRes) => {
-        if (fileCreateRes.status !== 201) {
-          const text = await fileCreateRes.text();
-          throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
-        }
+        onSuccess: async () => {
+          try {
+            const videoData = {
+              title: formData.title || name,
+              file_id: fileId,
+              convert_mode: 'auto',
+              watermark_area: 'ANIMATE_LEFT_TO_RIGHT',
+            };
 
-        const location = fileCreateRes.headers.get('Location');
-        if (!location) {
-          throw new Error('Missing Location header in upload creation');
-        }
+            const videoRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/videos`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Apikey ${vodApiKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(videoData),
+            });
 
-        // Extract file_id from URL
-        const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
-        const fileId = fileIdMatch?.[1];
-        if (!fileId) {
-          throw new Error('Unable to parse file_id from upload URL');
-        }
-
-        // Start TUS upload
-        const upload = new tus.Upload(file, {
-          uploadUrl: location,
-          headers: { 'Authorization': `Apikey ${vodApiKey}` },
-          chunkSize: 1 * 1024 * 1024, // 1MB
-          metadata: {
-            filename: name,
-            filetype: type,
-          },
-          onProgress: (uploaded, total) => {
-            const pct = Math.floor((uploaded / total) * 100);
-            setUploadProgress(pct);
-          },
-          onSuccess: async () => {
-            try {
-              // Wait for file processing
-              let processingComplete = false;
-              while (!processingComplete) {
-                const fileStatusRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files/${fileId}`, {
-                  headers: { 'Authorization': `Apikey ${vodApiKey}` },
-                });
-                const fileData = await fileStatusRes.json();
-                
-                if (fileData.data.status === "encoded") {
-                  processingComplete = true;
-                  resolve(fileData.data.id);
-                } else if (fileData.data.status === "failed") {
-                  throw new Error("Video processing failed");
-                } else {
-                  await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds before checking again
-                }
-              }
-            } catch (error) {
-              reject(error);
+            if (!videoRes.ok) {
+              const json = await videoRes.text();
+              throw new Error(`Failed to finalize video: ${videoRes.status} ${json}`);
             }
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
 
-        upload.start();
-      })
-      .catch(reject);
+            const json = await videoRes.json();
+            resolve(json.data.id || fileId);
+          } catch (err) {
+            reject(err);
+          }
+        },
+        onError: (error) => {
+          reject(error);
+        },
+      });
+
+      upload.start();
     });
   };
 
@@ -256,11 +269,33 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
 
     try {
       // Upload video if selected
-      let videoFileId = null;
+      let createdVideoFileDbId = null;
       if (videoFile) {
         setIsUploading(true);
         try {
-          videoFileId = await uploadVideoToArvanCloud(videoFile);
+          // Upload to Arvan and finalize (returns file_db_id)
+          const arvanFileDbId = await uploadVideoToArvanCloud(videoFile);
+          // If uploadVideoToArvanCloud returned the DB id already (when finalizing via backend), use it
+          // Otherwise, try to call backend finalize endpoint if needed.
+          if (typeof arvanFileDbId === 'object' && arvanFileDbId.file_db_id) {
+            createdVideoFileDbId = arvanFileDbId.file_db_id;
+          } else if (typeof arvanFileDbId === 'string' || typeof arvanFileDbId === 'number') {
+            createdVideoFileDbId = arvanFileDbId;
+          } else {
+            // Fallback: call backend finalize if upload function returned a file_id
+            try {
+              const finalizeRes = await axiosInstance.post('/videos/finalize/', {
+                file_id: arvanFileDbId,
+                title: formData.title || videoFile.name,
+                course: courseId,
+                session: sessionId,
+              });
+              createdVideoFileDbId = finalizeRes.data?.file_db_id || finalizeRes.data?.id || null;
+            } catch (err) {
+              console.warn('Finalize fallback failed', err);
+            }
+          }
+
           toast.success("ویدیو با موفقیت آپلود شد");
         } catch (error) {
           console.error("Error uploading video:", error);
@@ -273,12 +308,18 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
       }
 
       // Upload lecture notes if selected
-      let lectureNotesFormData = null;
+      let createdNotesFileDbId = null;
       if (lectureNotesFile) {
-        lectureNotesFormData = new FormData();
+        const lectureNotesFormData = new FormData();
         lectureNotesFormData.append('file', lectureNotesFile);
+        lectureNotesFormData.append('title', lectureNotesFile.name);
+        lectureNotesFormData.append('file_type', 'application/pdf');
+        lectureNotesFormData.append('session', String(sessionId));
+        lectureNotesFormData.append('course', String(courseId));
+        lectureNotesFormData.append('content_type', 'note');
         try {
-          await axiosInstance.post('/files/', lectureNotesFormData);
+          const res = await axiosInstance.post('/files/', lectureNotesFormData);
+          createdNotesFileDbId = res.data?.id || null;
           toast.success("جزوه با موفقیت آپلود شد");
         } catch (error) {
           console.error("Error uploading lecture notes:", error);
@@ -289,14 +330,32 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
       }
 
       // Update session
-      const updateData = {
-        title: formData.title.trim(),
-        session_number: formData.session_number,
-        description: formData.description.trim(),
-        ...(videoFileId && { video_id: videoFileId }),
-      };
+      const updateData: any = {};
+      if (formData.title.trim() !== session?.title) updateData.title = formData.title.trim();
+      if (String(formData.session_number) !== String(session?.session_number)) updateData.session_number = formData.session_number;
+      if (formData.description.trim() !== (session?.description || '')) updateData.description = formData.description.trim();
+      // If a new video was created, attach its file DB id reference (assuming backend expects video_id)
+      if (createdVideoFileDbId) updateData.video_id = createdVideoFileDbId;
 
-      await axiosInstance.put(`/courses/sessions/${sessionId}/`, updateData);
+      await axiosInstance.patch(`/sessions/${sessionId}/`, updateData);
+
+      // If we replaced the video, delete the old File DB record
+      if (createdVideoFileDbId && existingVideoFile && existingVideoFile.id) {
+        try {
+          await axiosInstance.delete(`/files/${existingVideoFile.id}/`);
+        } catch (err) {
+          console.warn('Failed to delete old video file record', err);
+        }
+      }
+
+      // If we replaced the lecture notes, delete old one
+      if (createdNotesFileDbId && existingNotesFile && existingNotesFile.id) {
+        try {
+          await axiosInstance.delete(`/files/${existingNotesFile.id}/`);
+        } catch (err) {
+          console.warn('Failed to delete old notes file record', err);
+        }
+      }
 
       toast.success("جلسه با موفقیت بروزرسانی شد");
       onSessionUpdated();
@@ -358,12 +417,12 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
             {/* Video Upload */}
             <div className="space-y-2">
               <Label>ویدیو جلسه</Label>
-              {session?.video_url ? (
+              {existingVideoFile ? (
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <Play className="w-4 h-4" />
-                  <span className="text-sm text-muted-foreground">
-                    ویدیو موجود است
-                  </span>
+                  <a href={existingVideoFile.file_url || existingVideoFile.arvan_url} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground underline">
+                    ویدیو موجود — مشاهده
+                  </a>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground mb-2">
@@ -406,12 +465,12 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
             {/* Lecture Notes Upload */}
             <div className="space-y-2">
               <Label>جزوه جلسه</Label>
-              {session?.lecture_notes_url ? (
+              {existingNotesFile ? (
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <FileText className="w-4 h-4" />
-                  <span className="text-sm text-muted-foreground">
-                    جزوه موجود است
-                  </span>
+                  <a href={existingNotesFile.file_url || existingNotesFile.file} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground underline">
+                    جزوه موجود — مشاهده
+                  </a>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground mb-2">

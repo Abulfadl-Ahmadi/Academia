@@ -60,12 +60,19 @@ interface TestSummary {
   duration?: string | number | null;
   frequency?: string | null;
   test_collection?: number | null;
+  collection?: {
+    id: number;
+    name: string;
+    created_by_name?: string;
+  } | null;
   test_collection_detail?: {
     id: number;
     name: string;
   } | null;
   folders?: number[] | null;
+  folders_count?: number;
   questions?: number[] | null;
+  questions_count?: number;
 }
 
 const testTypeLabels: Record<TestTypeOption, string> = {
@@ -251,8 +258,9 @@ const TestsList = () => {
   };
 
   const handleNavigateToCollection = (test: TestSummary) => {
-    if (test.test_collection_detail) {
-      navigate(`/panel/test-collections/${test.test_collection_detail.id}`);
+    const collectionDetail = test.collection || test.test_collection_detail;
+    if (collectionDetail) {
+      navigate(`/panel/test-collections/${collectionDetail.id}`);
     }
   };
 
@@ -469,8 +477,9 @@ const TestsList = () => {
         <div className="grid gap-4 lg:grid-cols-2">
           {filteredTests.map((test) => {
             const scheduleBadge = determineScheduleBadge(test);
-            const foldersCount = Array.isArray(test.folders) ? test.folders.length : 0;
-            const questionsCount = Array.isArray(test.questions) ? test.questions.length : 0;
+            const foldersCount = test.folders_count ?? (Array.isArray(test.folders) ? test.folders.length : 0);
+            const questionsCount = test.questions_count ?? (Array.isArray(test.questions) ? test.questions.length : 0);
+            const collectionName = test.collection?.name || test.test_collection_detail?.name || "بدون مجموعه";
             return (
               <Card key={test.id} className="flex h-full flex-col">
                 <CardHeader className="space-y-3">
@@ -528,7 +537,7 @@ const TestsList = () => {
                     <div className="flex items-center gap-2">
                       <Layers className="h-4 w-4" />
                       <span>
-                        مجموعه: {test.test_collection_detail?.name || "بدون مجموعه"}
+                        مجموعه: {collectionName}
                       </span>
                     </div>
                   </div>
@@ -559,7 +568,7 @@ const TestsList = () => {
                       <Activity className="h-4 w-4" />
                       نتایج آزمون
                     </Button>
-                    {test.test_collection_detail ? (
+                    {(test.collection || test.test_collection_detail) ? (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -579,7 +588,7 @@ const TestsList = () => {
                       <DropdownMenuItem onClick={() => handleEditShortcut(test)}>
                         ویرایش / بازبینی
                       </DropdownMenuItem>
-                      {test.test_collection_detail ? (
+                      {(test.collection || test.test_collection_detail) ? (
                         <DropdownMenuItem onClick={() => handleNavigateToCollection(test)}>
                           باز کردن مجموعه مرتبط
                         </DropdownMenuItem>
