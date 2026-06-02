@@ -550,7 +550,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0 border-t">
               <TeacherLiveChat courseId={courseId.toString()} />
             </CardContent>
           </Card>

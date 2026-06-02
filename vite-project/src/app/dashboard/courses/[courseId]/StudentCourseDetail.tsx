@@ -210,10 +210,10 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
               <div className="flex items-center gap-3 mb-2">
                 <CardTitle className="text-2xl">{course.title}</CardTitle>
                 {course.is_live && (
-                  <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-300 animate-pulse">
+                  <div className="flex items-center gap-1 px-1 rounded-lg pl-2 border bg-red-500/60 text-red-200 border-red-500 animate-pulse">
                     <Radio className="w-3 h-3 mr-1" />
                     آنلاین
-                  </Badge>
+                  </div>
                 )}
               </div>
               <p className="text-muted-foreground mt-2">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>

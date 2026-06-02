@@ -128,24 +128,20 @@ export default function TeacherLiveChat({ courseId }: TeacherLiveChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-[600px] border rounded-lg">
+    <div className="flex flex-col h-[600px]">
       {/* Header */}
-      <div className="p-4 border-b bg-muted/50">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          <h3 className="font-semibold">چت زنده کلاس</h3>
+      <div className="px-4 py-2 bg-muted/30 flex items-center justify-between border-b">
+        <span className="text-xs text-muted-foreground">وضعیت اتصال به سرور چت:</span>
+        <div className="flex items-center gap-1.5">
           <div
             className={`w-2 h-2 rounded-full ${
               isConnected ? "bg-green-500" : "bg-red-500"
             }`}
           ></div>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {isConnected ? "متصل" : "قطع شده"}
           </span>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">
-          شما به عنوان معلم می‌توانید با دانش‌آموزان چت کنید
-        </p>
       </div>
 
       {/* Messages */}
