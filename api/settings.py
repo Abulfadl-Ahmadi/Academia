@@ -140,7 +140,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    # 'daphne',  # Temporarily commented out
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -151,7 +151,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'storages',
-    # 'channels',  # Temporarily commented out
+    'channels',
 
     'accounts',
     'courses',
