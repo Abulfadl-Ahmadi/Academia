@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { columns, type File } from "@/app/teacher-dashboard/files/column";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/ui/data-table-with-selection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,9 +41,14 @@ type CourseSummary = {
 };
 
 type FileApiItem = {
+  id?: number;
   file_id?: string;
   file?: string;
   title?: string;
+  file_type?: string;
+  content_type?: string;
+  course?: number | null;
+  session?: number | null;
   course_info?: {
     title?: string;
   };
@@ -58,6 +63,8 @@ export default function FilesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");
+  const [editingFile, setEditingFile] = useState<File | null>(null);
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
   // const token = localStorage.getItem("access_token")
   const [, setCourses] = useState<{ id: number; title: string }[]>([]);
 
@@ -111,13 +118,16 @@ export default function FilesPage() {
         }
         
         const data = filesData.map((file) => ({
+          id: file.id ?? 0,
           file_id: file.file_id || "",
           file: file.file || "",
           title: file.title || "",
+          file_type: file.file_type || "",
+          content_type: file.content_type || "",
           // file_type: file.file_type || "—",
           st_group: file.course_info?.title || "",
           create_at: file.created_at || "",
-          class_session: file.class_session || "",
+          class_session: file.class_session || (file.session != null ? String(file.session) : ""),
         }));
         setFiles(data);
       })
@@ -179,6 +189,20 @@ export default function FilesPage() {
     });
   }, [files, searchQuery, selectedClass, sortOrder]);
 
+  const handleEdit = (file: File) => {
+    setEditingFile(file);
+    setEditDrawerOpen(true);
+  };
+
+  const handleDelete = async (fileId: number) => {
+    try {
+      await axiosInstance.delete(`/files/${fileId}/`);
+      setFiles((prev) => prev.filter((f) => f.id !== fileId));
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
+
   const totalFiles = files.length;
   const visibleFiles = filteredFiles.length;
 
@@ -186,6 +210,19 @@ export default function FilesPage() {
 
   // Prepare cuorse options for combobox
   // const courseOptions = courses.map(c => ({ label: c.title, value: c.id.toString() }));
+
+  const cleanupOverlays = () => {
+    const openOverlays = document.querySelectorAll(
+      '[data-slot="dialog-overlay"][data-state="open"], [data-slot="drawer-overlay"][data-state="open"]'
+    );
+    if (openOverlays.length > 0) return;
+
+    document
+      .querySelectorAll('[data-slot="dialog-overlay"], [data-slot="drawer-overlay"]')
+      .forEach((el) => el.remove());
+    document.body.style.pointerEvents = "";
+    document.body.style.overflow = "";
+  };
 
   return (
     <div className="p-4 space-y-4">
@@ -309,7 +346,105 @@ export default function FilesPage() {
         </Dialog>
       </div>
 
-      <DataTable columns={columns} data={files} />
+      {typeof window !== "undefined" && (
+        <ResponsiveEditFileForm
+          open={editDrawerOpen}
+          file={editingFile}
+          onOpenChange={(open) => {
+            setEditDrawerOpen(open);
+            if (!open) {
+              window.setTimeout(cleanupOverlays, 250);
+            }
+          }}
+          onClosed={() => setEditingFile(null)}
+          onSuccess={(updatedFile) => {
+            setFiles((prev) =>
+              prev.map((f) => (f.id === updatedFile.id ? updatedFile : f))
+            );
+            setEditDrawerOpen(false);
+            setEditingFile(null);
+          }}
+        />
+      )}
+
+      <DataTable 
+        columns={columns} 
+        data={files}
+        meta={{
+          handleEdit,
+          handleDelete
+        }}
+      />
     </div>
+  );
+}
+
+function ResponsiveEditFileForm({
+  open,
+  file,
+  onOpenChange,
+  onClosed,
+  onSuccess,
+}: {
+  open: boolean;
+  file: File | null;
+  onOpenChange: (open: boolean) => void;
+  onClosed: () => void;
+  onSuccess: (updatedFile: File) => void;
+}) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleChange = () => setIsMobile(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (open || !file) return;
+
+    const closeTimer = window.setTimeout(() => {
+      onClosed();
+    }, 250);
+
+    return () => window.clearTimeout(closeTimer);
+  }, [open, file, onClosed]);
+
+  if (!file) return null;
+
+  const form = (
+    <FileCreateForm
+      mode="edit"
+      initialFile={file}
+      onSuccess={onSuccess}
+      onClose={() => onOpenChange(false)}
+      context={isMobile ? "drawer" : "dialog"}
+    />
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>ویرایش فایل</DrawerTitle>
+            <DrawerDescription>{file.title}</DrawerDescription>
+          </DrawerHeader>
+          <div className="p-4">{form}</div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle>ویرایش فایل</DialogTitle>
+        {form}
+      </DialogContent>
+    </Dialog>
   );
 }

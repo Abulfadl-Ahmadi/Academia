@@ -1,39 +1,30 @@
-import requests
-import base64
 from decouple import config
+from utils.vod import create_upload_url as create_tus_upload_url
+import logging
+
+logger = logging.getLogger(__name__)
 
 VOD_API_KEY = config('VOD_API_KEY')
 VOD_BASE_URL = config('VOD_BASE_URL')
 
-HEADERS = {
-    "Authorization": f"Apikey {VOD_API_KEY}",
-    "Content-Type": "application/json",
-    "Accept": "application/json", # It's good practice to specify you want JSON back
-}
 
-
-# The signature should not include file_size, as this method doesn't use it.
-def create_upload_url(channel_id: str, file_name: str, file_type: str):
-    
-    # This hardcoded ID should be removed if you want dynamic channels.
-    channel_id = "86515078-d523-4927-8233-2b6b3b022986"
-
-    # Create a JSON payload (the correct method for pre-signed URLs)
-    data = {
-        "channel_id": channel_id,
-        "title": file_name,
-        "file_type": file_type,
-    }
-    
-    # Send the request with the JSON data in the `json` parameter
-    response = requests.post(f"{VOD_BASE_URL}/channels/{channel_id}/files", headers=HEADERS, json=data)
-    
-    # This will now work because the API will return a JSON body
-    if response.status_code == 201:
-        return response.json()["data"]
-        
-    # Provide a more detailed error message for debugging
-    raise Exception(f"Failed to create upload URL: {response.status_code} - {response.text}")
+def create_upload_url(channel_id: str, file_name: str, file_type: str, file_size: int = None):
+    """
+    Wrapper that delegates to the main TUS upload URL creator in `utils.vod`.
+    Keeps a compatible signature for existing callers but uses the working
+    implementation which handles TUS headers and returns the upload location
+    and file id.
+    """
+    try:
+        # Prefer passing filesize if available (some implementations need it)
+        if file_size:
+            return create_tus_upload_url(channel_id=channel_id, file_size=file_size, filename=file_name, file_type=file_type)
+        else:
+            # Fall back to calling without filesize (some callers don't supply it)
+            return create_tus_upload_url(channel_id=channel_id, file_size=0, filename=file_name, file_type=file_type)
+    except Exception as e:
+        logger.error(f"create_upload_url failed for channel {channel_id}: {e}")
+        raise
 
 def create_video(channel_id: str, file_id: str, title: str):
     # This function remains correct

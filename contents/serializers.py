@@ -110,7 +110,7 @@ class FileUploadSerializer(serializers.Serializer):
 class VideoInitUploadSerializer(serializers.Serializer):
     title = serializers.CharField()
     channel_id = serializers.CharField()
-    # filesize = serializers.CharField()
+    filesize = serializers.IntegerField(required=False)
     file_type = serializers.CharField(default="video/mp4")  # Assuming video uploads are always mp4
 
 class VideoFinalizeSerializer(serializers.Serializer):

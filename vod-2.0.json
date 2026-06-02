@@ -1,0 +1,2920 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Arvan VOD",
+    "version": "2.0",
+    "x-logo": {
+      "url": "\/images\/other\/arvan-api-docs-logo.svg",
+      "backgroundColor": "white",
+      "altText": "arvancloud"
+    }
+  },
+  "basePath": "\/vod\/2.0",
+  "paths": {
+    "\/analytics\/play-count": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Return appropriate play count",
+        "description": "Interval constraint\n                        - Max 'daily' : 30d\n                        - Max 'hourly' : 2d\n                        - Max 'minutely' : 2h\n                        <br\/>\n                        Period constraint\n                        - Max : 30d\n                        <br\/>\n                        Since and until constraint\n                        - Max of date format : 30d\n                        - Max of date-time format : 2d\n                        - The format of both should be the same either as date-time or as date.\n                        <br\/>\n                        Aggregate constraint\n                        - It should be used with group_by or interval.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Enum: '1h' '2h' '3h' '6h' '12h' '24h' '3d' '7d' '14d' '1m' ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Enum: 'minutely' 'hourly' 'daily'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.name",
+            "in": "query",
+            "description": "Enum: watch_time",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.order",
+            "in": "query",
+            "description": "Enum: 'ASC' 'DESC'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "description": "Enum: 'channel' 'video' 'country' 'asn'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit the number of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Define offset of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "description": "Enum: 'SUM' 'AVG' 'MIN' 'MAX' 'COUNT'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "timezone",
+            "in": "query",
+            "description": "Timezone ex: Asia\/Tehran",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filters.channel",
+            "in": "query",
+            "description": "Filter by channel IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Channel ID", "type": "string" }
+          },
+          {
+            "name": "filters.video",
+            "in": "query",
+            "description": "Filter by video IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Video ID", "type": "string" }
+          },
+          {
+            "name": "filters.country",
+            "in": "query",
+            "description": "Filter by country IDs",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Country ID ex: IR, CA",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.asn",
+            "in": "query",
+            "description": "Filter by asn numbers",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "ASN number ex: 202468",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_type",
+            "in": "query",
+            "description": "Filter by client type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Client type ex: browser, mobile app",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_family",
+            "in": "query",
+            "description": "Filter by client family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "client family ex: Android Browser, Chrome, Safari, Firefox",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.os_family",
+            "in": "query",
+            "description": "Filter by os family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "OS family ex: Android, Windows, iOS, GNU\/Linux, Mac",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_type",
+            "in": "query",
+            "description": "Filter by device type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device type ex: smartphone, tv, desktop, tablet",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_brand",
+            "in": "query",
+            "description": "Filter by device brand",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device brand ex: Samsung, Huawei, Xiaomi, Apple, Asus",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_model",
+            "in": "query",
+            "description": "Filter by device model",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device model ex: Galaxy A50s, Galaxy S6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.resolution",
+            "in": "query",
+            "description": "Filter by resolution",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Resolution ex: 1920x1080",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return appropriate watch time" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/analytics\/traffic": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Return appropriate traffic",
+        "description": "Interval constraint\n                        - Max 'daily' : 30d\n                        - Max 'hourly' : 2d\n                        - Max 'minutely' : 2h\n                        <br\/>\n                        Period constraint\n                        - Max : 30d\n                        <br\/>\n                        Since and until constraint\n                        - Max of date format : 30d\n                        - Max of date-time format : 2d\n                        - The format of both should be the same either as date-time or as date.\n                        <br\/>\n                        Aggregate constraint\n                        - It should be used with group_by or interval.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Enum:  '1h' '2h' '3h' '6h' '12h' '24h' '3d' '7d' '14d' '1m' ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Enum: 'minutely' 'hourly' 'daily'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.name",
+            "in": "query",
+            "description": "Enum: traffic",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.order",
+            "in": "query",
+            "description": "Enum: 'ASC' 'DESC'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "description": "Enum: 'channel' 'video' 'country' 'asn' 'referer'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit the number of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Define offset of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "description": "Enum: 'SUM' 'AVG' 'MIN' 'MAX' 'COUNT'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "timezone",
+            "in": "query",
+            "description": "Timezone ex: Asia\/Tehran",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filters.channel",
+            "in": "query",
+            "description": "Filter by channel IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Channel ID", "type": "string" }
+          },
+          {
+            "name": "filters.video",
+            "in": "query",
+            "description": "Filter by video IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Video ID", "type": "string" }
+          },
+          {
+            "name": "filters.country",
+            "in": "query",
+            "description": "Filter by country IDs",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Country ID ex: IR, CA",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.asn",
+            "in": "query",
+            "description": "Filter by asn numbers",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "ASN number ex: 202468",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_type",
+            "in": "query",
+            "description": "Filter by client type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Client type ex: browser, mobile app",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_family",
+            "in": "query",
+            "description": "Filter by client family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "client family ex: Android Browser, Chrome, Safari, Firefox",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.os_family",
+            "in": "query",
+            "description": "Filter by os family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "OS family ex: Android, Windows, iOS, GNU\/Linux, Mac",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_type",
+            "in": "query",
+            "description": "Filter by device type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device type ex: smartphone, tv, desktop, tablet",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_brand",
+            "in": "query",
+            "description": "Filter by device brand",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device brand ex: Samsung, Huawei, Xiaomi, Apple, Asus",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_model",
+            "in": "query",
+            "description": "Filter by device model",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device model ex: Galaxy A50s, Galaxy S6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.resolution",
+            "in": "query",
+            "description": "Filter by resolution",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Resolution ex: 1920x1080",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return appropriate traffic" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/analytics\/watch-time": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Return appropriate watch time",
+        "description": "Interval constraint\n                        - Max 'daily' : 30d\n                        - Max 'hourly' : 2d\n                        - Max 'minutely' : 2h\n                        <br\/>\n                        Period constraint\n                        - Max : 30d\n                        <br\/>\n                        Since and until constraint\n                        - Max of date format : 30d\n                        - Max of date-time format : 2d\n                        - The format of both should be the same either as date-time or as date.\n                        <br\/>\n                        Aggregate constraint\n                        - It should be used with group_by or interval.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Enum: '1h' '2h' '3h' '6h' '12h' '24h' '3d' '7d' '14d' '1m'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "description": "string <date-time:Y-m-d H:i>|<date: Y-m-d>",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Enum: 'minutely' 'hourly' 'daily'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.name",
+            "in": "query",
+            "description": "Enum: watch_time",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order_by.order",
+            "in": "query",
+            "description": "Enum: 'ASC' 'DESC'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "description": "Enum: 'channel' 'video' 'country' 'asn'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit the number of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Define offset of entities",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "description": "Enum: 'SUM' 'AVG' 'MIN' 'MAX' 'COUNT'",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "timezone",
+            "in": "query",
+            "description": "Timezone ex: Asia\/Tehran",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filters.channel",
+            "in": "query",
+            "description": "Filter by channel IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Channel ID", "type": "string" }
+          },
+          {
+            "name": "filters.video",
+            "in": "query",
+            "description": "Filter by video IDs",
+            "required": false,
+            "type": "array",
+            "items": { "description": "Video ID", "type": "string" }
+          },
+          {
+            "name": "filters.country",
+            "in": "query",
+            "description": "Filter by country IDs",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Country ID ex: IR, CA",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.asn",
+            "in": "query",
+            "description": "Filter by asn numbers",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "ASN number ex: 202468",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_type",
+            "in": "query",
+            "description": "Filter by client type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Client type ex: browser, mobile app",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.client_family",
+            "in": "query",
+            "description": "Filter by client family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "client family ex: Android Browser, Chrome, Safari, Firefox",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.os_family",
+            "in": "query",
+            "description": "Filter by os family",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "OS family ex: Android, Windows, iOS, GNU\/Linux, Mac",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_type",
+            "in": "query",
+            "description": "Filter by device type",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device type ex: smartphone, tv, desktop, tablet",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_brand",
+            "in": "query",
+            "description": "Filter by device brand",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device brand ex: Samsung, Huawei, Xiaomi, Apple, Asus",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.device_model",
+            "in": "query",
+            "description": "Filter by device model",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Device model ex: Galaxy A50s, Galaxy S6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters.resolution",
+            "in": "query",
+            "description": "Filter by resolution",
+            "required": false,
+            "type": "array",
+            "items": {
+              "description": "Resolution ex: 1920x1080",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return appropriate watch time" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/audios": {
+      "get": {
+        "tags": ["Audio"],
+        "summary": "Return all channel's audios.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Page limit for query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return all channel's audios" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Audio"],
+        "summary": "Store a newly created audio.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Audio details",
+            "required": true,
+            "schema": {
+              "required": ["title", "convert_mode"],
+              "properties": {
+                "title": {
+                  "description": "Title of the audio",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the audio",
+                  "type": "string"
+                },
+                "audio_url": {
+                  "description": "Public URL of audio",
+                  "type": "string"
+                },
+                "file_id": {
+                  "description": "ID of the audio file",
+                  "type": "string"
+                },
+                "convert_mode": {
+                  "description": "Convert mode",
+                  "type": "string",
+                  "enum": ["auto", "manual", "profile"]
+                },
+                "parallel_convert": {
+                  "description": "Set this convert parallel when any audio(s) is converting. Parallel limit is 3",
+                  "type": "boolean",
+                  "default": false
+                },
+                "convert_info": {
+                  "description": "Array of convert details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "audio_bitrate": {
+                        "description": "Audio bitrate in kilobit",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "404": { "description": "Channel not found" },
+          "201": { "description": "Return created audio" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/audios\/{audio}": {
+      "get": {
+        "tags": ["Audio"],
+        "summary": "Return the specified audio.",
+        "parameters": [
+          {
+            "name": "audio",
+            "in": "path",
+            "description": "The Id of audio",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": { "200": { "description": "Return the specific audio" } },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Audio"],
+        "summary": "Remove the specified audio.",
+        "parameters": [
+          {
+            "name": "audio",
+            "in": "path",
+            "description": "The Id of audio",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Audio deleted successfully" } },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["Audio"],
+        "summary": "Update the specified audio.",
+        "parameters": [
+          {
+            "name": "audio",
+            "in": "path",
+            "description": "The Id of audio",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Audio details",
+            "required": true,
+            "schema": {
+              "properties": {
+                "title": {
+                  "description": "Title of the audio",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the audio",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Return updated audio" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/videos\/{video}\/audio-tracks": {
+      "get": {
+        "tags": ["Audio Track"],
+        "summary": "Display a listing of the Audio Tracks.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "200": { "description": "Return list of all video's audio tracks" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Audio Track"],
+        "summary": "Store a newly created audio track.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "lang",
+            "in": "formData",
+            "description": "Track language",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "fa",
+              "en",
+              "aa",
+              "ab",
+              "ae",
+              "af",
+              "ak",
+              "am",
+              "an",
+              "ar",
+              "av",
+              "ay",
+              "az",
+              "ba",
+              "be",
+              "bg",
+              "bh",
+              "bi",
+              "bm",
+              "bn",
+              "bo",
+              "br",
+              "bs",
+              "ca",
+              "ce",
+              "ch",
+              "co",
+              "cr",
+              "cs",
+              "cu",
+              "cv",
+              "cy",
+              "da",
+              "de",
+              "dv",
+              "dz",
+              "ee",
+              "el",
+              "eo",
+              "es",
+              "et",
+              "eu",
+              "ff",
+              "fi",
+              "fj",
+              "fo",
+              "fr",
+              "fy",
+              "ga",
+              "gd",
+              "gl",
+              "gn",
+              "gu",
+              "gv",
+              "ha",
+              "he",
+              "hi",
+              "ho",
+              "hr",
+              "ht",
+              "hu",
+              "hy",
+              "hz",
+              "ia",
+              "id",
+              "ie",
+              "ig",
+              "ii",
+              "ik",
+              "io",
+              "is",
+              "it",
+              "iu",
+              "ja",
+              "jv",
+              "ka",
+              "kg",
+              "ki",
+              "kj",
+              "kk",
+              "kl",
+              "km",
+              "kn",
+              "ko",
+              "kr",
+              "ks",
+              "ku",
+              "kv",
+              "kw",
+              "ky",
+              "la",
+              "lb",
+              "lg",
+              "li",
+              "ln",
+              "lo",
+              "lt",
+              "lu",
+              "lv",
+              "mg",
+              "mh",
+              "mi",
+              "mk",
+              "ml",
+              "mn",
+              "mr",
+              "ms",
+              "mt",
+              "my",
+              "na",
+              "nb",
+              "nd",
+              "ne",
+              "ng",
+              "nl",
+              "nn",
+              "no",
+              "nr",
+              "nv",
+              "ny",
+              "oc",
+              "oj",
+              "om",
+              "os",
+              "pa",
+              "pi",
+              "pl",
+              "ps",
+              "pt",
+              "qu",
+              "rm",
+              "rn",
+              "ro",
+              "ru",
+              "rw",
+              "sa",
+              "sc",
+              "sd",
+              "se",
+              "sg",
+              "si",
+              "sk",
+              "sl",
+              "sm",
+              "sn",
+              "so",
+              "sq",
+              "sr",
+              "ss",
+              "st",
+              "su",
+              "sv",
+              "sw",
+              "ta",
+              "te",
+              "tg",
+              "th",
+              "ti",
+              "tk",
+              "tl",
+              "tn",
+              "to",
+              "tr",
+              "ts",
+              "tt",
+              "tw",
+              "ty",
+              "ug",
+              "uk",
+              "ur",
+              "uz",
+              "ve",
+              "vi",
+              "vo",
+              "wa",
+              "wo",
+              "xh",
+              "yi",
+              "yo",
+              "za",
+              "zh",
+              "zu"
+            ]
+          },
+          {
+            "name": "audio_track",
+            "in": "formData",
+            "description": "The Mp3 or ACC Audio file.",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "201": { "description": "Return created Audio Track" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/audio-tracks\/{audio_track}": {
+      "get": {
+        "tags": ["Audio Track"],
+        "summary": "Return the specified audio track.",
+        "parameters": [
+          {
+            "name": "audio_track",
+            "in": "path",
+            "description": "The Id of audio track",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return the specific audio track" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Audio Track"],
+        "summary": "Remove the specified audio track.",
+        "parameters": [
+          {
+            "name": "audio_track",
+            "in": "path",
+            "description": "The Id of audio track",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Audio track deleted successfully" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels": {
+      "get": {
+        "tags": ["Channel"],
+        "summary": "Return all user's channels.",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Page limit",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return list of all user channel" },
+          "401": { "description": "Unauthenticated" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Channel"],
+        "summary": "Store a newly channel.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Channel details",
+            "required": true,
+            "schema": {
+              "required": ["title"],
+              "properties": {
+                "title": {
+                  "description": "Title of channel",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of channel",
+                  "type": "string"
+                },
+                "secure_link_enabled": {
+                  "description": "Enable or disable secure link for all videos in channel",
+                  "type": "boolean",
+                  "example": false
+                },
+                "secure_link_key": {
+                  "description": "Key for generate secure links",
+                  "type": "string"
+                },
+                "secure_link_with_ip": {
+                  "description": "IP can be considered as an optional parameter",
+                  "type": "boolean",
+                  "example": true
+                },
+                "ads_enabled": {
+                  "description": "Enable or disable Ads for all videos in channel",
+                  "type": "boolean",
+                  "example": false
+                },
+                "present_type": {
+                  "description": "Ads present method",
+                  "type": "string",
+                  "enum": ["auto", "manual"]
+                },
+                "campaign_id": {
+                  "description": "Created CampaignId in Ads",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Return created channel" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}": {
+      "get": {
+        "tags": ["Channel"],
+        "summary": "Return the specified channel.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return the specific channel" },
+          "401": { "description": "Unauthenticated" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Channel"],
+        "summary": "Remove the specified channel.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Channel deleted successfully" },
+          "401": { "description": "Unauthenticated" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["Channel"],
+        "summary": "Update the specified channel.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Channel details",
+            "required": true,
+            "schema": {
+              "properties": {
+                "title": {
+                  "description": "Title of channel",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of channel",
+                  "type": "string"
+                },
+                "secure_link_enabled": {
+                  "description": "Enable or disable secure link for all videos in channel",
+                  "type": "boolean",
+                  "example": false
+                },
+                "secure_link_key": {
+                  "description": "Key for generate secure links",
+                  "type": "string"
+                },
+                "secure_link_with_ip": {
+                  "description": "IP can be considered as an optional parameter",
+                  "type": "boolean",
+                  "example": true
+                },
+                "ads_enabled": {
+                  "description": "Enable or disable Ads for all videos in channel",
+                  "type": "boolean",
+                  "example": false
+                },
+                "present_type": {
+                  "description": "Ads present method",
+                  "type": "string",
+                  "enum": ["auto", "manual"]
+                },
+                "campaign_id": {
+                  "description": "Created CampaignId in Ads",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return updated channel" },
+          "401": { "description": "Unauthenticated" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/files": {
+      "get": {
+        "tags": ["File"],
+        "summary": "Return all draft files of channel.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Return list of all files" } },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["File"],
+        "summary": "Request a new upload file. See https:\/\/tus.io\/ for more detail.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tus-resumable",
+            "in": "header",
+            "description": "version of tus.io",
+            "required": true,
+            "type": "string",
+            "default": "1.0.0",
+            "enum": ["1.0.0"]
+          },
+          {
+            "name": "upload-length",
+            "in": "header",
+            "description": "To indicate the size of entire upload in bytes",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "upload-metadata",
+            "in": "header",
+            "description": "To add additional metadata to the upload creation request.\n     * MUST contain 'filename' and 'filetype'. From all available fields only these two fields will be used.\n     * MUST consist of one or more comma-separated key-value pairs.\n     * The key and value MUST be separated by a space.\n     * The key MUST NOT contain spaces and commas and MUST NOT be empty.\n     * The key SHOULD be ASCII encoded and the value MUST be Base64 encoded.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "201": { "description": "File created successfully" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/files\/{file}": {
+      "get": {
+        "tags": ["File"],
+        "summary": "Return the specified file.",
+        "parameters": [
+          {
+            "name": "File",
+            "in": "path",
+            "description": "The Id of file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Return the specific file" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/files\/{file}": {
+      "head": {
+        "tags": ["File"],
+        "summary": "Get upload offset. See https:\/\/tus.io\/ for more detail.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "description": "The Id of file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return file upload offset" },
+          "404": { "description": "File not found" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["File"],
+        "summary": "Upload and apply bytes to a file. See https:\/\/tus.io\/ for more detail.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "description": "The Id of file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tus-resumable",
+            "in": "header",
+            "description": "version of tus.io",
+            "required": true,
+            "type": "string",
+            "default": "1.0.0",
+            "enum": ["1.0.0"]
+          },
+          {
+            "name": "upload-offset",
+            "in": "header",
+            "description": "request and response header indicates a byte offset within a resource.\n     * For uploading entire file in one request, set this to '0'",
+            "required": true,
+            "type": "integer",
+            "default": "0"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "Request content type",
+            "required": true,
+            "type": "string",
+            "default": "application\/offset+octet-stream",
+            "enum": ["application\/offset+octet-stream"]
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Acknowledge successful upload and apply bytes to file"
+          },
+          "404": { "description": "File not found" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "files\/{file}": {
+      "delete": {
+        "tags": ["File"],
+        "summary": "Remove the specified file.",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "path",
+            "description": "The Id of file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "File deleted successfully" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/profiles": {
+      "get": {
+        "tags": ["Profile"],
+        "summary": "Return all channel's profiles.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Page limit",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return list of all channel's profile" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Profile"],
+        "summary": "Store a newly created profile.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Profile details",
+            "required": true,
+            "schema": {
+              "required": ["title", "convert_mode"],
+              "properties": {
+                "title": {
+                  "description": "Title of the profile",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the profile",
+                  "type": "string"
+                },
+                "convert_mode": {
+                  "description": "Convert mode",
+                  "type": "string",
+                  "enum": ["auto", "manual"]
+                },
+                "thumbnail_time": {
+                  "description": "Screenshot time for generate thumbnail for video in seconds",
+                  "type": "integer"
+                },
+                "watermark_id": {
+                  "description": "If you want to use watermark for a video, use this ID",
+                  "type": "string"
+                },
+                "watermark_area": {
+                  "description": "Area of the watermark if watermark_id presents",
+                  "type": "string",
+                  "enum": [
+                    "CENTER",
+                    "FIX_TOP_LEFT",
+                    "FIX_TOP_RIGHT",
+                    "FIX_TOP_CENTER",
+                    "FIX_BOTTOM_LEFT",
+                    "FIX_BOTTOM_RIGHT",
+                    "FIX_BOTTOM_CENTER",
+                    "ANIMATE_LEFT_TO_RIGHT",
+                    "ANIMATE_TOP_TO_BOTTOM"
+                  ]
+                },
+                "convert_info": {
+                  "description": "Array of convert details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "audio_bitrate": {
+                        "description": "Audio bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "video_bitrate": {
+                        "description": "Video bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "resolution": {
+                        "description": "resolution",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "options": {
+                  "description": "Array of option details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "bframe": {
+                        "description": "minimum: 0 maximum: 16, Sets the amount of b frames.",
+                        "type": "integer"
+                      },
+                      "level": {
+                        "description": "If three-pass encoding is used and a level is set for the encoder,\n     *                          the bitrate for some segments may exceed the bitrate limit which is\n     *                          defined by the level.\n     *                          Accepted values: 1,2,3,4,5,1.1,1.2,1.3,2.1,2.2,3.1,3.2,4.1,4.2,5.1,5.2",
+                        "type": "string"
+                      },
+                      "cabac": {
+                        "description": "Enable or disable CABAC and it should be boolean",
+                        "type": "boolean"
+                      },
+                      "crf": {
+                        "description": "Sets the constant rate factor for quality-based variable bitrate.\n     *                          Either bitrate or crf is required.\n     *                          Minimum value should be 0 and the maximum would be 51",
+                        "type": "integer"
+                      },
+                      "minGop": {
+                        "description": "Minimum GOP length, the minimum distance between I-frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "minKeyframeInterval": {
+                        "description": "Minimum interval in seconds between key frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "bitrate_tolerance": {
+                        "description": "bitrate_tolerance",
+                        "type": "string"
+                      },
+                      "fps": {
+                        "description": "Minimum value should be 1 and the maximum would be 60",
+                        "type": "integer"
+                      },
+                      "profile": {
+                        "description": "When setting a profile, all other settings must not exceed the limits\n     *                          which are defined in the profile. Otherwise, a higher profile may\n     *                          be automatically chosen.",
+                        "type": "string",
+                        "enum": ["BASELINE", "HIGH", "MAIN"]
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "404": { "description": "Profile not found" },
+          "201": { "description": "Return created profile" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/profiles\/{profile}": {
+      "get": {
+        "tags": ["Profile"],
+        "summary": "Return the specified profile.",
+        "parameters": [
+          {
+            "name": "profile",
+            "in": "path",
+            "description": "The Id of profile",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return the specific profile" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Profile"],
+        "summary": "Remove the specified profile.",
+        "parameters": [
+          {
+            "name": "profile",
+            "in": "path",
+            "description": "The Id of profile",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Profile deleted successfully" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["Profile"],
+        "summary": "Update the specified profile.",
+        "parameters": [
+          {
+            "name": "profile",
+            "in": "path",
+            "description": "The Id of profile",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Profile details",
+            "required": true,
+            "schema": {
+              "properties": {
+                "title": {
+                  "description": "Title of the profile",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the profile",
+                  "type": "string"
+                },
+                "convert_mode": {
+                  "description": "Convert mode",
+                  "type": "string",
+                  "enum": ["auto", "manual"]
+                },
+                "thumbnail_time": {
+                  "description": "Screenshot time for generate thumbnail for video in seconds",
+                  "type": "integer"
+                },
+                "watermark_id": {
+                  "description": "If you want to use watermark for a video, use this ID",
+                  "type": "string"
+                },
+                "watermark_area": {
+                  "description": "Area of the watermark if watermark_id presents",
+                  "type": "string",
+                  "enum": [
+                    "CENTER",
+                    "FIX_TOP_LEFT",
+                    "FIX_TOP_RIGHT",
+                    "FIX_TOP_CENTER",
+                    "FIX_BOTTOM_LEFT",
+                    "FIX_BOTTOM_RIGHT",
+                    "FIX_BOTTOM_CENTER",
+                    "ANIMATE_LEFT_TO_RIGHT",
+                    "ANIMATE_TOP_TO_BOTTOM"
+                  ]
+                },
+                "convert_info": {
+                  "description": "Array of convert details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "audio_bitrate": {
+                        "description": "Audio bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "video_bitrate": {
+                        "description": "Video bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "resolution": {
+                        "description": "resolution",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "options": {
+                  "description": "Array of option details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "bframe": {
+                        "description": "minimum: 0 maximum: 16, Sets the amount of b frames.",
+                        "type": "integer"
+                      },
+                      "level": {
+                        "description": "If three-pass encoding is used and a level is set for the encoder,\n     *                          the bitrate for some segments may exceed the bitrate limit which is\n     *                          defined by the level.\n     *                          Accepted values: 1,2,3,4,5,1.1,1.2,1.3,2.1,2.2,3.1,3.2,4.1,4.2,5.1,5.2",
+                        "type": "string"
+                      },
+                      "cabac": {
+                        "description": "Enable or disable CABAC and it should be boolean",
+                        "type": "boolean"
+                      },
+                      "crf": {
+                        "description": "Sets the constant rate factor for quality-based variable bitrate.\n     *                          Either bitrate or crf is required.\n     *                          Minimum value should be 0 and the maximum would be 51",
+                        "type": "integer"
+                      },
+                      "minGop": {
+                        "description": "Minimum GOP length, the minimum distance between I-frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "minKeyframeInterval": {
+                        "description": "Minimum interval in seconds between key frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "bitrate_tolerance": {
+                        "description": "bitrate_tolerance",
+                        "type": "string"
+                      },
+                      "fps": {
+                        "description": "Minimum value should be 1 and the maximum would be 60",
+                        "type": "integer"
+                      },
+                      "profile": {
+                        "description": "When setting a profile, all other settings must not exceed the limits\n     *                          which are defined in the profile. Otherwise, a higher profile may\n     *                          be automatically chosen.",
+                        "type": "string",
+                        "enum": ["BASELINE", "HIGH", "MAIN"]
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Return updated profile" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/report\/geo": {
+      "get": {
+        "tags": ["General Report"],
+        "summary": "Return Domain Geo Report.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Values: 1h,3h,6h,12h,24h,7d,30d",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Domain Geo" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/report\/statistics": {
+      "get": {
+        "tags": ["General Report"],
+        "summary": "Return Domain statistics report.",
+        "responses": {
+          "200": {
+            "description": "Domain Statistica (video and channel count)"
+          },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/report\/traffics": {
+      "get": {
+        "tags": ["General Report"],
+        "summary": "Return Domain Traffic.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Values: 1h,3h,6h,12h,24h,7d,30d",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Domain Traffic" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/report\/user-agent": {
+      "get": {
+        "tags": ["General Report"],
+        "summary": "Return User Agent.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Values: 1h,3h,6h,12h,24h,7d,30d",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "user agent" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/report\/visitors": {
+      "get": {
+        "tags": ["General Report"],
+        "summary": "Return Domain Visitors.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Values: 1h,3h,6h,12h,24h,7d,30d",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Domain Visitors" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity." }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/videos\/{video}\/subtitles": {
+      "get": {
+        "tags": ["Subtitle"],
+        "summary": "Display a listing of the subtitle.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "200": { "description": "Return list of all video's subtitles" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Subtitle"],
+        "summary": "Store a newly created subtitle.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "lang",
+            "in": "formData",
+            "description": "Subtitle language",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "fa",
+              "en",
+              "aa",
+              "ab",
+              "ae",
+              "af",
+              "ak",
+              "am",
+              "an",
+              "ar",
+              "av",
+              "ay",
+              "az",
+              "ba",
+              "be",
+              "bg",
+              "bh",
+              "bi",
+              "bm",
+              "bn",
+              "bo",
+              "br",
+              "bs",
+              "ca",
+              "ce",
+              "ch",
+              "co",
+              "cr",
+              "cs",
+              "cu",
+              "cv",
+              "cy",
+              "da",
+              "de",
+              "dv",
+              "dz",
+              "ee",
+              "el",
+              "eo",
+              "es",
+              "et",
+              "eu",
+              "ff",
+              "fi",
+              "fj",
+              "fo",
+              "fr",
+              "fy",
+              "ga",
+              "gd",
+              "gl",
+              "gn",
+              "gu",
+              "gv",
+              "ha",
+              "he",
+              "hi",
+              "ho",
+              "hr",
+              "ht",
+              "hu",
+              "hy",
+              "hz",
+              "ia",
+              "id",
+              "ie",
+              "ig",
+              "ii",
+              "ik",
+              "io",
+              "is",
+              "it",
+              "iu",
+              "ja",
+              "jv",
+              "ka",
+              "kg",
+              "ki",
+              "kj",
+              "kk",
+              "kl",
+              "km",
+              "kn",
+              "ko",
+              "kr",
+              "ks",
+              "ku",
+              "kv",
+              "kw",
+              "ky",
+              "la",
+              "lb",
+              "lg",
+              "li",
+              "ln",
+              "lo",
+              "lt",
+              "lu",
+              "lv",
+              "mg",
+              "mh",
+              "mi",
+              "mk",
+              "ml",
+              "mn",
+              "mr",
+              "ms",
+              "mt",
+              "my",
+              "na",
+              "nb",
+              "nd",
+              "ne",
+              "ng",
+              "nl",
+              "nn",
+              "no",
+              "nr",
+              "nv",
+              "ny",
+              "oc",
+              "oj",
+              "om",
+              "os",
+              "pa",
+              "pi",
+              "pl",
+              "ps",
+              "pt",
+              "qu",
+              "rm",
+              "rn",
+              "ro",
+              "ru",
+              "rw",
+              "sa",
+              "sc",
+              "sd",
+              "se",
+              "sg",
+              "si",
+              "sk",
+              "sl",
+              "sm",
+              "sn",
+              "so",
+              "sq",
+              "sr",
+              "ss",
+              "st",
+              "su",
+              "sv",
+              "sw",
+              "ta",
+              "te",
+              "tg",
+              "th",
+              "ti",
+              "tk",
+              "tl",
+              "tn",
+              "to",
+              "tr",
+              "ts",
+              "tt",
+              "tw",
+              "ty",
+              "ug",
+              "uk",
+              "ur",
+              "uz",
+              "ve",
+              "vi",
+              "vo",
+              "wa",
+              "wo",
+              "xh",
+              "yi",
+              "yo",
+              "za",
+              "zh",
+              "zu"
+            ]
+          },
+          {
+            "name": "subtitle",
+            "in": "formData",
+            "description": "The SRT or VTT subtitle file.",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "201": { "description": "Return created subtitle" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/subtitles\/{subtitle}": {
+      "get": {
+        "tags": ["Subtitle"],
+        "summary": "Return the specified subtitle.",
+        "parameters": [
+          {
+            "name": "subtitle",
+            "in": "path",
+            "description": "The Id of subtitle",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return the specific subtitle" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Subtitle"],
+        "summary": "Remove the specified subtitle.",
+        "parameters": [
+          {
+            "name": "subtitle",
+            "in": "path",
+            "description": "The Id of subtitle",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Subtitle deleted successfully" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/videos\/{video}\/tags": {
+      "get": {
+        "tags": ["Tag"],
+        "summary": "Return all vidoe's tags.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Return all video's tags" } },
+        "security": [{ "api_key": [] }]
+      },
+      "put": {
+        "tags": ["Tag"],
+        "summary": "Update the video tags.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "tags",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": { "200": { "description": "Return updated tag" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/tags": {
+      "get": {
+        "tags": ["Tag"],
+        "summary": "Return all user's tags.",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "path",
+            "description": "filter tags",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort ex: asc ,desc ",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Return all video's tags" } },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Tag"],
+        "summary": "Store a newly created Tag.",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "formData",
+            "description": "Title of tag",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "201": { "description": "Return created Tag" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/videos\/{video}\/thumbnail": {
+      "get": {
+        "tags": ["Thumbnail"],
+        "summary": "Display video thumbnail.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "200": { "description": "Return video thumbnail" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Thumbnail"],
+        "summary": "Store a newly created thumbnail.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "thumbnail",
+            "in": "formData",
+            "description": "The png file.",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "thumbnail_time",
+            "in": "formData",
+            "description": "Specific video time",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "404": { "description": "Video not found" },
+          "201": { "description": "Return created Thumbnail" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/domain": {
+      "get": {
+        "tags": ["Domain"],
+        "summary": "Return User Domain.",
+        "responses": {
+          "200": { "description": "Return User Domain" },
+          "401": { "description": "Unauthenticated" },
+          "404": { "description": "If user has no domain" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Domain"],
+        "summary": "Set subdomain for VOD service.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "subdomain": {
+                  "description": "The subdomain. Only contain lower case letters and digits",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Return created domain" },
+          "401": { "description": "Unauthenticated" },
+          "422": { "description": "Unprocessable Entity or Subdomain is taken" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/videos": {
+      "get": {
+        "tags": ["Video"],
+        "summary": "Return all channel's videos.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Page limit for query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Order by ex: title, time",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort ex: asc ,desc ",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return all channel's videos" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Video"],
+        "summary": "Store a newly created video.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Video details",
+            "required": true,
+            "schema": {
+              "required": ["title", "convert_mode"],
+              "properties": {
+                "title": {
+                  "description": "Title of the video",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the video",
+                  "type": "string"
+                },
+                "video_url": {
+                  "description": "Public URL of video",
+                  "type": "string"
+                },
+                "file_id": {
+                  "description": "ID of the video file",
+                  "type": "string"
+                },
+                "convert_mode": {
+                  "description": "Convert mode",
+                  "type": "string",
+                  "enum": ["auto", "manual", "profile"]
+                },
+                "profile_id": {
+                  "description": "The profile ID that video convert with it (priority is with video properties)",
+                  "type": "string"
+                },
+                "parallel_convert": {
+                  "description": "Set this convert parallel when any video(s) is converting. Parallel limit is 3",
+                  "type": "boolean",
+                  "default": false
+                },
+                "thumbnail_time": {
+                  "description": "Screenshot time for generate thumbnail for video in seconds",
+                  "type": "integer"
+                },
+                "watermark_id": {
+                  "description": "If you want to use watermark for a video, use this ID",
+                  "type": "string"
+                },
+                "watermark_area": {
+                  "description": "Area of the watermark if watermark_id presents",
+                  "type": "string",
+                  "enum": [
+                    "CENTER",
+                    "FIX_TOP_LEFT",
+                    "FIX_TOP_RIGHT",
+                    "FIX_TOP_CENTER",
+                    "FIX_BOTTOM_LEFT",
+                    "FIX_BOTTOM_RIGHT",
+                    "FIX_BOTTOM_CENTER",
+                    "ANIMATE_LEFT_TO_RIGHT",
+                    "ANIMATE_TOP_TO_BOTTOM"
+                  ]
+                },
+                "convert_info": {
+                  "description": "Array of convert details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "audio_bitrate": {
+                        "description": "Audio bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "video_bitrate": {
+                        "description": "Video bitrate in kilobit",
+                        "type": "integer"
+                      },
+                      "resolution": {
+                        "description": "resolution",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "options": {
+                  "description": "Array of option details",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "bframe": {
+                        "description": "minimum: 0 maximum: 16, Sets the amount of b frames.",
+                        "type": "integer"
+                      },
+                      "level": {
+                        "description": "If three-pass encoding is used and a level is set for the encoder,\n     *                          the bitrate for some segments may exceed the bitrate limit which is\n     *                          defined by the level.\n     *                          Accepted values: 1,2,3,4,5,1.1,1.2,1.3,2.1,2.2,3.1,3.2,4.1,4.2,5.1,5.2",
+                        "type": "string"
+                      },
+                      "cabac": {
+                        "description": "Enable or disable CABAC and it should be boolean",
+                        "type": "boolean"
+                      },
+                      "crf": {
+                        "description": "Sets the constant rate factor for quality-based variable bitrate.\n     *                          Either bitrate or crf is required.\n     *                          Minimum value should be 0 and the maximum would be 51",
+                        "type": "integer"
+                      },
+                      "minGop": {
+                        "description": "Minimum GOP length, the minimum distance between I-frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "minKeyframeInterval": {
+                        "description": "Minimum interval in seconds between key frames.\n     *                          Minimum value should be 1 and the maximum would be 6",
+                        "type": "integer"
+                      },
+                      "bitrate_tolerance": {
+                        "description": "bitrate_tolerance",
+                        "type": "string"
+                      },
+                      "fps": {
+                        "description": "Minimum value should be 1 and the maximum would be 60",
+                        "type": "integer"
+                      },
+                      "profile": {
+                        "description": "When setting a profile, all other settings must not exceed the limits\n     *                          which are defined in the profile. Otherwise, a higher profile may\n     *                          be automatically chosen.",
+                        "type": "string",
+                        "enum": ["BASELINE", "HIGH", "MAIN"]
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "404": { "description": "Channel not found" },
+          "201": { "description": "Return created video" }
+        },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/videos\/{video}": {
+      "get": {
+        "tags": ["Video"],
+        "summary": "Return the specified video.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": { "200": { "description": "Return the specific video" } },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Video"],
+        "summary": "Remove the specified video.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": { "200": { "description": "Video deleted successfully" } },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["Video"],
+        "summary": "Update the specified video.",
+        "parameters": [
+          {
+            "name": "video",
+            "in": "path",
+            "description": "The Id of video",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Video details",
+            "required": true,
+            "schema": {
+              "properties": {
+                "title": {
+                  "description": "Title of the video",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the video",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Return updated video" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/channels\/{channel}\/watermarks": {
+      "get": {
+        "tags": ["Watermark"],
+        "summary": "Return all channel's watermarks.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter result",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Page limit for query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "secure_ip",
+            "in": "query",
+            "description": "The IP address for generate secure links for. If channel is secure default is request IP",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "secure_expire_time",
+            "in": "query",
+            "description": "The Unix Timestamp for expire secure links.\n     *          If channel is secure default is 24 hours later from now",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return all channel's watermarks" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "post": {
+        "tags": ["Watermark"],
+        "summary": "Store a newly created Watermark.",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "The Id of channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "formData",
+            "description": "Title of watermark",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Description of watermark",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "watermark",
+            "in": "formData",
+            "description": "Watermark file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": { "201": { "description": "Return created Watermark" } },
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "\/watermarks\/{watermark}": {
+      "get": {
+        "tags": ["Watermark"],
+        "summary": "Return the specified watermark.",
+        "parameters": [
+          {
+            "name": "watermark",
+            "in": "path",
+            "description": "The Id of watermark",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Return the specific watermark" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "tags": ["Watermark"],
+        "summary": "Remove the specified watermark.",
+        "parameters": [
+          {
+            "name": "watermark",
+            "in": "path",
+            "description": "The Id of watermark",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Watermark deleted successfully" }
+        },
+        "security": [{ "api_key": [] }]
+      },
+      "patch": {
+        "tags": ["Watermark"],
+        "summary": "Update the specified watermark.",
+        "parameters": [
+          {
+            "name": "watermark",
+            "in": "path",
+            "description": "The Id of watermark",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Watermark details",
+            "required": true,
+            "schema": {
+              "properties": {
+                "title": {
+                  "description": "Title of watermark",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of watermark",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Return updated watermark" } },
+        "security": [{ "api_key": [] }]
+      }
+    }
+  },
+  "definitions": [],
+  "parameters": {
+    "Accept-Language": {
+      "name": "Accept-Language",
+      "in": "header",
+      "description": "",
+      "required": false,
+      "type": "string",
+      "enum": ["en", "fa"]
+    }
+  },
+  "securityDefinitions": {
+    "api_key": { "type": "apiKey", "name": "Authorization", "in": "header" }
+  },
+  "schemes": ["https"],
+  "host": "napi.arvancloud.ir"
+}

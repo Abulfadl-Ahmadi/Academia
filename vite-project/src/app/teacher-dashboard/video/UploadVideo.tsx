@@ -99,59 +99,79 @@ const UploadVideo: React.FC = () => {
         setUploadProgress(0);
 
         try {
-            // STEP 1: Get the secure upload URL from our backend
-            console.log("Initiating upload with backend...");
-            const initResponse = await axiosInstance.post('/videos/init-upload/', {
-                title: file.name, // Send the actual filename for metadata
-                filesize: file.size,
-                channel_id: selectedCourse.vod_channel_id,
-                file_type: "video/mp4", // Assuming video uploads are always mp4
+            // STEP 1: Create TUS upload directly on Arvan
+            const metadata = `filename ${btoa(unescape(encodeURIComponent(file.name)))},filetype ${btoa(unescape(encodeURIComponent(file.type)))}`;
+            const fileCreateRes = await fetch(`${vodBaseUrl}/channels/${selectedCourse.vod_channel_id}/files`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Apikey ${vodApiKey}`,
+                    'Tus-Resumable': '1.0.0',
+                    'Upload-Length': String(file.size),
+                    'Upload-Metadata': metadata,
+                },
             });
 
-            const { upload_url, file_id } = initResponse.data;
+            if (fileCreateRes.status !== 201) {
+                const text = await fileCreateRes.text();
+                throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
+            }
 
-            if (!upload_url || !file_id) {
-                throw new Error("Backend did not return a valid upload URL or File ID.");
-            }    
-            // const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
+            const location = fileCreateRes.headers.get('Location');
+            if (!location) throw new Error('Missing Location header in upload creation');
 
+            const fileId = location.match(/\/files\/([^/?]+)/i)?.[1];
 
-            // STEP 2: Use TUS client to upload directly to ArvanCloud
+            // STEP 2: Upload using tus-js-client directly to Arvan
             const upload = new tus.Upload(file, {
-                uploadUrl: upload_url,
+                uploadUrl: location,
                 retryDelays: [0, 3000, 5000, 10000, 20000],
-                // headers: { 'Authorization': `Apikey ${vodApiKey}` },
+                headers: { 'Authorization': `Apikey ${vodApiKey}` },
 
                 metadata: {
                     filename: file.name,
                     filetype: file.type,
-                    // filetype: "video/mp4", // Assuming video uploads are always mp4
                 },
                 onProgress: (bytesUploaded, bytesTotal) => {
                     const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
                     setUploadProgress(percentage);
                 },
                 onSuccess: async () => {
-                    console.log("Upload successful!");
-                    // STEP 3: Finalize the upload with our backend
-                    console.log("Finalizing upload with backend...");
-                    await axiosInstance.post('/videos/finalize/', {
-                        file_id: file_id,
+                    console.log('Upload successful!');
+
+                    // Finalize on Arvan
+                    const videoData = {
                         title: title,
-                        channel_id: selectedCourse.vod_channel_id,
-                        course: parseInt(courseId),
-                        session: sessionId ? parseInt(sessionId) : null,
+                        file_id: fileId,
+                        convert_mode: 'auto',
+                    };
+
+                    const videoRes = await fetch(`${vodBaseUrl}/channels/${selectedCourse.vod_channel_id}/videos`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Apikey ${vodApiKey}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(videoData),
                     });
-                    
+
+                    const json = await videoRes.json();
+                    // attach file_id and call backend finalize to persist metadata in our DB
+                    formData.append('file_id', json.data?.id || fileId);
+                    await fetch(baseURL + '/videos/finalize/', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include',
+                    });
+
                     setSuccess(`Video "${title}" uploaded successfully!`);
                     setIsUploading(false);
-                    // Reset form
                     setFile(null);
                     setTitle('');
                 },
                 onError: (err) => {
-                    console.error("TUS Upload Error:", err);
-                    setError("Upload failed. Please try again.");
+                    console.error('TUS Upload Error:', err);
+                    setError('Upload failed. Please try again.');
                     setIsUploading(false);
                 },
             });

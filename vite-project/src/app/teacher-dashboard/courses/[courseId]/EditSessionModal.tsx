@@ -62,9 +62,9 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
   const videoInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
-  // Arvan Cloud Video Platform configuration
-  const vodApiKey = "6642808d-d55c-53f7-a02c-dd3a89d366d3";
-  const vodBaseUrl = "https://napi.arvancloud.ir/vod/2.0";
+  // Arvan Cloud Video Platform configuration (read from Vite env)
+  const vodApiKey = import.meta.env.VITE_VOD_API_KEY || '';
+  const vodBaseUrl = import.meta.env.VITE_VOD_BASE_URL || 'https://napi.arvancloud.ir/vod/2.0';
 
   // Fetch session and course data
   useEffect(() => {
@@ -152,90 +152,88 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
   };
 
   const uploadVideoToArvanCloud = async (file: File): Promise<string> => {
+    if (!course?.vod_channel_id) {
+      throw new Error("VOD channel ID not found");
+    }
+
+    const size = file.size;
+    const name = file.name;
+    const type = file.type;
+
+    const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
+
+    const fileCreateRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Apikey ${vodApiKey}`,
+        'Tus-Resumable': '1.0.0',
+        'Upload-Length': String(size),
+        'Upload-Metadata': metadata,
+      },
+    });
+
+    if (fileCreateRes.status !== 201) {
+      const text = await fileCreateRes.text();
+      throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
+    }
+
+    const location = fileCreateRes.headers.get('Location');
+    if (!location) {
+      throw new Error('Missing Location header in upload creation');
+    }
+
+    const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
+    const fileId = fileIdMatch?.[1];
+    if (!fileId) {
+      throw new Error('Unable to parse file_id from upload URL');
+    }
+
     return new Promise((resolve, reject) => {
-      if (!course?.vod_channel_id) {
-        reject(new Error("VOD channel ID not found"));
-        return;
-      }
-
-      const size = file.size;
-      const name = file.name;
-      const type = file.type;
-
-      // Create TUS upload
-      const metadata = `filename ${btoa(unescape(encodeURIComponent(name)))},filetype ${btoa(unescape(encodeURIComponent(type)))}`;
-      
-      fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Apikey ${vodApiKey}`,
-          'Tus-Resumable': '1.0.0',
-          'Upload-Length': String(size),
-          'Upload-Metadata': metadata,
+      const upload = new tus.Upload(file, {
+        uploadUrl: location,
+        headers: { 'Authorization': `Apikey ${vodApiKey}` },
+        chunkSize: 1 * 1024 * 1024,
+        metadata: { filename: name, filetype: type },
+        onProgress: (uploaded, total) => {
+          const pct = Math.floor((uploaded / total) * 100);
+          setUploadProgress(pct);
         },
-      })
-      .then(async (fileCreateRes) => {
-        if (fileCreateRes.status !== 201) {
-          const text = await fileCreateRes.text();
-          throw new Error(`Create upload failed: ${fileCreateRes.status} ${text}`);
-        }
+        onSuccess: async () => {
+          try {
+            const videoData = {
+              title: formData.title || name,
+              file_id: fileId,
+              convert_mode: 'auto',
+              watermark_area: 'ANIMATE_LEFT_TO_RIGHT',
+            };
 
-        const location = fileCreateRes.headers.get('Location');
-        if (!location) {
-          throw new Error('Missing Location header in upload creation');
-        }
+            const videoRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/videos`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Apikey ${vodApiKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(videoData),
+            });
 
-        // Extract file_id from URL
-        const fileIdMatch = location.match(/\/files\/([^/?]+)/i);
-        const fileId = fileIdMatch?.[1];
-        if (!fileId) {
-          throw new Error('Unable to parse file_id from upload URL');
-        }
-
-        // Start TUS upload
-        const upload = new tus.Upload(file, {
-          uploadUrl: location,
-          headers: { 'Authorization': `Apikey ${vodApiKey}` },
-          chunkSize: 1 * 1024 * 1024, // 1MB
-          metadata: {
-            filename: name,
-            filetype: type,
-          },
-          onProgress: (uploaded, total) => {
-            const pct = Math.floor((uploaded / total) * 100);
-            setUploadProgress(pct);
-          },
-          onSuccess: async () => {
-            try {
-              // Wait for file processing
-              let processingComplete = false;
-              while (!processingComplete) {
-                const fileStatusRes = await fetch(`${vodBaseUrl}/channels/${course.vod_channel_id}/files/${fileId}`, {
-                  headers: { 'Authorization': `Apikey ${vodApiKey}` },
-                });
-                const fileData = await fileStatusRes.json();
-                
-                if (fileData.data.status === "encoded") {
-                  processingComplete = true;
-                  resolve(fileData.data.id);
-                } else if (fileData.data.status === "failed") {
-                  throw new Error("Video processing failed");
-                } else {
-                  await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds before checking again
-                }
-              }
-            } catch (error) {
-              reject(error);
+            if (!videoRes.ok) {
+              const json = await videoRes.text();
+              throw new Error(`Failed to finalize video: ${videoRes.status} ${json}`);
             }
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
 
-        upload.start();
-      })
-      .catch(reject);
+            const json = await videoRes.json();
+            resolve(json.data.id || fileId);
+          } catch (err) {
+            reject(err);
+          }
+        },
+        onError: (error) => {
+          reject(error);
+        },
+      });
+
+      upload.start();
     });
   };
 
@@ -296,7 +294,7 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
         ...(videoFileId && { video_id: videoFileId }),
       };
 
-      await axiosInstance.put(`/courses/sessions/${sessionId}/`, updateData);
+      await axiosInstance.patch(`/sessions/${sessionId}/`, updateData);
 
       toast.success("جلسه با موفقیت بروزرسانی شد");
       onSessionUpdated();
