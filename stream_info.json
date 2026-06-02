@@ -1,0 +1,49 @@
+{
+    "message": "",
+    "errors": null,
+    "data": {
+        "id": "b7406c26-c838-4d07-b673-197d646e2aa6",
+        "title": "Live Stream - ریاضی ۱",
+        "description": "Live streaming for course: ریاضی ۱",
+        "slug": "course24",
+        "input_url": "rtmp://push.ir-thr-mn-cluster.arvanlive.ir:1935/QgE3qxz7yA/o1qvRyGdYW",
+        "timeshift": 0,
+        "type": "normal",
+        "mode": "push",
+        "fps_mode": "manual",
+        "fps": 30,
+        "convert_info": [
+            {
+                "audio_bitrate": 128,
+                "video_bitrate": 1000,
+                "resolution_width": 1280,
+                "resolution_height": 720
+            }
+        ],
+        "available": false,
+        "status": "push_ready",
+        "config_url": "https://xma50obgbz.arvanlive.ir/course24/origin_config.json",
+        "player_url": "https://player.arvancloud.ir/index.html?config=https://xma50obgbz.arvanlive.ir/course24/origin_config.json",
+        "hls_playlist": "https://xma50obgbz.arvanlive.ir/hls/course24/course24.m3u8",
+        "dash_playlist": "https://xma50obgbz.arvanlive.ir/dash/course24/course24.mpd",
+        "archive_enabled": false,
+        "archive_mode": "",
+        "channel_id": "",
+        "catchup_enabled": false,
+        "catchup_period": 0,
+        "watermark_enabled": false,
+        "watermark_id": "",
+        "watermark_area": "",
+        "ads_enabled": false,
+        "present_type": "",
+        "campaign_id": "",
+        "secure_link_enabled": false,
+        "secure_link_key": "",
+        "secure_link_with_ip": false,
+        "player_id": "",
+        "player_enabled": false,
+        "created_at": "2026-06-02T21:01:38Z",
+        "updated_at": "2026-06-02T21:04:53Z"
+    },
+    "meta": null
+}

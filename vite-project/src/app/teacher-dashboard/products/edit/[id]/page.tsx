@@ -90,13 +90,6 @@ export default function EditProductPage() {
     shipping_cost: 0,
   });
 
-  useEffect(() => {
-    if (id) {
-      fetchProductData();
-      fetchRelatedData();
-    }
-  }, [id, fetchProductData, fetchRelatedData]);
-
   const fetchProductData = useCallback(async () => {
     try {
       setInitialLoading(true);
@@ -159,6 +152,13 @@ export default function EditProductPage() {
       console.error("Error fetching related data:", error);
     }
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      fetchProductData();
+      fetchRelatedData();
+    }
+  }, [id, fetchProductData, fetchRelatedData]);
 
   const handleInputChange = (field: keyof EditProductForm, value: unknown) => {
     setFormData(prev => ({

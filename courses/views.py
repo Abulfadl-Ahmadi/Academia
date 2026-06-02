@@ -37,13 +37,28 @@ def create_stream_async(course_title, course_id, max_attempts=5):
                 logger.info(f"Attempting to create stream for course '{course_title}' (attempt {attempt + 1}/{max_attempts})")
                 
                 stream_response = create_stream(course_title, course_id)
-                stream_id = stream_response.get('data', {}).get('id')
+                stream_data = stream_response.get('data', {})
+                stream_id = stream_data.get('id')
+                input_url = stream_data.get('input_url', '')
+                if input_url:
+                    parts = input_url.rsplit('/', 1)
+                    rtmp_url = parts[0]
+                    rtmp_key = parts[1] if len(parts) > 1 else ''
+                else:
+                    rtmp_url = ''
+                    rtmp_key = ''
+                    
+                player_url = stream_data.get('player_url', '')
+                live_iframe = f'<iframe src="{player_url}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" width="100%" height="100%" style="border: none;"></iframe>' if player_url else ''
                 
-                # Update course with stream_id
+                # Update course with stream details
                 from .models import Course
                 course = Course.objects.get(id=course_id)
                 course.stream_id = stream_id
-                course.save(update_fields=['stream_id'])
+                course.rtmp_url = rtmp_url
+                course.rtmp_key = rtmp_key
+                course.live_iframe = live_iframe
+                course.save(update_fields=['stream_id', 'rtmp_url', 'rtmp_key', 'live_iframe'])
                 
                 logger.info(f"Successfully created live stream {stream_id} for course '{course_title}'")
                 return
