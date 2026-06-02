@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 VOD_API_KEY = config('VOD_API_KEY')
 VOD_BASE_URL = config('VOD_BASE_URL')
+LIVE_BASE_URL = config('LIVE_BASE_URL', default='https://napi.arvancloud.ir/live/2.0')
 
 def create_channel(req):
     """
@@ -222,11 +223,12 @@ def create_stream(course_title, course_id, max_retries=3):
         "Content-Type": "application/json",
     }
     
-    # Generate a unique slug for the stream
+    # Generate a unique slug for the stream (only lowercase letters and digits, no underscores)
     import re
-    slug = re.sub(r'[^a-zA-Z0-9]', '', course_title.lower())[:50] + f"_{course_id}"
-    if len(slug) > 50:
-        slug = slug[:50]
+    clean_title = re.sub(r'[^a-zA-Z0-9]', '', course_title.lower())
+    if not clean_title:
+        clean_title = "course"
+    slug = f"{clean_title}{course_id}"[:50].lower()
     
     data = {
         "title": f"Live Stream - {course_title}",
@@ -257,7 +259,7 @@ def create_stream(course_title, course_id, max_retries=3):
             logger.info(f"Attempting to create stream (attempt {attempt + 1}/{max_retries})")
             
             # Increase timeout for stream creation as it might take longer
-            response = requests.post(f"{VOD_BASE_URL}/streams", json=data, headers=headers, timeout=60)
+            response = requests.post(f"{LIVE_BASE_URL}/streams", json=data, headers=headers, timeout=60)
             
             if response.status_code == 201:
                 stream_data = response.json()
@@ -309,7 +311,7 @@ def delete_stream(stream_id):
     logger.debug(f"Deleting stream: {stream_id}")
     
     try:
-        response = requests.delete(f"{VOD_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
+        response = requests.delete(f"{LIVE_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
         
         if response.status_code == 200:
             logger.info(f"Successfully deleted stream {stream_id}")
@@ -340,7 +342,7 @@ def get_stream(stream_id):
     logger.debug(f"Getting stream: {stream_id}")
     
     try:
-        response = requests.get(f"{VOD_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
+        response = requests.get(f"{LIVE_BASE_URL}/streams/{stream_id}", headers=headers, timeout=30)
         
         if response.status_code == 200:
             return response.json()
