@@ -77,7 +77,7 @@ export const createColumns = (onEdit: (id: number) => void, onDelete: (id: numbe
     cell: ({ row }) => {
       const type = row.getValue("product_type") as string;
       const isPhysical = ["book", "notebook", "pamphlet", "stationery"].includes(type);
-      
+
       return (
         <div className="product-type-cell font-iransans text-right" dir="rtl">
           <div className="flex items-center gap-2">
@@ -137,11 +137,11 @@ export const createColumns = (onEdit: (id: number) => void, onDelete: (id: numbe
       const type = row.getValue("product_type") as string;
       const isPhysical = ["book", "notebook", "pamphlet", "stationery"].includes(type);
       const stock = row.getValue("stock_quantity") as number;
-      
+
       if (!isPhysical) {
         return <div className="font-iransans text-muted-foreground">—</div>;
       }
-      
+
       return (
         <div className="font-iransans">
           <span className={stock <= 5 ? "text-red-600" : stock <= 20 ? "text-yellow-600" : "text-green-600"}>
@@ -164,7 +164,7 @@ export const createColumns = (onEdit: (id: number) => void, onDelete: (id: numbe
     header: () => <span className="font-iransans">{tableHeaders.actions}</span>,
     cell: ({ row }) => {
       const product = row.original;
-      
+
       return (
         <div className="flex justify-start">
           <DropdownMenu>
@@ -174,29 +174,29 @@ export const createColumns = (onEdit: (id: number) => void, onDelete: (id: numbe
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>عملیات</DropdownMenuLabel>
-            <DropdownMenuItem 
-              onClick={() => window.location.href = `/shop/products/${product.id}`}
-              className="flex items-center gap-2"
-            >
-              <Eye className="h-4 w-4" /> مشاهده
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onEdit(product.id)}
-              className="flex items-center gap-2"
-            >
-              <Edit className="h-4 w-4" /> ویرایش
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={() => onDelete(product.id)}
-              className="text-red-600 flex items-center gap-2"
-            >
-              <Trash2 className="h-4 w-4" /> حذف
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>عملیات</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => window.location.href = `/shop/${product.id}`}
+                className="flex items-center gap-2"
+              >
+                <Eye className="h-4 w-4" /> مشاهده
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onEdit(product.id)}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" /> ویرایش
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onDelete(product.id)}
+                className="text-red-600 flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" /> حذف
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       );
     },
