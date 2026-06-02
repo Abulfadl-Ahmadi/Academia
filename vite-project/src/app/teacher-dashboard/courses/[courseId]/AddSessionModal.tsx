@@ -97,7 +97,8 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
     const file = event.target.files?.[0];
     if (file) {
       // Validate PDF file type
-      if (file.type !== 'application/pdf') {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
         toast.error("لطفاً یک فایل PDF انتخاب کنید");
         return;
       }
@@ -233,12 +234,13 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
     });
   };
 
-  const uploadPDFToParsPack = async (file: File): Promise<string> => {
+  const uploadPDFToParsPack = async (file: File, sessionId: number): Promise<number> => {
     const formDataToSend = new FormData();
     formDataToSend.append('file', file);
     formDataToSend.append('title', `${formData.title}_lecture_notes`);
     formDataToSend.append('file_type', 'application/pdf');
     formDataToSend.append('content_type', 'note');
+    formDataToSend.append('session', sessionId.toString());
     formDataToSend.append('course', courseId.toString());
 
     const response = await axiosInstance.post('/files/', formDataToSend, {
@@ -247,7 +249,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
       },
     });
 
-    return response.data.file_id;
+    return response.data.id;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -307,17 +309,7 @@ export default function AddSessionModal({ courseId, onClose, onSessionAdded }: A
 
       if (lectureNotesFile) {
         try {
-          const pdfId = await uploadPDFToParsPack(lectureNotesFile);
-          
-          // Create File record for PDF
-          await axiosInstance.post('/files/', {
-            file_id: pdfId,
-            file_type: 'application/pdf',
-            content_type: 'note',
-            title: `${formData.title}_lecture_notes`,
-            course: courseId,
-            session: sessionId,
-          });
+          await uploadPDFToParsPack(lectureNotesFile, sessionId);
         } catch (error) {
           console.error("Error uploading PDF:", error);
           toast.error("خطا در آپلود جزوه");

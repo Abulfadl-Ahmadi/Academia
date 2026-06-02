@@ -168,6 +168,7 @@ class VideoFinalizeUploadView(views.APIView):
                 "video_id": video_data.get("id"),
                 "file_url": video_data.get("player_url"),
                 "embed_code": video_data.get("embed_code"),
+                "file_db_id": file.id,
             }, status=status.HTTP_201_CREATED)
         
         except Exception as e:

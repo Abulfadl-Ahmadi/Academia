@@ -46,6 +46,8 @@ interface Course {
 
 export default function EditSessionModal({ courseId, sessionId, onClose, onSessionUpdated }: EditSessionModalProps) {
   const [session, setSession] = useState<Session | null>(null);
+  const [existingVideoFile, setExistingVideoFile] = useState<any | null>(null);
+  const [existingNotesFile, setExistingNotesFile] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     session_number: "",
@@ -83,6 +85,18 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
         // Fetch course data
         const courseResponse = await axiosInstance.get(`/courses/${courseId}/`);
         setCourse(courseResponse.data);
+        // Fetch files for this session (video, lecture notes)
+        try {
+          const filesRes = await axiosInstance.get(`/files/?session=${sessionId}`);
+          const files = filesRes.data || [];
+          const video = files.find((f: any) => f.file_type && f.file_type.includes('video'));
+          const pdf = files.find((f: any) => f.file_type && f.file_type.includes('pdf'));
+          setExistingVideoFile(video || null);
+          setExistingNotesFile(pdf || null);
+        } catch (err) {
+          // Non-fatal: just don't show files
+          console.warn('Failed to fetch session files', err);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("خطا در دریافت اطلاعات جلسه");
@@ -120,7 +134,8 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
     const file = event.target.files?.[0];
     if (file) {
       // Validate PDF file type
-      if (file.type !== 'application/pdf') {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
         toast.error("لطفاً یک فایل PDF انتخاب کنید");
         return;
       }
@@ -254,11 +269,33 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
 
     try {
       // Upload video if selected
-      let videoFileId = null;
+      let createdVideoFileDbId = null;
       if (videoFile) {
         setIsUploading(true);
         try {
-          videoFileId = await uploadVideoToArvanCloud(videoFile);
+          // Upload to Arvan and finalize (returns file_db_id)
+          const arvanFileDbId = await uploadVideoToArvanCloud(videoFile);
+          // If uploadVideoToArvanCloud returned the DB id already (when finalizing via backend), use it
+          // Otherwise, try to call backend finalize endpoint if needed.
+          if (typeof arvanFileDbId === 'object' && arvanFileDbId.file_db_id) {
+            createdVideoFileDbId = arvanFileDbId.file_db_id;
+          } else if (typeof arvanFileDbId === 'string' || typeof arvanFileDbId === 'number') {
+            createdVideoFileDbId = arvanFileDbId;
+          } else {
+            // Fallback: call backend finalize if upload function returned a file_id
+            try {
+              const finalizeRes = await axiosInstance.post('/videos/finalize/', {
+                file_id: arvanFileDbId,
+                title: formData.title || videoFile.name,
+                course: courseId,
+                session: sessionId,
+              });
+              createdVideoFileDbId = finalizeRes.data?.file_db_id || finalizeRes.data?.id || null;
+            } catch (err) {
+              console.warn('Finalize fallback failed', err);
+            }
+          }
+
           toast.success("ویدیو با موفقیت آپلود شد");
         } catch (error) {
           console.error("Error uploading video:", error);
@@ -271,12 +308,18 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
       }
 
       // Upload lecture notes if selected
-      let lectureNotesFormData = null;
+      let createdNotesFileDbId = null;
       if (lectureNotesFile) {
-        lectureNotesFormData = new FormData();
+        const lectureNotesFormData = new FormData();
         lectureNotesFormData.append('file', lectureNotesFile);
+        lectureNotesFormData.append('title', lectureNotesFile.name);
+        lectureNotesFormData.append('file_type', 'application/pdf');
+        lectureNotesFormData.append('session', String(sessionId));
+        lectureNotesFormData.append('course', String(courseId));
+        lectureNotesFormData.append('content_type', 'note');
         try {
-          await axiosInstance.post('/files/', lectureNotesFormData);
+          const res = await axiosInstance.post('/files/', lectureNotesFormData);
+          createdNotesFileDbId = res.data?.id || null;
           toast.success("جزوه با موفقیت آپلود شد");
         } catch (error) {
           console.error("Error uploading lecture notes:", error);
@@ -287,14 +330,32 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
       }
 
       // Update session
-      const updateData = {
-        title: formData.title.trim(),
-        session_number: formData.session_number,
-        description: formData.description.trim(),
-        ...(videoFileId && { video_id: videoFileId }),
-      };
+      const updateData: any = {};
+      if (formData.title.trim() !== session?.title) updateData.title = formData.title.trim();
+      if (String(formData.session_number) !== String(session?.session_number)) updateData.session_number = formData.session_number;
+      if (formData.description.trim() !== (session?.description || '')) updateData.description = formData.description.trim();
+      // If a new video was created, attach its file DB id reference (assuming backend expects video_id)
+      if (createdVideoFileDbId) updateData.video_id = createdVideoFileDbId;
 
       await axiosInstance.patch(`/sessions/${sessionId}/`, updateData);
+
+      // If we replaced the video, delete the old File DB record
+      if (createdVideoFileDbId && existingVideoFile && existingVideoFile.id) {
+        try {
+          await axiosInstance.delete(`/files/${existingVideoFile.id}/`);
+        } catch (err) {
+          console.warn('Failed to delete old video file record', err);
+        }
+      }
+
+      // If we replaced the lecture notes, delete old one
+      if (createdNotesFileDbId && existingNotesFile && existingNotesFile.id) {
+        try {
+          await axiosInstance.delete(`/files/${existingNotesFile.id}/`);
+        } catch (err) {
+          console.warn('Failed to delete old notes file record', err);
+        }
+      }
 
       toast.success("جلسه با موفقیت بروزرسانی شد");
       onSessionUpdated();
@@ -356,12 +417,12 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
             {/* Video Upload */}
             <div className="space-y-2">
               <Label>ویدیو جلسه</Label>
-              {session?.video_url ? (
+              {existingVideoFile ? (
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <Play className="w-4 h-4" />
-                  <span className="text-sm text-muted-foreground">
-                    ویدیو موجود است
-                  </span>
+                  <a href={existingVideoFile.file_url || existingVideoFile.arvan_url} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground underline">
+                    ویدیو موجود — مشاهده
+                  </a>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground mb-2">
@@ -404,12 +465,12 @@ export default function EditSessionModal({ courseId, sessionId, onClose, onSessi
             {/* Lecture Notes Upload */}
             <div className="space-y-2">
               <Label>جزوه جلسه</Label>
-              {session?.lecture_notes_url ? (
+              {existingNotesFile ? (
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <FileText className="w-4 h-4" />
-                  <span className="text-sm text-muted-foreground">
-                    جزوه موجود است
-                  </span>
+                  <a href={existingNotesFile.file_url || existingNotesFile.file} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground underline">
+                    جزوه موجود — مشاهده
+                  </a>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground mb-2">
