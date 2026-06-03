@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { ArrowRight, Save, Plus, FileText, ClipboardList, Search, FilterX } from "lucide-react";
+import { ArrowRight, Save, Plus, FileText, ClipboardList, Search, FilterX, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -202,9 +202,10 @@ const durationMinutesOptions = Array.from({ length: 60 }, (_, i) => i.toString()
 
 interface CreateTestPageProps {
   mode?: "create" | "edit";
+  collectionId?: number;
 }
 
-export default function CreateTestPage({ mode = "create" }: CreateTestPageProps = {}) {
+export default function CreateTestPage({ mode = "create", collectionId }: CreateTestPageProps = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { testId: pathTestId } = useParams<{ testId?: string }>();
@@ -229,7 +230,11 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
   });
   const [isActive, setIsActive] = useState(true);
   const [frequency, setFrequency] = useState("once");
-  const [testCollectionId, setTestCollectionId] = useState<string>("none");
+  const [testCollectionId, setTestCollectionId] = useState<string>(() => {
+    if (collectionId) return collectionId.toString();
+    const queryCollection = searchParams.get("collectionId");
+    return queryCollection || "none";
+  });
 
   const [durationHour, setDurationHour] = useState("0");
   const [durationMinute, setDurationMinute] = useState("30");
@@ -748,10 +753,20 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
 
     setSubmitting(true);
     try {
+      const handleNavigationAfterSave = () => {
+        if (collectionId) {
+          navigate(`/panel/test-collections/${collectionId}`);
+        } else if (testCollectionId !== "none") {
+          navigate(`/panel/test-collections/${testCollectionId}`);
+        } else {
+          navigate("/panel/tests");
+        }
+      };
+
       if (isEditing && typeof effectiveTestId === "number") {
-        await axiosInstance.patch(`/tests/${effectiveTestId}/update`, payload);
+        await axiosInstance.patch(`/tests/${effectiveTestId}/`, payload);
         toast.success("آزمون با موفقیت به‌روزرسانی شد");
-        navigate("/panel/tests");
+        handleNavigationAfterSave();
       } else {
         await axiosInstance.post("/tests/", payload);
         toast.success("آزمون با موفقیت ایجاد شد");
@@ -759,12 +774,37 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
           resetForm();
           loadQuestions();
         } else {
-          navigate("/panel/tests");
+          handleNavigationAfterSave();
         }
       }
     } catch (error) {
       console.error(isEditing ? "Error updating test:" : "Error creating test:", error);
       toast.error(isEditing ? "خطا در بروزرسانی آزمون" : "خطا در ایجاد آزمون");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (typeof effectiveTestId !== "number") return;
+
+    const confirmed = window.confirm("آیا از حذف این آزمون اطمینان دارید؟ این عمل قابل برگشت نیست.");
+    if (!confirmed) return;
+
+    setSubmitting(true);
+    try {
+      await axiosInstance.delete(`/tests/${effectiveTestId}/`);
+      toast.success("آزمون با موفقیت حذف شد");
+      if (collectionId) {
+        navigate(`/panel/test-collections/${collectionId}`);
+      } else if (testCollectionId !== "none") {
+        navigate(`/panel/test-collections/${testCollectionId}`);
+      } else {
+        navigate("/panel/tests");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("خطا در حذف آزمون");
     } finally {
       setSubmitting(false);
     }
@@ -781,7 +821,20 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
   return (
     <div className="mx-auto w-full space-y-6">
       <div className="flex items-center gap-2">
-        <Button className="mb-auto" variant="outline" size="sm" onClick={() => navigate("/panel/tests")}> 
+        <Button 
+          className="mb-auto" 
+          variant="outline" 
+          size="sm" 
+          onClick={() => {
+            if (collectionId) {
+              navigate(`/panel/test-collections/${collectionId}`);
+            } else if (testCollectionId !== "none") {
+              navigate(`/panel/test-collections/${testCollectionId}`);
+            } else {
+              navigate("/panel/tests");
+            }
+          }}
+        > 
           <ArrowRight className="h-4 w-4" />
           {/* بازگشت */}
         </Button>
@@ -920,7 +973,7 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
                 <Select
                   value={testCollectionId}
                   onValueChange={setTestCollectionId}
-                  disabled={collectionsLoading}
+                  disabled={collectionsLoading || !!collectionId}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="انتخاب مجموعه" />
@@ -1241,7 +1294,33 @@ export default function CreateTestPage({ mode = "create" }: CreateTestPageProps 
         )}
 
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => navigate("/panel/tests")}>انصراف</Button>
+          {isEditing && (
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={submitting}
+              onClick={handleDelete}
+              className="ml-auto"
+            >
+              <Trash2 className="ml-2 h-4 w-4" />
+              حذف آزمون
+            </Button>
+          )}
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              if (collectionId) {
+                navigate(`/panel/test-collections/${collectionId}`);
+              } else if (testCollectionId !== "none") {
+                navigate(`/panel/test-collections/${testCollectionId}`);
+              } else {
+                navigate("/panel/tests");
+              }
+            }}
+          >
+            انصراف
+          </Button>
           {!isEditing && (
             <Button
               type="button"

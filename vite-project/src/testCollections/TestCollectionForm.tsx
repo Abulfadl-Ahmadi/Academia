@@ -14,7 +14,8 @@ import {
   Users,
   Check,
   X,
-  Edit
+  Edit,
+  Trash2
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -210,6 +211,24 @@ export default function TestCollectionForm() {
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} test collection:`, error);
       toast.error(`خطا در ${isEditMode ? 'بروزرسانی' : 'ایجاد'} مجموعه آزمون`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("آیا از حذف این مجموعه آزمون اطمینان دارید؟ همه آزمون‌های داخل این مجموعه نیز حذف خواهند شد.")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axiosInstance.delete(`/test-collections/${id}/`);
+      toast.success("مجموعه آزمون با موفقیت حذف شد");
+      navigate("/panel/test-collections");
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+      toast.error("خطا در حذف مجموعه آزمون");
     } finally {
       setLoading(false);
     }
@@ -419,6 +438,19 @@ export default function TestCollectionForm() {
                 >
                   انصراف
                 </Button>
+
+                {isEditMode && (
+                  <Button 
+                    type="button" 
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={loading}
+                    className="mr-auto"
+                  >
+                    <Trash2 className="ml-2 h-4 w-4" />
+                    حذف مجموعه آزمون
+                  </Button>
+                )}
                 
                 {/* Hidden debug button that only shows in development */}
                 {import.meta.env.DEV && (
