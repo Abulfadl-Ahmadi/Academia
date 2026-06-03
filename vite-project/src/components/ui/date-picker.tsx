@@ -112,7 +112,6 @@ export function DateTimePicker({
         date={date}
         setDate={setDate}
         placeholder={placeholder}
-        className={className}
         disabled={disabled}
         className={cn(className, showTime ? "w-2/3" : "w-full")}
       />

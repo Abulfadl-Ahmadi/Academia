@@ -292,7 +292,7 @@ export function QuestionCard({
           // Add question to test
           const updatedQuestionIds = [...currentQuestionIds, question.id];
           promises.push(
-            axiosInstance.patch(`/tests/${testId}/update`, {
+            axiosInstance.patch(`/tests/${testId}/`, {
               questions: updatedQuestionIds
             })
           );
@@ -300,7 +300,7 @@ export function QuestionCard({
           // Remove question from test
           const updatedQuestionIds = currentQuestionIds.filter((id: number) => id !== question.id);
           promises.push(
-            axiosInstance.patch(`/tests/${testId}/update`, {
+            axiosInstance.patch(`/tests/${testId}/`, {
               questions: updatedQuestionIds
             })
           );
