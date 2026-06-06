@@ -20,8 +20,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   Star,
-  Users,
-  Clock,
   PlayCircle,
   BookOpen,
   Loader2,
@@ -857,44 +855,6 @@ export default function HomePage() {
                           </CardHeader>
 
                           <CardContent>
-                            <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                              <div className="flex items-center gap-1">
-                                <Users className="h-4 w-4" />
-                                {course.students_count
-                                  ? course.students_count.toLocaleString(
-                                      "fa-IR"
-                                    )
-                                  : "0"}{" "}
-                                {course.product_type === "course"
-                                  ? "دانشجو"
-                                  : "خریدار"}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                {course.product_type === "course" ? (
-                                  <>
-                                    <Clock className="h-4 w-4" />
-                                    {course.sessions_count
-                                      ? `${course.sessions_count} جلسه`
-                                      : "در حال تکمیل"}
-                                  </>
-                                ) : course.requires_shipping ? (
-                                  <>
-                                    <Clock className="h-4 w-4" />
-                                    موجودی:{" "}
-                                    {course.stock_quantity &&
-                                    course.stock_quantity > 0
-                                      ? course.stock_quantity
-                                      : "ناموجود"}
-                                  </>
-                                ) : (
-                                  <>
-                                    <BookOpen className="h-4 w-4" />
-                                    دانلود فوری
-                                  </>
-                                )}
-                              </div>
-                            </div>
-
                             <div className="flex items-center justify-between">
                               <div>
                                 <span className="text-2xl font-bold text-green-600">
