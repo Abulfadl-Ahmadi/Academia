@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,6 +20,112 @@ from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
 
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Zibal helpers
+# ---------------------------------------------------------------------------
+
+def tomans_to_rials(tomans: int) -> int:
+    """Zibal API works in Rials. Convert Tomans → Rials."""
+    return tomans * 10
+
+
+def _zibal_request(order, callback_url, mobile=None, description=None):
+    """
+    Send a payment-request to Zibal and return (track_id, payment_url, error_msg).
+    amount must be in Rials (Zibal requirement).
+    """
+    merchant = settings.ZIBAL_MERCHANT_ID
+    amount_rials = tomans_to_rials(order.total_amount)
+
+    payload = {
+        "merchant": merchant,
+        "amount": amount_rials,
+        "callbackUrl": callback_url,
+        "description": description or f"پرداخت سفارش #{order.id}",
+        "orderId": str(order.id),
+    }
+    if mobile:
+        payload["mobile"] = mobile
+
+    try:
+        resp = requests.post(settings.ZIBAL_REQUEST_URL, json=payload, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException as exc:
+        logger.error("Zibal request network error: %s", exc)
+        return None, None, f"خطا در ارتباط با درگاه پرداخت: {exc}"
+
+    result_code = data.get("result")
+    if result_code == 100:
+        track_id = data["trackId"]
+        payment_url = f"{settings.ZIBAL_START_URL}{track_id}"
+        return track_id, payment_url, None
+    else:
+        msg = data.get("message", f"کد خطا: {result_code}")
+        logger.warning("Zibal request failed – result=%s message=%s", result_code, msg)
+        return None, None, msg
+
+
+def _zibal_verify(track_id):
+    """
+    Call Zibal /v1/verify.
+    Returns (success: bool, data: dict, error_msg: str|None)
+    """
+    payload = {
+        "merchant": settings.ZIBAL_MERCHANT_ID,
+        "trackId": track_id,
+    }
+    try:
+        resp = requests.post(settings.ZIBAL_VERIFY_URL, json=payload, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException as exc:
+        logger.error("Zibal verify network error: %s", exc)
+        return False, {}, f"خطا در ارتباط با درگاه پرداخت: {exc}"
+
+    result_code = data.get("result")
+    # 100 = verified, 201 = already verified (idempotent – treat as ok)
+    if result_code in (100, 201):
+        return True, data, None
+    else:
+        msg = data.get("message", f"کد نتیجه: {result_code}")
+        logger.warning("Zibal verify failed – result=%s message=%s", result_code, msg)
+        return False, data, msg
+
+
+# ---------------------------------------------------------------------------
+# Shared helper
+# ---------------------------------------------------------------------------
+
+def grant_product_access(order):
+    """Grant access to products when order is paid."""
+    for item in order.items.all():
+        access, created = UserAccess.objects.get_or_create(
+            user=order.user,
+            product=item.product,
+            defaults={
+                'order': order,
+                'is_active': True,
+            }
+        )
+        course = getattr(item.product, 'course', None)
+        if course:
+            course.students.add(order.user)
+            course.save()
+        if not created:
+            access.order = order
+            access.is_active = True
+            access.save()
+    # Send product access granted email
+    send_product_access_granted_email(order)
+
+
+# ---------------------------------------------------------------------------
+# ViewSets
+# ---------------------------------------------------------------------------
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -35,137 +143,92 @@ class OrderViewSet(viewsets.ModelViewSet):
         return OrderSerializer
 
     def create(self, request, *args, **kwargs):
-        """Use OrderCreateSerializer for input, but return OrderSerializer as output."""
+        """Create order then automatically initiate Zibal payment."""
         input_serializer = OrderCreateSerializer(data=request.data, context={"request": request})
         input_serializer.is_valid(raise_exception=True)
         order = input_serializer.save()
 
-        # Send notification email to admin when order is created (best-effort)
+        # Send admin notification (best-effort)
         try:
             send_purchase_notification_email(order)
         except Exception:
             pass
 
-        # Initiate payment automatically
-        try:
-            # Prepare Zarinpal request
-            callback_url = f"{settings.SERVER_IP}/finance/payment/callback/"
-            zarinpal_data = {
-                "merchant_id": settings.ZARINPAL_MERCHANT_ID,
-                "amount": order.total_amount,
-                "callback_url": callback_url,
-                "description": f'پرداخت سفارش #{order.id}'
-            }
+        # Initiate payment via Zibal
+        callback_url = f"{settings.SERVER_IP}/finance/payment/callback/"
+        mobile = getattr(request.user, 'phone', None)
+        track_id, payment_url, error = _zibal_request(
+            order, callback_url, mobile=mobile
+        )
 
-            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
-            result = response.json()
-
-            if result.get("data") and result["data"].get("authority"):
-                authority = result["data"]["authority"]
-                Payment.objects.create(
-                    user=request.user,
-                    order=order,
-                    amount=order.total_amount,
-                    description=f'پرداخت سفارش #{order.id}',
-                    authority=authority
-                )
-                payment_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
-                
-                return Response({
-                    "order": OrderSerializer(order, context={"request": request}).data,
-                    "payment_url": payment_url,
-                    "authority": authority,
-                    "message": "سفارش ایجاد شد. در حال انتقال به درگاه پرداخت..."
-                }, status=status.HTTP_201_CREATED)
-            else:
-                return Response({
-                    "order": OrderSerializer(order, context={"request": request}).data,
-                    "message": "سفارش ایجاد شد اما مشکلی در ایجاد درگاه پرداخت وجود دارد. لطفاً دوباره تلاش کنید."
-                }, status=status.HTTP_201_CREATED)
-                
-        except Exception as e:
+        if track_id:
+            Payment.objects.create(
+                user=request.user,
+                order=order,
+                amount=tomans_to_rials(order.total_amount),
+                track_id=track_id,
+                description=f"پرداخت سفارش #{order.id}",
+            )
             return Response({
                 "order": OrderSerializer(order, context={"request": request}).data,
-                "message": "سفارش ایجاد شد اما مشکلی در اتصال به درگاه پرداخت وجود دارد. لطفاً دوباره تلاش کنید."
+                "payment_url": payment_url,
+                "track_id": track_id,
+                "message": "سفارش ایجاد شد. در حال انتقال به درگاه پرداخت زیبال...",
             }, status=status.HTTP_201_CREATED)
+
+        # Payment initiation failed – return order but warn the user
+        return Response({
+            "order": OrderSerializer(order, context={"request": request}).data,
+            "message": f"سفارش ایجاد شد اما مشکلی در اتصال به درگاه پرداخت وجود دارد: {error}",
+        }, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
-        """Update order status (admin only)"""
+        """Update order status (admin only)."""
         if request.user.role != 'admin':
             return Response(
-                {"error": "Only admins can update order status"}, 
+                {"error": "Only admins can update order status"},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         order = self.get_object()
         serializer = OrderStatusUpdateSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             new_status = serializer.validated_data['status']
             admin_notes = serializer.validated_data.get('admin_notes', '')
-            
-            # Update order status
+
             order.status = new_status
             if admin_notes:
                 order.admin_notes = admin_notes
             order.save()
-            
-            # If order is paid, grant access to products
+
             if new_status == Order.OrderStatus.PAID:
-                self.grant_product_access(order)
-                # Send confirmation email to student
+                grant_product_access(order)
                 send_payment_confirmation_email(order)
-            
+
             return Response({
                 'message': f'Order status updated to {new_status}',
-                'order': OrderSerializer(order).data
+                'order': OrderSerializer(order).data,
             })
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
     def pending(self, request):
-        """Get pending orders (admin only)"""
-        if request.user.role != 'admin' and request.user.role != 'teacher':
+        """Get pending orders (admin/teacher only)."""
+        if request.user.role not in ('admin', 'teacher'):
             return Response(
-                {"error": "Only admins can view pending orders"}, 
+                {"error": "Only admins can view pending orders"},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         pending_orders = Order.objects.filter(
             status=Order.OrderStatus.PENDING
         ).select_related('user').prefetch_related('items__product')
-        
+
         serializer = OrderSerializer(pending_orders, many=True)
         return Response(serializer.data)
-
-    def grant_product_access(self, order):
-        """Grant access to products when order is paid"""
-        for item in order.items.all():
-            # Check if user already has access
-            access, created = UserAccess.objects.get_or_create(
-                user=order.user,
-                product=item.product,
-                defaults={
-                    'order': order,
-                    'is_active': True
-                }
-            )
-
-            course = item.product.course
-            if course:
-                course.students.add(order.user)
-                course.save()
-            
-            if not created:
-                # Update existing access
-                access.order = order
-                access.is_active = True
-                access.save()
-        
-        # Send product access granted email
-        send_product_access_granted_email(order)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -174,7 +237,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'admin' or user.role == 'teacher':
+        if user.role in ('admin', 'teacher'):
             return Transaction.objects.all().select_related('order', 'created_by')
         return Transaction.objects.filter(order__user=user).select_related('order', 'created_by')
 
@@ -185,19 +248,16 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         with transaction.atomic():
-            # Save the transaction
             transaction_obj = serializer.save(created_by=self.request.user)
-            
-            # Update order status to PAID
+
             order = transaction_obj.order
             order.status = Order.OrderStatus.PAID
             order.save()
             print(order.id, ":", order.status)
-            
-            # Grant product access
-            self.grant_product_access(order)
-            
-            # Check if user has national ID and update order status to CONFIRMED
+
+            grant_product_access(order)
+
+            # Promote to CONFIRMED if user has a national ID
             try:
                 user_profile = UserProfile.objects.get(user=order.user)
                 if user_profile.national_id:
@@ -205,33 +265,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
                     order.save()
             except UserProfile.DoesNotExist:
                 pass
-
-    def grant_product_access(self, order):
-        """Grant access to products when order is paid"""
-        for item in order.items.all():
-            # Check if user already has access
-            access, created = UserAccess.objects.get_or_create(
-                user=order.user,
-                product=item.product,
-                defaults={
-                    'order': order,
-                    'is_active': True
-                }
-            )
-
-            course = item.product.course
-            if course:
-                course.students.add(order.user)
-                course.save()
-            
-            if not created:
-                # Update existing access
-                access.order = order
-                access.is_active = True
-                access.save()
-        
-        # Send product access granted email
-        send_product_access_granted_email(order)
 
 
 class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
@@ -246,48 +279,48 @@ class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
         ).select_related('product', 'order').prefetch_related(
             'product__file',
             'product__course',
-            'product__test'
+            'product__test',
         )
 
     @action(detail=False, methods=['get'])
     def my_products(self, request):
-        """Get current user's accessible products"""
+        """Get current user's accessible products."""
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
+# ---------------------------------------------------------------------------
+# Miscellaneous API views
+# ---------------------------------------------------------------------------
+
 class AdminDashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        """Get admin dashboard statistics"""
         if request.user.role != 'admin':
             return Response(
-                {"error": "Only admins can access dashboard"}, 
+                {"error": "Only admins can access dashboard"},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
-        # Get statistics
+
         total_orders = Order.objects.count()
         pending_orders = Order.objects.filter(status=Order.OrderStatus.PENDING).count()
-        total_revenue = sum(order.total_amount for order in Order.objects.filter(status=Order.OrderStatus.PAID))
-        
-        # Recent orders
+        total_revenue = sum(
+            order.total_amount for order in Order.objects.filter(status=Order.OrderStatus.PAID)
+        )
         recent_orders = Order.objects.order_by('-created_at')[:10]
-        
-        # Recent transactions
         recent_transactions = Transaction.objects.order_by('-created_at')[:10]
-        
+
         return Response({
             'statistics': {
                 'total_orders': total_orders,
                 'pending_orders': pending_orders,
                 'total_revenue': total_revenue,
-                'paid_orders': Order.objects.filter(status=Order.OrderStatus.PAID).count()
+                'paid_orders': Order.objects.filter(status=Order.OrderStatus.PAID).count(),
             },
             'recent_orders': OrderSerializer(recent_orders, many=True).data,
-            'recent_transactions': TransactionSerializer(recent_transactions, many=True).data
+            'recent_transactions': TransactionSerializer(recent_transactions, many=True).data,
         })
 
 
@@ -295,50 +328,39 @@ class ProductAccessCheckView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        """Check if user has access to a product"""
         product_id = request.data.get('product_id')
-        
         if not product_id:
             return Response(
-                {"error": "product_id is required"}, 
+                {"error": "product_id is required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
-            return Response(
-                {"error": "Product not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
-        # Check if user has access
-        try:
-            access = UserAccess.objects.get(
-                user=request.user,
-                product=product,
-                is_active=True
-            )
-            
-            if access.is_expired:
-                return Response({
-                    "has_access": False,
-                    "message": "Access has expired"
-                })
-            
-            return Response({
-                "has_access": True,
-                "access": UserAccessSerializer(access).data
-            })
-            
-        except UserAccess.DoesNotExist:
-            return Response({
-                "has_access": False,
-                "message": "Product not purchased"
-            })
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            access = UserAccess.objects.get(user=request.user, product=product, is_active=True)
+            if access.is_expired:
+                return Response({"has_access": False, "message": "Access has expired"})
+            return Response({"has_access": True, "access": UserAccessSerializer(access).data})
+        except UserAccess.DoesNotExist:
+            return Response({"has_access": False, "message": "Product not purchased"})
+
+
+# ---------------------------------------------------------------------------
+# Zibal Payment views
+# ---------------------------------------------------------------------------
 
 class PaymentInitiateView(APIView):
+    """
+    POST /finance/payment/initiate/
+    Body: { "order_id": <int>, "description": "<optional>" }
+
+    Creates a Zibal payment session and returns the payment URL.
+    The amount is always taken from the order (server-side) to prevent tampering.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -347,162 +369,124 @@ class PaymentInitiateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         order_id = serializer.validated_data['order_id']
-        # For security, always use the server-calculated amount from the order
         description = serializer.validated_data.get('description', f'پرداخت سفارش #{order_id}')
 
-        # Get the order
         try:
             order = Order.objects.get(id=order_id, user=request.user)
         except Order.DoesNotExist:
             return Response({"error": "سفارش یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Check if order is already paid
         if order.status == Order.OrderStatus.PAID:
             return Response({"error": "این سفارش قبلاً پرداخت شده است"}, status=status.HTTP_400_BAD_REQUEST)
 
-
-        # Prepare Zarinpal request (single correct version)
-        callback_url = f"{settings.SERVER_IP} /finance/payment/callback/"
-        zarinpal_data = {
-            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
-            "amount": order.total_amount,
-            "callback_url": callback_url,
-            "description": description
-        }
-
-        try:
-            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
-            result = response.json()
-        except Exception as e:
-            return Response({"error": f"خطا در ارتباط با درگاه پرداخت: {e}"}, status=status.HTTP_502_BAD_GATEWAY)
-
-        if result.get("data") and result["data"].get("authority"):
-            authority = result["data"]["authority"]
-            payment = Payment.objects.create(
-                user=request.user,
-                order=order,
-                amount=order.total_amount,
-                description=description,
-                authority=authority
-            )
-            startpay_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
-            return Response({"payment_url": startpay_url, "authority": authority})
-        else:
-            error_message = result.get("errors", ["خطا در دریافت کد پرداخت"])[0]
-            return Response({"error": error_message}, status=status.HTTP_502_BAD_GATEWAY)
-
-        # Prepare Zarinpal request
         callback_url = f"{settings.SERVER_IP}/finance/payment/callback/"
-        zarinpal_data = {
-            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
-            "amount": order.total_amount,
-            "callback_url": callback_url,
-            "description": description
-        }
+        mobile = getattr(request.user, 'phone', None)
 
-        try:
-            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
-            response_data = response.json()
+        track_id, payment_url, error = _zibal_request(
+            order, callback_url, mobile=mobile, description=description
+        )
 
-            if response_data.get('data', {}).get('code') == 100:
-                authority = response_data['data']['authority']
-                payment.authority = authority
-                payment.save()
+        if not track_id:
+            return Response(
+                {"error": f"خطا در دریافت لینک پرداخت: {error}"},
+                status=status.HTTP_502_BAD_GATEWAY
+            )
 
-                payment_url = f"{settings.ZARINPAL_START_PAY_URL}{authority}"
-                return Response({
-                    "payment_url": payment_url,
-                    "authority": authority
-                })
-            else:
-                payment.status = Payment.PaymentStatus.FAILED
-                payment.save()
-                return Response({
-                    "error": "خطا در ایجاد پرداخت",
-                    "code": response_data.get('data', {}).get('code')
-                }, status=status.HTTP_400_BAD_REQUEST)
+        payment = Payment.objects.create(
+            user=request.user,
+            order=order,
+            amount=tomans_to_rials(order.total_amount),
+            track_id=track_id,
+            description=description,
+        )
 
-        except requests.RequestException as e:
-            payment.status = Payment.PaymentStatus.FAILED
-            payment.save()
-            return Response({"error": "خطا در اتصال به درگاه پرداخت"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({
+            "payment_url": payment_url,
+            "track_id": track_id,
+        })
 
 
 class PaymentCallbackView(APIView):
+    """
+    GET /finance/payment/callback/
+    Zibal redirects here after payment with query params:
+        ?trackId=<id>&success=<0|1>&status=<code>&orderId=<order_id>
+
+    Verifies the payment with Zibal and redirects the user to the frontend.
+    """
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        authority = request.GET.get('Authority')
-        status_param = request.GET.get('Status')
-
         FRONTEND_URL = settings.FRONTEND_BASE_URL
-        if not authority or status_param != 'OK':
-            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+
+        track_id_param = request.GET.get('trackId')
+        success_param = request.GET.get('success')
+        zibal_status = request.GET.get('status')
+
+        # If Zibal reports failure up-front
+        if success_param != '1' or not track_id_param:
+            logger.warning(
+                "Zibal callback – payment not successful. trackId=%s success=%s status=%s",
+                track_id_param, success_param, zibal_status
+            )
+            return redirect(f"{FRONTEND_URL}/payment/failed?trackId={track_id_param}")
 
         try:
-            payment = Payment.objects.get(authority=authority)
+            track_id = int(track_id_param)
+        except (TypeError, ValueError):
+            return redirect(f"{FRONTEND_URL}/payment/failed?trackId={track_id_param}")
+
+        # Fetch our Payment record
+        try:
+            payment = Payment.objects.get(track_id=track_id)
         except Payment.DoesNotExist:
-            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+            logger.error("Zibal callback – no Payment found for trackId=%s", track_id)
+            return redirect(f"{FRONTEND_URL}/payment/failed?trackId={track_id}")
 
-        # Verify payment with Zarinpal
-        verify_data = {
-            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
-            "authority": authority,
-            "amount": payment.amount
-        }
+        # Guard against double-processing
+        if payment.status == Payment.PaymentStatus.SUCCESS:
+            ref = payment.ref_number or ''
+            return redirect(f"{FRONTEND_URL}/payment/success?refNumber={ref}")
 
-        try:
-            response = requests.post(settings.ZARINPAL_VERIFY_URL, json=verify_data, timeout=10)
-            response_data = response.json()
+        # Call Zibal verify
+        verified, verify_data, error_msg = _zibal_verify(track_id)
 
-            if response_data.get('data', {}).get('code') == 100:
-                ref_id = response_data['data']['ref_id']
-                payment.ref_id = ref_id
-                payment.status = Payment.PaymentStatus.SUCCESS
-                payment.save()
+        if verified:
+            ref_number = str(verify_data.get('refNumber', ''))
+            card_number = verify_data.get('cardNumber', '')
+            paid_at = verify_data.get('paidAt', '')
 
-                # Update order status
-                if payment.order:
+            payment.status = Payment.PaymentStatus.SUCCESS
+            payment.ref_number = ref_number
+            payment.card_number = card_number
+            payment.save()
+
+            if payment.order:
+                with transaction.atomic():
                     payment.order.status = Order.OrderStatus.PAID
                     payment.order.save()
 
-                    # Create transaction record
+                    # Record the transaction
                     Transaction.objects.create(
                         order=payment.order,
-                        amount=payment.amount,
+                        amount=payment.order.total_amount,  # store in Tomans
                         transaction_type=Transaction.TransactionType.PURCHASE,
                         payment_method=Transaction.PaymentMethod.ONLINE_PAYMENT,
-                        reference_number=ref_id,
-                        description=f"پرداخت آنلاین - کد پیگیری: {ref_id}",
-                        created_by=payment.user
+                        reference_number=ref_number,
+                        description=f"پرداخت آنلاین زیبال - شماره پیگیری: {ref_number}",
+                        created_by=payment.user,
                     )
 
-                    # Grant product access
-                    for item in payment.order.items.all():
-                        access, created = UserAccess.objects.get_or_create(
-                            user=payment.user,
-                            product=item.product,
-                            order=payment.order,
-                            defaults={'is_active': True}
-                        )
-                        if not created and not access.is_active:
-                            access.is_active = True
-                            access.save()
-                        # Add user to course.students if not already
-                        course = getattr(item.product, 'course', None)
-                        if course and not course.students.filter(id=payment.user.id).exists():
-                            course.students.add(payment.user)
-
-                    # Send confirmation email
+                    grant_product_access(payment.order)
                     send_payment_confirmation_email(payment.order)
 
-                return redirect(f"{FRONTEND_URL}/payment/success?ref_id={ref_id}")
-            else:
-                payment.status = Payment.PaymentStatus.FAILED
-                payment.save()
-                return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+            return redirect(f"{FRONTEND_URL}/payment/success?refNumber={ref_number}&trackId={track_id}")
 
-        except requests.RequestException:
+        else:
             payment.status = Payment.PaymentStatus.FAILED
             payment.save()
-            return redirect(f"{FRONTEND_URL}/payment/failed?authority={authority}")
+            logger.warning(
+                "Zibal verify failed for trackId=%s – %s",
+                track_id, error_msg
+            )
+            return redirect(f"{FRONTEND_URL}/payment/failed?trackId={track_id}")

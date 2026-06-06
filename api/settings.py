@@ -56,12 +56,12 @@ except UndefinedValueError:
 # SMS settings for sms.ir
 SMS_IR_API_KEY = config('SMS_IR_API_KEY', default='')
 
-# Zarinpal Payment Gateway Settings
-ZARINPAL_MERCHANT_ID = config('ZARINPAL_MERCHANT_ID', default='550e8400-e29b-41d4-a716-446655440000')
-ZARINPAL_SANDBOX = config('ZARINPAL_SANDBOX', cast=bool, default=True)
-ZARINPAL_REQUEST_URL = 'https://sandbox.zarinpal.com/pg/v4/payment/request.json' if ZARINPAL_SANDBOX else 'https://api.zarinpal.com/pg/v4/payment/request.json'
-ZARINPAL_VERIFY_URL = 'https://sandbox.zarinpal.com/pg/v4/payment/verify.json' if ZARINPAL_SANDBOX else 'https://api.zarinpal.com/pg/v4/payment/verify.json'
-ZARINPAL_STARTPAY_URL = 'https://sandbox.zarinpal.com/pg/StartPay/' if ZARINPAL_SANDBOX else 'https://www.zarinpal.com/pg/StartPay/'
+# Zibal Payment Gateway Settings
+# Use 'zibal' as merchant ID for sandbox/testing, or the real merchant ID for production
+ZIBAL_MERCHANT_ID = config('ZIBAL_MERCHANT_ID', default='zibal')
+ZIBAL_REQUEST_URL = 'https://gateway.zibal.ir/v1/request'
+ZIBAL_VERIFY_URL = 'https://gateway.zibal.ir/v1/verify'
+ZIBAL_START_URL = 'https://gateway.zibal.ir/start/'  # append trackId
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 # Allow Django test client default host when debugging
@@ -437,16 +437,14 @@ os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 
 # ASGI & Channels Settings
 ASGI_APPLICATION = 'api.asgi.application'
+
+# InMemoryChannelLayer works fine with a single Daphne process.
+# If you ever scale to multiple workers, switch to RedisChannelLayer:
+#   'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#   'CONFIG': {"hosts": [(config('REDIS_HOST', default='127.0.0.1'), 6379)]},
 CHANNEL_LAYERS = {
     'default': {
-        # Use InMemoryChannelLayer for development (no Redis needed)
-        # For production, switch back to RedisChannelLayer
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        # Redis configuration (commented out for now):
-        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        # 'CONFIG': {
-        #     "hosts": [(config('REDIS_HOST', default='127.0.0.1'), config('REDIS_PORT', cast=int, default=6379))],
-        # },
     },
 }
 

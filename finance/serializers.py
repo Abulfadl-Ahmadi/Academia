@@ -173,13 +173,12 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            'id', 'user', 'order', 'amount', 'authority', 'ref_id',
-            'status', 'description', 'created_at', 'updated_at'
+            'id', 'user', 'order', 'amount', 'track_id', 'ref_number',
+            'card_number', 'status', 'description', 'created_at', 'updated_at'
         ]
         read_only_fields = ['user', 'created_at', 'updated_at']
 
 
 class PaymentInitiateSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
-    amount = serializers.IntegerField(min_value=1000)  # Minimum 1000 Tomans
     description = serializers.CharField(max_length=255, required=False)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderItem, Transaction, UserAccess
+from .models import Order, OrderItem, Transaction, UserAccess, Payment
 
 
 class OrderItemInline(admin.TabularInline):
@@ -104,3 +104,25 @@ class UserAccessAdmin(admin.ModelAdmin):
         return obj.is_expired
     is_expired_status.boolean = True
     is_expired_status.short_description = 'Expired'
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'order', 'amount', 'track_id', 'ref_number', 'card_number', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'user__email', 'track_id', 'ref_number', 'order__id')
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 25
+
+    fieldsets = (
+        ('Payment Info', {
+            'fields': ('user', 'order', 'amount', 'status', 'description')
+        }),
+        ('Zibal Data', {
+            'fields': ('track_id', 'ref_number', 'card_number')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
