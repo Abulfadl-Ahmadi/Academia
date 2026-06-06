@@ -32,6 +32,7 @@ except ImportError:
 
 urlpatterns = [
     path('api/', include('accounts.urls')),
+    path('api/accounts/', include('accounts.urls')),
     path("api/", include("courses.urls")),
     path("api/", include("contents.urls")),
     path("api/", include("tests.urls")),
