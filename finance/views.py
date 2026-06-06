@@ -101,7 +101,7 @@ def _zibal_verify(track_id):
 # ---------------------------------------------------------------------------
 
 def grant_product_access(order):
-    """Grant access to products when order is paid."""
+    """Grant access to products when order is paid. Does NOT send emails — callers handle that."""
     for item in order.items.all():
         access, created = UserAccess.objects.get_or_create(
             user=order.user,
@@ -119,8 +119,6 @@ def grant_product_access(order):
             access.order = order
             access.is_active = True
             access.save()
-    # Send product access granted email
-    send_product_access_granted_email(order)
 
 
 # ---------------------------------------------------------------------------
@@ -205,7 +203,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             if new_status == Order.OrderStatus.PAID:
                 grant_product_access(order)
-                send_payment_confirmation_email(order)
+                try:
+                    send_product_access_granted_email(order)
+                    send_payment_confirmation_email(order)
+                except Exception as e:
+                    logger.warning("Email error in update_status: %s", e)
 
             return Response({
                 'message': f'Order status updated to {new_status}',
@@ -265,6 +267,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
                     order.save()
             except UserProfile.DoesNotExist:
                 pass
+
+        # Send emails outside atomic block
+        try:
+            send_product_access_granted_email(order)
+        except Exception as e:
+            logger.warning("Email error in perform_create: %s", e)
 
 
 class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
@@ -478,7 +486,16 @@ class PaymentCallbackView(APIView):
                     )
 
                     grant_product_access(payment.order)
+
+                # Send emails OUTSIDE atomic block so SMTP errors don't rollback DB changes
+                try:
+                    send_product_access_granted_email(payment.order)
+                except Exception as e:
+                    logger.warning("Could not send product access email: %s", e)
+                try:
                     send_payment_confirmation_email(payment.order)
+                except Exception as e:
+                    logger.warning("Could not send payment confirmation email: %s", e)
 
             return redirect(f"{FRONTEND_URL}/payment/success?refNumber={ref_number}&trackId={track_id}")
 
