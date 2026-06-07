@@ -1224,20 +1224,24 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  دانش آموخته جبرمحض دانشگاه علم و صنعت ایران
+                  دانش‌آموخته جبر محض دانشگاه علم و صنعت ایران
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  دانش آموخته دکتری مدیریت کسب و کار از TBS
+                  دانش‌آموخته دکتری مدیریت کسب و کار
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  ۱۴ سال سابقه تدریس در مدارس بهارستان ، علامه طباطبایی،ندای
-                  کوثر، ممتاز حنان ،تلاش،بهار علم آموزان، شوق پرواز، اوج و …
+                  ۱۵ سال سابقه تدریس در مدارس بهارستان، علامه طباطبایی، ندای کوثر،
+                  ممتاز حنان، کیوان، تلاش، بهار علم‌آموزان، شوق پرواز، اوج و …
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  و آموزشگاه های کنکور هدف ،ماهان، راه اندیشه، انرژی و …
+                  و آموزشگاه‌های کنکور هدف، ماهان، راه اندیشه، انرژی و …
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+                  مسئول درس آزمون‌های کشوری (آلفا اسکول)
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
@@ -1245,8 +1249,11 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  مؤلف کتاب لقمه هندسه۳ مهر و ماه مؤلف کتاب فرموتست ریاضیات
-                  تجربی (گاج)
+                  مؤلف کتاب لقمه هندسه۳ مهر و ماه
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+                  مؤلف کتاب فرموتست ریاضیات تجربی (گاج)
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
@@ -1262,8 +1269,7 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  نویسنده حوزه توسعه فردی در روزنامه ها و وبسایت های هنرمند ،خوب
-                  و …
+                  نویسنده حوزه توسعه فردی در روزنامه‌ها و وبسایت‌های هنرمند، خوب و …
                 </TextEffect>
               </div>
             </div>
