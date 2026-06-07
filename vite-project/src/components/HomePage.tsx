@@ -491,7 +491,7 @@ export default function HomePage() {
   const getBadge = (course: Course) => {
     const daysSinceCreated = Math.floor(
       (new Date().getTime() - new Date(course.created_at).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     if (daysSinceCreated < 30) return "جدید";
@@ -648,20 +648,13 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative my-4 aspect-square h-full overflow-hidden rounded-[4px]">
+            <div className="relative my-4 aspect-video w-full overflow-hidden rounded-4xl shadow-2xl border border-white/10 group">
               <img
-                src="https://c242950.parspack.net/c242950/media/portrait.png"
-                alt="Benjamin Spiers - Moonlight 2023"
-                className="absolute inset-0 h-[95%] mx-auto"
+                src="/newJPG.JPG"
+                alt="تدریس ریاضی آرین تفضلی زاده"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-
-              <ProgressiveBlur
-                className="pointer-events-none absolute bottom-0 left-0 h-[30%] w-full"
-                blurIntensity={8}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-              <div className="pointer-events-none absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-background via-transparent to-transparent" />
-              <div className="pointer-events-none absolute top-0 right-0 h-full w-1/4 bg-gradient-to-l from-background via-transparent to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             </div>
 
             <div className="space-y-8">
@@ -1014,8 +1007,7 @@ export default function HomePage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  (window.location.href = `/blog/${
-                                    post.slug || post.id
+                                (window.location.href = `/blog/${post.slug || post.id
                                   }`)
                                 }
                               >
@@ -1146,7 +1138,7 @@ export default function HomePage() {
           )}
         </div>
 
-                <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none">
           <img
             src="/Glass_shapes_optimized/33.webp"
             alt=""
