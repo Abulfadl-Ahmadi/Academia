@@ -1,36 +1,54 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
 import CreateTransaction from "./CreateTransaction";
 import TransactionsList from "./TransactionsList";
 
 export default function TransactionsPage() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleTransactionCreated = () => {
-    // Refresh the transactions list
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
+    setDialogOpen(false);
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">مدیریت تراکنش‌ها</h1>
+        <div>
+          <h1 className="text-3xl font-bold">مدیریت مالی</h1>
+          <p className="text-muted-foreground mt-1">
+            مشاهده و مدیریت تراکنش‌های مالی
+          </p>
+        </div>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 ml-2" />
+              ثبت تراکنش جدید
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>ایجاد تراکنش جدید</DialogTitle>
+            </DialogHeader>
+            <CreateTransaction onTransactionCreated={handleTransactionCreated} />
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <Tabs defaultValue="create" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="create">ایجاد تراکنش جدید</TabsTrigger>
-          <TabsTrigger value="list">لیست تراکنش‌ها</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="create" className="mt-6">
-          <CreateTransaction onTransactionCreated={handleTransactionCreated} />
-        </TabsContent>
-
-        <TabsContent value="list" className="mt-6">
-          <TransactionsList key={refreshKey} />
-        </TabsContent>
-      </Tabs>
+      {/* Transactions List */}
+      <TransactionsList key={refreshKey} />
     </div>
   );
 }
