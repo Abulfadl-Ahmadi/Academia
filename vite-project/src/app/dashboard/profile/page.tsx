@@ -13,10 +13,11 @@ import {
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
-import { School, User, Mail, Calendar as CalendarIcon, GraduationCap, CreditCard, Save, Edit, ChevronDownIcon, Phone } from "lucide-react";
+import { School, User, Mail, Calendar as CalendarIcon, GraduationCap, CreditCard, Save, Edit, ChevronDownIcon, Phone, MapPin } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { validateIranianNationalId } from "@/lib/nationalIdValidator";
+import { Textarea } from "@/components/ui/textarea";
 
 interface UserProfile {
   national_id: string;
@@ -24,6 +25,18 @@ interface UserProfile {
   birth_date: string;
   school: string;
   grade: string;
+}
+
+interface UserAddress {
+  id?: number;
+  full_name: string;
+  phone_number: string;
+  province: string;
+  city: string;
+  postal_code: string;
+  address_line: string;
+  is_complete: boolean;
+  formatted_address?: string;
 }
 
 interface UserData {
@@ -67,6 +80,21 @@ export default function ProfilePage() {
   });
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
+
+  // Address State
+  const [address, setAddress] = useState<UserAddress>({
+    full_name: "",
+    phone_number: "",
+    province: "",
+    city: "",
+    postal_code: "",
+    address_line: "",
+    is_complete: false,
+  });
+  const [addressLoading, setAddressLoading] = useState(true);
+  const [savingAddress, setSavingAddress] = useState(false);
+  const [hasAddress, setHasAddress] = useState(false);
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
 
   const translateBackendError = (error: string): string => {
     const errorTranslations: Record<string, string> = {
@@ -234,11 +262,85 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+  const fetchAddress = useCallback(async () => {
+    try {
+      setAddressLoading(true);
+      const response = await axiosInstance.get('/accounts/address/');
+      if (response.data) {
+        setAddress(response.data);
+        setHasAddress(true);
+      }
+    } catch {
+      setHasAddress(false);
+    } finally {
+      setAddressLoading(false);
+    }
+  }, []);
+
+  const handleAddressChange = (field: keyof UserAddress, value: string) => {
+    setAddress(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (addressErrors[field]) {
+      setAddressErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
+    }
+  };
+
+  const handleAddressSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddressErrors({});
+
+    const errors: Record<string, string> = {};
+    if (!address.full_name.trim()) errors.full_name = "نام کامل گیرنده الزامی است";
+    if (!address.phone_number.trim()) {
+      errors.phone_number = "شماره موبایل گیرنده الزامی است";
+    } else if (!/^09\d{9}$/.test(address.phone_number)) {
+      errors.phone_number = "شماره موبایل باید با ۰۹ شروع شده و ۱۱ رقم باشد";
+    }
+    if (!address.province.trim()) errors.province = "استان الزامی است";
+    if (!address.city.trim()) errors.city = "شهر الزامی است";
+    if (!address.postal_code.trim()) {
+      errors.postal_code = "کد پستی الزامی است";
+    } else if (!/^\d{10}$/.test(address.postal_code)) {
+      errors.postal_code = "کد پستی باید ۱۰ رقم باشد";
+    }
+    if (!address.address_line.trim()) errors.address_line = "آدرس کامل الزامی است";
+
+    if (Object.keys(errors).length > 0) {
+      setAddressErrors(errors);
+      toast.error("لطفاً فیلدهای الزامی آدرس را به درستی تکمیل کنید");
+      return;
+    }
+
+    try {
+      setSavingAddress(true);
+      if (hasAddress) {
+        await axiosInstance.put('/accounts/address/', address);
+        toast.success('آدرس با موفقیت بروزرسانی شد');
+      } else {
+        const response = await axiosInstance.post('/accounts/address/', address);
+        setAddress(response.data);
+        setHasAddress(true);
+        toast.success('آدرس با موفقیت ذخیره شد');
+      }
+    } catch (error) {
+      console.error('Error saving address:', error);
+      toast.error('خطا در ذخیره آدرس');
+    } finally {
+      setSavingAddress(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchAddress();
     }
-  }, [user, fetchProfile]);
+  }, [user, fetchProfile, fetchAddress]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -671,6 +773,137 @@ export default function ProfilePage() {
               </>
             {/* )} */}
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Address Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-primary" />
+            آدرس و مشخصات گیرنده (برای محصولات فیزیکی)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {addressLoading ? (
+            <div className="flex justify-center py-4">
+              <div className="text-sm text-muted-foreground">در حال بارگذاری اطلاعات آدرس...</div>
+            </div>
+          ) : (
+            <form onSubmit={handleAddressSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="addr_full_name">نام کامل گیرنده *</Label>
+                  <Input
+                    id="addr_full_name"
+                    value={address.full_name}
+                    onChange={(e) => handleAddressChange('full_name', e.target.value)}
+                    placeholder="نام و نام خانوادگی"
+                    className={addressErrors.full_name ? "border-red-500 focus:border-red-500" : ""}
+                  />
+                  {addressErrors.full_name && (
+                    <p className="text-sm text-red-500 mt-1">{addressErrors.full_name}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="addr_phone_number">شماره موبایل گیرنده *</Label>
+                  <Input
+                    id="addr_phone_number"
+                    value={address.phone_number}
+                    onChange={(e) => handleAddressChange('phone_number', e.target.value)}
+                    placeholder="09123456789"
+                    maxLength={11}
+                    className={addressErrors.phone_number ? "border-red-500 focus:border-red-500" : ""}
+                  />
+                  {addressErrors.phone_number && (
+                    <p className="text-sm text-red-500 mt-1">{addressErrors.phone_number}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="addr_province">استان *</Label>
+                  <Input
+                    id="addr_province"
+                    value={address.province}
+                    onChange={(e) => handleAddressChange('province', e.target.value)}
+                    placeholder="استان"
+                    className={addressErrors.province ? "border-red-500 focus:border-red-500" : ""}
+                  />
+                  {addressErrors.province && (
+                    <p className="text-sm text-red-500 mt-1">{addressErrors.province}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="addr_city">شهر *</Label>
+                  <Input
+                    id="addr_city"
+                    value={address.city}
+                    onChange={(e) => handleAddressChange('city', e.target.value)}
+                    placeholder="شهر"
+                    className={addressErrors.city ? "border-red-500 focus:border-red-500" : ""}
+                  />
+                  {addressErrors.city && (
+                    <p className="text-sm text-red-500 mt-1">{addressErrors.city}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="addr_postal_code">کد پستی *</Label>
+                <Input
+                  id="addr_postal_code"
+                  value={address.postal_code}
+                  onChange={(e) => handleAddressChange('postal_code', e.target.value)}
+                  placeholder="کد پستی ۱۰ رقمی"
+                  maxLength={10}
+                  className={addressErrors.postal_code ? "border-red-500 focus:border-red-500" : ""}
+                />
+                {addressErrors.postal_code && (
+                  <p className="text-sm text-red-500 mt-1">{addressErrors.postal_code}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="addr_address_line">آدرس کامل *</Label>
+                <Textarea
+                  id="addr_address_line"
+                  value={address.address_line}
+                  onChange={(e) => handleAddressChange('address_line', e.target.value)}
+                  placeholder="آدرس کامل شامل خیابان، کوچه، پلاک و واحد"
+                  rows={3}
+                  className={addressErrors.address_line ? "border-red-500 focus:border-red-500" : ""}
+                />
+                {addressErrors.address_line && (
+                  <p className="text-sm text-red-500 mt-1">{addressErrors.address_line}</p>
+                )}
+              </div>
+
+              {address.is_complete && (
+                <div className="p-3 bg-green-500/5 border border-green-500/50 rounded-lg">
+                  <p className="text-green-700 text-sm">
+                    ✅ آدرس شما کامل است و آماده ارسال محصولات فیزیکی می‌باشد.
+                  </p>
+                </div>
+              )}
+
+              <Button 
+                type="submit" 
+                disabled={savingAddress}
+                className="w-full"
+              >
+                {savingAddress ? "در حال ذخیره..." : (
+                  <>
+                    <Save className="w-4 h-4 ml-2" />
+                    {hasAddress ? 'بروزرسانی آدرس' : 'ذخیره آدرس'}
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
 

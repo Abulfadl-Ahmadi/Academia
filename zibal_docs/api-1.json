@@ -1,0 +1,895 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Zibal IPG API (درگاه پرداخت زیبال)",
+    "description": "## مقدمه\n\nبه راهنمای سرویس درگاه پرداختی اینترنتی (IPG) زیبال خوش آمدید. این مستندات جهت آسانی استفاده شما از سرویس‌های زیبال جمع آوری شده‌اند. در صورت بروز هر گونه سوال با تیم فنی زیبال تماس بگیرید. وظیفه همکاران ما پاسخ به پیام‌های شما در اسرع وقت می‌باشد.\n\nلطفا قبل از پیاده‌سازی به نکات زیر توجه نمایید:\n\n- API‌ های زیبال RESTful می‌باشند و درخواست‌ها و پاسخ‌ها به صورت JSON‌ رد و بدل می‌شوند.\n- زیبال تنها به درخواست‌هایی که تحت دامنه https ارسال می‌شوند پاسخ خواهد داد.\n- در صورت دریافت هر گونه خطا از جانب زیبال، پس از بررسی مقادیر ارسالی خود، این خطا را به همراه مقادیر ارسالی و مقادیر پاسخ‌ دریافتی را برای ما ارسال کنید. از امکان بروز خطا توسط زیبال باخبریم و به سرعت در راستای حل مشکل قدم برخواهیم داشت!\n- یک حساب کاربری جهت تست تمام قابلیت‌ها و سرویس‌ها تهیه شده‌است. با قراردادن `merchant: zibal` می‌توانید از این حساب استفاده کنید.\n\n## مراحل راه‌اندازی\n\nاستفاده و راه‌اندازی سرویس درگاه پرداخت اینترنتی زیبال پیچیده نیست. تنها کافیست چهار مرحله زیر را به‌درستی پیاده کنید!\n\n### ۱. درخواست پرداخت - Request\nبرای راه‌اندازی درگاه شما، زیبال نیاز به اطلاعات سفارش شما دارد که ارسال آن‌ها از طریق این پایانه ممکن می‌باشد.\nدر جواب این پایانه `trackId` را به‌عنوان شناسه پیگیری پرداخت دریافت خواهید کرد.\n\n### ۲. شروع پرداخت - Start\nبا ارسال `trackId` به این پایانه صفحه‌ی پرداخت برای شما نمایان می‌شود و شما آماده‌ی پرداخت هستید.\n\n### ۳. تایید پرداخت - Verify\nزیبال وضعیت پرداخت هر سفارش را به آدرس `callbackUrl` ای که برای آن سفارش ثبت کرده‌اید ارسال می‌کند.\nپس از آن نیاز است که شما متد تایید تراکنش را فراخوانی کنید.\nتایید موفقیت‌آمیز بودن پرداخت از طریق این پایانه میسر است.\n\n### ۴. استعلام پرداخت - Inquiry\nدر صورتی که در هر کدام از مراحل پرداخت نیاز به دریافت اطلاعات و وضعیت تراکنش وجود داشته باشد، با فراخوانی این سامانه وضعیت کامل تراکنش موردنظر را دریافت خواهید کرد.\n\nبا طی شدن مسیر ذکر شده روند پرداخت یک سفارش پایان می‌یابد. مبلغ واریزی از طریق درگاه پرداخت اینترنتی بسته به تنظیمات حساب کاربری شما به حساب(های) تعیین‌شده یا کیف‌پول زیبال شما واریز می‌گردد.\n\n## اعتبارسنجی\n\nزیبال از پارامتر `merchant` جهت اعتبارسنجی درگاه‌های موجود استفاده می‌کند.\nاین اطلاعات پس از ایجاد هر درگاه جدید در پنل کاربری زیبال موجود می‌باشند.\n\nاین امکان وجود دارد که درگاه خود را به IP (های) مشخصی محدود کنید.\n\nدر صورتی که نیاز به ابطال این اطلاعات دارید و یا این اطلاعات را از دست داده‌اید، با ما تماس بگیرید.\n\n**حساب تستی**\nپیش از راه‌اندازی و فعال‌سازی درگاه شما می‌توانید با قراردادن `merchant: zibal` تمام امکانات و سرویس‌ها را آزمایش کنید.\nتمامی درخواست‌های ارسالی به زیبال بایستی حاوی اطلاعات احراز هویت باشند:\n\n```json \n{\n  \"merchant\": \"zibal\",\n  // OTHER FIELDS\n} ```\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://gateway.zibal.ir",
+      "description": "سرور اصلی درگاه پرداخت زیبال"
+    }
+  ],
+  "tags": [
+    {
+      "name": "درخواست پرداخت",
+      "description": "از این پایانه جهت ارسال اطلاعات سفارش و ثبت آن در سیستم زیبال استفاده کنید."
+    },
+    {
+      "name": "شروع به پرداخت",
+      "description": "از این پایانه جهت نمایان شدن صفحه‌ی پرداخت و شروع به پرداخت استفاده کنید."
+    },
+    {
+      "name": "Callback",
+      "description": "زیبال اطلاعات پرداخت یک سفارش را در زمان تغییر وضعیت به `callbackUrl` ثبت‌شده برای آن سفارش ارسال می‌کند.\n\nاین اطلاعات به صورت Query String و از طریق متد `GET` برای `callbackUrl` ارسال می‌شوند.\n\n**برای پایان دادن به جلسه پرداخت یک سفارش در صورت موفقیت‌آمیز بودن پرداخت، حتما از طریق پایانه‌ی تایید پرداخت‌ اقدام به تایید اطلاعات دریافتی نمایید.**\n\n### بدنه Callback\n\n| پارامتر | توضیحات |\n| :--- | :--- |\n| success | در صورت موفقیت‌آمیز بودن تراکنش 1، در غیر این‌صورت 0 می‌باشد. |\n| trackId | شناسه پیگیری جلسه‌ی پرداخت |\n| orderId | شناسه سفارش ارسال شده در هنگام درخواست پرداخت (در صورت ارسال) |\n| status | وضعیت پرداخت (از طریق بخش جداول، جدول وضعیت‌ها می‌توانید مقادیر status را مشاهده نمایید) |\n\n#### مثال\n\n`https://yourcallbackurl.com/callback?trackId=9900&success=1&status=2&orderId=1`\n"
+    },
+    {
+      "name": "تایید پرداخت",
+      "description": "از این پایانه جهت تایید موفقیت‌آمیز بودن پرداخت و پایان دادن به یک جلسه‌ی پرداخت استفاده نمایید."
+    },
+    {
+      "name": "استعلام پرداخت",
+      "description": "از این پایانه جهت استعلام پرداخت و دریافت گزارش یک جلسه‌ی پرداخت استفاده نمایید."
+    },
+    {
+      "name": "متد Lazy",
+      "description": "در صورت استفاده از متد وریفای سمت پذیرنده، در صورتی که پس از ۲۰ دقیقه پس از پرداخت تراکنش در درگاه پرداخت، تاییدیه پرداخت ارسال نشود، مبلغ تراکنش به شماره کارت پرداختی بازگشت داده می‌شود. دیگر تفاوت این روش با روش عادی در پارامتر‌های ارسالی و دریافتی می‌باشد.\n"
+    },
+    {
+      "name": "Callback - Lazy",
+      "description": "زیبال اطلاعات پرداخت یک سفارش را در زمان تغییر وضعیت به `callbackUrl` ثبت‌شده برای آن سفارش ارسال می‌کند.\n\nدر روش lazy این اطلاعات به صورت JSON و از طریق متد `POST` برای `callbackUrl` ارسال می‌شوند.\n\n**برای پایان دادن به جلسه پرداخت یک سفارش در صورت موفقیت‌آمیز بودن پرداخت، حتما از طریق پایانه‌ی تایید پرداخت‌ اقدام به تایید اطلاعات دریافتی نمایید.**\n\n### بدنه Callback\n\n| پارامتر | توضیحات |\n| :--- | :--- |\n| success | در صورت موفقیت‌آمیز بودن تراکنش 1، در غیر این‌صورت 0 می‌باشد. |\n| trackId | شناسه پیگیری جلسه‌ی پرداخت |\n| orderId | شناسه سفارش ارسال شده در هنگام درخواست پرداخت (در صورت ارسال) |\n| status | تعیین وضعیت سفارش به عهده پذیرنده بوده و سفارش تا زمان تایید دارای وضعیت نیست. |\n| cardNumber | شماره کارت پرداخت کننده (Mask شده) |\n| hashedCardNumber | شماره کارت پرداخت کننده (Hash شده) |\n\n#### نمونه JSON ارسالی زیبال\n\n```json\n{\n  \"success\": \"1\",\n  \"trackId\": \"15966442233311\",\n  \"orderId\": \"1234\",\n  \"status\": null,\n  \"cardNumber\": \"62741****44\",\n  \"hashedCardNumber\": \"432DA439OSD345\"\n}  \n```\n"
+    },
+    {
+      "name": "جداول",
+      "description": "### جدول وضعیت‌ها\n| وضعیت | توضیحات |\n| :--- | :--- |\n| -1 | در انتظار پردخت |\n| -2 | خطای داخلی |\n| 1 | پرداخت شده - تاییدشده |\n| 2 | پرداخت شده - تاییدنشده |\n| 3 | لغوشده توسط کاربر |\n| 4 | ‌شماره کارت نامعتبر می‌باشد. |\n| 5 | ‌موجودی حساب کافی نمی‌باشد. |\n| 6 | رمز واردشده اشتباه می‌باشد. |\n| 7 | ‌تعداد درخواست‌ها بیش از حد مجاز می‌باشد. |\n| 8 | ‌تعداد پرداخت اینترنتی روزانه بیش از حد مجاز می‌باشد. |\n| 9 | مبلغ پرداخت اینترنتی روزانه بیش از حد مجاز می‌باشد. |\n| 10 | ‌صادرکننده‌ی کارت نامعتبر می‌باشد. |\n| 11 | ‌خطای سوییچ |\n| 12 | کارت قابل دسترسی نمی‌باشد. |\n| 15 | تراکنش استرداد شده  |\n| 16 | تراکنش در حال استرداد |\n| 18 | تراکنش ریورس شده |\n| 21 | پذیرنده نامعتبر است |\n\n### جدول کدهای نتیجه درخواست پرداخت\n| کد | توضیحات |\n| :--- | :--- |\n| 100 | با موفقیت تایید شد. |\n| 102 | `merchant`یافت نشد. |\n| 103 | `merchant`غیرفعال / عدم امضا قرارداد درگاه مربوطه |\n| 104 | `merchant`نامعتبر |\n| 105 | `amount`بایستی بزرگتر از 1,000 ریال باشد. |\n| 106 | `callbackUrl`نامعتبر می‌باشد. (شروع با http و یا https) |\n| 107 | `percentMode`نامعتبر می‌باشد. (تنها 0 و 1 قابل قبول هستند) |\n| 108 | یک یا چند ذی‌نفع در `multiplexingInfos` نامعتبر می‌باشند. |\n| 109 | یک یا چند ذی‌نفع در `multiplexingInfos` غیرفعال می‌باشند. |\n| 110 | `id = self` در `multiplexingInfos` وجود ندارد. |\n| 111 | `amount` با مجموع سهم‌ها در `multiplexingInfos` برابر نمی‌باشد. |\n| 112 | موجودی کیف پول کارمزد جهت کسر کارمزد کافی نیست. |\n| 113 | `amount` مبلغ تراکنش از سقف میزان تراکنش بیشتر است. |\n| 114 | کدملی ارسالی نامعتبر است. |\n| 115 |  ip شما در پنل کاربری ثبت نشده است. |\n\n### جدول کدهای نتیجه تایید پرداخت\n| کد | توضیحات |\n| :--- | :--- |\n| 100 | با موفقیت تایید شد. |\n| 102 | `merchant` یافت نشد. |\n| 103 | `merchant` غیرفعال |\n| 104 | `merchant` نامعتبر |\n| 201 | قبلا تایید شده |\n| 202 | سفارش پرداخت نشده یا ناموفق بوده است. ( جهت اطلاعات بیشتر جدول وضعیت‌ها را مطالعه کنید) |\n| 203 | `trackId` نامعتبر می‌باشد. |\n\n### جدول کدهای نتیجه استعلام پرداخت\n| کد | توضیحات |\n| :--- | :--- |\n| 100 | با موفقیت گزارش ایجاد شد. |\n| 102 | `merchant` یافت نشد. |\n| 103 | `merchant` غیرفعال |\n| 104 | `merchant` نامعتبر |\n| 203 | `trackId` نامعتبر می‌باشد. |\n\n### جدول کدهای نتیجه درخواست پرداخت Lazy\n| کد | توضیحات |\n| :--- | :--- |\n| 100 | با موفقیت تایید شد. |\n| 102 | `merchant`یافت نشد. |\n| 103 | `merchant`غیرفعال / عدم امضا قرارداد درگاه مربوطه |\n| 104 | `merchant`نامعتبر |\n| 105 | `amount`بایستی بزرگتر از 1,000 ریال باشد. |\n| 106 | `callbackUrl`نامعتبر می‌باشد. (شروع با http و یا https) |\n| 107 | `percentMode`نامعتبر می‌باشد. (تنها 0 و 1 قابل قبول هستند) |\n| 108 | یک یا چند ذی‌نفع در `multiplexingInfos` نامعتبر می‌باشند. |\n| 109 | یک یا چند ذی‌نفع در `multiplexingInfos` غیرفعال می‌باشند. |\n| 110 | `id = self` در `multiplexingInfos` وجود ندارد. |\n| 111 | `amount` با مجموع سهم‌ها در `multiplexingInfos` برابر نمی‌باشد. |\n| 112 | موجودی کیف پول کارمزد جهت کسر کارمزد کافی نیست. |\n| 113 | `amount` مبلغ تراکنش از سقف میزان تراکنش بیشتر است. |\n| 114 | کدملی ارسالی نامعتبر است. |\n| 115 |  ip شما در پنل کاربری ثبت نشده است. |\n\n### جدول کدهای نتیجه تایید پرداخت Lazy\n| کد | توضیحات |\n| :--- | :--- |\n| 100 | با موفقیت تایید شد. |\n| 102 | `merchant` یافت نشد. |\n| 103 | `merchant` غیرفعال |\n| 104 | `merchant` نامعتبر |\n| 201 | قبلا تایید شده |\n| 202 | سفارش پرداخت نشده یا ناموفق بوده است. (به بخش جداول، جدول وضعیت ها مراجعه کنید) |\n| 203 | `trackId` نامعتبر می‌باشد. |\n"
+    },
+    {
+      "name": "نشان اعتماد زیبال",
+      "description": "با توجه به لزوم جلب اعتماد مشتریان جهت انجام پرداختی امن و سریع، می‌توانید با قرار دادن کد زیر در قسمتی از وبسایت خود (مانند فوتر وبسایت)، مشتریان خود را از پردازش پرداخت‌ها توسط زیبال مطلع نمایید.\n\n```html \n<script src=\"https://zibal.ir/trust/scripts/zibal-trust-v4.js\" type=\"text/javascript\"></script> \n```\n\n---\n\n**استفاده در Dark Mode**\n```html\n<script src=\"https://zibal.ir/trust/scripts/zibal-trust-v4.js?theme=dark\" type=\"text/javascript\"></script>\n```\n\n---\n\nپس از قراردادن این تکه کد، نشان اعتماد زیبال به شکل زیر در وبسایت شما نمایش داده خواهد شد.\n\n![پرداخت آنلاین زیبال](https://zibal.ir/trust/assets/1.png)\n![پرداخت آنلاین زیبال](https://zibal.ir/trust/assets/2.png)\n\n---\n\n#### نمونه‌ای از تنظیم استایل یا ابعاد برای لوگوی تصویر:\n\nبا تغییر مقدار height (که در این مثال 200px در نظر گرفته شده)، می‌توانید ابعاد تصویر را به اندازه‌ی دلخواه تنظیم کنید.\n\n```html \n<html lang='en'>  <head>\n  <meta charset='UTF-8'>\n  <meta name='viewport' content='width=device-width, initial-scale=1'>\n  <title>Document</title>\n  <style>\n    #zibal{\n        margin: auto;\n    }\n    #zibal img{\n      height: 200px!important;\n    }\n  </style>\n</head>\n<body>\n  <div id='zibal'>\n    <script src=\"https://zibal.ir/trust/scripts/zibal-trust-v4.js\" type=\"text/javascript\"></script>\n  </div>\n</body> \n</html> \n```\n\n---\n\n**استفاده در Next.js**\nهمانطور که میدانید در پروژه های Next.js میبایست از تگ Script استفاده کرد.\n```javascript\nimport Script from \"next/script\";\n\n<div id='zibal'>\n<Script src=\"https://zibal.ir/trust/scripts/zibal-trust-v4.js\" type=\"text/javascript\"/>\n</div>\n```\n"
+    },
+    {
+      "name": "اعلان تراکنش‌ها",
+      "description": "شما می‌توانید جهت اطلاع از تراکنش‌های موفقیت‌آمیز از ربات تلگرامی زیبال استفاده کنید.\nتنها کافی‌است وارد [ZibalBot](https://t.me/ZibalBot) شوید و ربات را به حساب کاربری خود متصل نمایید تا تمامی تراکنش‌های تمامی درگاه‌های پرداخت شما، در لحظه به اطلاع شما برسند.\n![ZibalBot](/assets/images/zibalbot.png)\n"
+    }
+  ],
+  "paths": {
+    "/v1/request": {
+      "post": {
+        "tags": [
+          "درخواست پرداخت"
+        ],
+        "summary": "درخواست پرداخت",
+        "description": "از این پایانه جهت ارسال اطلاعات سفارش و ثبت آن در سیستم زیبال استفاده کنید. در جواب این پایانه `trackId` را به‌عنوان شناسه پیگیری پرداخت دریافت خواهید کرد.\n",
+        "operationId": "requestPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "merchant",
+                  "amount",
+                  "callbackUrl"
+                ],
+                "properties": {
+                  "merchant": {
+                    "type": "string",
+                    "description": "ضروری جهت احراز هویت. برای تست از `zibal` استفاده کنید.",
+                    "example": "zibal"
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "مبلغ کل سفارش (به ریال)",
+                    "example": 160000
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "description": "آدرسی از سایت پذیرنده که زیبال اطلاعات پرداخت را به آن ارسال خواهد کرد.",
+                    "example": "http://yourapiurl.com/callback.php"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "توضیحات مربوط به سفارش (در گزارشات مختلف نشان‌داده خواهند شد)",
+                    "example": "Hello World!"
+                  },
+                  "orderId": {
+                    "type": "string",
+                    "description": "شناسه سفارش منحصربه‌فرد شما (اختیاری - در گزارشات استفاده می‌شوند)",
+                    "example": "ZBL-7799"
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "با فرستادن شماره موبایل کاربران خود، شماره کارت‌های ثبت‌شده مشتریان در درگاه پرداخت جهت انتخاب ظاهر می‌شوند.",
+                    "example": "09123456789"
+                  },
+                  "allowedCards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "چنانچه تمایل دارید کاربر فقط از شماره کارت های مشخصی بتواند پرداخت کند لیست کارت (های) 16 رقمی را ارسال کنید."
+                  },
+                  "nationalCode": {
+                    "type": "string",
+                    "description": "کد ملی (nationalCode) اختیاری و ۱۰ رقمی است. در صورت ارسال این فیلد، کد ملی صاحب کارت با کد ملی وارد شده تطبیق داده می‌شود و در صورت عدم تطابق، از انجام تراکنش جلوگیری خواهد شد."
+                  },
+                  "checkMobileWithCard": {
+                    "type": "boolean",
+                    "description": "تطبیق شماره کارت و موبایل ارسال شده"
+                  },
+                  "percentMode": {
+                    "type": "integer",
+                    "description": "در صورتی که نحوه تسهیم مبلغ شما به‌صورت درصدی می‌باشد، این مقدار را 1 ارسال کنید. (پیش‌فرض :‌ 0)"
+                  },
+                  "feeMode": {
+                    "type": "integer",
+                    "description": "`0`: کسر از تراکنش\n`1`: کسر کارمزد از کیف پول متصل به درگاه (در پرداختیاری پشتیبانی نمی‌شود)\n"
+                  },
+                  "multiplexingInfos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "bankAccount": {
+                          "type": "string",
+                          "description": "شماره شبای ذی نفع"
+                        },
+                        "subMerchantId": {
+                          "type": "string",
+                          "description": "شناسه ذی نفع"
+                        },
+                        "amount": {
+                          "type": "integer",
+                          "format": "int64",
+                          "description": "مبلغ یا درصد"
+                        },
+                        "wagePayer": {
+                          "type": "boolean",
+                          "description": "کارمزد از این آیتم گرفته شود؟ فقط در صورتیکه `feeMode: 0` موثر است. اگر مشخص نشود از ذی نفع اصلی با `id: self` کارمزد اخذ میگردد.\n"
+                        }
+                      }
+                    },
+                    "description": "لیستی از آیتم‌های تسهیم"
+                  }
+                }
+              },
+              "examples": {
+                "sample": {
+                  "summary": "نمونه درخواست پرداخت (عادی)",
+                  "value": {
+                    "merchant": "zibal",
+                    "amount": 160000,
+                    "callbackUrl": "http://yourapiurl.com/callback.php",
+                    "description": "Hello World!",
+                    "orderId": "ZBL-7799",
+                    "mobile": "09123456789"
+                  }
+                },
+                "advancedSample": {
+                  "summary": "نمونه درخواست پرداخت (پیشرفته - تسهیم)",
+                  "value": {
+                    "merchant": "zibal",
+                    "amount": 3000,
+                    "callbackUrl": "http://zibal.ir/callback",
+                    "mobile": "09123456789",
+                    "description": "Hello World !",
+                    "orderId": "231",
+                    "feeMode": 0,
+                    "multiplexingInfos": [
+                      {
+                        "amount": 1000,
+                        "bankAccount": "IR540560004120002717448001"
+                      },
+                      {
+                        "walletID": 12185542112,
+                        "wagePayer": true
+                      },
+                      {
+                        "amount": 1000,
+                        "subMerchantId": "x48mBx"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "درخواست با موفقیت انجام شد",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trackId": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "شناسه منحصربه‌فرد هر جلسه پرداخت درگاه پرداخت اینترنتی زیبال که استعلام وضعیت پرداخت و درخواست‌های گزارش‌گیری با استفاده از این شناسه امکان‌پذیر است.",
+                      "example": 15966442233311
+                    },
+                    "result": {
+                      "type": "integer",
+                      "description": "نتیجه درخواست (به بخش جداول جدول کدهای نتیجه درخواست پرداخت مراجعه کنید)",
+                      "example": 100
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "پیغام حاوی نتیجه درخواست",
+                      "example": "success"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "نمونه پاسخ زیبال",
+                    "value": {
+                      "trackId": 15966442233311,
+                      "result": 100,
+                      "message": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/start/{trackId}": {
+      "get": {
+        "tags": [
+          "شروع به پرداخت"
+        ],
+        "summary": "شروع به پرداخت",
+        "description": "با ارسال `trackId` به آدرس بالا و باز کردن این صفحه در مرورگر، به صفحه‌ی پرداخت درگاه مستقیم زیبال منتقل خواهید شد.",
+        "operationId": "startPayment",
+        "parameters": [
+          {
+            "name": "trackId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "شناسه پیگیری پرداخت دریافت شده از مرحله Request"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "انتقال به درگاه پرداخت"
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "tags": [
+          "تایید پرداخت"
+        ],
+        "summary": "تایید پرداخت",
+        "description": "از این پایانه جهت تایید موفقیت‌آمیز بودن پرداخت و پایان دادن به یک جلسه‌ی پرداخت استفاده نمایید.\n\n**تایید پرداخت**\nهمان‌طور که قبلا اشاره شد زیبال با ارسال اطلاعات پرداخت به `callbackUrl` ثبت‌شده، شما را از وضعیت یک پرداخت مطلع می‌سازد. این پایانه جهت اطمینان زیبال از دریافت این اطلاعات توسط شما و خاتمه‌دادن پروسه پرداخت سفارش تعبیه شده‌است.\n",
+        "operationId": "verifyPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "merchant",
+                  "trackId"
+                ],
+                "properties": {
+                  "merchant": {
+                    "type": "string",
+                    "description": "ضروری جهت احراز هویت. برای تست از `zibal` استفاده کنید.",
+                    "example": "zibal"
+                  },
+                  "trackId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "شناسه‌ی جلسه‌ی پرداختی که قصد تایید آن را دارید.",
+                    "example": 15966442233311
+                  }
+                }
+              },
+              "examples": {
+                "sample": {
+                  "summary": "نمونه درخواست تایید پرداخت",
+                  "value": {
+                    "merchant": "zibal",
+                    "trackId": 15966442233311
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "درخواست با موفقیت انجام شد",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paidAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "تاریخ پرداخت سفارش - به فرمت ISODate (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "cardNumber": {
+                      "type": "string",
+                      "description": "شماره کارت پرداخت کننده (Mask شده)"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "description": "وضعیت پرداخت (به بخش جداول، جدول وضعیت‌ها مراجعه کنید)"
+                    },
+                    "amount": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "مبلغ سفارش (به ریال)"
+                    },
+                    "refNumber": {
+                      "type": "integer",
+                      "description": "شناسه مرجع تراکنش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "توضیحات تراکنش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "شناسه سفارش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "result": {
+                      "type": "integer",
+                      "description": "نتیجه درخواست (به بخش جداول، جدول کدهای نتیجه تایید پرداخت مراجعه کنید)"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "پیغام حاوی نتیجه درخواست"
+                    },
+                    "multiplexingInfos": {
+                      "type": "array",
+                      "description": "اطلاعات تسهیم تراکنش (در صورت تسهیم‌دار بودن)"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "نمونه پاسخ تایید پرداخت (عادی)",
+                    "value": {
+                      "paidAt": "2018-03-25T23:43:01.053000",
+                      "amount": 1600,
+                      "result": 100,
+                      "status": 1,
+                      "refNumber": 12312,
+                      "description": "Hello World!",
+                      "cardNumber": "62741****44",
+                      "orderId": "2211",
+                      "message": "success"
+                    }
+                  },
+                  "advancedSuccess": {
+                    "summary": "نمونه پاسخ تایید پرداخت (پیشرفته - تسهیم)",
+                    "value": {
+                      "paidAt": "2018-03-25T23:43:01.053000",
+                      "amount": 1600,
+                      "result": 100,
+                      "status": 1,
+                      "refNumber": 12312,
+                      "cardNumber": "62741****44",
+                      "description": "Hello World!",
+                      "orderId": "2211",
+                      "multiplexingInfos": [
+                        {
+                          "amount": 900,
+                          "bankAccount": "IR540560004120002717448001"
+                        },
+                        {
+                          "amount": 700,
+                          "bankAccount": "IR132000300120002722448001"
+                        }
+                      ],
+                      "message": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/inquiry": {
+      "post": {
+        "tags": [
+          "استعلام پرداخت"
+        ],
+        "summary": "استعلام پرداخت",
+        "description": "از این پایانه جهت استعلام پرداخت و دریافت گزارش یک جلسه‌ی پرداخت استفاده نمایید.\n",
+        "operationId": "inquiryPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "merchant",
+                  "trackId"
+                ],
+                "properties": {
+                  "merchant": {
+                    "type": "string",
+                    "description": "ضروری جهت احراز هویت. برای تست از `zibal` استفاده کنید.",
+                    "example": "zibal"
+                  },
+                  "trackId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "شناسه‌ی جلسه‌ی پرداختی که قصد دریافت گزارش آن را دارید.",
+                    "example": 15966442233311
+                  }
+                }
+              },
+              "examples": {
+                "sample": {
+                  "summary": "نمونه درخواست استعلام پرداخت",
+                  "value": {
+                    "merchant": "zibal",
+                    "trackId": 15966442233311
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "درخواست با موفقیت انجام شد",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "تاریخ ایجاد سفارش - به فرمت ISODate (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "paidAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "تاریخ پرداخت سفارش - به فرمت ISODate (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "verifiedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "تاریخ تایید سفارش - به فرمت ISODate (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "cardNumber": {
+                      "type": "string",
+                      "description": "شماره کارت پرداخت کننده (Mask شده)"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "description": "وضعیت پرداخت (به بخش جداول، جدول وضعیت‌ها مراجعه کنید)"
+                    },
+                    "amount": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "مبلغ سفارش (به ریال)"
+                    },
+                    "refNumber": {
+                      "type": "integer",
+                      "description": "شناسه مرجع تراکنش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "توضیحات تراکنش"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "شناسه سفارش"
+                    },
+                    "wage": {
+                      "type": "integer",
+                      "description": "نحوه کسر کارمزد: 0 = کسر از تراکنش، 1 = کسر از کیف پول کارمزد"
+                    },
+                    "result": {
+                      "type": "integer",
+                      "description": "نتیجه درخواست (به بخش جداول، جدول کدهای نتیجه استعلام پرداخت مراجعه کنید)"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "پیغام حاوی نتیجه درخواست"
+                    },
+                    "multiplexingInfos": {
+                      "type": "array",
+                      "description": "اطلاعات تسهیم تراکنش (در صورت تسهیم‌دار بودن)"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "نمونه پاسخ استعلام پرداخت (عادی)",
+                    "value": {
+                      "message": "success",
+                      "result": 100,
+                      "refNumber": 12312,
+                      "paidAt": "2022-07-06T14:18:21.742000",
+                      "verifiedAt": "2022-07-06T14:18:21.742000",
+                      "status": 1,
+                      "amount": 10000,
+                      "orderId": "231",
+                      "description": "Hello World !",
+                      "cardNumber": "62741****44",
+                      "multiplexingInfos": [],
+                      "wage": 0,
+                      "createdAt": "2022-07-06T14:17:52.918000"
+                    }
+                  },
+                  "advancedSuccess": {
+                    "summary": "نمونه پاسخ استعلام پرداخت (پیشرفته - تسهیم)",
+                    "value": {
+                      "message": "success",
+                      "result": 100,
+                      "refNumber": 12312,
+                      "paidAt": "2022-07-06T14:18:21.742000",
+                      "verifiedAt": "2022-07-06T14:18:21.742000",
+                      "status": 1,
+                      "amount": 10000,
+                      "orderId": "231",
+                      "description": "Hello World !",
+                      "cardNumber": "62741****44",
+                      "multiplexingInfos": [
+                        {
+                          "bankAccount": "IR123412341234123412341234",
+                          "amount": 10000,
+                          "walletID": null
+                        }
+                      ],
+                      "wage": 0,
+                      "createdAt": "2022-07-06T14:17:52.918000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/request/lazy": {
+      "post": {
+        "tags": [
+          "متد Lazy"
+        ],
+        "summary": "درخواست پرداخت Lazy",
+        "description": "از این پایانه جهت ارسال اطلاعات سفارش و ثبت آن در سیستم زیبال استفاده کنید. در صورت استفاده از متد وریفای سمت پذیرنده، در صورتی که پس از ۲۰ دقیقه پس از پرداخت تراکنش در درگاه پرداخت، تاییدیه پرداخت ارسال نشود، مبلغ تراکنش به شماره کارت پرداختی بازگشت داده می‌شود.\n",
+        "operationId": "requestLazyPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "merchant",
+                  "amount",
+                  "callbackUrl"
+                ],
+                "properties": {
+                  "merchant": {
+                    "type": "string",
+                    "description": "ضروری جهت احراز هویت. برای تست از `zibal` استفاده کنید.",
+                    "example": "zibal"
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "مبلغ کل سفارش (به ریال)",
+                    "example": 160000
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "description": "آدرسی از سایت پذیرنده که زیبال اطلاعات پرداخت را به آن ارسال خواهد کرد.",
+                    "example": "http://yourapiurl.com/callback.php"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "توضیحات مربوط به سفارش (در گزارشات مختلف نشان‌داده خواهند شد)"
+                  },
+                  "orderId": {
+                    "type": "string",
+                    "description": "شناسه سفارش منحصربه‌فرد شما (اختیاری - در گزارشات استفاده می‌شوند)"
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "با فرستادن شماره موبایل کاربران خود، شماره کارت‌های ثبت‌شده مشتریان در درگاه پرداخت جهت انتخاب ظاهر می‌شوند.",
+                    "example": "09123456789"
+                  },
+                  "allowedCards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "استفاده همزمان از lazy و ارسال پارامتر allowedCards پیشنهاد نمی‌شود."
+                  },
+                  "nationalCode": {
+                    "type": "string",
+                    "description": "کد ملی (nationalCode) اختیاری و ۱۰ رقمی است. در صورت ارسال این فیلد، کد ملی صاحب کارت با کد ملی وارد شده تطبیق داده می‌شود و در صورت عدم تطابق، از انجام تراکنش جلوگیری خواهد شد."
+                  },
+                  "checkMobileWithCard": {
+                    "type": "boolean",
+                    "description": "تطبیق شماره کارت و موبایل ارسال شده"
+                  },
+                  "percentMode": {
+                    "type": "integer",
+                    "description": "در صورتی که نحوه تسهیم مبلغ شما به‌صورت درصدی می‌باشد، این مقدار را 1 ارسال کنید. (پیش‌فرض :‌ 0)"
+                  },
+                  "feeMode": {
+                    "type": "integer",
+                    "description": "`0`: کسر از تراکنش\n`1`: کسر کارمزد از کیف پول متصل به درگاه (در پرداختیاری پشتیبانی نمی‌شود)\n"
+                  },
+                  "multiplexingInfos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "bankAccount": {
+                          "type": "string",
+                          "description": "شماره شبای ذی نفع"
+                        },
+                        "subMerchantId": {
+                          "type": "string",
+                          "description": "شناسه ذی نفع"
+                        },
+                        "amount": {
+                          "type": "integer",
+                          "format": "int64",
+                          "description": "مبلغ یا درصد"
+                        },
+                        "wagePayer": {
+                          "type": "boolean",
+                          "description": "کارمزد از این آیتم گرفته شود؟ فقط در صورتیکه `feeMode: 0` موثر است. اگر مشخص نشود از ذی نفع اصلی با `id: self` کارمزد اخذ میگردد.\n"
+                        }
+                      }
+                    },
+                    "description": "لیستی از آیتم‌های تسهیم"
+                  }
+                }
+              },
+              "examples": {
+                "sample": {
+                  "summary": "نمونه درخواست پرداخت Lazy (عادی)",
+                  "value": {
+                    "merchant": "zibal",
+                    "amount": 160000,
+                    "callbackUrl": "http://yourapiurl.com/callback.php",
+                    "description": "Hello World!",
+                    "orderId": "ZBL-7799",
+                    "mobile": "09123456789"
+                  }
+                },
+                "advancedSample": {
+                  "summary": "نمونه درخواست پرداخت Lazy (پیشرفته - تسهیم)",
+                  "value": {
+                    "merchant": "zibal",
+                    "amount": 3000,
+                    "callbackUrl": "http://zibal.ir/callback",
+                    "mobile": "09123456789",
+                    "description": "Hello World !",
+                    "orderId": "231",
+                    "feeMode": 0,
+                    "multiplexingInfos": [
+                      {
+                        "amount": 1000,
+                        "bankAccount": "IR540560004120002717448001"
+                      },
+                      {
+                        "walletID": 12185542112,
+                        "wagePayer": true
+                      },
+                      {
+                        "amount": 1000,
+                        "subMerchantId": "x48mBx"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "درخواست با موفقیت انجام شد",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trackId": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "شناسه منحصربه‌فرد هر جلسه پرداخت درگاه پرداخت اینترنتی زیبال که استعلام وضعیت پرداخت و درخواست‌های گزارش‌گیری با استفاده از این شناسه امکان‌پذیر است."
+                    },
+                    "result": {
+                      "type": "integer",
+                      "description": "نتیجه درخواست (به بخش جداول، جدول کدهای نتیجه درخواست پرداخت Lazy مراجعه کنید)"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "پیغام حاوی نتیجه درخواست"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "نمونه پاسخ زیبال",
+                    "value": {
+                      "trackId": 15966442233311,
+                      "result": 100,
+                      "message": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "tags": [
+          "متد Lazy"
+        ],
+        "summary": "تایید پرداخت Lazy",
+        "description": "از این پایانه جهت تایید موفقیت‌آمیز بودن پرداخت در روش Lazy استفاده نمایید.\n\n**تایید پرداخت**\nهمان‌طور که قبلا اشاره شد زیبال با ارسال اطلاعات پرداخت به `callbackUrl` ثبت‌شده، شما را از وضعیت یک پرداخت مطلع می‌سازد. این پایانه جهت اطمینان زیبال از دریافت این اطلاعات توسط شما و خاتمه‌دادن پروسه پرداخت سفارش تعبیه شده‌است.\n",
+        "operationId": "verifyLazyPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "merchant",
+                  "trackId"
+                ],
+                "properties": {
+                  "merchant": {
+                    "type": "string",
+                    "description": "ضروری جهت احراز هویت. برای تست از `zibal` استفاده کنید.",
+                    "example": "zibal"
+                  },
+                  "trackId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "شناسه‌ی جلسه‌ی پرداختی که قصد تایید آن را دارید.",
+                    "example": 15966442233311
+                  }
+                }
+              },
+              "examples": {
+                "sample": {
+                  "summary": "نمونه درخواست تایید پرداخت Lazy",
+                  "value": {
+                    "merchant": "zibal",
+                    "trackId": 15966442233311
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "درخواست با موفقیت انجام شد",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paidAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "تاریخ پرداخت سفارش - به فرمت ISODate (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "cardNumber": {
+                      "type": "string",
+                      "description": "شماره کارت پرداخت کننده (Mask شده)"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "description": "وضعیت پرداخت (به بخش جداول، جدول وضعیت‌ها مراجعه کنید)"
+                    },
+                    "amount": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "مبلغ سفارش (به ریال)"
+                    },
+                    "refNumber": {
+                      "type": "integer",
+                      "description": "شناسه مرجع تراکنش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "توضیحات تراکنش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "شناسه سفارش (در صورت موفقیت‌آمیز بودن پرداخت)"
+                    },
+                    "result": {
+                      "type": "integer",
+                      "description": "نتیجه درخواست (به بخش جداول، جدول کدهای نتیجه تایید پرداخت Lazy مراجعه کنید)"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "پیغام حاوی نتیجه درخواست"
+                    },
+                    "multiplexingInfos": {
+                      "type": "array",
+                      "description": "اطلاعات تسهیم تراکنش (در صورت تسهیم‌دار بودن)"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "نمونه پاسخ تایید پرداخت Lazy (عادی)",
+                    "value": {
+                      "paidAt": "2018-03-25T23:43:01.053000",
+                      "amount": 1600,
+                      "result": 100,
+                      "status": 1,
+                      "refNumber": 12312,
+                      "description": "Hello World!",
+                      "cardNumber": "62741****44",
+                      "orderId": "2211",
+                      "message": "success"
+                    }
+                  },
+                  "advancedSuccess": {
+                    "summary": "نمونه پاسخ تایید پرداخت Lazy (پیشرفته - تسهیم)",
+                    "value": {
+                      "paidAt": "2018-03-25T23:43:01.053000",
+                      "amount": 1600,
+                      "result": 100,
+                      "status": 1,
+                      "refNumber": 12312,
+                      "cardNumber": "62741****44",
+                      "description": "Hello World!",
+                      "orderId": "2211",
+                      "multiplexingInfos": [
+                        {
+                          "amount": 900,
+                          "bankAccount": "IR540560004120002717448001"
+                        },
+                        {
+                          "amount": 700,
+                          "bankAccount": "IR132000300120002722448001"
+                        }
+                      ],
+                      "message": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

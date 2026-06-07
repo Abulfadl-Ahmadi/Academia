@@ -499,10 +499,10 @@ class PurchaseView(APIView):
                 'free_purchase': True
             }, status=status.HTTP_201_CREATED)
         
-        # ZarinPal minimum amount is 1000 Tomans for paid products
-        if total_amount < 1000:
+        # Zibal minimum is 1,000 Rials → 100 Tomans. We check against 100 Tomans.
+        if total_amount < 100:
             return Response(
-                {"error": "حداقل مبلغ پرداخت 1000 تومان است"}, 
+                {"error": "حداقل مبلغ پرداخت 100 تومان است"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -520,7 +520,7 @@ class PurchaseView(APIView):
                     }, status=status.HTTP_400_BAD_REQUEST)
             except UserAddress.DoesNotExist:
                 return Response({
-                    "error": "missing_address", 
+                    "error": "missing_address",
                     "message": "برای خرید محصولات فیزیکی، وارد کردن آدرس الزامی است",
                     "redirect_to": "/panel/address"
                 }, status=status.HTTP_400_BAD_REQUEST)
@@ -531,7 +531,7 @@ class PurchaseView(APIView):
             total_amount=total_amount,
             status=Order.OrderStatus.PENDING
         )
-        
+
         # Create order items
         for item_data in order_items:
             OrderItem.objects.create(
@@ -542,62 +542,37 @@ class PurchaseView(APIView):
                 discount_amount=item_data['discount_amount']
             )
 
-        # Initiate ZarinPal payment
-        import requests
-        from django.conf import settings
-        
-        zarinpal_data = {
-            "merchant_id": settings.ZARINPAL_MERCHANT_ID,
-            "amount": int(total_amount),
-            "callback_url": f"{settings.BACKEND_BASE_URL}/api/finance/payment/callback/",
-            "description": f"خرید محصولات - سفارش {order.id}",
-            "metadata": {"order_id": str(order.id)}
-        }
-        
-        print(f"ZarinPal Request Data: {zarinpal_data}")
-        print(f"ZarinPal URL: {settings.ZARINPAL_REQUEST_URL}")
-        
-        try:
-            response = requests.post(settings.ZARINPAL_REQUEST_URL, json=zarinpal_data, timeout=10)
-            response_data = response.json()
-            
-            print(f"ZarinPal Response Status: {response.status_code}")
-            print(f"ZarinPal Response Data: {response_data}")
-            
-            if response_data.get('data', {}).get('code') == 100:
-                authority = response_data['data']['authority']
-                
-                # Create Payment record
-                from finance.models import Payment
-                Payment.objects.create(
-                    user=request.user,
-                    order=order,
-                    amount=total_amount,
-                    authority=authority,
-                    status=Payment.PaymentStatus.PENDING
-                )
-                
-                # Generate payment URL
-                payment_url = f"{settings.ZARINPAL_STARTPAY_URL}{authority}"
-                
-                return Response({
-                    'message': 'در حال انتقال به درگاه پرداخت...',
-                    'payment_url': payment_url,
-                    'authority': authority,
-                    'order': OrderSerializer(order).data
-                }, status=status.HTTP_201_CREATED)
-            else:
-                error_message = response_data.get('errors', {})
-                print(f"ZarinPal Error: {error_message}")
-                return Response({
-                    'error': f'خطا در اتصال به درگاه پرداخت: {error_message}'
-                }, status=status.HTTP_400_BAD_REQUEST)
-                
-        except requests.RequestException as e:
-            print(f"ZarinPal Request Exception: {e}")
+        # Initiate Zibal payment
+        from finance.views import _zibal_request, tomans_to_rials
+        from finance.models import Payment
+
+        callback_url = f"{settings.BACKEND_BASE_URL}/api/finance/payment/callback/"
+        mobile = getattr(request.user, 'phone', None)
+
+        track_id, payment_url, error = _zibal_request(
+            order, callback_url, mobile=mobile,
+            description=f"خرید محصولات - سفارش {order.id}"
+        )
+
+        if track_id:
+            Payment.objects.create(
+                user=request.user,
+                order=order,
+                amount=tomans_to_rials(total_amount),
+                track_id=track_id,
+                description=f"خرید محصولات - سفارش {order.id}",
+                status=Payment.PaymentStatus.PENDING,
+            )
             return Response({
-                'error': f'خطا در اتصال به درگاه پرداخت: {str(e)}'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                'message': 'در حال انتقال به درگاه پرداخت زیبال...',
+                'payment_url': payment_url,
+                'track_id': track_id,
+                'order': OrderSerializer(order).data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'error': f'خطا در اتصال به درگاه پرداخت: {error}'
+            }, status=status.HTTP_502_BAD_GATEWAY)
 
 class UserAccessView(APIView):
     permission_classes = [permissions.IsAuthenticated]

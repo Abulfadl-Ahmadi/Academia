@@ -265,12 +265,9 @@ export function TeacherSidebar({
         icon: CreditCard,
         items: [
           {
-            title: "ثبت تراکنش جدید",
-            url: "/panel/transactions/new",
-          },
-          {
-            title: "لیست تراکنش‌ها",
+            title: "تراکنش‌ها",
             url: "/panel/transactions",
+            description: "مشاهده و ثبت تراکنش‌های مالی",
           },
         ],
       },

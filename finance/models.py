@@ -97,13 +97,14 @@ class Payment(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
-    amount = models.IntegerField()  # Amount in Tomans
-    authority = models.CharField(max_length=100, unique=True)  # Zarinpal authority
-    ref_id = models.CharField(max_length=100, blank=True, null=True)  # Reference ID from Zarinpal
+    amount = models.BigIntegerField()  # Amount in Rials (Zibal uses Rials)
+    track_id = models.BigIntegerField(unique=True, null=True, blank=True)  # Zibal trackId
+    ref_number = models.CharField(max_length=100, blank=True, null=True)  # Zibal refNumber after verify
+    card_number = models.CharField(max_length=20, blank=True, null=True)  # Masked card number
     status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Payment #{self.id} - {self.user.username} - {self.amount} Tomans - {self.status}"
+        return f"Payment #{self.id} - {self.user.username} - {self.amount} Rials - {self.status}"

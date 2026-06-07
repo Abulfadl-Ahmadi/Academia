@@ -20,8 +20,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   Star,
-  Users,
-  Clock,
   PlayCircle,
   BookOpen,
   Loader2,
@@ -493,7 +491,7 @@ export default function HomePage() {
   const getBadge = (course: Course) => {
     const daysSinceCreated = Math.floor(
       (new Date().getTime() - new Date(course.created_at).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     if (daysSinceCreated < 30) return "جدید";
@@ -650,20 +648,13 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative my-4 aspect-square h-full overflow-hidden rounded-[4px]">
+            <div className="relative my-4 aspect-video w-full overflow-hidden rounded-4xl shadow-2xl border border-white/10 group">
               <img
-                src="https://c242950.parspack.net/c242950/media/portrait.png"
-                alt="Benjamin Spiers - Moonlight 2023"
-                className="absolute inset-0 h-[95%] mx-auto"
+                src="/newJPG.JPG"
+                alt="تدریس ریاضی آرین تفضلی زاده"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-
-              <ProgressiveBlur
-                className="pointer-events-none absolute bottom-0 left-0 h-[30%] w-full"
-                blurIntensity={8}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-              <div className="pointer-events-none absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-background via-transparent to-transparent" />
-              <div className="pointer-events-none absolute top-0 right-0 h-full w-1/4 bg-gradient-to-l from-background via-transparent to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             </div>
 
             <div className="space-y-8">
@@ -857,44 +848,6 @@ export default function HomePage() {
                           </CardHeader>
 
                           <CardContent>
-                            <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                              <div className="flex items-center gap-1">
-                                <Users className="h-4 w-4" />
-                                {course.students_count
-                                  ? course.students_count.toLocaleString(
-                                      "fa-IR"
-                                    )
-                                  : "0"}{" "}
-                                {course.product_type === "course"
-                                  ? "دانشجو"
-                                  : "خریدار"}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                {course.product_type === "course" ? (
-                                  <>
-                                    <Clock className="h-4 w-4" />
-                                    {course.sessions_count
-                                      ? `${course.sessions_count} جلسه`
-                                      : "در حال تکمیل"}
-                                  </>
-                                ) : course.requires_shipping ? (
-                                  <>
-                                    <Clock className="h-4 w-4" />
-                                    موجودی:{" "}
-                                    {course.stock_quantity &&
-                                    course.stock_quantity > 0
-                                      ? course.stock_quantity
-                                      : "ناموجود"}
-                                  </>
-                                ) : (
-                                  <>
-                                    <BookOpen className="h-4 w-4" />
-                                    دانلود فوری
-                                  </>
-                                )}
-                              </div>
-                            </div>
-
                             <div className="flex items-center justify-between">
                               <div>
                                 <span className="text-2xl font-bold text-green-600">
@@ -1054,8 +1007,7 @@ export default function HomePage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  (window.location.href = `/blog/${
-                                    post.slug || post.id
+                                (window.location.href = `/blog/${post.slug || post.id
                                   }`)
                                 }
                               >
@@ -1186,7 +1138,7 @@ export default function HomePage() {
           )}
         </div>
 
-                <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none">
           <img
             src="/Glass_shapes_optimized/33.webp"
             alt=""
@@ -1264,20 +1216,24 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  دانش آموخته جبرمحض دانشگاه علم و صنعت ایران
+                  دانش‌آموخته جبر محض دانشگاه علم و صنعت ایران
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  دانش آموخته دکتری مدیریت کسب و کار از TBS
+                  دانش‌آموخته دکتری مدیریت کسب و کار
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  ۱۴ سال سابقه تدریس در مدارس بهارستان ، علامه طباطبایی،ندای
-                  کوثر، ممتاز حنان ،تلاش،بهار علم آموزان، شوق پرواز، اوج و …
+                  ۱۵ سال سابقه تدریس در مدارس بهارستان، علامه طباطبایی، ندای کوثر،
+                  ممتاز حنان، کیوان، تلاش، بهار علم‌آموزان، شوق پرواز، اوج و …
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  و آموزشگاه های کنکور هدف ،ماهان، راه اندیشه، انرژی و …
+                  و آموزشگاه‌های کنکور هدف، ماهان، راه اندیشه، انرژی و …
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+                  مسئول درس آزمون‌های کشوری (آلفا اسکول)
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
@@ -1285,8 +1241,11 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  مؤلف کتاب لقمه هندسه۳ مهر و ماه مؤلف کتاب فرموتست ریاضیات
-                  تجربی (گاج)
+                  مؤلف کتاب لقمه هندسه۳ مهر و ماه
+                </TextEffect>
+
+                <TextEffect preset="blur" trigger={isVisible}>
+                  مؤلف کتاب فرموتست ریاضیات تجربی (گاج)
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
@@ -1302,8 +1261,7 @@ export default function HomePage() {
                 </TextEffect>
 
                 <TextEffect preset="blur" trigger={isVisible}>
-                  نویسنده حوزه توسعه فردی در روزنامه ها و وبسایت های هنرمند ،خوب
-                  و …
+                  نویسنده حوزه توسعه فردی در روزنامه‌ها و وبسایت‌های هنرمند، خوب و …
                 </TextEffect>
               </div>
             </div>
