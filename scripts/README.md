@@ -7,7 +7,8 @@ This directory contains utility scripts for the Academia platform.
 ```
 scripts/
 ├── README.md (this file)
-├── deploy.sh (deployment script)
+├── deploy.sh (development deployment script)
+├── deploy-prod.sh (production deployment script)
 └── data_migration/ (data migration utilities)
     ├── assign_parent_folders_to_questions.py
     ├── backup_questions_to_json.py
@@ -15,12 +16,17 @@ scripts/
     └── update_question_folders.py
 ```
 
-## Deployment Script
+## Deployment Scripts
 
 ### deploy.sh
-- **Purpose**: Production deployment script
+- **Purpose**: Development deployment script
 - **Usage**: `./deploy.sh`
-- **Description**: Handles the deployment process for the Academia platform
+- **Description**: Handles the deployment process for the development environment (development branch).
+
+### deploy-prod.sh
+- **Purpose**: Production deployment script
+- **Usage**: `./deploy-prod.sh`
+- **Description**: Handles the deployment process for the production environment (main branch), builds the frontend, and restarts production services.
 
 ## Data Migration Scripts
 
