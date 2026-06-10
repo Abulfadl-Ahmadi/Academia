@@ -447,6 +447,11 @@ class PurchaseView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
         
+        # Calculate 10% tax
+        if total_amount > 0:
+            tax_amount = int(total_amount * 0.10)
+            total_amount += tax_amount
+
         if total_amount < 0:
             return Response(
                 {"error": "Invalid total amount"}, 
