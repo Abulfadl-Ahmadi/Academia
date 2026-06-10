@@ -9,7 +9,7 @@ interface Product {
   description: string
   price: number
   current_price: number
-  product_type: 'course' | 'file' | 'test'
+  product_type: 'course' | 'file' | 'test' | 'book' | 'notebook' | 'pamphlet' | 'stationery'
   image?: string
   file?: number
   course?: number

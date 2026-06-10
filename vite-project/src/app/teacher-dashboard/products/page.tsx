@@ -25,23 +25,8 @@ export default function TeacherProducts() {
     navigate(`/panel/products/edit/${id}`);
   }, [navigate]);
 
-  // Handle delete action
-  const handleDelete = useCallback((id: number) => {
-    // Add delete confirmation and logic here
-    if (window.confirm('آیا از حذف این محصول اطمینان دارید؟')) {
-      // Implement delete API call
-      console.log('Delete product:', id);
-    }
-  }, []);
-
-  // Create columns with callbacks
-  const columns = useMemo(() => createColumns(handleEdit, handleDelete), [handleEdit, handleDelete]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  // Fetch products function wrapped in useCallback
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/shop/products/");
@@ -65,7 +50,28 @@ export default function TeacherProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Handle delete action
+  const handleDelete = useCallback(async (id: number) => {
+    if (window.confirm('آیا از حذف این محصول اطمینان دارید؟')) {
+      try {
+        await axiosInstance.delete(`/shop/products/${id}/`);
+        toast.success("محصول با موفقیت حذف شد");
+        await fetchProducts();
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        toast.error("خطا در حذف محصول");
+      }
+    }
+  }, [fetchProducts]);
+
+  // Create columns with callbacks
+  const columns = useMemo(() => createColumns(handleEdit, handleDelete), [handleEdit, handleDelete]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const filterByType = (type: string) => {
     if (type === 'physical') {
