@@ -49,7 +49,7 @@ export default function LogoCloud() {
                             <div className="flex gap-2">
                                 <img
                                     className="mx-auto h-8"
-                                    src="./public/hadaf-yellow-tr.png"
+                                    src="/hadaf-yellow-tr.png"
                                     alt="Column Logo"
                                     // height="16"
                                     width="auto"
@@ -94,7 +94,7 @@ export default function LogoCloud() {
                             <div className="flex gap-2">
                                 <img
                                     className="mx-auto h-8"
-                                    src="./public/hadaf-yellow-tr.png"
+                                    src="/hadaf-yellow-tr.png"
                                     alt="Column Logo"
                                     // height="16"
                                     width="auto"
