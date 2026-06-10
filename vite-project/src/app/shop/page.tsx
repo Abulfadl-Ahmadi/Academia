@@ -544,7 +544,7 @@ export default function ShopPage() {
                       </div>
                     )}
                     <div className="flex justify-between text-muted-foreground">
-                      <span>مالیات (9.9%):</span>
+                      <span>مالیات ({TAX_RATE * 100}%):</span>
                       <span>{formatPrice(calculateTax())} تومان</span>
                     </div>
                     <Separator />
@@ -714,6 +714,20 @@ export default function ShopPage() {
           )}
         </div>
       </div>
+
+      {/* Floating Cart Button */}
+      <Button
+        onClick={() => setShowCartDrawer(true)}
+        className="fixed bottom-6 left-6 md:bottom-8 md:left-8 z-50 rounded-full h-16 w-16 shadow-2xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group border-2 border-white/10"
+        aria-label="سبد خرید"
+      >
+        <ShoppingCart className="w-7 h-7" />
+        {getCartCount() > 0 && (
+          <Badge className="absolute -top-1 -right-1 h-6 w-6 rounded-full p-0 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white text-xs font-bold border-2 border-white animate-pulse">
+            {getCartCount()}
+          </Badge>
+        )}
+      </Button>
     </div>
   )
 }
