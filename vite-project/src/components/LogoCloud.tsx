@@ -22,7 +22,7 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                انتشارات بین‌المللی گاج
+                                    انتشارات بین‌المللی گاج
                                 </div>
                             </div>
                             <div className="flex">
@@ -43,7 +43,19 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                     علامه طباطبایی
+                                    علامه طباطبایی
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="./public/logo-hadaf.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    کنکوز هدف
                                 </div>
                             </div>
                             <div className="flex gap-1">
@@ -55,7 +67,7 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                انتشارات بین‌المللی گاج
+                                    انتشارات بین‌المللی گاج
                                 </div>
                             </div>
                             <div className="flex">
@@ -76,10 +88,10 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                     علامه طباطبایی
+                                    علامه طباطبایی
                                 </div>
                             </div>
-                            
+
                         </InfiniteSlider>
 
                         <div className="bg-linear-to-r from-background absolute inset-y-0 left-0 w-20"></div>
