@@ -57,7 +57,7 @@ export default function ShopPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart()
 
-  const TAX_RATE = 0.099 // 9.9%
+  const TAX_RATE = 0.10 // 10%
 
   // Check authentication status
   useEffect(() => {
