@@ -39,6 +39,8 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const { addToCart } = useCart()
 
+  const TAX_RATE = 0.10 // 10%
+
   useEffect(() => {
     if (id) {
       fetchProduct()
@@ -301,14 +303,14 @@ export default function ProductDetailPage() {
                   <span className="font-bold">{formatPrice(product.current_price * quantity)} تومان</span>
                 </div>
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>مالیات (9.9%):</span>
-                  <span>{formatPrice(Math.round(product.current_price * quantity * 0.099))} تومان</span>
+                  <span>مالیات ({TAX_RATE * 100}%):</span>
+                  <span>{formatPrice(Math.round(product.current_price * quantity * TAX_RATE))} تومان</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between text-xl font-bold">
                   <span>مبلغ نهایی:</span>
                   <span className="text-blue-600">
-                    {formatPrice(Math.round(product.current_price * quantity * 1.099))} تومان
+                    {formatPrice(Math.round(product.current_price * quantity * (1 + TAX_RATE)))} تومان
                   </span>
                 </div>
               </div>

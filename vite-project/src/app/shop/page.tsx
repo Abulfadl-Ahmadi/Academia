@@ -544,7 +544,7 @@ export default function ShopPage() {
                       </div>
                     )}
                     <div className="flex justify-between text-muted-foreground">
-                      <span>مالیات (9.9%):</span>
+                      <span>مالیات ({TAX_RATE * 100}%):</span>
                       <span>{formatPrice(calculateTax())} تومان</span>
                     </div>
                     <Separator />
