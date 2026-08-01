@@ -37,6 +37,7 @@ interface CourseData {
   title: string;
   description: string;
   is_active: boolean;
+  spotplayer_course_id: string;
   schedules: CourseSchedule[];
 }
 
@@ -59,6 +60,7 @@ export default function EditCoursePage() {
     title: "",
     description: "",
     is_active: true,
+    spotplayer_course_id: "",
     schedules: [],
   });
 
@@ -79,6 +81,7 @@ export default function EditCoursePage() {
           title: course.title,
           description: course.description || "",
           is_active: course.is_active,
+          spotplayer_course_id: course.spotplayer_course_id || "",
           schedules: schedules.map((schedule: { id: number; day: number; time: string }) => ({
             id: schedule.id,
             day: schedule.day,
@@ -165,6 +168,7 @@ export default function EditCoursePage() {
         title: courseData.title.trim(),
         description: courseData.description.trim(),
         is_active: courseData.is_active,
+        spotplayer_course_id: courseData.spotplayer_course_id.trim() || null,
       });
 
       // Update schedules
@@ -251,6 +255,23 @@ export default function EditCoursePage() {
                   }
                   rows={5}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="spotplayer_course_id">شناسه دوره اسپات‌پلیر</Label>
+                <Input
+                  id="spotplayer_course_id"
+                  dir="ltr"
+                  placeholder="e.g., 5d2ee35bcddc092a304ae5eb"
+                  value={courseData.spotplayer_course_id}
+                  onChange={(e) =>
+                    handleInputChange("spotplayer_course_id", e.target.value)
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  این شناسه از پنل اسپات‌پلیر (SpotPlayer) کپی می‌شود. اگر این دوره ویدیو
+                  حفاظت‌شده ندارد، این فیلد را خالی بگذارید.
+                </p>
               </div>
 
               <div className="flex items-center space-x-2 space-x-reverse">

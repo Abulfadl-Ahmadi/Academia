@@ -36,6 +36,7 @@ interface CreateCourseForm {
   title: string;
   description: string;
   is_active: boolean;
+  spotplayer_course_id: string;
   schedules: CourseSchedule[];
 }
 
@@ -70,6 +71,7 @@ export default function CreateCoursePage() {
     title: "",
     description: "",
     is_active: true,
+    spotplayer_course_id: "",
     schedules: [],
   });
 
@@ -190,6 +192,7 @@ export default function CreateCoursePage() {
         title: courseForm.title.trim(),
         description: courseForm.description.trim(),
         is_active: courseForm.is_active,
+        spotplayer_course_id: courseForm.spotplayer_course_id.trim() || null,
       });
 
       const courseId = courseResponse.data.id;
@@ -319,6 +322,21 @@ export default function CreateCoursePage() {
                 placeholder="توضیحات کامل دوره، اهداف یادگیری و محتوای آموزشی..."
                 rows={4}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="spotplayer_course_id">شناسه دوره اسپات‌پلیر</Label>
+              <Input
+                id="spotplayer_course_id"
+                dir="ltr"
+                value={courseForm.spotplayer_course_id}
+                onChange={(e) => handleCourseInputChange("spotplayer_course_id", e.target.value)}
+                placeholder="e.g., 5d2ee35bcddc092a304ae5eb"
+              />
+              <p className="text-xs text-muted-foreground">
+                این شناسه از پنل اسپات‌پلیر (SpotPlayer) کپی می‌شود. اگر این دوره ویدیو
+                حفاظت‌شده ندارد، این فیلد را خالی بگذارید.
+              </p>
             </div>
 
             <div className="flex items-center space-x-2 space-x-reverse">

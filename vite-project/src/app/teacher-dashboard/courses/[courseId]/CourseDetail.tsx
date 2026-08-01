@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
+import { spotPlayerApi, type SpotPlayerLicenseAdmin } from "@/api/spotplayer";
 import { 
   Users, 
   Calendar,
@@ -32,7 +33,9 @@ import {
   Radio,
   Copy,
   CheckCircle,
-  MessageCircle
+  MessageCircle,
+  RefreshCw,
+  KeyRound
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
 import EditSessionModal from "./EditSessionModal";
@@ -45,6 +48,7 @@ interface Course {
   students_count: number;
   created_at: string;
   is_active: boolean;
+  spotplayer_course_id: string | null;
   rtmp_url: string | null;
   rtmp_key: string | null;
   live_iframe: string | null;
@@ -97,6 +101,9 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [editSessionId, setEditSessionId] = useState<number | null>(null);
   const [showLiveDialog, setShowLiveDialog] = useState(false);
   const [isStartingLive, setIsStartingLive] = useState(false);
+  const [licenses, setLicenses] = useState<SpotPlayerLicenseAdmin[]>([]);
+  const [licensesLoading, setLicensesLoading] = useState(false);
+  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
 
   const fetchCourseData = useCallback(async () => {
     try {
@@ -145,6 +152,48 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   useEffect(() => {
     fetchCourseData();
   }, [fetchCourseData]);
+
+  const fetchLicenses = useCallback(async () => {
+    setLicensesLoading(true);
+    try {
+      const res = await spotPlayerApi.listCourseLicenses(courseId);
+      setLicenses(res.data.licenses);
+    } catch {
+      setLicenses([]);
+    } finally {
+      setLicensesLoading(false);
+    }
+  }, [courseId]);
+
+  useEffect(() => {
+    if (course?.spotplayer_course_id) {
+      fetchLicenses();
+    }
+  }, [course?.spotplayer_course_id, fetchLicenses]);
+
+  const handleCopyLicense = (key: string | null) => {
+    if (!key) return;
+    copy(key);
+    toast.success("کلید لایسنس کپی شد");
+  };
+
+  const handleRegenerateLicense = async (licenseId: number) => {
+    if (!confirm("آیا از بازتولید (Regenerate) این لایسنس مطمئن هستید؟ لایسنس قبلی باطل می‌شود.")) {
+      return;
+    }
+    setRegeneratingId(licenseId);
+    try {
+      const res = await spotPlayerApi.regenerateLicense(courseId, licenseId);
+      setLicenses(prev =>
+        prev.map(l => (l.id === licenseId ? res.data.license : l))
+      );
+      toast.success("لایسنس با موفقیت بازتولید شد");
+    } catch {
+      toast.error("خطا در بازتولید لایسنس");
+    } finally {
+      setRegeneratingId(null);
+    }
+  };
 
 
 
@@ -352,6 +401,13 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                 </div>
               )}
               
+              {course.spotplayer_course_id && (
+                <Badge variant="outline" className="text-xs gap-1" title="شناسه دوره اسپات‌پلیر">
+                  <KeyRound className="w-3 h-3" />
+                  اسپات‌پلیر: <span dir="ltr" className="font-mono">{course.spotplayer_course_id}</span>
+                </Badge>
+              )}
+
               <Button 
                 variant="outline" 
                 size="sm"
@@ -399,10 +455,14 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="sessions" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="sessions">جلسات ({sessions.length})</TabsTrigger>
           <TabsTrigger value="tests">مجموعه آزمون‌ها ({testCollections.length})</TabsTrigger>
           <TabsTrigger value="students">دانش‌آموزان ({course.students_count})</TabsTrigger>
+          <TabsTrigger value="licenses" className="flex items-center justify-center gap-2">
+            <KeyRound className="w-3 h-3" />
+            لایسنس‌ها
+          </TabsTrigger>
           <TabsTrigger value="chat" className="flex items-center gap-2">
             <MessageCircle className="w-4 h-4" />
             چت زنده
@@ -511,6 +571,100 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                   {students && students.map((student) => (
                     <StudentCard key={student.id} student={student} />
                   ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Licenses Tab */}
+        <TabsContent value="licenses" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <KeyRound className="w-5 h-5" />
+                لایسنس‌های اسپات‌پلیر
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                لیست لایسنس‌های صادرشده برای دانش‌آموزان این دوره
+              </p>
+            </CardHeader>
+            <CardContent>
+              {!course?.spotplayer_course_id ? (
+                <div className="text-center py-10">
+                  <KeyRound className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">
+                    برای این دوره شناسه اسپات‌پلیر تنظیم نشده است. ابتدا در «ویرایش دوره»
+                    شناسه دوره اسپات‌پلیر را وارد کنید.
+                  </p>
+                </div>
+              ) : licensesLoading ? (
+                <div className="flex items-center justify-center py-10 text-muted-foreground">
+                  در حال بارگذاری لایسنس‌ها...
+                </div>
+              ) : licenses.length === 0 ? (
+                <div className="text-center py-10 text-muted-foreground">
+                  هنوز لایسنسی صادر نشده است. با اولین ورود دانش‌آموز به بخش لایسنس،
+                  به‌صورت خودکار ایجاد می‌شود.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b text-right text-muted-foreground">
+                        <th className="py-2 px-3">دانش‌آموز</th>
+                        <th className="py-2 px-3">موبایل / ایمیل</th>
+                        <th className="py-2 px-3">کلید لایسنس</th>
+                        <th className="py-2 px-3">تاریخ صدور</th>
+                        <th className="py-2 px-3">وضعیت دستگاه</th>
+                        <th className="py-2 px-3">عملیات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {licenses.map((lic) => (
+                        <tr key={lic.id} className="border-b">
+                          <td className="py-2 px-3 font-medium">{lic.student_name}</td>
+                          <td className="py-2 px-3" dir="ltr" style={{ textAlign: "right" }}>
+                            {lic.student_phone || lic.student_email || "—"}
+                          </td>
+                          <td className="py-2 px-3">
+                            <div className="flex items-center gap-2">
+                              <code className="max-w-[180px] truncate rounded bg-muted px-2 py-1 font-mono text-xs" dir="ltr">
+                                {lic.spotplayer_license_key || "—"}
+                              </code>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                onClick={() => handleCopyLicense(lic.spotplayer_license_key)}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </td>
+                          <td className="py-2 px-3">{formatDate(lic.created_at)}</td>
+                          <td className="py-2 px-3">
+                            {typeof lic.device_limit === "object"
+                              ? `p0: ${lic.device_limit.p0 ?? "-"}`
+                              : lic.device_limit === "default"
+                                ? "پیش‌فرض"
+                                : lic.device_limit}
+                          </td>
+                          <td className="py-2 px-3">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={regeneratingId === lic.id}
+                              onClick={() => handleRegenerateLicense(lic.id)}
+                            >
+                              <RefreshCw className={`h-3 w-3 ${regeneratingId === lic.id ? "animate-spin" : ""}`} />
+                              بازتولید
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </CardContent>

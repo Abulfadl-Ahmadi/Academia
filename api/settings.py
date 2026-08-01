@@ -159,6 +159,7 @@ INSTALLED_APPS = [
     'tests',
     'shop',
     'finance',
+    'spotplayer',
     'tickets',
     'knowledge',
     'blog',
@@ -352,6 +353,18 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
+
+# SpotPlayer DRM Settings
+# https://spotplayer.ir/ — API key is copied from the panel dashboard
+SPOTPLAYER_API_KEY = config('SPOTPLAYER_API_KEY', default='')
+SPOTPLAYER_API_BASE_URL = config('SPOTPLAYER_API_BASE_URL', default='https://panel.spotplayer.ir')
+SPOTPLAYER_DL_DOMAIN = config('SPOTPLAYER_DL_DOMAIN', default='https://dl.spotplayer.ir')
+SPOTPLAYER_APP_URL = config('SPOTPLAYER_APP_URL', default='https://app.spotplayer.ir')
+SPOTPLAYER_API_TIMEOUT = config('SPOTPLAYER_API_TIMEOUT', cast=int, default=15)
+# When True, all newly created licenses are test licenses ("test": true)
+SPOTPLAYER_TEST_MODE = config('SPOTPLAYER_TEST_MODE', cast=bool, default=False)
+# Custom cookie name if the default 'X' is already used on your domain
+SPOTPLAYER_COOKIE_NAME = config('SPOTPLAYER_COOKIE_NAME', default='X')
 
 # API Keys - Use environment variables
 try:
