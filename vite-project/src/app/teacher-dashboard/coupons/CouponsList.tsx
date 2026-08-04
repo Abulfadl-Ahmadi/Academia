@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { Plus, Search, Edit, Trash2, Tag, Percent, DollarSign, Calendar } from "lucide-react";
 import { couponsApi, type Coupon, type CouponPayload } from "@/api/coupons";
 import axiosInstance from "@/lib/axios";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface CourseOption {
   id: number;
@@ -44,11 +45,12 @@ export default function CouponsList() {
     discount_value: 10,
     max_uses: 0,
     min_purchase_amount: 0,
-    valid_from: new Date().toISOString().slice(0, 16),
+    valid_from: new Date().toISOString(),
     valid_until: null,
     is_active: true,
     courses: [],
   });
+  const [validUntilDate, setValidUntilDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     fetchCoupons();
@@ -91,11 +93,12 @@ export default function CouponsList() {
       discount_value: 10,
       max_uses: 0,
       min_purchase_amount: 0,
-      valid_from: new Date().toISOString().slice(0, 16),
+      valid_from: new Date().toISOString(),
       valid_until: null,
       is_active: true,
       courses: [],
     });
+    setValidUntilDate(undefined);
     setIsDialogOpen(true);
   };
 
@@ -107,11 +110,12 @@ export default function CouponsList() {
       discount_value: coupon.discount_value,
       max_uses: coupon.max_uses,
       min_purchase_amount: coupon.min_purchase_amount,
-      valid_from: coupon.valid_from ? new Date(coupon.valid_from).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
-      valid_until: coupon.valid_until ? new Date(coupon.valid_until).toISOString().slice(0, 16) : null,
+      valid_from: coupon.valid_from ? new Date(coupon.valid_from).toISOString() : new Date().toISOString(),
+      valid_until: coupon.valid_until ? new Date(coupon.valid_until).toISOString() : null,
       is_active: coupon.is_active,
       courses: coupon.courses || [],
     });
+    setValidUntilDate(coupon.valid_until ? new Date(coupon.valid_until) : undefined);
     setIsDialogOpen(true);
   };
 
@@ -411,15 +415,16 @@ export default function CouponsList() {
 
             <div>
               <Label>تاریخ انقضا (اختیاری)</Label>
-              <Input
-                type="datetime-local"
-                value={formData.valid_until || ""}
-                onChange={(e) =>
+              <DatePicker
+                date={validUntilDate}
+                setDate={(date) => {
+                  setValidUntilDate(date);
                   setFormData({
                     ...formData,
-                    valid_until: e.target.value ? new Date(e.target.value).toISOString() : null,
-                  })
-                }
+                    valid_until: date ? date.toISOString() : null,
+                  });
+                }}
+                placeholder="انتخاب تاریخ انقضا"
               />
             </div>
 
