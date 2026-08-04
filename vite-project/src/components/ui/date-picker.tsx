@@ -40,6 +40,8 @@ interface DatePickerProps {
   placeholder?: string
   className?: string
   disabled?: boolean
+  portalContainer?: HTMLElement | null
+  modal?: boolean
 }
 
 export function DatePicker({
@@ -48,11 +50,21 @@ export function DatePicker({
   placeholder = "انتخاب تاریخ",
   className,
   disabled = false,
+  portalContainer,
+  modal = true,
 }: DatePickerProps) {
+  const [open, setOpen] = React.useState(false)
+
+  const handleSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate)
+    setOpen(false)
+  }
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant="outline"
           data-empty={!date}
           className={cn(
@@ -72,11 +84,11 @@ export function DatePicker({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0" align="start" container={portalContainer ?? undefined}>
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={handleSelect}
           initialFocus
         />
       </PopoverContent>

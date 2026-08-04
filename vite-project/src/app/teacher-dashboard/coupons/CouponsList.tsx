@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -153,9 +153,10 @@ export default function CouponsList() {
       }
       setIsDialogOpen(false);
       fetchCoupons();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving coupon:", error);
-      const errMsg = error.response?.data?.code?.[0] || error.response?.data?.detail || "خطا در ثبت کد تخفیف";
+      const err = error as { response?: { data?: { code?: string[]; detail?: string } } };
+      const errMsg = err.response?.data?.code?.[0] || err.response?.data?.detail || "خطا در ثبت کد تخفیف";
       toast.error(errMsg);
     } finally {
       setSubmitting(false);
