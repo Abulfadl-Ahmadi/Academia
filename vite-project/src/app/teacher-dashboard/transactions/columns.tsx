@@ -17,6 +17,8 @@ export type Transaction = {
     user: {
       username: string
       email: string
+      first_name: string
+      last_name: string
     }
   }
   created_by: {
@@ -28,6 +30,8 @@ export type Transaction = {
   user: {
     username: string
     email: string
+    first_name: string
+    last_name: string
   }
   reference_number: string | null
   transaction_type: "purchase" | "refund"
@@ -47,10 +51,11 @@ export const columns: ColumnDef<Transaction>[] = [
     header: "کاربر",
     cell: ({ row }) => {
       const user = row.original.order.user;
+      const fullName = `${user.first_name} ${user.last_name}`.trim();
       return (
         <div>
-          <div>{user.username}</div>
-          <div className="text-sm text-muted-foreground">{user.email}</div>
+          <div>{fullName || user.username}</div>
+          <div className="text-sm text-muted-foreground">{user.username}</div>
         </div>
       );
     }
