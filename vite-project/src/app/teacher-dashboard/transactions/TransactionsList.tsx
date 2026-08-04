@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import { Search, Filter, Download } from "lucide-react";
+import { Search, Filter, Download, FileSpreadsheet } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { columns, type Transaction } from "./columns";
 import { getStatusLabel, getPaymentMethodLabel, formatDate, formatPrice } from "./utils";
+import * as XLSX from "xlsx";
 
 // Transaction interface moved to columns.tsx
 
@@ -131,29 +132,42 @@ export default function TransactionsList() {
     });
   };
 
+  const buildExportRows = () => {
+    const headers = ["شماره تراکنش", "شماره سفارش", "کاربر", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"];
+    const rows = filteredTransactions.map(t => {
+      const user = t.order.user;
+      const fullName = `${user.first_name} ${user.last_name}`.trim();
+      return [
+        t.id.toString(),
+        t.order.id.toString(),
+        fullName || user.username,
+        t.amount.toString(),
+        getPaymentMethodLabel(t.payment_method),
+        getStatusLabel(t.order.status),
+        formatDate(t.created_at)
+      ];
+    });
+    return [headers, ...rows];
+  };
+
   const exportTransactions = () => {
-    const csvContent = [
-      ["شماره تراکنش", "شماره سفارش", "کاربر", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"],
-      ...filteredTransactions.map(t => {
-        const user = t.order.user;
-        const fullName = `${user.first_name} ${user.last_name}`.trim();
-        return [
-          t.id.toString(),
-          t.order.id.toString(),
-          fullName || user.username,
-          t.amount.toString(),
-          getPaymentMethodLabel(t.payment_method),
-          getStatusLabel(t.order.status),
-          formatDate(t.created_at)
-        ];
-      })
-    ].map(row => row.join(",")).join("\n");
+    const csvContent = buildExportRows()
+      .map(row => row.join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
+  };
+
+  const exportTransactionsExcel = () => {
+    const data = buildExportRows();
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "تراکنش‌ها");
+    XLSX.writeFile(workbook, `transactions_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   // Formatting functions moved to columns.tsx
@@ -172,10 +186,16 @@ export default function TransactionsList() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>لیست تراکنش‌ها</span>
-            <Button onClick={exportTransactions} variant="outline" size="sm">
-              <Download className="w-4 h-4 ml-2" />
-              خروجی CSV
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportTransactions} variant="outline" size="sm">
+                <Download className="w-4 h-4 ml-2" />
+                خروجی CSV
+              </Button>
+              <Button onClick={exportTransactionsExcel} variant="outline" size="sm">
+                <FileSpreadsheet className="w-4 h-4 ml-2" />
+                خروجی اکسل
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -94,6 +94,7 @@
     "tus-js-client": "^4.3.1",
     "use-stick-to-bottom": "^1.1.1",
     "vaul": "^1.1.2",
+    "xlsx": "^0.18.5",
     "zod": "^4.0.10"
   },
   "devDependencies": {
