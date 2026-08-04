@@ -33,7 +33,8 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'description', 'teacher', 'students',
-            'vod_channel_id', 'stream_id', 'created_at', 'updated_at', 'is_active',
+            'vod_channel_id', 'stream_id', 'spotplayer_course_id',
+            'created_at', 'updated_at', 'is_active',
             'students_count', 'sessions_count', 'tests_count'
         ]
         read_only_fields = ['created_at', 'updated_at']
@@ -67,6 +68,7 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'description', 'teacher', 'students_count', 'vod_channel_id',
+            'stream_id', 'spotplayer_course_id',
             'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active',
             'rtmp_url', 'rtmp_key', 'live_iframe', 'is_live', 'chat_mode'
         ]
@@ -91,6 +93,7 @@ class StudentCourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'description', 'teacher', 'students_count',
+            'spotplayer_course_id',
             'sessions_count', 'tests_count', 'last_accessed', 'progress_percentage'
         ]
 

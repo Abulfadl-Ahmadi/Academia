@@ -1,0 +1,332 @@
+راهنما و مستندات استفاده از API
+به منظور تست API میتوانید از Intellij Idea استفاده کنید، پس از دانلود و نصب آن پروژه زیر را در برنامه باز کنید.
+
+دانلود Intellij Ideaدانلود پروژه
+ایجاد لایسنس توسط API
+به منظور ایجاد لایسنس توسط API آدرس زیر را به همراه هدر API$ و اطلاعات لایسنس با متد POST فراخوانی کنید:
+
+https://panel.spotplayer.ir/license/edit/
+توجه: امکان فراخوانی API به طور مستقیم از مرورگرها مانند کروم یا فایرفاکس وجود ندارد. در صورت انجام این کار به علت مکانیزم CORS مرورگر خطا روی میدهد. در مرورگر فقط امکان فراخوانی آدرس‌هایی وجود دارد که با دامنه آدرس صفحه فراخوان یکی باشند. برای تست API میتوانید از Postman استفاده کنید.
+
+مقدار هدر API$ کلید شما است که از داشبورد پنل میتوانید کپی کنید. هدر LEVEL$ همیشه 1- ارسال شود.
+
+$API: YhD5yX/9FQzVTg+c6YHQ7gCtZAs=
+$LEVEL: -1
+اطلاعات لایسنس می بایست به صورت JSON به سرور اسپات پلیر ارسال شوند:
+
+{
+	"test": false, // Test License
+	"course": ["5d2ee35bcddc092a304ae5eb", "5d2ee35bcddc092a304ae5ec"],
+	"offline": 30,
+	"name": "customer",
+	"payload": "",
+	"data": {
+		"confs": 0,
+		"limit": {
+			"5d2ee35bcddc092a304ae5eb": "0-",
+			"5d2ee35bcddc092a304ae5ec": "1,4-6,10-"
+		},
+	},
+	"watermark": {
+		"position": 511,
+			// Position Flag  [1     2    4]
+			//                [8    16   32]
+			//                [64  128  256]
+			// Example: 1 | 2 | 4 | 8 | 16 | 64 | 128 | 256 = 511 [All Positions]
+		"reposition": 15, // Seconds 1-3600
+		"margin": 40, // Pixels 0-1000
+		"texts": [
+			{
+				"text": "09121112266",
+				"repeat": 10,
+				"font": 1,
+				"weight": 1,
+				"color": 2164260863,
+				"size": 50,
+				"stroke": {"color": 2164260863, "size": 1}
+			},
+			{
+				"text": "09121112266",
+				"repeat": 1,
+				"font": 1,
+				"weight": 1,
+				"color": 2164260863,
+				"size": 200,
+				"stroke": {"color": 2164260863, "size": 1}
+			}
+		]
+	},
+	"device": {
+		"p0": 1, // All Devices 1-99
+		"p1": 1, // Windows 0-99
+		"p2": 0, // MacOS 0-99
+		"p3": 0, // Ubuntu 0-99
+		"p4": 0, // Android 0-99
+		"p5": 0  // IOS 0-99
+		"p6": 0  // WebApp 0-99
+	}
+}
+مقدار payload یک رشته کاراکتر است که هنگامی که کاربر از سمت اسپات پلیر به صفحه پشتیبانی دوره هدایت میشود به صورت متغیر GET ارسال میگردد. برای مثال این مقدار را میتوانید برابر شناسه خرید کاربر در سیستم فروشگاهی خود قرار دهید.
+
+از اطلاعات بالا فقط موارد course و name و watermark.texts.text الزامی میباشند و در صورت تعیین نشدن موارد دیگر، تنظیمات پیشفرض لایسنس تعیین شده در پنل استفاده میشوند.
+
+برای مثال JSON زیر نیز برای ساخت لایسنس کافی میباشد:
+
+{
+	"course": ["5d2ee35bcddc092a304ae5eb"],
+	"name": "customer",
+	"watermark": {"texts": [{"text": "09121112266"}]}
+}
+برای ایجاد لایسنس تستی مقدار test را برابر true قرار دهید:
+
+{
+	"test": true,
+	"course": ["5d2ee35bcddc092a304ae5eb"],
+	"name": "customer",
+	"watermark": {"texts": [{"text": "09121112266"}]}
+}
+پس از ایجاد لایسنس سرور مقادیر زیر را باز میگرداند.
+
+{
+	"_id": "5dcab540796f5d4d48a6570f", // Created License ID
+	"key": "00015dcab540796f5d4d48a6570fb7bb74943c36c5e588c0267f9476ff7fe84846070ac971cd311716c6db6a6d603dae09b51395700894cd11c6dd10b71ae24625d1395595eb798844d7d5aec12c", // License Key
+	"url": "/5e0796ae55fb7a18e83b3554/91d0726373dd525f9d3f57f688299a00/"
+}
+مقدار key کلید لایسنس ساخته شده میباشد، که باید در دیتابیس همراه سفارش ذخیره و همچنین در اختیار کاربر قرار بگیرد.
+
+فراخوانی API ساخت لایسنس توسط Curl
+
+curl -X POST https://panel.spotplayer.ir/license/edit/
+	-H 'Content-Type: application/json' -H '$API: YhD5yX/9FQzVTg+c6YHQ7gCtZAs=' -H '$LEVEL: -1'
+	-d '{"test": true, "course": ["5d2ee35bcddc092a304ae5eb"], "name": "ali", "watermark": {"texts": [{"text": "09121112266"}]}}'
+نمونه کد PHP ساخت لایسنس
+
+function filter($a): array {
+	return array_filter($a, function ($v) { return !is_null($v); });
+}
+
+function request($u, $o = null) {
+	curl_setopt_array($c = curl_init(), [
+		CURLOPT_URL => $u,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_CUSTOMREQUEST => $o ? 'POST' : 'GET',
+		CURLOPT_SSL_VERIFYHOST => false,
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_FOLLOWLOCATION => false,
+		CURLOPT_HTTPHEADER => ['$API: ' . API, '$LEVEL: -1', 'content-type: application/json' ],
+	]);
+	if ($o) curl_setopt($c, CURLOPT_POSTFIELDS, json_encode(filter($o)));
+	$json = json_decode(curl_exec($c), true);
+	curl_close($c);
+	if (is_array($json) && ($ex = @$json['ex'])) throw new Exception($ex['msg']);
+	return $json;
+}
+
+function license($name, $courses, $watermarks, $test) {
+	return request('https://panel.spotplayer.ir/license/edit/', [
+		'test' => $test,
+		'name' => $name,
+		'course' => $courses,
+		'watermark' => ['texts' => array_map(function ($w) { return ['text' => $w]; }, $watermarks)]
+	]);
+}
+
+// ----------------------------------------------------------------------------
+const API = 'YaEUZnSJcfpdQH3x4InV7QGoiQI=';
+try {
+	$L = license('ali', ['5d2ee35bcddc092a304ae5eb'], ['09121112266'], true);
+	echo 'ID: ' . ($LID = $L['_id']);
+	echo 'KEY: ' . $L['key'];
+	echo 'URL: https://dl.spotplayer.ir/' . $L['url'];
+}
+catch (Exception $e) {
+	echo($e->getMessage());
+}
+ویرایش لایسنس توسط API
+به منظور ویرایش لایسنس آدرس زیر را به همراه هدر $API با مقدار کلید API و اطلاعات لایسنس فراخوانی کنید:
+
+https://panel.spotplayer.ir/license/edit/$LID
+اطلاعات لایسنس می بایست به صورت JSON به سرور اسپات پلیر ارسال شوند. اطلاعات زیر هنگام ویرایش لایسنس قابل تغییر میباشند:
+
+{
+	"name": "customer",
+	"data": {"limit": {"5d2ee35bcddc092a304ae5eb": "0-"}},
+	"device": {"p0": 1, "p1": 1, "p2": 0, "p3": 0, "p4": 0, "p5": 0, "p6": 0}
+}
+فقط فیلدهایی که در فراخوانی موجود باشند به روز خواهند شد. برای مثال فراخوانی زیر فقط مقدار دستگاه ویندوز را تغییر خواهد داد:
+
+{"device": {"p1": 1}}
+روند محدود کردن دسترسی به ویدیوها
+توسط مقدار حد دسترسی (limit در API) لایسنس می توانید مشخص کنید که لایسنس به چه تعدادی از ویدیوها دسترسی داشته باشد.
+
+در این حالت هنگامی که کاربر قصد داشته باشد ویدیوهای بعدی را ببیند یا دانلود کند به صفحه پشتیبانی دوره به همراه متغیرهای شناسه لایسنس و پی لودی که هنگام ساخت لایسنس توسط API وارد شده است هدایت میشود:
+
+https://learn.com/course/?lid=5d5a91a89b2c367378de11f0&payload=1000
+پس از برقراری شرط ادامه دسترسی (برگزاری آزمون، پرداخت اقساط دوره و ...) توسط پنل یا API ویرایش لایسنس حد دسترسی را به مقدار جدید تغییر دهید.
+
+نمایش ویدیوهای لایسنس در سایت شما
+با قرار دادن اسکریپت زیر در صفحه، اطلاعات دوره در مرورگر کاربر بارگزاری میشود، متغیر $res مقدار بازگشتی فراخوان ساخت لایسنس میباشد که در بخش قبل مورد بررسی قرار گرفت.
+
+متغیر $domain باید http://dl.spotplayer.ir یا دامنه ایی که توسط رکورد CName بر روی آن پارک کرده اید باشد.
+
+<script src="<?=$domain.$res['url'] ?>?f=js"></script>
+این اسکریپت متغییر آرایه ایی spotplayer_courses را با اطلاعات زیر به متغیر window اضافه میکند که از آن میتوانید برای نمایش ویدیوها استفاده کنید.
+
+[{
+	"_id": "5d5a91a89b2c367378de11f0",
+	"name": "دوره آموزش اندروید",
+	"desc": "-",
+	"link": "http://www.spotplayer.ir/android",
+	"items": [
+		{
+			"_id": "5d5aa90f9b2c367378de11f2",
+			"path": "01-Intro",
+			"name": "مبانی برنامه نویسی اندروید",
+			"desc": "-",
+			"duration": 3278442,
+			"size": 180819643,
+			"access": true
+		}
+	]
+}]
+نمونه کد کامل:
+
+<div>
+	<h2>کلید لایسنس</h2>
+	<textarea><?=$data['key']?></textarea>
+</div>
+<div>
+	<h2>دانلود ویدیوها</h2>
+	<div>
+		<script src="https://dl.spotplayer.ir<?=$data['url']?>?f=js"></script>
+		<script type="application/javascript">
+			document.write(window.spotplayer_courses.map(function (c) {
+				return '<h3>' + c.name + '</h3>' +
+				c.items.map(function (v) {
+					return '<div class="sp_' + v.type + '">'
+						+ '<a href="<?=$domain . $data['url'] ?>' + v._id + '.spot">' + dl_icon + v.name + '</a>'
+						+ '</div>';
+				}).join('');
+			}).join(''));
+		</script>
+	</div>
+</div>
+
+نمایش دانلود پلیر در سایت شما
+به منظور نمایش دانلود پلیر در سایت خود ابتدا اسکریپت زیر را در صفحه مورد نظر قرار دهید.
+
+<script src="https://dl.spotplayer.ir/players/?f=js"></script>
+این اسکریپت متغییر spotplayer_players را با اطلاعات زیر به متغیر window اضافه میکند که از اطلاعات آن میتوانید برای نمایش پلیرها استفاده کنید.
+
+[
+	{
+		"name": "ویندوز",
+		"file": "/player/spotplayer-win.exe",
+		"code": 1,
+		"version": "1.0.0.0"
+	}
+]
+نمونه کد:
+
+<script src="http://dl.spotplayer.ir/players/?f=js"></script>
+<div id="spotplayer-players">
+	<h2>دانلود پخش کننده</h2>
+	<div id="spotplayer-players-items">
+		<script type="application/javascript">
+			var domain = 'http://dl.spotplayer.ir';
+			if (spotplayer_players) document.write(spotplayer_players.map(function (p) {
+				return [
+					'<a target="_blank" ' + (p.file ? ('href="' + domain + p.file + '"') : '') + '>',
+					' <img alt="' + p.name +'" src="' + domain + p.image + '">',
+					' <h3> دانلود برای ' + p.name + '</h3>',
+					' <h4>' + (p.file ? ('نسخه ' + p.version) : 'به زودی') + '</h4>',
+					'</a>'
+				].join('');
+			}).join(''));
+		</script>
+	</div>
+</div>
+قرار دادن نسخه وب در سایت
+سمت سرور
+برای قرار دادن اسپات پلیر در سایت اولین مرحله همگام‌سازی کوکی (با نام X) مرورگر کاربر با سرور اسپات پلیر است که می‌بایست در کدهای سمت سرور سایت شما انجام شود.
+
+به این منظور لازم است در یک آدرس از سایت مانند http://localhost/spotx مقدار قبلی کوکی X را به سرور اسپات پلیر ارسال و مقدار دریافتی جدید را به مرورگر کاربر ارسال نمایید.
+
+کد php که برای این منظور میتوانید استفاده کنید:
+
+if ((microtime(true) * 1000) > hexdec(substr($X = $_COOKIE['X'], 24, 12))) {
+	$ch = curl_init();
+	curl_setopt_array($ch, [
+		CURLOPT_HEADER => true,
+		CURLOPT_NOBODY => true,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_URL => 'https://app.spotplayer.ir/',
+		CURLOPT_HTTPHEADER => ['cookie: X=' . $X]
+	]);
+	preg_match('/X=([a-f0-9]+);/', curl_exec($ch), $mm);
+	setcookie('X', $mm[1], time() + (3600*24*365*100), '/', 'localhost', true, false);
+}
+کد جاوااسکریپت برای express.js:
+
+const https = require('https');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+
+const app = express();
+app.use(cookieParser());
+app.use((req, res, next) => {
+	const X = req.cookies.X;
+	if (Date.now() < parseInt(X.substr(24, 12), 16)) return next();
+
+	https.request('https://app.spotplayer.ir/', {method: 'HEAD', headers: {Cookie: 'X=' + X}}, r => {
+		const [X] = headers['set-cookie'].join('').match(/X=([a-f0-9]+);/);
+		res.cookie('X', X, {maxAge: 3600*24*365*100, domain: 'localhost', secure: true, httpOnly: false});
+		next();
+	}).end();
+})
+در هر دو کد مقدار localhost هنگام ست کردن کوکی را به دامنه خود تغییر دهید.
+
+همانطور که ذکر شد این کد با یک آدرس مشخص باید در دسترس صفحه‌‌ایی که قصد نمایش اسپات پلیر در آن را دارید باشد. برای اطلاع از نحوه ریدایرکت کردن یک آدرس به یک کد به مستندات فریم‌ورکی که در ساخت سایت استفاده شده مراجعه نمایید.
+
+همچنین در صورتی که قبلا کوکی با نام X در سیستم شما استفاده شده، میتوانید نام کوکی ارسالی به مرورگر کاربر را تغییر داده و نام جدید را هنگام ساخت شی SpotPlayer در تابع قرار دهید.
+
+سمت کلاینت
+برای بارگذاری اسکریپت SpotPlayer کد زیر را در صفحه html مورد نظر قرار دهید.
+
+<div id="player"></div>
+<script src="https://app.spotplayer.ir/assets/js/app-api.js"></script>
+سپس یک شی اسپات پلیر ایجاد کنید:
+
+const sp = new SpotPlayer(document.getElementById('player'), '/spotx');
+توصیف این تابع به صورت زیر است:
+
+SpotPlayer(el: HTMLELement, cookieUrl: string, side: boolean, cookieName: string);
+در این تابع مقدار اول المنتی است که پلیر در آن قرار میگیرد. مقدار دوم آدرسی است که پلیر از طریق آن میتواند کوکی X را به روزرسانی کند. مقدار سوم نمایش یا عدم نمایش پنل کناری را تعیین میکند. مقدار چهارم نام کوکی با مقدار پیشفرض 'X' است که در صورتی که آن را تغییر داده‌اید میتوانید نام جدید را وارد کنید.
+
+پس از این مرحله میتوانید توسط تابع زیر محتوای مورد نظر را در پلیر بارگذاری نمایید:
+
+await sp.Open(key, course, item);
+هنگام استفاده از این تابع فقط key که کلید لایسنس است اجباریست. همچنین course شناسه دوره و item شناسه محتوا میباشند. در صورتی که پلیر توسط تابع Hide پنهان شده باشد مجددا نمایش داده خواهد شد.
+
+برای توقف پخش می توانید از تابع زیر استفاده کنید:
+
+await sp.Stop();
+تابع زیر علاوه بر توقف پلیر، ‌آن را پنهان هم میکند:
+
+await sp.Hide();
+توجه کنید عبارت await که قبل از توابع آمده به معنی غیرهمزمانی آنهاست و باید در یک تابع async فراخوانی شوند. همچنین کلیه توابع خطاهای روی داده را throw میکنند و لازم است در بلاک try & catch قرار گیرند.
+
+<div id="player"></div>
+<script src="https://app.spotplayer.ir/assets/js/app-api.js"></script>
+<script type="application/javascript">
+async function Play() {
+	try {
+		const sp = new SpotPlayer(document.getElementById('player'), '/spotx', false);
+		await sp.Open(key, course, item);
+	}
+	catch(ex) {
+		console.log(ex);
+	}
+}
+Play();
+</script>

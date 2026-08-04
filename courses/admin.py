@@ -28,7 +28,7 @@ class ClassCategoryAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ['title', 'teacher', 'category', 'students_count', 'sessions_count', 'schedules_count', 'has_rtmp', 'is_live', 'is_active', 'created_at']
     list_filter = ['is_active', 'is_live', 'created_at', 'teacher__role', 'category']
-    search_fields = ['title', 'description', 'teacher__username', 'vod_channel_id', 'rtmp_url']
+    search_fields = ['title', 'description', 'teacher__username', 'vod_channel_id', 'rtmp_url', 'spotplayer_course_id']
     readonly_fields = ['created_at', 'updated_at']
     filter_horizontal = ['students']
     inlines = [CourseScheduleInline, CourseSessionInline]
@@ -43,6 +43,10 @@ class CourseAdmin(admin.ModelAdmin):
         }),
         ('Technical', {
             'fields': ('vod_channel_id', 'is_active')
+        }),
+        ('SpotPlayer DRM', {
+            'fields': ('spotplayer_course_id',),
+            'description': 'شناسه دوره در پنل اسپات‌پلیر (از داشبورد اسپات‌پلیر کپی کنید)'
         }),
         ('RTMP Streaming', {
             'fields': ('rtmp_url', 'rtmp_key', 'live_iframe', 'is_live'),

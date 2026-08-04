@@ -19,6 +19,7 @@ from .serializers import (
 from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
+from spotplayer.services import provision_licenses_for_order
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +204,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             if new_status == Order.OrderStatus.PAID:
                 grant_product_access(order)
+                # Best-effort: create DRM licenses so the checkout never fails.
+                provision_licenses_for_order(order)
                 try:
                     send_product_access_granted_email(order)
                     send_payment_confirmation_email(order)
@@ -267,6 +270,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
                     order.save()
             except UserProfile.DoesNotExist:
                 pass
+
+        # Provision DRM licenses best-effort (outside atomic so HTTP calls
+        # cannot block/rollback the order transaction).
+        provision_licenses_for_order(order)
 
         # Send emails outside atomic block
         try:
@@ -486,6 +493,9 @@ class PaymentCallbackView(APIView):
                     )
 
                     grant_product_access(payment.order)
+
+                # Provision DRM licenses best-effort (outside atomic).
+                provision_licenses_for_order(payment.order)
 
                 # Send emails OUTSIDE atomic block so SMTP errors don't rollback DB changes
                 try:

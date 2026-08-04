@@ -38,6 +38,7 @@ urlpatterns = [
     path("api/", include("tests.urls")),
     path("api/shop/", include("shop.urls")),
     path("api/finance/", include("finance.urls")),
+    path("api/spotplayer/", include("spotplayer.urls")),
     path("api/support/", include("tickets.urls")),
     path("api/knowledge/", include("knowledge.urls")),
     path("api/", include("blog.urls")),

@@ -32,7 +32,14 @@ class Course(models.Model):
     )
     vod_channel_id = models.CharField(max_length=100, blank=True, null=True)
     stream_id = models.CharField(max_length=100, blank=True, null=True, help_text="ArvanCloud Stream ID for live streaming")
+    spotplayer_course_id = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="شناسه دوره در پنل اسپات‌پلیر (SpotPlayer course _id)",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     rtmp_url = models.CharField(max_length=255,blank=True, null=True, default=None)

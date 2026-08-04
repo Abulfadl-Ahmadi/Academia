@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
+import { SpotPlayerLicenseCard } from "@/components/SpotPlayerLicenseCard";
 import { 
   Users, 
   Calendar,
@@ -28,6 +29,7 @@ interface Course {
   created_at: string;
   is_live?: boolean;
   live_iframe?: string;
+  spotplayer_course_id?: string | null;
 }
 
 interface File {
@@ -259,6 +261,11 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
           </div>
         </CardHeader>
       </Card>
+
+      {/* SpotPlayer License Card (only if the course is protected by SpotPlayer) */}
+      {course.spotplayer_course_id && (
+        <SpotPlayerLicenseCard courseId={course.id} enableWebPlayer={false} />
+      )}
 
       {/* Tabs */}
       <Tabs defaultValue="sessions" className="w-full">
