@@ -134,15 +134,19 @@ export default function TransactionsList() {
   const exportTransactions = () => {
     const csvContent = [
       ["شماره تراکنش", "شماره سفارش", "کاربر", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"],
-      ...filteredTransactions.map(t => [
-        t.id.toString(),
-        t.order.id.toString(),
-        t.user.username,
-        t.amount.toString(),
-        getPaymentMethodLabel(t.payment_method),
-        getStatusLabel(t.order.status),
-        formatDate(t.created_at)
-      ])
+      ...filteredTransactions.map(t => {
+        const user = t.order.user;
+        const fullName = `${user.first_name} ${user.last_name}`.trim();
+        return [
+          t.id.toString(),
+          t.order.id.toString(),
+          fullName || user.username,
+          t.amount.toString(),
+          getPaymentMethodLabel(t.payment_method),
+          getStatusLabel(t.order.status),
+          formatDate(t.created_at)
+        ];
+      })
     ].map(row => row.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
