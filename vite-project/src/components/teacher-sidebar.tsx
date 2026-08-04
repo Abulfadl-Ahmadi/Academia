@@ -269,6 +269,11 @@ export function TeacherSidebar({
             url: "/panel/transactions",
             description: "مشاهده و ثبت تراکنش‌های مالی",
           },
+          {
+            title: "کدهای تخفیف",
+            url: "/panel/coupons",
+            description: "مدیریت کوپن‌ها و کدهای تخفیف",
+          },
         ],
       },
       {

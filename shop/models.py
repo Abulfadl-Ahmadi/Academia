@@ -121,3 +121,69 @@ class Discount(models.Model):
             self.save()
             return True
         return False
+
+
+class Coupon(models.Model):
+    class DiscountType(models.TextChoices):
+        PERCENTAGE = 'percentage', _('Percentage')
+        FIXED = 'fixed', _('Fixed Amount')
+
+    code = models.CharField(max_length=50, unique=True, db_index=True)
+    discount_type = models.CharField(
+        max_length=20,
+        choices=DiscountType.choices,
+        default=DiscountType.PERCENTAGE
+    )
+    discount_value = models.PositiveIntegerField(help_text="Percentage (1-100) or Fixed Amount in Tomans")
+    max_uses = models.PositiveIntegerField(default=0, help_text="0 means unlimited uses")
+    used_count = models.PositiveIntegerField(default=0)
+    min_purchase_amount = models.PositiveIntegerField(default=0, help_text="Minimum order total in Tomans")
+    valid_from = models.DateTimeField(default=timezone.now)
+    valid_until = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    courses = models.ManyToManyField(Course, blank=True, related_name='coupons', help_text="Applicable courses (empty for all courses)")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_coupons')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        val_str = f"{self.discount_value}%" if self.discount_type == self.DiscountType.PERCENTAGE else f"{self.discount_value} Tomans"
+        return f"{self.code} ({val_str})"
+
+    def save(self, *args, **kwargs):
+        if self.code:
+            self.code = self.code.strip().upper()
+        super().save(*args, **kwargs)
+
+    @property
+    def is_expired(self):
+        now = timezone.now()
+        if self.valid_until and now > self.valid_until:
+            return True
+        if now < self.valid_from:
+            return True
+        return False
+
+    @property
+    def is_available(self):
+        if not self.is_active or self.is_expired:
+            return False
+        if self.max_uses > 0 and self.used_count >= self.max_uses:
+            return False
+        return True
+
+    def calculate_discount(self, total_amount):
+        """Calculate discount amount in Tomans for a given subtotal."""
+        if not self.is_available or total_amount < self.min_purchase_amount:
+            return 0
+        
+        if self.discount_type == self.DiscountType.PERCENTAGE:
+            discount = (total_amount * self.discount_value) // 100
+        else:
+            discount = self.discount_value
+
+        return min(discount, total_amount)
+

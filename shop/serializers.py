@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Product, Discount
+from .models import Product, Discount, Coupon
 from accounts.serializers import UserSerializer
+from courses.serializers import CourseSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -53,6 +54,36 @@ class DiscountCreateSerializer(serializers.ModelSerializer):
         fields = ['product', 'code', 'percentage', 'expire_at', 'max_uses']
 
 
+class CouponSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+    is_expired = serializers.ReadOnlyField()
+    is_available = serializers.ReadOnlyField()
+    course_details = CourseSerializer(source='courses', many=True, read_only=True)
+
+    class Meta:
+        model = Coupon
+        fields = [
+            'id', 'code', 'discount_type', 'discount_value',
+            'max_uses', 'used_count', 'min_purchase_amount',
+            'valid_from', 'valid_until', 'is_active',
+            'courses', 'course_details', 'created_by',
+            'created_at', 'updated_at', 'is_expired', 'is_available'
+        ]
+        read_only_fields = ['created_by', 'created_at', 'updated_at', 'used_count']
+
+    def validate_code(self, value):
+        return value.strip().upper()
+
+
+class CouponValidateSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=50)
+    course_id = serializers.IntegerField(required=False, allow_null=True)
+    product_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=False, allow_null=True
+    )
+    total_amount = serializers.IntegerField(required=False, min_value=0)
+
+
 class CartItemSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
     quantity = serializers.IntegerField(min_value=1, default=1)
@@ -66,3 +97,4 @@ class CartSerializer(serializers.Serializer):
         if not value:
             raise serializers.ValidationError("Cart cannot be empty")
         return value
+

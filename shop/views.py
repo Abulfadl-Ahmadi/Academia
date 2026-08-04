@@ -6,10 +6,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db import transaction
 from django.utils import timezone
 from django.urls import reverse
-from .models import Product, Discount
+from .models import Product, Discount, Coupon
 from .serializers import (
     ProductSerializer, ProductCreateSerializer, DiscountSerializer,
-    DiscountCreateSerializer, CartSerializer, CartItemSerializer
+    DiscountCreateSerializer, CartSerializer, CartItemSerializer,
+    CouponSerializer, CouponValidateSerializer
 )
 from finance.models import Order, OrderItem, UserAccess
 from finance.serializers import OrderSerializer, PurchaseRequestSerializer
@@ -125,6 +126,107 @@ class DiscountViewSet(viewsets.ModelViewSet):
                 {"error": "Invalid discount code"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class CouponViewSet(viewsets.ModelViewSet):
+    """
+    Management of Coupons for Instructors/Admins.
+    Includes POST /api/shop/coupons/validate/ action for code validation.
+    """
+    queryset = Coupon.objects.all()
+    serializer_class = CouponSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(user, 'role', None) in ('admin', 'teacher') or user.is_staff or user.is_superuser:
+            if getattr(user, 'role', None) == 'admin' or user.is_staff or user.is_superuser:
+                return Coupon.objects.all()
+            return Coupon.objects.filter(created_by=user)
+        return Coupon.objects.filter(is_active=True)
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def validate(self, request):
+        """
+        POST /api/shop/coupons/validate/
+        Request Body: { "code": "SUMMER50", "course_id": 123, "total_amount": 100000, "product_ids": [1, 2] }
+        """
+        serializer = CouponValidateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        code_val = serializer.validated_data['code'].strip().upper()
+        course_id = serializer.validated_data.get('course_id')
+        product_ids = serializer.validated_data.get('product_ids') or []
+        total_amount = serializer.validated_data.get('total_amount', 0)
+
+        try:
+            coupon = Coupon.objects.get(code=code_val, is_active=True)
+        except Coupon.DoesNotExist:
+            return Response(
+                {"error": "کد تخفیف وارد شده معتبر نیست."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not coupon.is_available:
+            if coupon.is_expired:
+                return Response(
+                    {"error": "مهلت استفاده از این کد تخفیف به پایان رسیده است."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if coupon.max_uses > 0 and coupon.used_count >= coupon.max_uses:
+                return Response(
+                    {"error": "تعداد دفعات استفاده از این کد تخفیف تمام شده است."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            return Response(
+                {"error": "این کد تخفیف غیرفعال است."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check course constraints if coupon has course restrictions
+        if coupon.courses.exists():
+            allowed_course_ids = set(coupon.courses.values_list('id', flat=True))
+            is_course_matched = False
+
+            if course_id and course_id in allowed_course_ids:
+                is_course_matched = True
+
+            if product_ids:
+                cart_course_ids = set(
+                    Product.objects.filter(id__in=product_ids, course__isnull=False)
+                    .values_list('course_id', flat=True)
+                )
+                if cart_course_ids.intersection(allowed_course_ids):
+                    is_course_matched = True
+
+            if not is_course_matched and (course_id or product_ids):
+                return Response(
+                    {"error": "این کد تخفیف برای دوره‌ها یا محصولات انتخابی شما معتبر نیست."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        if total_amount > 0 and total_amount < coupon.min_purchase_amount:
+            return Response(
+                {"error": f"حداقل مبلغ سفارش برای اعمال این کد تخفیف {coupon.min_purchase_amount:,} تومان است."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        discount_amount = coupon.calculate_discount(total_amount)
+        final_total = max(0, total_amount - discount_amount)
+
+        return Response({
+            "valid": True,
+            "code": coupon.code,
+            "discount_type": coupon.discount_type,
+            "discount_value": coupon.discount_value,
+            "discount_amount": discount_amount,
+            "final_total": final_total,
+            "coupon": CouponSerializer(coupon).data
+        })
 
 
 class CartView(APIView):
@@ -447,6 +549,21 @@ class PurchaseView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
         
+        # Check overall coupon code
+        coupon_code = request.data.get('coupon_code') or request.data.get('coupon')
+        coupon_obj = None
+        if coupon_code:
+            code_val = str(coupon_code).strip().upper()
+            try:
+                coupon_obj = Coupon.objects.get(code=code_val, is_active=True)
+                if coupon_obj.is_available:
+                    coupon_discount = coupon_obj.calculate_discount(total_amount)
+                    total_amount = max(0, total_amount - coupon_discount)
+                else:
+                    coupon_obj = None
+            except Coupon.DoesNotExist:
+                coupon_obj = None
+
         # Calculate 10% tax
         if total_amount > 0:
             tax_amount = int(total_amount * 0.10)
@@ -466,6 +583,9 @@ class PurchaseView(APIView):
                 total_amount=total_amount,
                 status=Order.OrderStatus.PAID
             )
+            if coupon_obj:
+                coupon_obj.used_count += 1
+                coupon_obj.save()
             
             # Create order items
             for item_data in order_items:
@@ -536,6 +656,9 @@ class PurchaseView(APIView):
             total_amount=total_amount,
             status=Order.OrderStatus.PENDING
         )
+        if coupon_obj:
+            coupon_obj.used_count += 1
+            coupon_obj.save()
 
         # Create order items
         for item_data in order_items:
