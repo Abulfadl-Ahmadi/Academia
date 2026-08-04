@@ -26,6 +26,7 @@ import ProfilePage from "@/app/dashboard/profile/page";
 import Home from "@/app/dashboard/home/page";
 import StudentFilesPage from "@/app/dashboard/files/StudentFilesPage";
 import TransactionsPage from "@/app/teacher-dashboard/transactions/page";
+import TeacherCouponsPage from "@/app/teacher-dashboard/coupons/page";
 import CalendarPage from "@/app/shared/calendar/page";
 import CompletedCoursesPage from "@/app/dashboard/courses/completed/page";
 import ActiveTestsPage from "@/app/dashboard/tests/active/page";
@@ -250,6 +251,7 @@ export default function PanelRoute() {
           <Route path="/tests/:testId/student/:studentId/result" element={<StudentTestResultPage />} />
           <Route path="/tests/:testId/answer-sheet" element={<TestAnswerSheetPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/coupons" element={<TeacherCouponsPage />} />
           <Route path="/products" element={<TeacherProducts />} />
           <Route path="/products/create" element={<CreateProductPage />} />
           <Route path="/products/edit/:id" element={<EditProductPage />} />

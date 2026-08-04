@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    ProductViewSet, DiscountViewSet, CartView, 
+    ProductViewSet, DiscountViewSet, CouponViewSet, CartView, 
     PurchaseView, UserAccessView, CartManagementView,
     shop_page_view
 )
@@ -9,6 +9,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
 router.register(r'discounts', DiscountViewSet)
+router.register(r'coupons', CouponViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
