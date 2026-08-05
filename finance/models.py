@@ -97,14 +97,66 @@ class Payment(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
+    order_id_str = models.CharField(max_length=100, blank=True, null=True)  # Unique order reference string sent to Zibal
     amount = models.BigIntegerField()  # Amount in Rials (Zibal uses Rials)
     track_id = models.BigIntegerField(unique=True, null=True, blank=True)  # Zibal trackId
     ref_number = models.CharField(max_length=100, blank=True, null=True)  # Zibal refNumber after verify
-    card_number = models.CharField(max_length=20, blank=True, null=True)  # Masked card number
+    card_number = models.CharField(max_length=20, blank=True, null=True)  # Masked card number (62741****44)
+    hashed_card_number = models.CharField(max_length=255, blank=True, null=True)  # Hashed card number (for lazy method)
     status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+    
+    # Zibal Specific Status & Result Codes
+    zibal_status = models.IntegerField(null=True, blank=True)  # Zibal status (-1, 1, 2, 3, 4, 5, etc.)
+    result_code = models.IntegerField(null=True, blank=True)   # Zibal result code (100, 102, 201, 202, 203, etc.)
+    result_message = models.CharField(max_length=255, blank=True, null=True)
+
+    # Zibal Timestamps
+    paid_at = models.DateTimeField(null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    zibal_created_at = models.DateTimeField(null=True, blank=True)
+
+    # Financial & Configuration Info
+    wage = models.IntegerField(null=True, blank=True)  # Fee mode or fee amount returned by Zibal
+    multiplexing_data = models.JSONField(default=list, blank=True)  # Multiplexing / split details
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    national_code = models.CharField(max_length=20, blank=True, null=True)
+    check_mobile_with_card = models.BooleanField(default=False)
+    allowed_cards = models.JSONField(default=list, blank=True)
+
+    # Raw Payload Storage for Full Audit & Inquiry
+    raw_request_payload = models.JSONField(null=True, blank=True)
+    raw_request_response = models.JSONField(null=True, blank=True)
+    raw_callback_payload = models.JSONField(null=True, blank=True)
+    raw_verify_response = models.JSONField(null=True, blank=True)
+    raw_inquiry_response = models.JSONField(null=True, blank=True)
+
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Payment #{self.id} - {self.user.username} - {self.amount} Rials - {self.status}"
+        return f"Payment #{self.id} - {self.user.username} - {self.amount} Rials - Track: {self.track_id} - Status: {self.status}"
+
+
+class PaymentLog(models.Model):
+    class ActionType(models.TextChoices):
+        REQUEST = 'request', _('Payment Request')
+        CALLBACK = 'callback', _('Callback Received')
+        VERIFY = 'verify', _('Payment Verify')
+        INQUIRY = 'inquiry', _('Payment Inquiry')
+
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='logs')
+    action = models.CharField(max_length=20, choices=ActionType.choices)
+    zibal_status = models.IntegerField(null=True, blank=True)
+    result_code = models.IntegerField(null=True, blank=True)
+    request_data = models.JSONField(null=True, blank=True)
+    response_data = models.JSONField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"PaymentLog #{self.id} - Payment #{self.payment.id} - Action: {self.action} at {self.created_at}"
+

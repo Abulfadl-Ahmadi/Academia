@@ -1,5 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
+import { Link } from "react-router-dom"
 import { getStatusLabel, getStatusVariant, formatPrice, getPaymentMethodLabel } from "./utils"
 // @ts-expect-error: No type definitions for moment-jalaali
 import moment from 'moment-jalaali'
@@ -41,6 +42,10 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "id",
     header: "شماره تراکنش",
+    cell: ({ row }) => {
+      const id = row.getValue("id");
+      return <Link to={`/panel/transactions/${id}`} className="text-blue-600 underline">{id}</Link>;
+    }
   },
   {
     accessorKey: "order.id",
