@@ -192,6 +192,20 @@ class TransactionViewSet(viewsets.ModelViewSet):
             return Transaction.objects.all().select_related('order', 'created_by')
         return Transaction.objects.filter(order__user=user).select_related('order', 'created_by')
 
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field or 'pk'
+        val = self.kwargs[lookup_url_kwarg]
+        if str(val).isdigit():
+            obj = queryset.filter(models.Q(id=val) | models.Q(transaction_code=val)).first()
+        else:
+            obj = queryset.filter(transaction_code=val).first()
+        if not obj:
+            from django.http import Http404
+            raise Http404("تراکنش یافت نشد.")
+        self.check_object_permissions(self.request, obj)
+        return obj
+
     def get_serializer_class(self):
         if self.action == 'create':
             return TransactionCreateSerializer

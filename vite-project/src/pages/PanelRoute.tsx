@@ -253,6 +253,7 @@ export default function PanelRoute() {
           <Route path="/tests/:testId/student/:studentId/result" element={<StudentTestResultPage />} />
           <Route path="/tests/:testId/answer-sheet" element={<TestAnswerSheetPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/:id" element={<TransactionDetail />} />
           <Route path="/coupons" element={<TeacherCouponsPage />} />
           <Route path="/products" element={<TeacherProducts />} />
           <Route path="/products/create" element={<CreateProductPage />} />

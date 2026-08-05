@@ -3,6 +3,15 @@ from django.utils import timezone
 from accounts.models import User
 from shop.models import Product
 from django.utils.translation import gettext_lazy as _
+import secrets
+import string
+
+
+def generate_unique_code(prefix: str) -> str:
+    """Generate a secure, non-sequential unique code like TRX-8F4B92C1 or ORD-93A17B42."""
+    alphabet = string.ascii_uppercase + string.digits
+    random_str = ''.join(secrets.choice(alphabet) for _ in range(8))
+    return f"{prefix}-{random_str}"
 
 
 class Order(models.Model):
@@ -14,14 +23,23 @@ class Order(models.Model):
         REFUNDED = 'refunded', _('Refunded')
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    order_code = models.CharField(max_length=50, unique=True, db_index=True, null=True, blank=True)
     total_amount = models.IntegerField()  # Total amount in Tomans
     status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     admin_notes = models.TextField(blank=True, null=True)
     
+    def save(self, *args, **kwargs):
+        if not self.order_code:
+            code = generate_unique_code("ORD")
+            while Order.objects.filter(order_code=code).exists():
+                code = generate_unique_code("ORD")
+            self.order_code = code
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Order #{self.id} - {self.user.username} - {self.status}"
+        return f"Order {self.order_code or self.id} - {self.user.username} - {self.status}"
 
     @property
     def order_items(self):
@@ -53,6 +71,7 @@ class Transaction(models.Model):
         ONLINE_PAYMENT = 'online_payment', _('Online Payment')
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions')
+    transaction_code = models.CharField(max_length=50, unique=True, db_index=True, null=True, blank=True)
     amount = models.IntegerField()  # Amount in Tomans
     transaction_type = models.CharField(max_length=20, choices=TransactionType.choices)
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices)
@@ -62,8 +81,16 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_transactions')
     
+    def save(self, *args, **kwargs):
+        if not self.transaction_code:
+            code = generate_unique_code("TRX")
+            while Transaction.objects.filter(transaction_code=code).exists():
+                code = generate_unique_code("TRX")
+            self.transaction_code = code
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Transaction #{self.id} - {self.order.id} - {self.amount} Tomans"
+        return f"Transaction {self.transaction_code or self.id} - {self.order.id} - {self.amount} Tomans"
 
 
 class UserAccess(models.Model):
