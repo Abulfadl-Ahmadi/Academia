@@ -16,6 +16,7 @@ import axiosInstance from "@/lib/axios";
 import { School, User, Mail, Calendar as CalendarIcon, GraduationCap, CreditCard, Save, Edit, ChevronDownIcon, Phone, MapPin } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { validateIranianNationalId } from "@/lib/nationalIdValidator";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -95,6 +96,15 @@ export default function ProfilePage() {
   const [savingAddress, setSavingAddress] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
+
+  // Password Change State
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const translateBackendError = (error: string): string => {
     const errorTranslations: Record<string, string> = {
@@ -519,6 +529,43 @@ export default function ProfilePage() {
   //   return grades[grade] || grade;
   // };
 
+  const handleChangePassword = async () => {
+    if (!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      toast.error("لطفاً تمامی فیلدها را پر کنید");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error("رمز عبور جدید و تکرار آن یکسان نیستند");
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      toast.error("رمز عبور جدید باید حداقل ۶ کاراکتر باشد");
+      return;
+    }
+    
+    try {
+      setPasswordLoading(true);
+      await axiosInstance.post('/accounts/change-password/', {
+        old_password: passwordForm.oldPassword,
+        new_password: passwordForm.newPassword,
+        new_password_confirm: passwordForm.confirmPassword
+      });
+      toast.success("رمز عبور با موفقیت تغییر کرد");
+      setIsPasswordModalOpen(false);
+      setPasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (error: any) {
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else if (error.response?.data?.new_password) {
+        toast.error(error.response.data.new_password[0]);
+      } else {
+        toast.error("خطا در تغییر رمز عبور");
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -919,7 +966,7 @@ export default function ProfilePage() {
                 <h4 className="font-medium">تغییر رمز عبور</h4>
                 <p className="text-sm text-muted-foreground">رمز عبور خود را به‌روزرسانی کنید</p>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => setIsPasswordModalOpen(true)}>
                 تغییر رمز
               </Button>
             </div>
@@ -946,6 +993,55 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Password Change Dialog */}
+      <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>تغییر رمز عبور</DialogTitle>
+            <DialogDescription>
+              رمز عبور جدید خود را وارد کنید.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="old-password">رمز عبور فعلی</Label>
+              <Input
+                id="old-password"
+                type="password"
+                value={passwordForm.oldPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">رمز عبور جدید</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">تکرار رمز عبور جدید</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPasswordModalOpen(false)}>
+              انصراف
+            </Button>
+            <Button onClick={handleChangePassword} disabled={passwordLoading}>
+              {passwordLoading ? "در حال ثبت..." : "ثبت رمز جدید"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

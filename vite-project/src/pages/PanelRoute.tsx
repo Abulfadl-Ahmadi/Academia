@@ -190,7 +190,7 @@ export default function PanelRoute() {
         </Route>
       </Routes>
     );
-  if (user.role === "teacher")
+  if (["teacher", "admin", "content_creator", "support", "finance"].includes(user.role))
     return (
       <Routes>
         <Route path="/" element={<TeacherLayout />}>
