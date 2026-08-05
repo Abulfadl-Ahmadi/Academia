@@ -40,14 +40,20 @@ class User(AbstractUser):
     STUDENT = 'student'
     TEACHER = 'teacher'
     ADMIN = 'admin'
+    SUPPORT = 'support'
+    CONTENT_CREATOR = 'content_creator'
+    FINANCE = 'finance'
 
     ROLE_CHOICES = (
         (STUDENT, 'Student'),
         (TEACHER, 'Teacher'),
         (ADMIN, 'Admin'),
+        (SUPPORT, 'Support'),
+        (CONTENT_CREATOR, 'Content Creator'),
+        (FINANCE, 'Finance'),
     )
     email = models.EmailField(blank=True, null=True, unique=False)  # make email optional
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=STUDENT)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=STUDENT)
     is_email_verified = models.BooleanField(default=False)
 
     objects = UserManager()

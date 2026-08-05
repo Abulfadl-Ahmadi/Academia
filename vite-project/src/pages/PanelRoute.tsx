@@ -90,6 +90,10 @@ import TestLeaderboardPage from "@/testCollections/TestLeaderboardPage";
 // Layout components
 import { StudentLayout } from "@/components/layouts/StudentLayout";
 import { TeacherLayout } from "@/components/layouts/TeacherLayout";
+import { AdminLayout } from "@/components/layouts/AdminLayout";
+import { SupportLayout } from "@/components/layouts/SupportLayout";
+import { ContentCreatorLayout } from "@/components/layouts/ContentCreatorLayout";
+import { FinanceLayout } from "@/components/layouts/FinanceLayout";
 import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page";
 import { TeacherKnowledgePanel } from "@/features/knowledge";
 import QuestionsListPage from "@/app/teacher-dashboard/questions/page";
@@ -107,6 +111,7 @@ import EditGalleryPage from "@/app/teacher-dashboard/gallery/edit/[id]/page";
 import QuestionCollectionsPage from "@/app/teacher-dashboard/question-collections/page";
 import CreateQuestionCollectionPage from "@/app/teacher-dashboard/question-collections/create";
 import TeacherDashboardHome from "@/app/teacher-dashboard/home/page";
+import GenericStaffHome from "@/app/dashboard/staff-home/page";
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -190,11 +195,20 @@ export default function PanelRoute() {
         </Route>
       </Routes>
     );
-  if (user.role === "teacher")
+  
+  if (["teacher", "admin", "support", "content_creator", "finance"].includes(user.role)) {
+    const StaffLayout = {
+      teacher: TeacherLayout,
+      admin: AdminLayout,
+      support: SupportLayout,
+      content_creator: ContentCreatorLayout,
+      finance: FinanceLayout
+    }[user.role as string] || TeacherLayout;
+
     return (
       <Routes>
-        <Route path="/" element={<TeacherLayout />}>
-          <Route index element={<TeacherDashboardHome />} />
+        <Route path="/" element={<StaffLayout />}>
+          <Route index element={user.role === 'teacher' ? <TeacherDashboardHome /> : <GenericStaffHome />} />
           <Route path="students" element={<StudentList />} />
           <Route path="courses" element={<CoursesList />} />
           <Route path="courses/create" element={<CreateCoursePage />} />
@@ -338,5 +352,6 @@ export default function PanelRoute() {
         </Route>
       </Routes>
     );
+  }
   return <div>نقش نامعتبر است</div>;
 }

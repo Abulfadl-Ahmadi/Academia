@@ -367,7 +367,7 @@ class ListCreateTestView(generics.ListCreateAPIView):
 
             queryset = queryset.filter(student_filter, is_active=True)
 
-        elif user.role == "teacher":
+        elif user.role not in ['student', 'admin']:
             queryset = queryset.filter(teacher=user)
 
         test_type_param = self.request.query_params.get('test_type')
@@ -411,7 +411,7 @@ class ListCreateQuestionTestView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        if user.role == "teacher":
+        if user.role not in ['student', 'admin']:
             # teacher should only see question tests they created
             return Test.objects.filter(
                 teacher=user,
@@ -460,7 +460,7 @@ class UpdateDeleteTestView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == "teacher":
+        if user.role not in ['student', 'admin']:
             # فقط آزمون‌هایی که این معلم ساخته
             return Test.objects.filter(teacher=user)
         # ادمین همه آزمون‌ها را می‌بیند
@@ -469,7 +469,7 @@ class UpdateDeleteTestView(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         # اطمینان از اینکه فقط معلم سازنده می‌تواند حذف کند
         user = self.request.user
-        if user.role == "teacher" and instance.teacher != user:
+        if user.role not in ['student', 'admin'] and instance.teacher != user:
             raise PermissionDenied("شما فقط می‌توانید آزمون‌های خود را حذف کنید")
         instance.delete()
 
@@ -481,7 +481,7 @@ class ListCreateQuestionTestView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == "teacher":
+        if user.role not in ['student', 'admin']:
             return Test.objects.filter(
                 teacher=user,
                 content_type=TestContentType.TYPED_QUESTION
@@ -501,7 +501,7 @@ class QuestionTestDetailView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == "teacher":
+        if user.role not in ['student', 'admin']:
             return Test.objects.filter(
                 teacher=user,
                 content_type=TestContentType.TYPED_QUESTION
@@ -1041,7 +1041,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
             return TestCollection.objects.filter(
                 Q(courses__students=user) | Q(is_public=True)
             ).distinct()
-        elif user.role == "teacher":
+        elif user.role not in ['student', 'admin']:
             # معلم تمام مجموعه‌های فعال را می‌بیند
             return TestCollection.objects.all()
         
@@ -1070,7 +1070,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         test_collection = self.get_object()
         
         # Check permission - only teachers who created it or admins
-        if (user.role == 'teacher' and 
+        if (user.role not in ['student', 'admin'] and 
             test_collection.created_by != user and 
             not user.is_staff):
             return Response(
@@ -1166,7 +1166,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
             serializer = StudentProgressSerializer(progress)
             return Response(serializer.data)
         
-        elif request.user.role == "teacher":
+        elif request.user.role not in ['student', 'admin']:
             # معلم پیشرفت همه دانش‌آموزان را می‌بیند
             students = test_collection.get_accessible_students()
             progress_data = []
@@ -1422,7 +1422,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         
         # TODO: For debugging purposes, show all questions regardless of user
         # Later, uncomment this for production:
-        # if user.role == 'teacher':
+        # if user.role not in ['student', 'admin']:
         #     queryset = queryset.filter(created_by=user)
         # else:
         #     queryset = queryset.filter(is_active=True)
@@ -1827,7 +1827,7 @@ class OptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'teacher':
+        if user.role not in ['student', 'admin']:
             return Option.objects.filter(question__created_by=user)
         return Option.objects.filter(question__is_active=True)
 
@@ -1839,7 +1839,7 @@ class QuestionImageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'teacher':
+        if user.role not in ['student', 'admin']:
             return QuestionImage.objects.filter(question__created_by=user)
         return QuestionImage.objects.filter(question__is_active=True)
 
@@ -1854,7 +1854,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         
-        if user.role == 'teacher':
+        if user.role not in ['student', 'admin']:
             # Teachers can only see their own question collections
             return QuestionCollection.objects.filter(created_by=user)
         elif user.role == 'admin':
@@ -1877,7 +1877,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         # Ensure only teachers can create question collections
-        if self.request.user.role != 'teacher':
+        if self.request.user.role == 'student':
             raise PermissionDenied("فقط معلمان می‌توانند مجموعه سوال ایجاد کنند")
         serializer.save()
     

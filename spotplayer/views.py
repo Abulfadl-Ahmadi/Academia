@@ -5,6 +5,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import permissions, status
+from accounts.permissions import IsTeacherOrAdmin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -71,14 +72,9 @@ class CourseLicensesListView(APIView):
     List all SpotPlayer licenses issued for a course. Teacher/admin only.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsTeacherOrAdmin]
 
     def get(self, request, course_id):
-        if request.user.role not in ("teacher", "admin"):
-            return Response(
-                {"detail": "Only teachers and admins can view issued licenses."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
         course = Course.objects.filter(pk=course_id).first()
         if course is None:
@@ -106,14 +102,9 @@ class LicenseRegenerateView(APIView):
     Teacher/admin only.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsTeacherOrAdmin]
 
     def post(self, request, course_id, license_id):
-        if request.user.role not in ("teacher", "admin"):
-            return Response(
-                {"detail": "Only teachers and admins can regenerate licenses."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
         course = Course.objects.filter(pk=course_id).first()
         if course is None:

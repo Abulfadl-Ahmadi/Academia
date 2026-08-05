@@ -25,7 +25,7 @@ class TopicTestViewSet(viewsets.ModelViewSet):
         if self.request.user.role == 'student':
             # دانش‌آموزان فقط آزمون‌های فعال را می‌بینند
             queryset = queryset.filter(is_active=True)
-        elif self.request.user.role == 'teacher':
+        elif self.request.user.role not in ['student', 'admin']:
             # معلم‌ها فقط آزمون‌های خودشان را می‌بینند
             queryset = queryset.filter(teacher=self.request.user)
         # ادمین همه آزمون‌ها را می‌بیند

@@ -85,7 +85,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'admin':
+        if user.role != 'student' and user.role != 'teacher':
             return Course.objects.all().annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
@@ -107,7 +107,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         user = self.request.user
         if self.action in ['update', 'partial_update', 'retrieve']:
-            if user.role in ['teacher', 'admin']:
+            if user.role != 'student':
                 return TeacherCourseSerializer
             elif user.role == 'student':
                 return StudentCourseSerializer
@@ -254,7 +254,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         
         elif request.method == 'POST':
             # Only teachers can create schedules for their courses
-            if request.user.role not in ['admin', 'teacher']:
+            if request.user.role == 'student':
                 return Response(
                     {"error": "Only teachers can create schedules"}, 
                     status=status.HTTP_403_FORBIDDEN
@@ -287,11 +287,11 @@ class TeacherCourseViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role not in ['admin', 'teacher']:
+        if self.request.user.role == 'student':
             return Course.objects.none()
         
         user = self.request.user
-        if user.role == 'admin':
+        if user.role != 'student' and user.role != 'teacher':
             return Course.objects.all().annotate(
                 students_count=Count('students'),
                 sessions_count=Count('sessions'),
@@ -326,7 +326,7 @@ class CourseSessionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role in ['admin', 'teacher']:
+        if user.role != 'student':
             return CourseSession.objects.all()
         else:  # student
             return CourseSession.objects.filter(
@@ -336,7 +336,7 @@ class CourseSessionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         # Only teachers can create sessions for their courses
-        if self.request.user.role not in ['admin', 'teacher']:
+        if self.request.user.role == 'student':
             raise permissions.PermissionDenied("Only teachers can create sessions")
         
         course = serializer.validated_data['course']
@@ -384,14 +384,14 @@ class CourseScheduleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role in ['admin', 'teacher']:
+        if user.role != 'student':
             return CourseSchedule.objects.all()
         else:  # student
             return CourseSchedule.objects.filter(course__students=user)
 
     def perform_create(self, serializer):
         # Only teachers can create schedules for their courses
-        if self.request.user.role not in ['admin', 'teacher']:
+        if self.request.user.role == 'student':
             raise permissions.PermissionDenied("Only teachers can create schedules")
         
         course = serializer.validated_data['course']
@@ -408,7 +408,7 @@ class CourseDetailView(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'admin':
+        if user.role != 'student' and user.role != 'teacher':
             return Course.objects.all()
         elif user.role == 'teacher':
             return Course.objects.filter(teacher=user)
@@ -604,14 +604,14 @@ class TeacherAnalyticsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
-        if request.user.role not in ['teacher', 'admin']:
+        if request.user.role == 'student':
             return Response(
                 {"error": "Only teachers can access this endpoint"}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
         # Get teacher's courses
-        if request.user.role == 'admin':
+        if request.user.role != 'student' and request.user.role != 'teacher':
             courses = Course.objects.all()
         else:
             courses = Course.objects.filter(teacher=request.user)
@@ -668,14 +668,14 @@ class TeacherDueActivitiesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
-        if request.user.role not in ['teacher', 'admin']:
+        if request.user.role == 'student':
             return Response(
                 {"error": "Only teachers can access this endpoint"}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
         # Get teacher's courses
-        if request.user.role == 'admin':
+        if request.user.role != 'student' and request.user.role != 'teacher':
             courses = Course.objects.all()
         else:
             courses = Course.objects.filter(teacher=request.user)
@@ -740,14 +740,14 @@ class TeacherScheduleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
-        if request.user.role not in ['teacher', 'admin']:
+        if request.user.role == 'student':
             return Response(
                 {"error": "Only teachers can access this endpoint"}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
         # Get teacher's courses
-        if request.user.role == 'admin':
+        if request.user.role != 'student' and request.user.role != 'teacher':
             courses = Course.objects.all()
         else:
             courses = Course.objects.filter(teacher=request.user)
@@ -810,14 +810,14 @@ class TeacherQuickStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
-        if request.user.role not in ['teacher', 'admin']:
+        if request.user.role == 'student':
             return Response(
                 {"error": "Only teachers can access this endpoint"}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
         # Get teacher's courses
-        if request.user.role == 'admin':
+        if request.user.role != 'student' and request.user.role != 'teacher':
             courses = Course.objects.all()
         else:
             courses = Course.objects.filter(teacher=request.user)

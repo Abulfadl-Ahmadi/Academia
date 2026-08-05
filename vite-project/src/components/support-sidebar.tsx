@@ -20,7 +20,7 @@ import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
-  SidebarContent,
+  SidebarContent, 
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
@@ -29,7 +29,7 @@ import {
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
 
-export function TeacherSidebar({
+export function SupportSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { user, loading } = useUser();
@@ -62,28 +62,28 @@ export function TeacherSidebar({
 
   const data = {
     navMain: [
-      // {
-      //   title: "درخت دانش",
-      //   url: "/panel/knowledge",
-      //   icon: TreePine,
-      //   items: [
-      //     {
-      //       title: "مدیریت کتاب‌ها",
-      //       url: "/panel/knowledge",
-      //       description: "مدیریت کتاب‌های درسی و ساختار درخت دانش"
-      //     },
-      //     {
-      //       title: "نمای درختی",
-      //       url: "/panel/knowledge",
-      //       description: "مشاهده ساختار کامل درخت دانش"
-      //     },
-      //     {
-      //       title: "پوشه‌ها (مباحث جدید)",
-      //       url: "/panel/folders",
-      //       description: "مدیریت پوشه‌های سلسله‌مراتبی بینهایت"
-      //     },
-      //   ],
-      // },
+      {
+        title: "درخت دانش",
+        url: "/panel/knowledge",
+        icon: TreePine,
+        items: [
+          {
+            title: "مدیریت کتاب‌ها",
+            url: "/panel/knowledge",
+            description: "مدیریت کتاب‌های درسی و ساختار درخت دانش"
+          },
+          {
+            title: "نمای درختی",
+            url: "/panel/knowledge",
+            description: "مشاهده ساختار کامل درخت دانش"
+          },
+          {
+            title: "پوشه‌ها (مباحث جدید)",
+            url: "/panel/folders",
+            description: "مدیریت پوشه‌های سلسله‌مراتبی بینهایت"
+          },
+        ],
+      },
       {
         title: "کلاس‌ها",
         url: "/panel/courses",
@@ -100,21 +100,21 @@ export function TeacherSidebar({
           })) : []),
         ],
       },
-      // {
-      //   title: "مدیریت فروشگاه",
-      //   url: "/panel/products",
-      //   icon: ShoppingCart,
-      //   items: [
-      //     {
-      //       title: "لیست محصولات",
-      //       url: "/panel/products",
-      //     },
-      //     {
-      //       title: "ایجاد محصول جدید",
-      //       url: "/panel/products/create",
-      //     },
-      //   ],
-      // },
+      {
+        title: "مدیریت فروشگاه",
+        url: "/panel/products",
+        icon: ShoppingCart,
+        items: [
+          {
+            title: "لیست محصولات",
+            url: "/panel/products",
+          },
+          {
+            title: "ایجاد محصول جدید",
+            url: "/panel/products/create",
+          },
+        ],
+      },
       {
         title: "مجموعه آزمون‌ها",
         url: "/panel/test-collections",
@@ -215,39 +215,39 @@ export function TeacherSidebar({
           },
         ],
       },
-      // {
-      //   title: "مدیریت وبلاگ",
-      //   url: "/panel/blog",
-      //   icon: PenTool,
-      //   items: [
-      //     {
-      //       title: "لیست نوشته‌ها",
-      //       url: "/panel/blog",
-      //     },
-      //     {
-      //       title: "نوشته جدید",
-      //       url: "/panel/blog/create",
-      //       description: "ایجاد مقاله و نوشته جدید"
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "گالری تصاویر",
-      //   url: "/panel/gallery",
-      //   icon: Image,
-      //   items: [
-      //     {
-      //       title: "مدیریت تصاویر",
-      //       url: "/panel/gallery",
-      //       description: "مشاهده و مدیریت تصاویر گالری صفحه اصلی"
-      //     },
-      //     {
-      //       title: "آپلود تصویر جدید",
-      //       url: "/panel/gallery/upload",
-      //       description: "افزودن تصویر جدید به گالری"
-      //     },
-      //   ],
-      // },
+      {
+        title: "مدیریت وبلاگ",
+        url: "/panel/blog",
+        icon: PenTool,
+        items: [
+          {
+            title: "لیست نوشته‌ها",
+            url: "/panel/blog",
+          },
+          {
+            title: "نوشته جدید",
+            url: "/panel/blog/create",
+            description: "ایجاد مقاله و نوشته جدید"
+          },
+        ],
+      },
+      {
+        title: "گالری تصاویر",
+        url: "/panel/gallery",
+        icon: Image,
+        items: [
+          {
+            title: "مدیریت تصاویر",
+            url: "/panel/gallery",
+            description: "مشاهده و مدیریت تصاویر گالری صفحه اصلی"
+          },
+          {
+            title: "آپلود تصویر جدید",
+            url: "/panel/gallery/upload",
+            description: "افزودن تصویر جدید به گالری"
+          },
+        ],
+      },
       {
         title: "فایل‌ها",
         url: "/panel/files",
@@ -259,23 +259,23 @@ export function TeacherSidebar({
           },
         ],
       },
-      // {
-      //   title: "مدیریت مالی",
-      //   url: "/panel/transactions",
-      //   icon: CreditCard,
-      //   items: [
-      //     {
-      //       title: "تراکنش‌ها",
-      //       url: "/panel/transactions",
-      //       description: "مشاهده و ثبت تراکنش‌های مالی",
-      //     },
-      //     {
-      //       title: "کدهای تخفیف",
-      //       url: "/panel/coupons",
-      //       description: "مدیریت کوپن‌ها و کدهای تخفیف",
-      //     },
-      //   ],
-      // },
+      {
+        title: "مدیریت مالی",
+        url: "/panel/transactions",
+        icon: CreditCard,
+        items: [
+          {
+            title: "تراکنش‌ها",
+            url: "/panel/transactions",
+            description: "مشاهده و ثبت تراکنش‌های مالی",
+          },
+          {
+            title: "کدهای تخفیف",
+            url: "/panel/coupons",
+            description: "مدیریت کوپن‌ها و کدهای تخفیف",
+          },
+        ],
+      },
       {
         title: "پشتیبانی و تیکت‌ها",
         url: "/panel/support",
@@ -342,7 +342,7 @@ export function TeacherSidebar({
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium text-lg text-right">
-              پنل معلم
+              پنل مدیریت
             </span>
           </div>
           {/* <ChevronsUpDown className="ml-auto" /> */}

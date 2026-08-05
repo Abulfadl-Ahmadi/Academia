@@ -20,6 +20,7 @@ from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
 from spotplayer.services import provision_licenses_for_order
+from accounts.permissions import IsAdmin, IsTeacherOrAdmin
 
 logger = logging.getLogger(__name__)
 
@@ -181,15 +182,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             "message": f"سفارش ایجاد شد اما مشکلی در اتصال به درگاه پرداخت وجود دارد: {error}",
         }, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated, IsAdmin])
     def update_status(self, request, pk=None):
         """Update order status (admin only)."""
-        if request.user.role != 'admin':
-            return Response(
-                {"error": "Only admins can update order status"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
         order = self.get_object()
         serializer = OrderStatusUpdateSerializer(data=request.data)
 
@@ -219,15 +214,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated, IsTeacherOrAdmin])
     def pending(self, request):
         """Get pending orders (admin/teacher only)."""
-        if request.user.role not in ('admin', 'teacher'):
-            return Response(
-                {"error": "Only admins can view pending orders"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
         pending_orders = Order.objects.filter(
             status=Order.OrderStatus.PENDING
         ).select_related('user').prefetch_related('items__product')
@@ -310,15 +299,9 @@ class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
 # ---------------------------------------------------------------------------
 
 class AdminDashboardView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
     def get(self, request):
-        if request.user.role != 'admin':
-            return Response(
-                {"error": "Only admins can access dashboard"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
         total_orders = Order.objects.count()
         pending_orders = Order.objects.filter(status=Order.OrderStatus.PENDING).count()
         total_revenue = sum(
