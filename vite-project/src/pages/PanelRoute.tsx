@@ -22,6 +22,7 @@ import {
   AIConversationList,
   AIConversationDetail,
 } from "@/features/tickets/AIConversations";
+import { AIChatPage, AIConversationList as NewAIConversationList } from "@/features/ai-assistant";
 import ProfilePage from "@/app/dashboard/profile/page";
 import Home from "@/app/dashboard/home/page";
 import StudentFilesPage from "@/app/dashboard/files/StudentFilesPage";
@@ -93,7 +94,6 @@ import { TeacherLayout } from "@/components/layouts/TeacherLayout";
 import EditCoursePage from "@/app/teacher-dashboard/courses/[courseId]/edit/page";
 import { TeacherKnowledgePanel } from "@/features/knowledge";
 import QuestionsListPage from "@/app/teacher-dashboard/questions/page";
-import LiveStream from "./livestream";
 // Blog pages
 import TeacherBlogListPage from "@/app/teacher-dashboard/blog/page";
 import TeacherBlogCreatePage from "@/app/teacher-dashboard/blog/create/page";
@@ -177,6 +177,9 @@ export default function PanelRoute() {
           <Route path="/test-maker/create" element={<TestMakerCreate />} />
           <Route path="/test-maker/test/:id" element={<CustomTestTake />} />
           <Route path="/test-maker/results/:id" element={<CustomTestResults />} />
+          {/* AI Assistant routes for students */}
+          <Route path="/ai" element={<NewAIConversationList />} />
+          <Route path="/ai/:id" element={<AIChatPage />} />
           {/* Support Tickets routes for students */}
           <Route path="/support" element={<TicketsList />} />
           <Route path="/support/new" element={<NewTicket />} />
@@ -305,6 +308,9 @@ export default function PanelRoute() {
           <Route path="/questions" element={<QuestionsListPage />} />
           <Route path="/questions/create" element={<CreateQuestionPage />} />
           <Route path="/questions/edit/:id" element={<EditQuestionPage />} />
+          {/* AI Assistant routes for teachers */}
+          <Route path="/ai" element={<NewAIConversationList />} />
+          <Route path="/ai/:id" element={<AIChatPage />} />
           {/* Support Tickets routes for teachers */}
           <Route path="/support" element={<TicketsList />} />
           <Route path="/support/new" element={<NewTicket />} />

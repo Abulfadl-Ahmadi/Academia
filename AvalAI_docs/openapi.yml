@@ -1,0 +1,2854 @@
+openapi: 3.0.3
+info:
+  title: AvalAI Unified API
+  description: |
+    مستندات کامل و جامع API پلتفرم اول‌آی (AvalAI) - OpenAPI 3.0 Specification.
+    AvalAI یک پلتفرم یکپارچه برای دسترسی به مدل‌های مختلف هوش مصنوعی (OpenAI, Anthropic, Google Gemini, Mistral, Cohere, FLUX, Sora و غیره) با پشتیبانی کامل از استاندارد OpenAI، مدل‌های بومی گوگل (v1beta)، OCR، جستجوی وب، رتبه‌بندی مجدد و مدیریت حساب کاربری است.
+    
+    آدرس پایه عمومی (Base URL): `https://api.avalai.ir/v1`
+    آدرس پایه کاربری (User API Base URL): `https://api.avalai.ir/user/v1`
+    آدرس پایه گوگل (Google GenAI Base URL): `https://api.avalai.ir/v1beta`
+  version: 1.0.0
+  contact:
+    name: AvalAI Support
+    url: https://avalai.ir/contact-us-avalai
+servers:
+  - url: https://api.avalai.ir/v1
+    description: OpenAI-compatible API base URL (آدرس پایه استاندارد پلتفرم)
+  - url: https://api.avalai.ir/user/v1
+    description: AvalAI User & Billing API base URL (آدرس پایه سرویس کاربری و مالی)
+  - url: https://api.avalai.ir/v1beta
+    description: Google GenAI SDK v1beta base URL (آدرس پایه سرویس بومی گوگل)
+  - url: https://api.avalai.ir
+    description: Root Base URL
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Models
+    description: دریافت لیست مدل‌ها و اطلاعات آن‌ها (Models Management)
+  - name: Chat Completions
+    description: تولید پاسخ‌های متنی، مکالمه و ابزارها (Chat Completion Endpoint)
+  - name: Responses
+    description: سرویس ساختارمند و مدرن پاسخ‌دهی اول‌آی (Responses API)
+  - name: Images
+    description: ساخت، ویرایش و تولید واریانت تصویر (Images Generation & Edits)
+  - name: Embeddings
+    description: تولید بردارهای معنایی متن (Embeddings API)
+  - name: Audio
+    description: تبدیل گفتار به متن، ترجمه و متن به گفتار (Speech-to-Text & Text-to-Speech)
+  - name: Moderation
+    description: بررسی ایمنی محتوا و تعدیل (Content Moderation)
+  - name: Rerank
+    description: رتبه‌بندی مجدد مستندات بر اساس پرس‌وجو (Rerank API)
+  - name: Search
+    description: جستجوی مستقیم وب با استفاده از موتورهای جستجو (Web Search API)
+  - name: OCR
+    description: پردازش تصویر و استخراج ساختاریافته متن سند (Mistral OCR API)
+  - name: Videos
+    description: تولید و مدیریت ساخت ویدیو با مدل‌های Sora و Veo (Video Generation API)
+  - name: Messages (Anthropic)
+    description: رابط سازگار با Anthropic Claude Messages API
+  - name: Google GenAI (v1beta)
+    description: رابط بومی Google Gemini GenAI SDK
+  - name: Vertex AI Text
+    description: رابط سازگار با Vertex AI Synthesize Text
+  - name: Files
+    description: مدیریت فایل‌ها برای Fine-Tuning، Assistants و غیره (Files Management)
+  - name: Batch
+    description: پردازش دسته‌ای درخواست‌ها با تخفیف قیمت (Batch Processing API)
+  - name: Fine-Tuning
+    description: مدیریت فرآیند فین‌تیونینگ مدل‌ها (Fine-Tuning Jobs)
+  - name: Assistants
+    description: ساخت دستیارهای هوشمند، Threads، Messages و Runs (Assistants API)
+  - name: User API
+    description: استعلام اعتبار، تراکنش‌های مالی و خلاصه‌ی مصرف (User Account & Cost Tracking)
+
+paths:
+  # ---------------------------------------------------------------------------
+  # Models API
+  # ---------------------------------------------------------------------------
+  /models:
+    get:
+      tags:
+        - Models
+      summary: دریافت لیست مدل‌های فعال (List Models)
+      description: کل مدل‌های پشتیبانی شده توسط پلتفرم اول‌آی را بازیابی می‌کند.
+      operationId: listModels
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelListResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /models/{model}:
+    get:
+      tags:
+        - Models
+      summary: دریافت جزئیات یک مدل (Retrieve Model)
+      description: اطلاعات جزئی یک مدل مشخص را بازیابی می‌کند.
+      operationId: retrieveModel
+      parameters:
+        - name: model
+          in: path
+          required: true
+          description: شناسه‌ی مدل (مثلاً gpt-5.5 یا gemini-3.5-flash)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelObject'
+        '404':
+          description: Model not found
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # Chat Completions API
+  # ---------------------------------------------------------------------------
+  /chat/completions:
+    post:
+      tags:
+        - Chat Completions
+      summary: ارسال درخواست چت و تکمیل متن (Create Chat Completion)
+      description: تولید پاسخ برای مکالمات ورودی، فراخوانی ابزارها (Tools)، خروجی ساختاریافته، پردازش تصویر و متن.
+      operationId: createChatCompletion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events stream when stream=true
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+
+  # ---------------------------------------------------------------------------
+  # Responses API
+  # ---------------------------------------------------------------------------
+  /responses:
+    post:
+      tags:
+        - Responses
+      summary: ایجاد پاسخ هوشمند ساختاریافته (Create Response)
+      description: رابط جدید اول‌آی برای جریان‌های کاری مدرن متنی، چندوجهی و ابزارها.
+      operationId: createResponse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponsesRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponsesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /responses/{response_id}:
+    get:
+      tags:
+        - Responses
+      summary: دریافت جزئیات پاسخ ایجاد شده (Get Response)
+      description: وضعیت و خروجی یک شناسه پاسخ ایجاد شده در سرویس Responses را بازیابی می‌کند.
+      operationId: getResponse
+      parameters:
+        - name: response_id
+          in: path
+          required: true
+          description: شناسه‌ی یکتای درخواست پاسخ
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponsesResponse'
+        '404':
+          description: Response ID not found
+
+  # ---------------------------------------------------------------------------
+  # Images API
+  # ---------------------------------------------------------------------------
+  /images/generations:
+    post:
+      tags:
+        - Images
+      summary: ساخت تصویر با توصیف متنی (Create Image Generation)
+      description: تولید تصاویر با استفاده از مدل‌های FLUX, DALL-E 3, GPT Image, Imagen و Nano Banana.
+      operationId: createImageGeneration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageGenerationRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /images/edits:
+    post:
+      tags:
+        - Images
+      summary: ویرایش تصویر با ماسک یا دستور (Edit Image)
+      description: ویرایش تصاویر موجود بر اساس پرامپت و تصویر ورودی (مانند مدل‌های Seedream یا DALL-E).
+      operationId: createImageEdit
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageEditMultipartRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+
+  /images/variations:
+    post:
+      tags:
+        - Images
+      summary: ایجاد واریانت از تصویر (Create Image Variation)
+      description: تولید تصاویر مشابه بر اساس یک تصویر ورودی.
+      operationId: createImageVariation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                model:
+                  type: string
+                n:
+                  type: integer
+                  default: 1
+                size:
+                  type: string
+                  default: "1024x1024"
+                response_format:
+                  type: string
+                  default: url
+                user:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+
+  # ---------------------------------------------------------------------------
+  # Embeddings API
+  # ---------------------------------------------------------------------------
+  /embeddings:
+    post:
+      tags:
+        - Embeddings
+      summary: ایجاد بردارهای معنایی متن (Create Embeddings)
+      description: محاسبه بردارهای امبدینگ برای جستجوی معنایی و سیستم‌های RAG.
+      operationId: createEmbedding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddingsRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmbeddingsResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # Audio API
+  # ---------------------------------------------------------------------------
+  /audio/transcriptions:
+    post:
+      tags:
+        - Audio
+      summary: تبدیل گفتار به متن (Create Audio Transcription)
+      description: تبدیل فایل‌های صوتی به متن (Speech to Text) با مدل‌های Whisper.
+      operationId: createAudioTranscription
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - model
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: فایل صوتی جهت پردازش (flac, mp3, mp4, m4a, ogg, wav, webm)
+                model:
+                  type: string
+                  description: شناسه‌ی مدل (مثلاً whisper-1)
+                language:
+                  type: string
+                  description: کد زبان ورودی (ISO-639-1)
+                prompt:
+                  type: string
+                response_format:
+                  type: string
+                  enum: [json, text, srt, verbose_json, vtt]
+                  default: json
+                temperature:
+                  type: number
+                  default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTranscriptionResponse'
+
+  /audio/translations:
+    post:
+      tags:
+        - Audio
+      summary: ترجمه صوتی به انگلیسی (Create Audio Translation)
+      description: دریافت فایل صوتی به زبان‌های مختلف و ترجمه مستقیم آن به متن انگلیسی.
+      operationId: createAudioTranslation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - model
+              properties:
+                file:
+                  type: string
+                  format: binary
+                model:
+                  type: string
+                prompt:
+                  type: string
+                response_format:
+                  type: string
+                  default: json
+                temperature:
+                  type: number
+                  default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTranscriptionResponse'
+
+  /audio/speech:
+    post:
+      tags:
+        - Audio
+      summary: تولید گفتار از متن (Create Audio Speech / TTS)
+      description: تبدیل متن به فایل صوتی متناظر با صداهای مختلف.
+      operationId: createAudioSpeech
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudioSpeechRequest'
+      responses:
+        '200':
+          description: فایل صوتی تولید شده
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+
+  # ---------------------------------------------------------------------------
+  # Moderation API
+  # ---------------------------------------------------------------------------
+  /moderations:
+    post:
+      tags:
+        - Moderation
+      summary: ارزیابی ایمنی محتوا (Create Moderation)
+      description: بررسی متن ورودی از نظر محتوای نامناسب یا ناقض قوانین.
+      operationId: createModeration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationResponse'
+
+  # ---------------------------------------------------------------------------
+  # Rerank API
+  # ---------------------------------------------------------------------------
+  /rerank:
+    post:
+      tags:
+        - Rerank
+      summary: رتبه‌بندی مجدد مستندات (Rerank Documents)
+      description: بازمرتب‌سازی نتایج جستجو یا سندها بر اساس میزان ارتباط آن‌ها با یک پرس‌وجو (Query).
+      operationId: rerankDocuments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RerankRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RerankResponse'
+
+  # ---------------------------------------------------------------------------
+  # Search API
+  # ---------------------------------------------------------------------------
+  /search:
+    post:
+      tags:
+        - Search
+      summary: جستجوی مستقیم در وب (Web Search Query)
+      description: اجرای استعلام جستجو در وب با موتورهای مختلف (Serper, Tavily, Perplexity, Exa, DataForSEO, Firecrawl).
+      operationId: searchWeb
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /search/{search_tool_name}:
+    post:
+      tags:
+        - Search
+      summary: جستجو با ابزار مشخص (Search with Specific Tool Path)
+      description: اجرای استعلام با تعیین نام ابزار در مساوی URL (مانند /v1/search/serper-search).
+      operationId: searchWebWithTool
+      parameters:
+        - name: search_tool_name
+          in: path
+          required: true
+          description: نام ابزار جستجو (serper-search, tavily-search, perplexity-search و غیره)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  # ---------------------------------------------------------------------------
+  # OCR API
+  # ---------------------------------------------------------------------------
+  /ocr:
+    post:
+      tags:
+        - OCR
+      summary: استخراج متن و ساختار اسناد (Mistral OCR)
+      description: پردازش تصاویر و اسناد PDF جهت استخراج مارک‌داون، جداول، جعبه‌های احاطه‌کننده (Bounding Boxes) و عنوان‌ها.
+      operationId: processOcr
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OcrRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrResponse'
+
+  # ---------------------------------------------------------------------------
+  # Videos API
+  # ---------------------------------------------------------------------------
+  /videos:
+    post:
+      tags:
+        - Videos
+      summary: ثبت درخواست تولید ویدیو (Create Video Generation)
+      description: ارسال درخواست تولید ویدیو با مدل‌های Sora یا Veo به صورت غیرهمزمان (Async).
+      operationId: createVideo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoGenerationRequest'
+      responses:
+        '200':
+          description: Successful job submission response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoGenerationJob'
+
+    get:
+      tags:
+        - Videos
+      summary: دریافت لیست ویدیوهای کاربر (List Videos)
+      description: بازیابی تمام کارهای تولید ویدیوی اکانت به همراه وضعیت آن‌ها.
+      operationId: listVideos
+      parameters:
+        - name: safety_identifier
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: request_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoListResponse'
+
+  /videos/{video_id}:
+    get:
+      tags:
+        - Videos
+      summary: استعلام وضعیت و جزئیات ویدیو (Retrieve Video Status)
+      description: دریافت اطلاعات و لینک خروجی ویدیوی ساخت شده با شناسه مشخص.
+      operationId: retrieveVideo
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoGenerationJob'
+
+    delete:
+      tags:
+        - Videos
+      summary: حذف کار ساخت ویدیو (Delete Video)
+      description: حذف یک ویدیو و محتوای وابسته به آن.
+      operationId: deleteVideo
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Video deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
+
+  /videos/{video_id}/remix:
+    post:
+      tags:
+        - Videos
+      summary: بازتولید و ریمیکس ویدیو (Remix Video)
+      description: ایجاد کار ویدیوی جدید بر اساس یک ویدیوی موجود و تنظیمات تغییریافته.
+      operationId: remixVideo
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoGenerationRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoGenerationJob'
+
+  /videos/{video_id}/content:
+    get:
+      tags:
+        - Videos
+      summary: دانلود فایل ویدیوی تولیدشده (Download Video Content)
+      description: دریافت مستور فایل mp4 ویدیوی آماده شده.
+      operationId: downloadVideoContent
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Video MP4 file stream
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+
+  # ---------------------------------------------------------------------------
+  # Anthropic Messages API
+  # ---------------------------------------------------------------------------
+  /messages:
+    post:
+      tags:
+        - Messages (Anthropic)
+      summary: ارسال پیام بر اساس ساختار Anthropic Messages
+      description: نقطه اتصال سازگار برای استفاده از SDKهای Anthropic Claude در اول‌آی.
+      operationId: createAnthropicMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnthropicMessageRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnthropicMessageResponse'
+
+  # ---------------------------------------------------------------------------
+  # Files API
+  # ---------------------------------------------------------------------------
+  /files:
+    post:
+      tags:
+        - Files
+      summary: آپلود فایل (Upload File)
+      description: آپلود اسناد و فایل‌ها برای استفاده در Fine-tuning، Assistants یا Search.
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - purpose
+              properties:
+                file:
+                  type: string
+                  format: binary
+                purpose:
+                  type: string
+                  description: هدف فایل (fine-tune, assistants, batch)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileObject'
+
+    get:
+      tags:
+        - Files
+      summary: دریافت لیست فایل‌ها (List Files)
+      description: بازیابی تمام فایل‌های آپلود شده در حساب کاربری.
+      operationId: listFiles
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileListResponse'
+
+  /files/{file_id}:
+    get:
+      tags:
+        - Files
+      summary: دریافت مشخصات یک فایل (Retrieve File)
+      description: متادیتای یک فایل را بازیابی می‌کند.
+      operationId: retrieveFile
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileObject'
+
+    delete:
+      tags:
+        - Files
+      summary: حذف فایل (Delete File)
+      description: حذف فایل با شناسه مشخص.
+      operationId: deleteFile
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
+
+  /files/{file_id}/content:
+    get:
+      tags:
+        - Files
+      summary: دانلود محتوای فایل (Retrieve File Content)
+      description: دانلود محتوای بایری یا متنی فایل.
+      operationId: retrieveFileContent
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File raw content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  # ---------------------------------------------------------------------------
+  # Batch API
+  # ---------------------------------------------------------------------------
+  /batches:
+    post:
+      tags:
+        - Batch
+      summary: ایجاد درخواست پردازش بچ (Create Batch)
+      description: ثبت فایل حاوی درخواست‌های متعددی جهت اجرا در پس‌زمینه با ۵۰٪ تخفیف قیمت.
+      operationId: createBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchJob'
+
+    get:
+      tags:
+        - Batch
+      summary: دریافت لیست درخواست‌های بچ (List Batches)
+      description: لیست تمام کارهای بچ ثبت‌شده کاربر.
+      operationId: listBatches
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BatchJob'
+
+  /batches/{batch_id}:
+    get:
+      tags:
+        - Batch
+      summary: استعلام وضعیت درخواست بچ (Retrieve Batch)
+      description: مشخصات و وضعیت اجرای یک کار بچ مشخص را بازیابی می‌کند.
+      operationId: retrieveBatch
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchJob'
+
+  /batches/{batch_id}/cancel:
+    post:
+      tags:
+        - Batch
+      summary: لغو درخواست پردازش بچ (Cancel Batch)
+      description: متوقف کردن اجرای کار پردازش دسته‌ای.
+      operationId: cancelBatch
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Batch job cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchJob'
+
+  # ---------------------------------------------------------------------------
+  # Fine-Tuning API
+  # ---------------------------------------------------------------------------
+  /fine_tuning/jobs:
+    post:
+      tags:
+        - Fine-Tuning
+      summary: ایجاد فرایند فین‌تیونینگ (Create Fine-Tuning Job)
+      description: آموزش اختصاصی یک مدل پایه بر روی داده‌های کاربر.
+      operationId: createFineTuningJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model
+                - training_file
+              properties:
+                model:
+                  type: string
+                training_file:
+                  type: string
+                hyperparameters:
+                  type: object
+                suffix:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FineTuningJob'
+
+    get:
+      tags:
+        - Fine-Tuning
+      summary: دریافت لیست فین‌تیونینگ‌ها (List Fine-Tuning Jobs)
+      description: مشاهده لیست تمام کارهای فین‌تیونینگ فعال یا تمام شده.
+      operationId: listFineTuningJobs
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FineTuningJob'
+
+  /fine_tuning/jobs/{fine_tuning_job_id}:
+    get:
+      tags:
+        - Fine-Tuning
+      summary: مشاهده اطلاعات کار فین‌تیونینگ (Retrieve Fine-Tuning Job)
+      description: دریافت وضعیت و جزئیات دقیق یک کار آموزش مدل.
+      operationId: retrieveFineTuningJob
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FineTuningJob'
+
+  /fine_tuning/jobs/{fine_tuning_job_id}/cancel:
+    post:
+      tags:
+        - Fine-Tuning
+      summary: لغو اجرای فین‌تیونینگ (Cancel Fine-Tuning Job)
+      description: متوقف کردن کار آموزش جاری.
+      operationId: cancelFineTuningJob
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FineTuningJob'
+
+  /fine_tuning/jobs/{fine_tuning_job_id}/events:
+    get:
+      tags:
+        - Fine-Tuning
+      summary: رویدادهای فین‌تیونینگ (List Fine-Tuning Events)
+      description: دریافت لۆگ‌ها و رویدادهای زنده پیشرفت فرآیند آموزش.
+      operationId: listFineTuningEvents
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object:
+                          type: string
+                        id:
+                          type: string
+                        created_at:
+                          type: integer
+                        level:
+                          type: string
+                        message:
+                          type: string
+
+  # ---------------------------------------------------------------------------
+  # Assistants API
+  # ---------------------------------------------------------------------------
+  /assistants:
+    post:
+      tags:
+        - Assistants
+      summary: ساخت دستیار هوشمند (Create Assistant)
+      description: ایجاد دستیار هوشمند همراه با دستورالعمل‌ها، مدل و ابزارها.
+      operationId: createAssistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model
+              properties:
+                model:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                instructions:
+                  type: string
+                tools:
+                  type: array
+                  items:
+                    type: object
+                file_ids:
+                  type: array
+                  items:
+                    type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantObject'
+
+    get:
+      tags:
+        - Assistants
+      summary: لیست دستیارها (List Assistants)
+      description: دریافت لیست تمام دستیارهای تعریف‌شده.
+      operationId: listAssistants
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssistantObject'
+
+  /assistants/{assistant_id}:
+    get:
+      tags:
+        - Assistants
+      summary: دریافت اطلاعات دستیار (Retrieve Assistant)
+      description: بازیابی تنظیمات یک دستیار خاص.
+      operationId: retrieveAssistant
+      parameters:
+        - name: assistant_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantObject'
+
+    post:
+      tags:
+        - Assistants
+      summary: ویرایش دستیار (Modify Assistant)
+      description: بروزرسانی پارامترهای یک دستیار موجود.
+      operationId: modifyAssistant
+      parameters:
+        - name: assistant_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantObject'
+
+    delete:
+      tags:
+        - Assistants
+      summary: حذف دستیار (Delete Assistant)
+      description: پاکسازی یک دستیار.
+      operationId: deleteAssistant
+      parameters:
+        - name: assistant_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assistant deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
+
+  /threads:
+    post:
+      tags:
+        - Assistants
+      summary: ایجاد رشته مکالمه (Create Thread)
+      description: ساخت یک Thread جدید برای شروع گفتگو.
+      operationId: createThread
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: object
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadObject'
+
+  /threads/{thread_id}:
+    get:
+      tags:
+        - Assistants
+      summary: دریافت مشخصات گفتگو (Retrieve Thread)
+      description: بازیابی مشخصات Thread.
+      operationId: retrieveThread
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadObject'
+
+    post:
+      tags:
+        - Assistants
+      summary: ویرایش Thread (Modify Thread)
+      description: بروزرسانی متادیتای مکالمه.
+      operationId: modifyThread
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadObject'
+
+    delete:
+      tags:
+        - Assistants
+      summary: حذف گفتگو (Delete Thread)
+      description: پاک کردن مکالمه.
+      operationId: deleteThread
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thread deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
+
+  /threads/{thread_id}/messages:
+    post:
+      tags:
+        - Assistants
+      summary: افزودن پیام به گفتگو (Create Message)
+      description: ثبت پیام جدید در Thread.
+      operationId: createThreadMessage
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+                - content
+              properties:
+                role:
+                  type: string
+                  enum: [user, assistant]
+                content:
+                  type: string
+                file_ids:
+                  type: array
+                  items:
+                    type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadMessageObject'
+
+    get:
+      tags:
+        - Assistants
+      summary: دریافت لیست پیام‌های گفتگو (List Messages)
+      description: بازیابی تمام پیام‌های ارسال‌شده و دریافت شده در Thread.
+      operationId: listThreadMessages
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ThreadMessageObject'
+
+  /threads/{thread_id}/messages/{message_id}:
+    get:
+      tags:
+        - Assistants
+      summary: دریافت یک پیام خاص (Retrieve Message)
+      description: بازیابی جزئیات پیام بر اساس شناسه.
+      operationId: retrieveThreadMessage
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadMessageObject'
+
+    post:
+      tags:
+        - Assistants
+      summary: ویرایش متادیتای پیام (Modify Message)
+      description: بروزرسانی متادیتای یک پیام در Thread.
+      operationId: modifyThreadMessage
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadMessageObject'
+
+  /threads/{thread_id}/runs:
+    post:
+      tags:
+        - Assistants
+      summary: اجرای دستیار روی گفتگو (Create Run)
+      description: شروع فرایند پردازش و تولید پاسخ توسط دستیار روی Thread.
+      operationId: createThreadRun
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - assistant_id
+              properties:
+                assistant_id:
+                  type: string
+                model:
+                  type: string
+                instructions:
+                  type: string
+                tools:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunObject'
+
+    get:
+      tags:
+        - Assistants
+      summary: لیست اجراهای گفتگو (List Runs)
+      description: دریافت تمام اجراها (Runs) انجام شده روی یک Thread.
+      operationId: listThreadRuns
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RunObject'
+
+  /threads/{thread_id}/runs/{run_id}:
+    get:
+      tags:
+        - Assistants
+      summary: استعلام وضعیت اجرای دستیار (Retrieve Run)
+      description: دریافت وضعیت جاری اجرای یک Run.
+      operationId: retrieveThreadRun
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunObject'
+
+    post:
+      tags:
+        - Assistants
+      summary: ویرایش متادیتای Run (Modify Run)
+      description: بروزرسانی اطلاعات یک اجرای جاری.
+      operationId: modifyThreadRun
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunObject'
+
+  /threads/{thread_id}/runs/{run_id}/submit_tool_outputs:
+    post:
+      tags:
+        - Assistants
+      summary: ارسال خروجی ابزارها به Run (Submit Tool Outputs)
+      description: ارسال نتایج فراخوانی توابع یا ابزارها به دستیار هنگام انتظار با وضعیت requires_action.
+      operationId: submitToolOutputsToRun
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tool_outputs
+              properties:
+                tool_outputs:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - tool_call_id
+                      - output
+                    properties:
+                      tool_call_id:
+                        type: string
+                      output:
+                        type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunObject'
+
+  /threads/{thread_id}/runs/{run_id}/cancel:
+    post:
+      tags:
+        - Assistants
+      summary: لغو اجرای دستیار (Cancel Run)
+      description: متوقف ساختن یک Run در حال اجرا.
+      operationId: cancelThreadRun
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunObject'
+
+  # ---------------------------------------------------------------------------
+  # Google GenAI (v1beta) API
+  # ---------------------------------------------------------------------------
+  /models/{model}:generateContent:
+    post:
+      tags:
+        - Google GenAI (v1beta)
+      summary: تولید محتوای بومی گوگل Gemini (Google GenAI generateContent)
+      description: فراخوانی بومی مدل‌های Gemini با ساختار درخواست و پاسخ رسمی Google SDK.
+      operationId: googleGenerateContent
+      parameters:
+        - name: model
+          in: path
+          required: true
+          description: نام مدل گوگل (مثلاً gemini-3.5-flash)
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+        - GoogleApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleGenerateContentRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleGenerateContentResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # Vertex AI Text Synthesize API
+  # ---------------------------------------------------------------------------
+  /text:synthesize:
+    post:
+      tags:
+        - Vertex AI Text
+      summary: سنتز و پردازش متن سازگار با Vertex AI
+      description: نقطه تماس متناظر با Vertex AI برای سنتز متن.
+      operationId: vertexTextSynthesize
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: object
+                instances:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  predictions:
+                    type: array
+                    items:
+                      type: object
+
+  # ---------------------------------------------------------------------------
+  # User API Endpoints (/user/v1)
+  # ---------------------------------------------------------------------------
+  /credit:
+    get:
+      tags:
+        - User API
+      summary: استعلام موجودی اعتبار و سطح حساب (Get Credit Info)
+      description: دریافت اطلاعات دقیق موجودی اعتبار (به تومان IRT)، سقف مصرف و سطح حساب کاربری (Tier).
+      operationId: getUserCredit
+      servers:
+        - url: https://api.avalai.ir/user/v1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /transactions:
+    get:
+      tags:
+        - User API
+      summary: مشاهده تاریخچه تراکنش‌های مصرف (List Transactions)
+      description: بازیابی لیست تراکنش‌های هزینه‌ای API با قابلیت فیلتر بر اساس مدل، سرویس‌دهنده و بازه زمانی (با ماندگاری حداقل ۹۰ روز).
+      operationId: listTransactions
+      servers:
+        - url: https://api.avalai.ir/user/v1
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /transactions/{request_id}:
+    get:
+      tags:
+        - User API
+      summary: پیگیری جزئیات هزینه‌ی یک درخواست (Retrieve Transaction by Request ID)
+      description: استعلام دقیق محاسبه ریزهزینه و توکن‌های مصرف‌شده برای یک شناسه درخواست مشخص (Request ID).
+      operationId: getTransactionByRequestId
+      servers:
+        - url: https://api.avalai.ir/user/v1
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: شناسه‌ی یکتای درخواست API
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionItem'
+        '404':
+          description: Transaction not found
+
+  /usage/summary:
+    get:
+      tags:
+        - User API
+      summary: دریافت خلاصه آمار مصرف و هزینه (Get Usage Summary)
+      description: دریافت گزارش تجمیعی مصرف و هزینه‌ها به تفکیک روز، مدل، سرویس‌دهنده یا کلید API.
+      operationId: getUsageSummary
+      servers:
+        - url: https://api.avalai.ir/user/v1
+      parameters:
+        - name: group_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [day, model, provider, api_key]
+            default: day
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSummaryResponse'
+
+# ---------------------------------------------------------------------------
+# Reusable Components & Schemas
+# ---------------------------------------------------------------------------
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: APIKey
+      description: |
+        احراز هویت استاندارد اول‌آی با ارسال کلید API در هدر Authorization.
+        `Authorization: Bearer AVALAI_API_KEY`
+    GoogleApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-goog-api-key
+      description: |
+        هدر اختصاصی کلید API برای درخواست‌های بومی Google GenAI SDK.
+        `x-goog-api-key: AVALAI_API_KEY`
+
+  responses:
+    400BadRequest:
+      description: درخواست نادرست به دلیل عدم تطابق الگوی پارامترها یا داده‌های ورودی
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    401Unauthorized:
+      description: خطای عدم احراز هویت - کلید API ارسال نشده یا معتبر نیست
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    429RateLimit:
+      description: خطای عبور از سقف مجاز نرخ درخواست‌ها (Rate Limit Exceeded)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    # Error Schemas
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: Invalid API key provided.
+            type:
+              type: string
+              example: invalid_request_error
+            param:
+              type: string
+              nullable: true
+            code:
+              type: string
+              example: invalid_api_key
+
+    # Models Schemas
+    ModelObject:
+      type: object
+      required:
+        - id
+        - object
+        - created
+        - owned_by
+      properties:
+        id:
+          type: string
+          example: gpt-5.5
+        object:
+          type: string
+          example: model
+        created:
+          type: integer
+          example: 1710000000
+        owned_by:
+          type: string
+          example: avalai
+
+    ModelListResponse:
+      type: object
+      required:
+        - object
+        - data
+      properties:
+        object:
+          type: string
+          example: list
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelObject'
+
+    # Chat Completions Schemas
+    ChatCompletionRequest:
+      type: object
+      required:
+        - model
+        - messages
+      properties:
+        model:
+          type: string
+          description: شناسه‌ی مدل مورد نظر جهت تولید پاسخ
+          example: gpt-5.5
+        messages:
+          type: array
+          description: آرایه شامل پیام‌های قبلی و جدید در مکالمه
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        temperature:
+          type: number
+          default: 1
+          minimum: 0
+          maximum: 2
+        top_p:
+          type: number
+          default: 1
+        n:
+          type: integer
+          default: 1
+        stream:
+          type: boolean
+          default: false
+        stop:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        max_tokens:
+          type: integer
+        presence_penalty:
+          type: number
+          default: 0
+        frequency_penalty:
+          type: number
+          default: 0
+        user:
+          type: string
+        response_format:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [text, json_object, json_schema]
+            json_schema:
+              type: object
+        tools:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: function
+              function:
+                type: object
+        tool_choice:
+          oneOf:
+            - type: string
+            - type: object
+
+    ChatMessage:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+        name:
+          type: string
+        tool_calls:
+          type: array
+          items:
+            type: object
+        tool_call_id:
+          type: string
+
+    ChatCompletionResponse:
+      type: object
+      required:
+        - id
+        - object
+        - created
+        - model
+        - choices
+      properties:
+        id:
+          type: string
+          example: chatcmpl-12345
+        object:
+          type: string
+          example: chat.completion
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                $ref: '#/components/schemas/ChatMessage'
+              finish_reason:
+                type: string
+                example: stop
+        usage:
+          $ref: '#/components/schemas/UsageInfo'
+
+    UsageInfo:
+      type: object
+      properties:
+        prompt_tokens:
+          type: integer
+        completion_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+
+    # Responses Schemas
+    ResponsesRequest:
+      type: object
+      required:
+        - model
+        - input
+      properties:
+        model:
+          type: string
+          example: gpt-5.6-sol
+        input:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+        instructions:
+          type: string
+        tools:
+          type: array
+          items:
+            type: object
+        output_format:
+          type: object
+
+    ResponsesResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: resp-98765
+        object:
+          type: string
+          example: response
+        created:
+          type: integer
+        model:
+          type: string
+        output_text:
+          type: string
+        status:
+          type: string
+        usage:
+          $ref: '#/components/schemas/UsageInfo'
+
+    # Image Schemas
+    ImageGenerationRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          example: A realistic photo of Mount Damavand during sunset
+        model:
+          type: string
+          default: flux-schnell
+        n:
+          type: integer
+          default: 1
+        quality:
+          type: string
+          default: standard
+        response_format:
+          type: string
+          enum: [url, b64_json]
+          default: url
+        size:
+          type: string
+          default: 1024x1024
+        style:
+          type: string
+
+    ImageEditMultipartRequest:
+      type: object
+      required:
+        - image
+        - prompt
+      properties:
+        image:
+          type: string
+          format: binary
+        prompt:
+          type: string
+        mask:
+          type: string
+          format: binary
+        model:
+          type: string
+        n:
+          type: integer
+        size:
+          type: string
+        response_format:
+          type: string
+
+    ImageResponse:
+      type: object
+      properties:
+        created:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              b64_json:
+                type: string
+              revised_prompt:
+                type: string
+
+    # Embeddings Schemas
+    EmbeddingsRequest:
+      type: object
+      required:
+        - model
+        - input
+      properties:
+        model:
+          type: string
+          example: text-embedding-3-small
+        input:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        user:
+          type: string
+        dimensions:
+          type: integer
+
+    EmbeddingsResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          example: list
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              object:
+                type: string
+                example: embedding
+              embedding:
+                type: array
+                items:
+                  type: number
+              index:
+                type: integer
+        model:
+          type: string
+        usage:
+          $ref: '#/components/schemas/UsageInfo'
+
+    # Speech/Audio Schemas
+    AudioTranscriptionResponse:
+      type: object
+      properties:
+        text:
+          type: string
+        task:
+          type: string
+        language:
+          type: string
+        duration:
+          type: number
+        segments:
+          type: array
+          items:
+            type: object
+
+    AudioSpeechRequest:
+      type: object
+      required:
+        - model
+        - input
+        - voice
+      properties:
+        model:
+          type: string
+          example: tts-1
+        input:
+          type: string
+          example: سلام! به اول‌آی خوش آمدید.
+        voice:
+          type: string
+          example: alloy
+        response_format:
+          type: string
+          enum: [mp3, opus, aac, flac, wav]
+          default: mp3
+        speed:
+          type: number
+          default: 1.0
+
+    # Moderation Schemas
+    ModerationRequest:
+      type: object
+      required:
+        - input
+      properties:
+        input:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        model:
+          type: string
+
+    ModerationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        model:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              flagged:
+                type: boolean
+              categories:
+                type: object
+              category_scores:
+                type: object
+
+    # Rerank Schemas
+    RerankRequest:
+      type: object
+      required:
+        - model
+        - query
+        - documents
+      properties:
+        model:
+          type: string
+          example: cohere-rerank-v4.0-pro
+        query:
+          type: string
+          example: هوش مصنوعی چیست؟
+        documents:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  id:
+                    type: string
+                  text:
+                    type: string
+        top_n:
+          type: integer
+        return_documents:
+          type: boolean
+          default: true
+        user:
+          type: string
+
+    RerankResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              relevance_score:
+                type: number
+              document:
+                type: object
+
+    # Search Schemas
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          example: آخرین اخبار فناوری در ایران
+        search_tool_name:
+          type: string
+          example: serper-search
+        max_results:
+          type: integer
+          default: 10
+        search_domain_filter:
+          type: array
+          items:
+            type: string
+        max_tokens_per_page:
+          type: integer
+          default: 1024
+        country:
+          type: string
+
+    SearchResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        search_tool_name:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              url:
+                type: string
+              snippet:
+                type: string
+
+    # OCR Schemas
+    OcrRequest:
+      type: object
+      required:
+        - model
+        - document
+      properties:
+        model:
+          type: string
+          example: mistral-ocr-4-0
+        document:
+          type: object
+          required:
+            - type
+          properties:
+            type:
+              type: string
+              enum: [document_url, image_url]
+            document_url:
+              type: string
+            image_url:
+              type: string
+        pages:
+          type: array
+          items:
+            type: integer
+        include_image_base64:
+          type: boolean
+          default: false
+        extract_header:
+          type: boolean
+          default: false
+        extract_footer:
+          type: boolean
+          default: false
+        table_format:
+          type: string
+          enum: [markdown, html]
+          default: markdown
+
+    OcrResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        model:
+          type: string
+        pages:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              markdown:
+                type: string
+              images:
+                type: array
+                items:
+                  type: object
+
+    # Video Schemas
+    VideoGenerationRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          example: A cinematic drone shot over Persepolis at sunset
+        model:
+          type: string
+          example: sora-1.0
+        duration:
+          type: integer
+          default: 5
+        aspect_ratio:
+          type: string
+          default: "16:9"
+        resolution:
+          type: string
+          default: "720p"
+
+    VideoGenerationJob:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vid-554433
+        object:
+          type: string
+          example: video.job
+        created_at:
+          type: integer
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+        model:
+          type: string
+        video_url:
+          type: string
+
+    VideoListResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          example: list
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoGenerationJob'
+
+    # Anthropic Messages Schemas
+    AnthropicMessageRequest:
+      type: object
+      required:
+        - model
+        - messages
+        - max_tokens
+      properties:
+        model:
+          type: string
+          example: claude-3-5-sonnet
+        messages:
+          type: array
+          items:
+            type: object
+        system:
+          type: string
+        max_tokens:
+          type: integer
+        temperature:
+          type: number
+        stream:
+          type: boolean
+
+    AnthropicMessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: message
+        role:
+          type: string
+          example: assistant
+        content:
+          type: array
+          items:
+            type: object
+        model:
+          type: string
+
+    # Files Schemas
+    FileObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: file-abc1234
+        object:
+          type: string
+          example: file
+        bytes:
+          type: integer
+        created_at:
+          type: integer
+        filename:
+          type: string
+        purpose:
+          type: string
+
+    FileListResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          example: list
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileObject'
+
+    # Batch Schemas
+    BatchRequest:
+      type: object
+      required:
+        - input_file_id
+        - endpoint
+        - completion_window
+      properties:
+        input_file_id:
+          type: string
+        endpoint:
+          type: string
+          example: /v1/chat/completions
+        completion_window:
+          type: string
+          example: 24h
+        metadata:
+          type: object
+
+    BatchJob:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: batch
+        endpoint:
+          type: string
+        input_file_id:
+          type: string
+        completion_window:
+          type: string
+        status:
+          type: string
+          example: completed
+        output_file_id:
+          type: string
+        error_file_id:
+          type: string
+        created_at:
+          type: integer
+
+    # Fine-Tuning Schemas
+    FineTuningJob:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: fine_tuning.job
+        created_at:
+          type: integer
+        model:
+          type: string
+        training_file:
+          type: string
+        status:
+          type: string
+
+    # Assistants Schemas
+    AssistantObject:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: assistant
+        created_at:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        model:
+          type: string
+        instructions:
+          type: string
+
+    ThreadObject:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: thread
+        created_at:
+          type: integer
+
+    ThreadMessageObject:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: thread.message
+        created_at:
+          type: integer
+        thread_id:
+          type: string
+        role:
+          type: string
+        content:
+          type: array
+          items:
+            type: object
+
+    RunObject:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: thread.run
+        created_at:
+          type: integer
+        thread_id:
+          type: string
+        assistant_id:
+          type: string
+        status:
+          type: string
+
+    # Google GenAI Schemas
+    GoogleGenerateContentRequest:
+      type: object
+      required:
+        - contents
+      properties:
+        contents:
+          type: array
+          items:
+            type: object
+            required:
+              - parts
+              - role
+            properties:
+              role:
+                type: string
+                enum: [user, model]
+              parts:
+                type: array
+                items:
+                  type: object
+        system_instruction:
+          type: object
+          properties:
+            parts:
+              type: array
+              items:
+                type: object
+        generationConfig:
+          type: object
+          properties:
+            temperature:
+              type: number
+            topP:
+              type: number
+            topK:
+              type: integer
+            maxOutputTokens:
+              type: integer
+            responseMimeType:
+              type: string
+
+    GoogleGenerateContentResponse:
+      type: object
+      properties:
+        candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              content:
+                type: object
+              finishReason:
+                type: string
+        usageMetadata:
+          type: object
+
+    # User API Schemas
+    CreditResponse:
+      type: object
+      required:
+        - remaining_irt
+        - account_tier
+      properties:
+        limit:
+          type: number
+          description: سقف اعتبار حساب (تومان)
+          example: 10000000
+        remaining_irt:
+          type: number
+          description: اعتبار باقیمانده حساب به تومان (IRT)
+          example: 4500000
+        account_tier:
+          type: integer
+          description: سطح حساب کاربری (از Tier 0 تا Tier 5)
+          example: 2
+
+    TransactionItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: tx-112233
+        request_id:
+          type: string
+          example: req-998877
+        model:
+          type: string
+          example: gpt-5.5
+        provider:
+          type: string
+          example: openai
+        cost_irt:
+          type: number
+          example: 120.5
+        prompt_tokens:
+          type: integer
+          example: 150
+        completion_tokens:
+          type: integer
+          example: 45
+        created_at:
+          type: string
+          format: date-time
+
+    TransactionsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionItem'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    UsageSummaryResponse:
+      type: object
+      properties:
+        summary:
+          type: array
+          items:
+            type: object
+            properties:
+              group:
+                type: string
+                example: 2026-08-06
+              total_cost_irt:
+                type: number
+              total_requests:
+                type: integer
+              total_prompt_tokens:
+                type: integer
+              total_completion_tokens:
+                type: integer

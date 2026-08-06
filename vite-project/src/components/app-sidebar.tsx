@@ -56,16 +56,16 @@ const data = {
   navMain: [
     {
       title: "هوش مصنوعی",
-      url: "/panel/support/ask-ai",
+      url: "/panel/ai",
       icon: Bot,
       items: [
         {
           title: "گفتگوهای من",
-          url: "/panel/support/ask-ai",
+          url: "/panel/ai",
         },
         {
           title: "گفتگوی جدید",
-          url: "/panel/support/ask-ai/new",
+          url: "/panel/ai",
         },
       ],
     },
