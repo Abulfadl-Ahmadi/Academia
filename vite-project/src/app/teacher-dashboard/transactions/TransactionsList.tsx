@@ -49,12 +49,26 @@ export default function TransactionsList() {
 
     // Search filter
     if (filters.search) {
-      filtered = filtered.filter(transaction =>
-        transaction.user.username.toLowerCase().includes(filters.search.toLowerCase()) ||
-        transaction.user.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-        transaction.reference_number?.toLowerCase().includes(filters.search.toLowerCase()) ||
-        transaction.order.id.toString().includes(filters.search)
-      );
+      filtered = filtered.filter(transaction => {
+        const user = transaction.order?.user || transaction.created_by || transaction.user || {};
+        const username = (user.username || "").toLowerCase();
+        const email = (user.email || "").toLowerCase();
+        const firstName = (user.first_name || "").toLowerCase();
+        const lastName = (user.last_name || "").toLowerCase();
+        const ref = (transaction.reference_number || "").toLowerCase();
+        const orderId = (transaction.order?.id || "").toString();
+        const transCode = (transaction.transaction_code || transaction.id || "").toString().toLowerCase();
+        const q = filters.search.toLowerCase();
+        return (
+          username.includes(q) ||
+          email.includes(q) ||
+          firstName.includes(q) ||
+          lastName.includes(q) ||
+          ref.includes(q) ||
+          orderId.includes(q) ||
+          transCode.includes(q)
+        );
+      });
     }
 
     // Payment method filter
@@ -74,7 +88,7 @@ export default function TransactionsList() {
     // Status filter
     if (filters.status) {
       filtered = filtered.filter(transaction =>
-        transaction.order.status === filters.status
+        transaction.order?.status === filters.status
       );
     }
 
@@ -135,15 +149,17 @@ export default function TransactionsList() {
   const buildExportRows = () => {
     const headers = ["شماره تراکنش", "شماره سفارش", "کاربر", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"];
     const rows = filteredTransactions.map(t => {
-      const user = t.order.user;
-      const fullName = `${user.first_name} ${user.last_name}`.trim();
+      const user = t.order?.user || t.created_by || t.user || {};
+      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      const orderId = t.order?.id?.toString() || "-";
+      const status = t.order?.status || "";
       return [
-        t.id.toString(),
-        t.order.id.toString(),
-        fullName || user.username,
-        t.amount.toString(),
+        (t.transaction_code || t.id).toString(),
+        orderId,
+        fullName || user.username || "-",
+        (t.amount || 0).toString(),
         getPaymentMethodLabel(t.payment_method),
-        getStatusLabel(t.order.status),
+        getStatusLabel(status),
         formatDate(t.created_at)
       ];
     });

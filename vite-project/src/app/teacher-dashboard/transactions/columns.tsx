@@ -53,7 +53,9 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "order.order_code",
     header: "کد سفارش",
     cell: ({ row }) => {
-      const orderCode = row.original.order.order_code || `#${row.original.order.id}`;
+      const order = row.original.order;
+      if (!order) return <span className="text-muted-foreground">-</span>;
+      const orderCode = order.order_code || `#${order.id}`;
       return <span className="font-mono text-xs text-muted-foreground">{orderCode}</span>;
     }
   },
@@ -61,8 +63,9 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "user.username",
     header: "کاربر",
     cell: ({ row }) => {
-      const user = row.original.order.user;
-      const fullName = `${user.first_name} ${user.last_name}`.trim();
+      const user = row.original.order?.user || row.original.created_by || row.original.user;
+      if (!user) return <span className="text-muted-foreground">-</span>;
+      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       return (
         <div>
           <div>{fullName || user.username}</div>
@@ -75,7 +78,7 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "amount",
     header: "مبلغ",
     cell: ({ row }) => {
-      const amount = parseInt(row.getValue("amount"));
+      const amount = parseInt(row.getValue("amount") || 0);
       return formatPrice(amount);
     },
   },
@@ -91,7 +94,8 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "order.status",
     header: "وضعیت سفارش",
     cell: ({ row }) => {
-      const status = row.original.order.status;
+      const status = row.original.order?.status;
+      if (!status) return <span className="text-muted-foreground">-</span>;
       return (
         <Badge variant={getStatusVariant(status)}>
           {getStatusLabel(status)}
@@ -102,10 +106,18 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "created_at",
     header: "تاریخ",
-    cell: ({ row }) => convertToJalali(row.getValue("created_at")),
+    cell: ({ row }) => {
+      const date = row.getValue("created_at") as string;
+      return date ? convertToJalali(date) : "-";
+    },
   },
   {
     accessorKey: "created_by.username",
     header: "ایجاد شده توسط",
+    cell: ({ row }) => {
+      const createdBy = row.original.created_by;
+      if (!createdBy) return "-";
+      return createdBy.username || "-";
+    }
   },
 ]
