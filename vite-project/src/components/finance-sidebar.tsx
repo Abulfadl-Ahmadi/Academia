@@ -29,7 +29,7 @@ import {
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
 
-export function TeacherSidebar({
+export function FinanceSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { user, loading } = useUser();
@@ -100,121 +100,121 @@ export function TeacherSidebar({
           })) : []),
         ],
       },
+      {
+        title: "مدیریت فروشگاه",
+        url: "/panel/products",
+        icon: ShoppingCart,
+        items: [
+          {
+            title: "لیست محصولات",
+            url: "/panel/products",
+          },
+          {
+            title: "ایجاد محصول جدید",
+            url: "/panel/products/create",
+          },
+        ],
+      },
       // {
-      //   title: "مدیریت فروشگاه",
-      //   url: "/panel/products",
-      //   icon: ShoppingCart,
+      //   title: "مجموعه آزمون‌ها",
+      //   url: "/panel/test-collections",
+      //   icon: Box,
       //   items: [
       //     {
-      //       title: "لیست محصولات",
-      //       url: "/panel/products",
+      //       title: "لیست مجموعه آزمون‌ها",
+      //       url: "/panel/test-collections",
       //     },
       //     {
-      //       title: "ایجاد محصول جدید",
-      //       url: "/panel/products/create",
+      //       title: "ایجاد مجموعه آزمون",
+      //       url: "/panel/test-collections/new",
+      //     },
+      //     {
+      //       title: "آمار و گزارشات",
+      //       url: "/panel/test-collections",
+      //       description: "مشاهده آمار آزمون‌های موجود در هر مجموعه"
       //     },
       //   ],
       // },
-      {
-        title: "مجموعه آزمون‌ها",
-        url: "/panel/test-collections",
-        icon: Box,
-        items: [
-          {
-            title: "لیست مجموعه آزمون‌ها",
-            url: "/panel/test-collections",
-          },
-          {
-            title: "ایجاد مجموعه آزمون",
-            url: "/panel/test-collections/new",
-          },
-          {
-            title: "آمار و گزارشات",
-            url: "/panel/test-collections",
-            description: "مشاهده آمار آزمون‌های موجود در هر مجموعه"
-          },
-        ],
-      },
-      {
-        title: "آزمون‌ها",
-        url: "/panel/tests",
-        icon: Target,
-        items: [
-          {
-            title: "لیست آزمون‌ها",
-            url: "/panel/tests",
-          },
-          {
-            title: "ایجاد آزمون جدید",
-            url: "/panel/tests/create",
-            description: "فرم یکپارچه برای همه انواع آزمون"
-          },
-        ],
-      },
-      {
-        title: "آزمون‌های مبحثی",
-        url: "/panel/topic-tests",
-        icon: Target,
-        items: [
-          {
-            title: "لیست آزمون‌های مبحثی",
-            url: "/panel/topic-tests",
-          },
-          {
-            title: "ایجاد آزمون مبحثی",
-            url: "/panel/tests/create?type=topic_based&content=pdf",
-            description: "آزمون‌های آزاد مرتبط با مباحث درخت دانش"
-          },
-        ],
-      },
-      {
-        title: "آزمون‌های سوالی",
-        url: "/panel/question-tests",
-        icon: Target,
-        items: [
-          {
-            title: "لیست آزمون‌های سوالی",
-            url: "/panel/question-tests",
-          },
-          {
-            title: "ایجاد آزمون سوالی",
-            url: "/panel/tests/create?type=practice&content=typed_question",
-            description: "آزمون با سوالات تایپ شده انتخابی"
-          },
-        ],
-      },
-      {
-        title: "سوالات",
-        url: "/panel/questions",
-        icon: Target, // یا آیکون مناسب دیگر
-        items: [
-          {
-            title: "لیست سوالات",
-            url: "/panel/questions",
-          },
-          {
-            title: "ایجاد سوال",
-            url: "/panel/questions/create",
-            description: "ایجاد سوال جدید با پشتیبانی ریاضی"
-          },
-        ],
-      },
-      {
-        title: "مجموعه‌های سوال",
-        url: "/panel/question-collections",
-        icon: Library,
-        items: [
-          {
-            title: "لیست مجموعه‌های سوال",
-            url: "/panel/question-collections",
-          },
-          {
-            title: "ایجاد مجموعه سوال",
-            url: "/panel/question-collections/create",
-            description: "ایجاد مجموعه جدید برای سازماندهی سوالات"
-          },
-        ],
-      },
+      // {
+      //   title: "آزمون‌ها",
+      //   url: "/panel/tests",
+      //   icon: Target,
+      //   items: [
+      //     {
+      //       title: "لیست آزمون‌ها",
+      //       url: "/panel/tests",
+      //     },
+      //     {
+      //       title: "ایجاد آزمون جدید",
+      //       url: "/panel/tests/create",
+      //       description: "فرم یکپارچه برای همه انواع آزمون"
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "آزمون‌های مبحثی",
+      //   url: "/panel/topic-tests",
+      //   icon: Target,
+      //   items: [
+      //     {
+      //       title: "لیست آزمون‌های مبحثی",
+      //       url: "/panel/topic-tests",
+      //     },
+      //     {
+      //       title: "ایجاد آزمون مبحثی",
+      //       url: "/panel/tests/create?type=topic_based&content=pdf",
+      //       description: "آزمون‌های آزاد مرتبط با مباحث درخت دانش"
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "آزمون‌های سوالی",
+      //   url: "/panel/question-tests",
+      //   icon: Target,
+      //   items: [
+      //     {
+      //       title: "لیست آزمون‌های سوالی",
+      //       url: "/panel/question-tests",
+      //     },
+      //     {
+      //       title: "ایجاد آزمون سوالی",
+      //       url: "/panel/tests/create?type=practice&content=typed_question",
+      //       description: "آزمون با سوالات تایپ شده انتخابی"
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "سوالات",
+      //   url: "/panel/questions",
+      //   icon: Target, // یا آیکون مناسب دیگر
+      //   items: [
+      //     {
+      //       title: "لیست سوالات",
+      //       url: "/panel/questions",
+      //     },
+      //     {
+      //       title: "ایجاد سوال",
+      //       url: "/panel/questions/create",
+      //       description: "ایجاد سوال جدید با پشتیبانی ریاضی"
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "مجموعه‌های سوال",
+      //   url: "/panel/question-collections",
+      //   icon: Library,
+      //   items: [
+      //     {
+      //       title: "لیست مجموعه‌های سوال",
+      //       url: "/panel/question-collections",
+      //     },
+      //     {
+      //       title: "ایجاد مجموعه سوال",
+      //       url: "/panel/question-collections/create",
+      //       description: "ایجاد مجموعه جدید برای سازماندهی سوالات"
+      //     },
+      //   ],
+      // },
       // {
       //   title: "مدیریت وبلاگ",
       //   url: "/panel/blog",
@@ -248,34 +248,34 @@ export function TeacherSidebar({
       //     },
       //   ],
       // },
-      {
-        title: "فایل‌ها",
-        url: "/panel/files",
-        icon: Library,
-        items: [
-          {
-            title: "جزوه‌ها",
-            url: "/panel/files",
-          },
-        ],
-      },
       // {
-      //   title: "مدیریت مالی",
-      //   url: "/panel/transactions",
-      //   icon: CreditCard,
+      //   title: "فایل‌ها",
+      //   url: "/panel/files",
+      //   icon: Library,
       //   items: [
       //     {
-      //       title: "تراکنش‌ها",
-      //       url: "/panel/transactions",
-      //       description: "مشاهده و ثبت تراکنش‌های مالی",
-      //     },
-      //     {
-      //       title: "کدهای تخفیف",
-      //       url: "/panel/coupons",
-      //       description: "مدیریت کوپن‌ها و کدهای تخفیف",
+      //       title: "جزوه‌ها",
+      //       url: "/panel/files",
       //     },
       //   ],
       // },
+      {
+        title: "مدیریت مالی",
+        url: "/panel/transactions",
+        icon: CreditCard,
+        items: [
+          {
+            title: "تراکنش‌ها",
+            url: "/panel/transactions",
+            description: "مشاهده و ثبت تراکنش‌های مالی",
+          },
+          {
+            title: "کدهای تخفیف",
+            url: "/panel/coupons",
+            description: "مدیریت کوپن‌ها و کدهای تخفیف",
+          },
+        ],
+      },
       {
         title: "پشتیبانی و تیکت‌ها",
         url: "/panel/support",
@@ -293,21 +293,21 @@ export function TeacherSidebar({
           },
         ],
       },
-      {
-        title: "کتاب‌های درسی",
-        url: "/panel/books",
-        icon: Library,
-        items: [
-          {
-            title: "لیست کتاب‌ها",
-            url: "/panel/books",
-          },
-          {
-            title: "افزودن کتاب جدید",
-            url: "/panel/books/create",
-          },
-        ],
-      },
+      // {
+      //   title: "کتاب‌های درسی",
+      //   url: "/panel/books",
+      //   icon: Library,
+      //   items: [
+      //     {
+      //       title: "لیست کتاب‌ها",
+      //       url: "/panel/books",
+      //     },
+      //     {
+      //       title: "افزودن کتاب جدید",
+      //       url: "/panel/books/create",
+      //     },
+      //   ],
+      // },
     ],
     projects: [
       {
@@ -342,7 +342,7 @@ export function TeacherSidebar({
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium text-lg text-right">
-              پنل معلم
+              مدیریت مالی
             </span>
           </div>
           {/* <ChevronsUpDown className="ml-auto" /> */}

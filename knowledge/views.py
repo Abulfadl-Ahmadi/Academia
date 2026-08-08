@@ -188,7 +188,7 @@ class StudentTopicProgressViewSet(viewsets.ReadOnlyModelViewSet):
             return StudentTopicProgress.objects.filter(
                 student=self.request.user
             ).select_related('topic__topic_category__lesson__section__chapter__subject')
-        elif self.request.user.role in ['teacher', 'admin']:
+        elif self.request.user.role != 'student':
             return StudentTopicProgress.objects.all().select_related(
                 'student', 'topic__topic_category__lesson__section__chapter__subject'
             )
