@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
 from .models import UserProfile, User, VerificationCode, UserAddress
 from .serializers import (
     UserProfileSerializer, 
@@ -415,6 +416,18 @@ Example POST JSON body:
         if user.is_authenticated and user.role == 'admin':
             return self.queryset
         return self.queryset.filter(user=user)
+
+    @action(detail=False, methods=['get', 'patch', 'put'])
+    def me(self, request):
+        """Always returns the current authenticated user's profile."""
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if request.method in ('PATCH', 'PUT'):
+            serializer = self.get_serializer(profile, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
 
 
 class LoginView(APIView):

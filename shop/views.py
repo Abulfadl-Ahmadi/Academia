@@ -139,8 +139,8 @@ class CouponViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if getattr(user, 'role', None) in ('admin', 'teacher') or user.is_staff or user.is_superuser:
-            if getattr(user, 'role', None) == 'admin' or user.is_staff or user.is_superuser:
+        if getattr(user, 'role', None) in ('admin', 'teacher', 'finance') or user.is_staff or user.is_superuser:
+            if getattr(user, 'role', None) in ('admin', 'finance') or user.is_staff or user.is_superuser:
                 return Coupon.objects.all()
             return Coupon.objects.filter(created_by=user)
         return Coupon.objects.filter(is_active=True)

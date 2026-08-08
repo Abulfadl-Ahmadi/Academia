@@ -78,8 +78,6 @@ export default function TransactionDetail() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPayloads, setShowPayloads] = useState(false);
 
-  const isAdminOrTeacher = currentUser?.role === "admin" || currentUser?.role === "teacher";
-
   const fetchTransactionDetail = async () => {
     if (!id) return;
     setLoading(true);

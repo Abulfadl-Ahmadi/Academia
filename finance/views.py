@@ -21,7 +21,7 @@ from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
 from spotplayer.services import provision_licenses_for_order
-from accounts.permissions import IsAdmin, IsTeacherOrAdmin
+from accounts.permissions import IsAdmin, IsTeacherOrAdmin, IsAdminOrFinance, IsStaffUser
 from .services.zibal import (
     tomans_to_rials, request_payment_service, verify_payment_service,
     inquiry_payment_service, process_callback_service
@@ -74,7 +74,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'admin':
+        if user.role in ('admin', 'finance') or user.is_staff or user.is_superuser:
             return Order.objects.all().select_related('user').prefetch_related('items__product')
         return Order.objects.filter(user=user).select_related('user').prefetch_related('items__product')
 
@@ -128,9 +128,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             "message": f"سفارش ایجاد شد اما مشکلی در اتصال به درگاه پرداخت وجود دارد: {error}",
         }, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated, IsAdmin])
+    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated, IsAdminOrFinance])
     def update_status(self, request, pk=None):
-        """Update order status (admin only)."""
+        """Update order status (admin or finance)."""
         order = self.get_object()
         serializer = OrderStatusUpdateSerializer(data=request.data)
 
@@ -160,9 +160,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated, IsTeacherOrAdmin])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def pending(self, request):
-        """Get pending orders (admin/teacher only)."""
+        """Get pending orders (staff/teacher/admin/finance)."""
         pending_orders = Order.objects.filter(
             status=Order.OrderStatus.PENDING
         ).select_related('user').prefetch_related('items__product')
@@ -177,7 +177,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role in ('admin', 'teacher'):
+        if user.role in ('admin', 'teacher', 'finance') or user.is_staff or user.is_superuser:
             return Transaction.objects.all().select_related('order', 'created_by')
         return Transaction.objects.filter(order__user=user).select_related('order', 'created_by')
 
@@ -259,7 +259,7 @@ class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
 # ---------------------------------------------------------------------------
 
 class AdminDashboardView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrFinance]
 
     def get(self, request):
         total_orders = Order.objects.count()
@@ -504,8 +504,8 @@ class PaymentInquiryView(APIView):
         if not payment:
             return Response({"error": "تراکنش پرداخت یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Permission check: must be owner or admin/teacher
-        if request.user.role not in ('admin', 'teacher') and payment.user != request.user:
+        # Permission check: must be owner or admin/teacher/finance
+        if request.user.role not in ('admin', 'teacher', 'finance') and not (request.user.is_staff or request.user.is_superuser) and payment.user != request.user:
             return Response({"error": "شما دسترسی به این تراکنش ندارید."}, status=status.HTTP_403_FORBIDDEN)
 
         ip_address = get_client_ip(request)

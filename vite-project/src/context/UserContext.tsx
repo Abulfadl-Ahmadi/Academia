@@ -108,27 +108,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const res = await axiosInstance.get("/profiles/", {
-        withCredentials: true,
-      });
+      let res;
+      try {
+        res = await axiosInstance.get("/profiles/me/", {
+          withCredentials: true,
+        });
+      } catch {
+        res = await axiosInstance.get("/profiles/", {
+          withCredentials: true,
+        });
+      }
       
       console.log("API Response:", res.data); // Debug log
       
-      // Handle both old format (array) and new format (pagination object)
       let userData;
-      if (res.data.results && Array.isArray(res.data.results)) {
-        // New pagination format
+      if (res.data && res.data.user) {
+        // Direct profile object from /profiles/me/
+        userData = res.data;
+      } else if (res.data.results && Array.isArray(res.data.results)) {
+        // Fallback for paginated list (should not happen with /profiles/me/)
         userData = res.data.results[0];
-        console.log("Using pagination format, userData:", userData);
       } else if (Array.isArray(res.data)) {
-        // Old array format
         userData = res.data[0];
-        console.log("Using array format, userData:", userData);
       } else {
         throw new Error("Invalid response format");
       }
       
-      if (!userData) {
+      if (!userData || !userData.user) {
         throw new Error("No user data found");
       }
       
@@ -139,18 +145,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           last_name,
           email,
           role,
-          id,
+          id: authUserId,
         },
       } = userData;
+
+      const userId = authUserId || userData.id;
+
       setUser({
         username,
         first_name,
         last_name,
         email,
         role,
-        id,
+        id: userId,
       });
-      console.log("User set successfully:", { username, first_name, last_name, email, role, id });
+      console.log("User set successfully:", { username, first_name, last_name, email, role, id: userId });
       markLoggedIn();
       
       // Store last fetch timestamp to prevent excessive calls
