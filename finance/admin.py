@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderItem, Transaction, UserAccess, Payment
+from .models import Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog
 
 
 class OrderItemInline(admin.TabularInline):
@@ -106,23 +106,77 @@ class UserAccessAdmin(admin.ModelAdmin):
     is_expired_status.short_description = 'Expired'
 
 
+class PaymentLogInline(admin.TabularInline):
+    model = PaymentLog
+    extra = 0
+    readonly_fields = ('action', 'zibal_status', 'result_code', 'request_data', 'response_data', 'ip_address', 'created_at')
+    can_delete = False
+
+
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'order', 'amount', 'track_id', 'ref_number', 'card_number', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('user__username', 'user__email', 'track_id', 'ref_number', 'order__id')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = (
+        'id', 'user', 'order_id_str', 'amount', 'track_id', 'ref_number',
+        'card_number', 'status', 'zibal_status', 'result_code', 'paid_at', 'created_at'
+    )
+    list_filter = ('status', 'zibal_status', 'result_code', 'created_at')
+    search_fields = ('user__username', 'user__email', 'track_id', 'ref_number', 'order_id_str', 'card_number', 'mobile')
+    readonly_fields = (
+        'created_at', 'updated_at', 'paid_at', 'verified_at', 'zibal_created_at',
+        'raw_request_payload', 'raw_request_response', 'raw_callback_payload',
+        'raw_verify_response', 'raw_inquiry_response'
+    )
+    inlines = [PaymentLogInline]
+    actions = ['inquiry_selected_payments']
     list_per_page = 25
 
     fieldsets = (
-        ('Payment Info', {
-            'fields': ('user', 'order', 'amount', 'status', 'description')
+        ('اطلاعات اصلی پرداخت', {
+            'fields': ('user', 'order', 'order_id_str', 'amount', 'status', 'description')
         }),
-        ('Zibal Data', {
-            'fields': ('track_id', 'ref_number', 'card_number')
+        ('اطلاعات درگاه زیبال', {
+            'fields': (
+                'track_id', 'ref_number', 'card_number', 'hashed_card_number',
+                'zibal_status', 'result_code', 'result_message', 'wage'
+            )
         }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
+        ('اطلاعات خریدار و کارت مجاز', {
+            'fields': ('mobile', 'national_code', 'check_mobile_with_card', 'allowed_cards', 'multiplexing_data')
+        }),
+        ('تاریخچه‌های زمانی زیبال', {
+            'fields': ('zibal_created_at', 'paid_at', 'verified_at', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+        ('پیلودهای خام JSON زیبال (Raw Payloads)', {
+            'fields': (
+                'raw_request_payload', 'raw_request_response',
+                'raw_callback_payload', 'raw_verify_response',
+                'raw_inquiry_response'
+            ),
             'classes': ('collapse',)
         }),
     )
+
+    @admin.action(description="استعلام آنی از زیبال (Sync / Inquiry with Zibal)")
+    def inquiry_selected_payments(self, request, queryset):
+        from .services.zibal import inquiry_payment_service
+        count = 0
+        failed = 0
+        for payment in queryset:
+            if payment.track_id:
+                success, data, err = inquiry_payment_service(payment, ip_address=request.META.get('REMOTE_ADDR'))
+                if success:
+                    count += 1
+                else:
+                    failed += 1
+        self.message_user(request, f"استعلام برای {count} تراکنش موفقیت‌آمیز انجام شد. ({failed} خطای ارتباط)")
+
+
+@admin.register(PaymentLog)
+class PaymentLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'payment', 'action', 'zibal_status', 'result_code', 'ip_address', 'created_at')
+    list_filter = ('action', 'zibal_status', 'result_code', 'created_at')
+    search_fields = ('payment__track_id', 'payment__user__username', 'ip_address')
+    readonly_fields = ('payment', 'action', 'zibal_status', 'result_code', 'request_data', 'response_data', 'ip_address', 'created_at')
+    list_per_page = 30
+

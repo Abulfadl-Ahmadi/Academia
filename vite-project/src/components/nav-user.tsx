@@ -88,7 +88,7 @@ const logout = useLogout()
                 <BadgeCheck className="ml-2 h-4 w-4" />
                 حساب کاربری
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = '/panel/transactions'}>
                 <CreditCard className="ml-2 h-4 w-4" />
                 پرداخت‌ها
               </DropdownMenuItem>

@@ -774,3 +774,52 @@ body.ai-conversation-active {
   filter: blur(0.5px) brightness(1.1);
   mix-blend-mode: multiply;
 }
+
+/* ==========================================================================
+   Print Stylesheet Optimization for Main Page (Ctrl+P)
+   ========================================================================== */
+@media print {
+  html, body, #root, [data-slot="sidebar-wrapper"], [data-slot="sidebar-inset"], main {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    position: static !important;
+    display: block !important;
+  }
+
+  aside,
+  header,
+  nav,
+  button,
+  .no-print,
+  .print\:hidden,
+  [data-slot="sidebar"],
+  [data-slot="sidebar-trigger"] {
+    display: none !important;
+  }
+
+  * {
+    color: #000000 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    font-family: 'Ravi', 'Vazirmatn', 'Vazir', Tahoma, sans-serif !important;
+  }
+
+  .bg-card, .bg-accent\/30, .bg-muted\/20, .bg-primary\/10 {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  table, th, td {
+    border: 1px solid #94a3b8 !important;
+    color: #000000 !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+  }
+}
