@@ -26,6 +26,7 @@ import ProfilePage from "@/app/dashboard/profile/page";
 import Home from "@/app/dashboard/home/page";
 import StudentFilesPage from "@/app/dashboard/files/StudentFilesPage";
 import TransactionsPage from "@/app/teacher-dashboard/transactions/page";
+import TransactionDetail from "@/app/teacher-dashboard/transactions/TransactionDetail";
 import TeacherCouponsPage from "@/app/teacher-dashboard/coupons/page";
 import CalendarPage from "@/app/shared/calendar/page";
 import CompletedCoursesPage from "@/app/dashboard/courses/completed/page";
@@ -146,6 +147,7 @@ export default function PanelRoute() {
             element={<StudentFilesPage />}
           />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/:id" element={<TransactionDetail />} />
           <Route path="/courses" element={<StudentCoursesPage />} />
           <Route path="/courses/active" element={<StudentCoursesPage />} />
           <Route path="/courses/completed" element={<CompletedCoursesPage />} />
@@ -195,7 +197,6 @@ export default function PanelRoute() {
         </Route>
       </Routes>
     );
-  
   if (["teacher", "admin", "support", "content_creator", "finance"].includes(user.role)) {
     const StaffLayout = {
       teacher: TeacherLayout,
@@ -265,6 +266,7 @@ export default function PanelRoute() {
           <Route path="/tests/:testId/student/:studentId/result" element={<StudentTestResultPage />} />
           <Route path="/tests/:testId/answer-sheet" element={<TestAnswerSheetPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/:id" element={<TransactionDetail />} />
           <Route path="/coupons" element={<TeacherCouponsPage />} />
           <Route path="/products" element={<TeacherProducts />} />
           <Route path="/products/create" element={<CreateProductPage />} />

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, OrderItem, Transaction, UserAccess, Payment
+from .models import Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog
 from shop.models import Product, Discount
 from shop.serializers import ProductSerializer
 from accounts.serializers import UserSerializer
@@ -20,7 +20,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id', 'user', 'total_amount', 'status', 'created_at',
+            'id', 'order_code', 'user', 'total_amount', 'status', 'created_at',
             'updated_at', 'admin_notes', 'items'
         ]
         read_only_fields = ['user', 'created_at', 'updated_at']
@@ -109,15 +109,30 @@ class OrderCreateSerializer(serializers.Serializer):
 class TransactionSerializer(serializers.ModelSerializer):
     order = OrderSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
+    payments = serializers.SerializerMethodField()
     
     class Meta:
         model = Transaction
         fields = [
-            'id', 'order', 'amount', 'transaction_type', 'payment_method',
+            'id', 'transaction_code', 'order', 'amount', 'transaction_type', 'payment_method',
             'reference_number', 'description', 'admin_notes', 'created_at',
-            'created_by'
+            'created_by', 'payments'
         ]
         read_only_fields = ['created_at', 'created_by']
+
+    def get_payments(self, obj):
+        try:
+            PaymentSerializer = globals().get('PaymentSerializer')
+            if PaymentSerializer is None:
+                class _PaymentSerializer(serializers.ModelSerializer):
+                    class Meta:
+                        model = Payment
+                        fields = ['id', 'track_id', 'ref_number', 'card_number', 'amount', 'status', 'description', 'created_at', 'updated_at']
+                PaymentSerializer = _PaymentSerializer
+            payments_qs = obj.order.payments.all() if getattr(obj, 'order', None) else []
+            return PaymentSerializer(payments_qs, many=True).data
+        except Exception:
+            return []
 
 
 class TransactionCreateSerializer(serializers.ModelSerializer):
@@ -166,6 +181,16 @@ class OrderStatusUpdateSerializer(serializers.Serializer):
     admin_notes = serializers.CharField(required=False, allow_blank=True)
 
 
+class PaymentLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentLog
+        fields = [
+            'id', 'action', 'zibal_status', 'result_code',
+            'request_data', 'response_data', 'ip_address', 'created_at'
+        ]
+        read_only_fields = fields
+
+
 class PaymentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     order = OrderSerializer(read_only=True)
@@ -173,12 +198,48 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            'id', 'user', 'order', 'amount', 'track_id', 'ref_number',
-            'card_number', 'status', 'description', 'created_at', 'updated_at'
+            'id', 'user', 'order', 'order_id_str', 'amount', 'track_id', 'ref_number',
+            'card_number', 'status', 'zibal_status', 'result_code', 'result_message',
+            'paid_at', 'verified_at', 'zibal_created_at', 'description',
+            'created_at', 'updated_at'
         ]
         read_only_fields = ['user', 'created_at', 'updated_at']
+
+
+class PaymentDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    order = OrderSerializer(read_only=True)
+    logs = PaymentLogSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = [
+            'id', 'user', 'order', 'order_id_str', 'amount', 'track_id', 'ref_number',
+            'card_number', 'hashed_card_number', 'status', 'zibal_status', 'result_code',
+            'result_message', 'paid_at', 'verified_at', 'zibal_created_at', 'wage',
+            'multiplexing_data', 'mobile', 'national_code', 'check_mobile_with_card',
+            'allowed_cards', 'raw_request_payload', 'raw_request_response',
+            'raw_callback_payload', 'raw_verify_response', 'raw_inquiry_response',
+            'description', 'created_at', 'updated_at', 'logs'
+        ]
+        read_only_fields = fields
 
 
 class PaymentInitiateSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
     description = serializers.CharField(max_length=255, required=False)
+    mobile = serializers.CharField(max_length=20, required=False)
+    national_code = serializers.CharField(max_length=20, required=False)
+    check_mobile_with_card = serializers.BooleanField(default=False, required=False)
+    allowed_cards = serializers.ListField(child=serializers.CharField(max_length=20), required=False)
+
+
+class PaymentInquiryRequestSerializer(serializers.Serializer):
+    track_id = serializers.IntegerField(required=False)
+    order_id = serializers.IntegerField(required=False)
+
+    def validate(self, attrs):
+        if not attrs.get('track_id') and not attrs.get('order_id'):
+            raise serializers.ValidationError("باید حداقل یکی از فیلدهای track_id یا order_id ارسال شود.")
+        return attrs
+

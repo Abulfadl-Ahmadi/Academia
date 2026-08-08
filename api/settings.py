@@ -61,6 +61,7 @@ SMS_IR_API_KEY = config('SMS_IR_API_KEY', default='')
 ZIBAL_MERCHANT_ID = config('ZIBAL_MERCHANT_ID', default='zibal')
 ZIBAL_REQUEST_URL = 'https://gateway.zibal.ir/v1/request'
 ZIBAL_VERIFY_URL = 'https://gateway.zibal.ir/v1/verify'
+ZIBAL_INQUIRY_URL = 'https://gateway.zibal.ir/v1/inquiry'
 ZIBAL_START_URL = 'https://gateway.zibal.ir/start/'  # append trackId
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')

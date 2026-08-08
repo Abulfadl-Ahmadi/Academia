@@ -150,3 +150,15 @@ class ResetPasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['new_password_confirm']:
             raise serializers.ValidationError("گذرواژه‌ها با هم مطابقت ندارند")
         return data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=6)
+    new_password_confirm = serializers.CharField(required=True, min_length=6)
+
+    def validate(self, data):
+        if data['new_password'] != data['new_password_confirm']:
+            raise serializers.ValidationError({"new_password": "گذرواژه‌های جدید با هم مطابقت ندارند."})
+        return data
+

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +13,7 @@ import CreateTransaction from "./CreateTransaction";
 import TransactionsList from "./TransactionsList";
 
 export default function TransactionsPage() {
+  const { user } = useUser();
   const [refreshKey, setRefreshKey] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -31,20 +33,22 @@ export default function TransactionsPage() {
           </p>
         </div>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 ml-2" />
-              ثبت تراکنش جدید
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>ایجاد تراکنش جدید</DialogTitle>
-            </DialogHeader>
-            <CreateTransaction onTransactionCreated={handleTransactionCreated} />
-          </DialogContent>
-        </Dialog>
+        {user && user.role !== "student" ? (
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 ml-2" />
+                ثبت تراکنش جدید
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>ایجاد تراکنش جدید</DialogTitle>
+              </DialogHeader>
+              <CreateTransaction onTransactionCreated={handleTransactionCreated} />
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </div>
 
       {/* Transactions List */}

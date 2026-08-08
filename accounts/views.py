@@ -18,7 +18,8 @@ from .serializers import (
     UserAddressSerializer,
     SendResetPasswordCodeSerializer,
     VerifyResetPasswordCodeSerializer,
-    ResetPasswordSerializer
+    ResetPasswordSerializer,
+    ChangePasswordSerializer
 )
 from .utils import send_verification_email, send_verification_sms, send_reset_password_sms
 from django.core.cache import cache
@@ -782,3 +783,27 @@ class ResetPasswordView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            old_password = serializer.validated_data['old_password']
+            new_password = serializer.validated_data['new_password']
+
+            if not user.check_password(old_password):
+                return Response(
+                    {"error": "رمز عبور فعلی اشتباه است."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user.set_password(new_password)
+            user.save()
+            return Response(
+                {"message": "رمز عبور با موفقیت تغییر کرد."},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

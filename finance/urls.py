@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     OrderViewSet, TransactionViewSet, UserAccessViewSet,
-    AdminDashboardView, ProductAccessCheckView, PaymentInitiateView, PaymentCallbackView
+    AdminDashboardView, ProductAccessCheckView, PaymentInitiateView,
+    PaymentCallbackView, PaymentInquiryView
 )
 
 router = DefaultRouter()
@@ -16,4 +17,6 @@ urlpatterns = [
     path('check-access/', ProductAccessCheckView.as_view(), name='check-access'),
     path('payment/initiate/', PaymentInitiateView.as_view(), name='payment-initiate'),
     path('payment/callback/', PaymentCallbackView.as_view(), name='payment-callback'),
+    path('payment/inquiry/', PaymentInquiryView.as_view(), name='payment-inquiry'),
 ]
+

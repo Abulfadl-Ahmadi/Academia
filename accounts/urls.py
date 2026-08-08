@@ -16,7 +16,8 @@ from .views import (
     UserAddressView,
     SendResetPasswordCodeView,
     VerifyResetPasswordCodeView,
-    ResetPasswordView
+    ResetPasswordView,
+    ChangePasswordView
 )
 
 router = DefaultRouter()
@@ -38,4 +39,5 @@ urlpatterns += [
     path('send-reset-password/', SendResetPasswordCodeView.as_view()),
     path('verify-reset-password/', VerifyResetPasswordCodeView.as_view()),
     path('reset-password/', ResetPasswordView.as_view()),
+    path('change-password/', ChangePasswordView.as_view()),
 ]
