@@ -22,6 +22,7 @@ from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
 from spotplayer.services import provision_licenses_for_order
 from accounts.permissions import IsAdmin, IsTeacherOrAdmin, IsAdminOrFinance, IsStaffUser
+from tests.pagination import CustomPageNumberPagination
 from .services.zibal import (
     tomans_to_rials, request_payment_service, verify_payment_service,
     inquiry_payment_service, process_callback_service
@@ -70,13 +71,14 @@ def grant_product_access(order):
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
+    pagination_class = CustomPageNumberPagination
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         if user.role in ('admin', 'finance') or user.is_staff or user.is_superuser:
-            return Order.objects.all().select_related('user').prefetch_related('items__product')
-        return Order.objects.filter(user=user).select_related('user').prefetch_related('items__product')
+            return Order.objects.all().select_related('user').prefetch_related('items__product').order_by('-created_at', '-id')
+        return Order.objects.filter(user=user).select_related('user').prefetch_related('items__product').order_by('-created_at', '-id')
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -173,13 +175,14 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
+    pagination_class = CustomPageNumberPagination
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         if user.role in ('admin', 'teacher', 'finance') or user.is_staff or user.is_superuser:
-            return Transaction.objects.all().select_related('order', 'created_by')
-        return Transaction.objects.filter(order__user=user).select_related('order', 'created_by')
+            return Transaction.objects.all().select_related('order', 'created_by').order_by('-created_at', '-id')
+        return Transaction.objects.filter(order__user=user).select_related('order', 'created_by').order_by('-created_at', '-id')
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())

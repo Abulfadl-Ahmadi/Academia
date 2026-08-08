@@ -103,7 +103,7 @@ export default function TransactionsList() {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/finance/transactions/");
+      const response = await axiosInstance.get("/finance/transactions/?page_size=100");
       
       // Handle different response formats
       let transactionsData: Transaction[] = [];

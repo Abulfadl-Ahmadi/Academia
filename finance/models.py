@@ -30,6 +30,9 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     admin_notes = models.TextField(blank=True, null=True)
     
+    class Meta:
+        ordering = ['-created_at', '-id']
+    
     def save(self, *args, **kwargs):
         if not self.order_code:
             code = generate_unique_code("ORD")
@@ -80,6 +83,9 @@ class Transaction(models.Model):
     admin_notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_transactions')
+    
+    class Meta:
+        ordering = ['-created_at', '-id']
     
     def save(self, *args, **kwargs):
         if not self.transaction_code:
@@ -160,6 +166,9 @@ class Payment(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at', '-id']
 
     def __str__(self):
         return f"Payment #{self.id} - {self.user.username} - {self.amount} Rials - Track: {self.track_id} - Status: {self.status}"
