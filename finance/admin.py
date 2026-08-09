@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog
+from .models import (
+    Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog,
+    SMSNotificationConfig, SMSNotificationLog,
+)
 
 
 class OrderItemInline(admin.TabularInline):
@@ -179,4 +182,68 @@ class PaymentLogAdmin(admin.ModelAdmin):
     search_fields = ('payment__track_id', 'payment__user__username', 'ip_address')
     readonly_fields = ('payment', 'action', 'zibal_status', 'result_code', 'request_data', 'response_data', 'ip_address', 'created_at')
     list_per_page = 30
+
+
+@admin.register(SMSNotificationConfig)
+class SMSNotificationConfigAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active', 'get_trigger_statuses', 'min_order_amount', 'get_recipient_count', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('name', 'template_text')
+    readonly_fields = ('created_at', 'updated_at', 'created_by')
+    list_editable = ('is_active',)
+    list_per_page = 25
+    
+    fieldsets = (
+        ('اطلاعات اصلی', {
+            'fields': ('name', 'is_active', 'message_type', 'template_id', 'template_parameters')
+        }),
+        ('شرایط تریگر', {
+            'fields': ('product_types', 'min_order_amount', 'trigger_statuses'),
+            'description': 'تنظیم شرایطی که باعث ارسال پیامک می‌شود'
+        }),
+        ('متن پیامک', {
+            'fields': ('template_text',),
+            'description': 'متغیرهای قابل استفاده: {order_code}, {customer_name}, {customer_phone}, {total_amount}, {product_titles}, {product_types}, {order_date}, {items_count}'
+        }),
+        ('گیرندگان', {
+            'fields': ('admin_users', 'custom_phone_numbers'),
+            'description': 'کاربران ادمین/مالی و شماره تلفن‌های سفارشی که پیامک برایشان ارسال می‌شود'
+        }),
+        ('اطلاعات سیستمی', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_trigger_statuses(self, obj):
+        return ", ".join(obj.trigger_statuses) if obj.trigger_statuses else "—"
+    get_trigger_statuses.short_description = 'وضعیت‌های تریگر'
+    
+    def get_recipient_count(self, obj):
+        admin_count = obj.admin_users.count()
+        custom_count = len(obj.custom_phone_numbers) if obj.custom_phone_numbers else 0
+        return f"ادمین: {admin_count}، سفارشی: {custom_count}"
+    get_recipient_count.short_description = 'تعداد گیرندگان'
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Creating new object
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+    
+    class Media:
+        css = {
+            'all': ('admin/css/forms.css',)
+        }
+
+
+@admin.register(SMSNotificationLog)
+class SMSNotificationLogAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'config', 'order', 'phone_number', 'status')
+    list_filter = ('status', 'created_at')
+    search_fields = ('phone_number', 'order__order_code', 'config__name', 'error_message')
+    readonly_fields = (
+        'config', 'order', 'phone_number', 'message', 'status',
+        'error_message', 'provider_response', 'created_at',
+    )
+    date_hierarchy = 'created_at'
 

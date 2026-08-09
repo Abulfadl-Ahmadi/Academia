@@ -113,6 +113,7 @@ import QuestionCollectionsPage from "@/app/teacher-dashboard/question-collection
 import CreateQuestionCollectionPage from "@/app/teacher-dashboard/question-collections/create";
 import TeacherDashboardHome from "@/app/teacher-dashboard/home/page";
 import GenericStaffHome from "@/app/dashboard/staff-home/page";
+import SmsReportsPage from "@/pages/SmsReportsPage";
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -267,6 +268,7 @@ export default function PanelRoute() {
           <Route path="/tests/:testId/answer-sheet" element={<TestAnswerSheetPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/transactions/:id" element={<TransactionDetail />} />
+          <Route path="/sms-reports" element={<SmsReportsPage />} />
           <Route path="/coupons" element={<TeacherCouponsPage />} />
           <Route path="/products" element={<TeacherProducts />} />
           <Route path="/products/create" element={<CreateProductPage />} />

@@ -55,6 +55,7 @@ except UndefinedValueError:
 
 # SMS settings for sms.ir
 SMS_IR_API_KEY = config('SMS_IR_API_KEY', default='')
+SMS_IR_LINE_NUMBER = config('SMS_IR_LINE_NUMBER', default='')
 
 # Zibal Payment Gateway Settings
 # Use 'zibal' as merchant ID for sandbox/testing, or the real merchant ID for production

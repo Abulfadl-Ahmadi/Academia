@@ -1,8 +1,44 @@
 from rest_framework import serializers
-from .models import Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog
+from .models import (
+    Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog,
+    SMSNotificationConfig, SMSNotificationLog,
+)
 from shop.models import Product, Discount
 from shop.serializers import ProductSerializer
 from accounts.serializers import UserSerializer
+
+
+class SMSNotificationConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMSNotificationConfig
+        fields = [
+            'id', 'name', 'is_active', 'message_type', 'template_id',
+            'template_parameters', 'product_types', 'min_order_amount',
+            'trigger_statuses', 'template_text', 'admin_users',
+            'custom_phone_numbers', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate(self, attrs):
+        instance = self.instance or SMSNotificationConfig()
+        for field, value in attrs.items():
+            if field != 'admin_users':
+                setattr(instance, field, value)
+        instance.clean()
+        return attrs
+
+
+class SMSNotificationLogSerializer(serializers.ModelSerializer):
+    config_name = serializers.CharField(source='config.name', read_only=True)
+    order_code = serializers.CharField(source='order.order_code', read_only=True)
+
+    class Meta:
+        model = SMSNotificationLog
+        fields = [
+            'id', 'config', 'config_name', 'order', 'order_code',
+            'phone_number', 'message', 'status', 'error_message',
+            'provider_response', 'created_at',
+        ]
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

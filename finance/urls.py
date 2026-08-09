@@ -4,12 +4,15 @@ from .views import (
     OrderViewSet, TransactionViewSet, UserAccessViewSet,
     AdminDashboardView, ProductAccessCheckView, PaymentInitiateView,
     PaymentCallbackView, PaymentInquiryView
+    , SMSNotificationConfigViewSet, SMSNotificationLogViewSet
 )
 
 router = DefaultRouter()
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'transactions', TransactionViewSet, basename='transaction')
 router.register(r'user-access', UserAccessViewSet, basename='useraccess')
+router.register(r'sms-notifications', SMSNotificationConfigViewSet, basename='sms-notification')
+router.register(r'sms-notification-logs', SMSNotificationLogViewSet, basename='sms-notification-log')
 
 urlpatterns = [
     path('', include(router.urls)),

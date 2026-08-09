@@ -33,7 +33,8 @@ export const FinanceLayout = () => {
     transactions: 'تراکنش‌ها',
     knowledge: 'درخت دانش',
     blog: 'وبلاگ',
-    gallery: 'گالری تصاویر'
+    gallery: 'گالری تصاویر',
+    'sms-reports': 'گزارش خودکار SMS'
   };
   
   // Generate dynamic breadcrumb based on current path

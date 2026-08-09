@@ -9,17 +9,22 @@ from django.db import transaction
 from django.utils import timezone
 from django.conf import settings
 import requests
-from .models import Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog
+from .models import (
+    Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog,
+    SMSNotificationConfig, SMSNotificationLog,
+)
 from courses.models import Course
 from .serializers import (
     OrderSerializer, OrderCreateSerializer, TransactionSerializer,
     TransactionCreateSerializer, UserAccessSerializer, OrderStatusUpdateSerializer,
     PaymentSerializer, PaymentDetailSerializer, PaymentInitiateSerializer,
     PaymentInquiryRequestSerializer
+    , SMSNotificationConfigSerializer, SMSNotificationLogSerializer
 )
 from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
+from .services.sms import schedule_sms_notifications_for_order
 from spotplayer.services import provision_licenses_for_order
 from accounts.permissions import IsAdmin, IsTeacherOrAdmin, IsAdminOrFinance, IsStaffUser
 from tests.pagination import CustomPageNumberPagination
@@ -154,6 +159,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                     send_payment_confirmation_email(order)
                 except Exception as e:
                     logger.warning("Email error in update_status: %s", e)
+                
+                # Send SMS notifications
+                try:
+                    schedule_sms_notifications_for_order(order)
+                except Exception as e:
+                    logger.warning("SMS notification error in update_status: %s", e)
 
             return Response({
                 'message': f'Order status updated to {new_status}',
@@ -232,6 +243,48 @@ class TransactionViewSet(viewsets.ModelViewSet):
             send_product_access_granted_email(order)
         except Exception as e:
             logger.warning("Email error in perform_create: %s", e)
+        
+        # Send SMS notifications
+        try:
+            schedule_sms_notifications_for_order(order)
+        except Exception as e:
+            logger.warning("SMS notification error in perform_create: %s", e)
+
+
+class SMSNotificationConfigViewSet(viewsets.ModelViewSet):
+    serializer_class = SMSNotificationConfigSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrFinance]
+    queryset = SMSNotificationConfig.objects.all().prefetch_related('admin_users')
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def recipients(self, request):
+        from accounts.models import User
+
+        users = User.objects.filter(
+            role__in=[User.ADMIN, User.FINANCE], is_active=True
+        ).select_related('profile', 'address').order_by('first_name', 'last_name', 'username')
+        return Response([
+            {
+                'id': user.id,
+                'name': user.get_full_name() or user.username,
+                'username': user.username,
+                'phone_number': (
+                    getattr(getattr(user, 'profile', None), 'phone_number', None)
+                    or getattr(getattr(user, 'address', None), 'phone_number', None)
+                    or ''
+                ),
+            }
+            for user in users
+        ])
+
+
+class SMSNotificationLogViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SMSNotificationLogSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrFinance]
+    queryset = SMSNotificationLog.objects.select_related('config', 'order').all()
 
 
 class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
@@ -465,6 +518,12 @@ class PaymentCallbackView(APIView):
                     send_payment_confirmation_email(payment.order)
                 except Exception as e:
                     logger.warning("Could not send payment confirmation email: %s", e)
+                
+                # Send SMS notifications
+                try:
+                    schedule_sms_notifications_for_order(payment.order)
+                except Exception as e:
+                    logger.warning("SMS notification error in callback: %s", e)
 
             return redirect(f"{FRONTEND_URL}/payment/success?refNumber={ref_number}&trackId={track_id}")
         else:
@@ -518,7 +577,11 @@ class PaymentInquiryView(APIView):
             return Response({"error": f"خطا در استعلام زیبال: {error_msg}"}, status=status.HTTP_502_BAD_GATEWAY)
 
         # If inquiry confirms transaction success and order is not paid yet, fulfill order
-        if payment.status == Payment.PaymentStatus.SUCCESS and payment.order and payment.order.status != Order.OrderStatus.PAID:
+        if (
+            payment.status == Payment.PaymentStatus.SUCCESS
+            and payment.order
+            and payment.order.status not in (Order.OrderStatus.PAID, Order.OrderStatus.CONFIRMED)
+        ):
             ref_number = payment.ref_number or ''
             with transaction.atomic():
                 payment.order.status = Order.OrderStatus.PAID
@@ -538,6 +601,12 @@ class PaymentInquiryView(APIView):
                 grant_product_access(payment.order)
 
             provision_licenses_for_order(payment.order)
+            
+            # Send SMS notifications
+            try:
+                schedule_sms_notifications_for_order(payment.order)
+            except Exception as e:
+                logger.warning("SMS notification error in inquiry: %s", e)
 
         return Response({
             "inquiry_success": success,

@@ -274,6 +274,11 @@ export function AdminSidebar({
             url: "/panel/coupons",
             description: "مدیریت کوپن‌ها و کدهای تخفیف",
           },
+          {
+            title: "گزارش خودکار SMS",
+            url: "/panel/sms-reports",
+            description: "تنظیم ارسال پیامک فروش و مشاهده لاگ‌ها",
+          },
         ],
       },
       {
