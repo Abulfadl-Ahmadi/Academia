@@ -163,3 +163,9 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"new_password": "گذرواژه‌های جدید با هم مطابقت ندارند."})
         return data
 
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role', 'is_active', 'date_joined']
+        read_only_fields = ['id', 'date_joined', 'username']

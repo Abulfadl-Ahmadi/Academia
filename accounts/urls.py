@@ -17,11 +17,13 @@ from .views import (
     SendResetPasswordCodeView,
     VerifyResetPasswordCodeView,
     ResetPasswordView,
-    ChangePasswordView
+    ChangePasswordView,
+    AdminUserViewSet
 )
 
 router = DefaultRouter()
 router.register(r'profiles', UserProfileViewSet)
+router.register(r'admin/users', AdminUserViewSet, basename='admin-users')
 urlpatterns = router.urls
 
 urlpatterns += [

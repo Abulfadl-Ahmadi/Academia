@@ -14,6 +14,7 @@ import {
   TreePine,
   PenTool,
   Image,
+  Users,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -62,6 +63,18 @@ export function AdminSidebar({
 
   const data = {
     navMain: [
+      {
+        title: "مدیریت کاربران",
+        url: "/panel/users",
+        icon: Users,
+        items: [
+          {
+            title: "لیست کاربران",
+            url: "/panel/users",
+            description: "مشاهده و مدیریت کاربران سیستم",
+          },
+        ],
+      },
       {
         title: "درخت دانش",
         url: "/panel/knowledge",

@@ -114,6 +114,7 @@ import CreateQuestionCollectionPage from "@/app/teacher-dashboard/question-colle
 import TeacherDashboardHome from "@/app/teacher-dashboard/home/page";
 import GenericStaffHome from "@/app/dashboard/staff-home/page";
 import SmsReportsPage from "@/pages/SmsReportsPage";
+import UsersPage from "@/pages/admin/UsersPage";
 
 // import TestDetailPage from "@/app/teacher-dashboard/tests/TestPage"
 
@@ -211,6 +212,7 @@ export default function PanelRoute() {
       <Routes>
         <Route path="/" element={<StaffLayout />}>
           <Route index element={user.role === 'teacher' ? <TeacherDashboardHome /> : <GenericStaffHome />} />
+          <Route path="users" element={<UsersPage />} />
           <Route path="students" element={<StudentList />} />
           <Route path="courses" element={<CoursesList />} />
           <Route path="courses/create" element={<CreateCoursePage />} />

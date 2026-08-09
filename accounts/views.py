@@ -20,7 +20,8 @@ from .serializers import (
     SendResetPasswordCodeSerializer,
     VerifyResetPasswordCodeSerializer,
     ResetPasswordSerializer,
-    ChangePasswordSerializer
+    ChangePasswordSerializer,
+    AdminUserSerializer
 )
 from .utils import send_verification_email, send_verification_sms, send_reset_password_sms
 from django.core.cache import cache
@@ -820,3 +821,28 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+class AdminUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = AdminUserSerializer
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['username', 'first_name', 'last_name', 'email']
+    filterset_fields = ['role', 'is_active']
+
+    def get_permissions(self):
+        return [permissions.IsAuthenticated()]
+
+    def check_permissions(self, request):
+        super().check_permissions(request)
+        if not request.user.role == 'admin':
+            self.permission_denied(request, message='Only admins can manage users.')
+
+    def destroy(self, request, *args, **kwargs):
+        # Instead of deleting, just deactivate
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
