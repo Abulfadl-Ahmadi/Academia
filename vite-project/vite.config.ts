@@ -23,7 +23,7 @@ export default defineConfig({
     react(), 
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['pwa-icons/pwa-icon.svg'],
       manifest: false, // Use the manifest.json from public directory
       workbox: {
