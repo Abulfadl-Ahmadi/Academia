@@ -671,30 +671,33 @@ class PurchaseView(APIView):
             )
 
         # Initiate Zibal payment
-        from finance.views import _zibal_request, tomans_to_rials
+        from finance.services.zibal import request_payment_service, tomans_to_rials
         from finance.models import Payment
 
         callback_url = f"{settings.BACKEND_BASE_URL}/api/finance/payment/callback/"
         mobile = getattr(request.user, 'phone', None)
+        description = f"خرید محصولات - سفارش {order.id}"
 
-        track_id, payment_url, error = _zibal_request(
-            order, callback_url, mobile=mobile,
-            description=f"خرید محصولات - سفارش {order.id}"
+        payment = Payment.objects.create(
+            user=request.user,
+            order=order,
+            amount=tomans_to_rials(total_amount),
+            description=description,
+            status=Payment.PaymentStatus.PENDING,
         )
 
-        if track_id:
-            Payment.objects.create(
-                user=request.user,
-                order=order,
-                amount=tomans_to_rials(total_amount),
-                track_id=track_id,
-                description=f"خرید محصولات - سفارش {order.id}",
-                status=Payment.PaymentStatus.PENDING,
-            )
+        success, payment_url, error = request_payment_service(
+            payment=payment,
+            callback_url=callback_url,
+            mobile=mobile,
+            description=description
+        )
+
+        if success:
             return Response({
                 'message': 'در حال انتقال به درگاه پرداخت زیبال...',
                 'payment_url': payment_url,
-                'track_id': track_id,
+                'track_id': payment.track_id,
                 'order': OrderSerializer(order).data
             }, status=status.HTTP_201_CREATED)
         else:
