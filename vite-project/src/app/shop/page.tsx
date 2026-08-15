@@ -13,6 +13,7 @@ import { ShoppingCart, Search, Filter, Clock, FileText, BookOpen, FileCheck, X }
 import { toast } from "sonner"
 import { useCart } from "@/context/CartContext"
 import axiosInstance from "@/lib/axios"
+import { couponsApi, type ValidateCouponResponse } from "@/api/coupons"
 
 interface Product {
   id: number
@@ -36,13 +37,6 @@ interface Product {
   created_at: string
 }
 
-interface Discount {
-  id: number
-  code: string
-  percentage: number
-  is_available: boolean
-}
-
 export default function ShopPage() {
   const navigate = useNavigate()
   const [products, setProducts] = useState<Product[]>([])
@@ -52,7 +46,7 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState<string>('newest')
   const [loading, setLoading] = useState(true)
   const [discountCode, setDiscountCode] = useState('')
-  const [appliedDiscount, setAppliedDiscount] = useState<Discount | null>(null)
+  const [appliedCoupon, setAppliedCoupon] = useState<ValidateCouponResponse | null>(null)
   const [showCartDrawer, setShowCartDrawer] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const { cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart()
@@ -224,16 +218,21 @@ export default function ShopPage() {
     if (!discountCode.trim()) return
 
     try {
-      const response = await axiosInstance.post('/shop/discounts/validate_code/', {
-        code: discountCode
+      const productIds = cart.map(item => item.product.id)
+      const response = await couponsApi.validateCoupon({
+        code: discountCode.trim(),
+        product_ids: productIds,
+        total_amount: calculateSubtotal(),
       })
 
-      if (response.data.is_valid) {
-        setAppliedDiscount(response.data.discount)
-        toast.success(`${response.data.discount.percentage}% تخفیف اعمال شد`)
+      if (response.valid) {
+        setAppliedCoupon(response)
+        toast.success(`کد تخفیف ${response.code} اعمال شد`)
       }
-    } catch {
-      toast.error("کد تخفیف نامعتبر است")
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } }
+      setAppliedCoupon(null)
+      toast.error(err.response?.data?.error || "کد تخفیف نامعتبر است")
     }
   }
 
@@ -242,8 +241,7 @@ export default function ShopPage() {
   }
 
   const calculateDiscount = () => {
-    if (!appliedDiscount) return 0
-    return (calculateSubtotal() * appliedDiscount.percentage) / 100
+    return appliedCoupon?.discount_amount || 0
   }
 
   const calculateTax = () => {
@@ -290,27 +288,23 @@ export default function ShopPage() {
 
     // User is authenticated, proceed with purchase
     try {
+      const purchasePayload = {
+        items: cart.map(item => ({
+          product_id: item.product.id,
+          quantity: item.quantity,
+        })),
+        ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {})
+      }
+
       // Try new endpoint first
       let response
       try {
-        response = await axiosInstance.post('/shop/purchase/', {
-          items: cart.map(item => ({
-            product_id: item.product.id,
-            quantity: item.quantity,
-            discount_code: appliedDiscount?.code || undefined
-          }))
-        })
+        response = await axiosInstance.post('/shop/purchase/', purchasePayload)
       } catch (error) {
         const errorResponse = error as { response?: { status?: number } }
         if (errorResponse.response?.status === 404) {
           // Fallback to old endpoint
-          response = await axiosInstance.post('/finance/orders/', {
-            items: cart.map(item => ({
-              product_id: item.product.id,
-              quantity: item.quantity,
-              discount_code: appliedDiscount?.code || undefined
-            }))
-          })
+          response = await axiosInstance.post('/finance/orders/', purchasePayload)
         } else {
           throw error
         }
@@ -329,7 +323,7 @@ export default function ShopPage() {
         toast.success(response.data.message || "محصولات رایگان با موفقیت خریداری شد")
         // Clear cart immediately for free purchases
         await clearCart()
-        setAppliedDiscount(null)
+        setAppliedCoupon(null)
         setDiscountCode('')
         // Optionally redirect to purchased products page
         setTimeout(() => {
@@ -339,7 +333,7 @@ export default function ShopPage() {
         toast.success(response.data.message || "سفارش شما با موفقیت ثبت شد")
         // Only clear cart if no payment_url (immediate success)
         await clearCart()
-        setAppliedDiscount(null)
+        setAppliedCoupon(null)
         setDiscountCode('')
       }
 
@@ -522,9 +516,11 @@ export default function ShopPage() {
                         اعمال
                       </Button>
                     </div>
-                    {appliedDiscount && (
+                    {appliedCoupon && (
                       <Badge variant="secondary" className="w-fit">
-                        {appliedDiscount.percentage}% تخفیف اعمال شد
+                        {appliedCoupon.discount_type === "percentage"
+                          ? `${appliedCoupon.discount_value}٪ تخفیف اعمال شد`
+                          : `${formatPrice(appliedCoupon.discount_value)} تومان تخفیف اعمال شد`}
                       </Badge>
                     )}
                   </div>
@@ -537,7 +533,7 @@ export default function ShopPage() {
                       <span>جمع کل:</span>
                       <span>{formatPrice(calculateSubtotal())} تومان</span>
                     </div>
-                    {appliedDiscount && (
+                    {appliedCoupon && (
                       <div className="flex justify-between text-emerald-600">
                         <span>تخفیف:</span>
                         <span>-{formatPrice(calculateDiscount())} تومان</span>
