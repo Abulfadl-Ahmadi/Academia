@@ -455,8 +455,12 @@ class TestDetailView(generics.RetrieveAPIView):
 
 class UpdateDeleteTestView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Test.objects.all()
-    serializer_class = TestUpdateSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return TestUpdateSerializer
+        return TestDetailSerializer
 
     def get_queryset(self):
         user = self.request.user
