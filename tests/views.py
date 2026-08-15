@@ -485,7 +485,9 @@ class ListCreateQuestionTestView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role not in ['student', 'admin']:
+        if user.role == 'admin':
+            return Test.objects.filter(content_type=TestContentType.TYPED_QUESTION)
+        elif user.role not in ['student', 'admin']:
             return Test.objects.filter(
                 teacher=user,
                 content_type=TestContentType.TYPED_QUESTION
@@ -505,7 +507,9 @@ class QuestionTestDetailView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role not in ['student', 'admin']:
+        if user.role == 'admin':
+            return Test.objects.filter(content_type=TestContentType.TYPED_QUESTION)
+        elif user.role not in ['student', 'admin']:
             return Test.objects.filter(
                 teacher=user,
                 content_type=TestContentType.TYPED_QUESTION
@@ -1831,7 +1835,9 @@ class OptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role not in ['student', 'admin']:
+        if user.role == 'admin':
+            return Option.objects.all()
+        elif user.role not in ['student', 'admin']:
             return Option.objects.filter(question__created_by=user)
         return Option.objects.filter(question__is_active=True)
 
@@ -1843,7 +1849,9 @@ class QuestionImageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.role not in ['student', 'admin']:
+        if user.role == 'admin':
+            return QuestionImage.objects.all()
+        elif user.role not in ['student', 'admin']:
             return QuestionImage.objects.filter(question__created_by=user)
         return QuestionImage.objects.filter(question__is_active=True)
 

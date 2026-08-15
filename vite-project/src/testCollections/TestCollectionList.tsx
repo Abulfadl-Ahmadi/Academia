@@ -34,6 +34,8 @@ export default function TestCollectionList() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useUser();
 
+  const isTeacherOrAdmin = user?.role === "teacher" || user?.role === "admin";
+
   useEffect(() => {
     fetchCollections();
   }, []);
@@ -81,7 +83,7 @@ export default function TestCollectionList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">مجموعه آزمون‌ها</h1>
-        {user?.role === "teacher" && (
+        {isTeacherOrAdmin && (
           <Link to="/panel/test-collections/new">
             <Button>
               <Plus className="ml-2 h-4 w-4" />
@@ -143,7 +145,7 @@ export default function TestCollectionList() {
                       جزئیات
                     </Button>
                   </Link>
-                  {user?.role === "teacher" && (
+                  {isTeacherOrAdmin && (
                     <Link to={`/panel/test-collections/${collection.id}/statistics`}>
                       <Button variant="outline" size="sm">
                         <BarChart3 className="h-4 w-4 ml-1" />

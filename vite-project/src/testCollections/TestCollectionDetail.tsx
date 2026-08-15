@@ -85,6 +85,8 @@ export default function TestCollectionDetail() {
   const [collection, setCollection] = useState<TestCollection | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isTeacherOrAdmin = user?.role === "teacher" || user?.role === "admin";
+
   const handleViewResult = (testId: number) => {
     navigate(`/panel/tests/result/${testId}`);
   };
@@ -290,7 +292,7 @@ export default function TestCollectionDetail() {
               <CardTitle>عملیات</CardTitle>
             </CardHeader>
             <CardContent>
-              {user?.role === "teacher" ? (
+              {isTeacherOrAdmin ? (
                 <div className="gap-2 space-y-2">
                   <div>
                     <Link
@@ -375,7 +377,7 @@ export default function TestCollectionDetail() {
               <FileText className="h-5 w-5" />
               آزمون‌های موجود
             </CardTitle>
-            {user?.role === "teacher" && (
+            {isTeacherOrAdmin && (
               <Link to={`/panel/test-collections/${id}/create-test`}>
                 <Button size="sm">
                   <Plus className="h-4 w-4 ml-1" />
@@ -415,7 +417,7 @@ export default function TestCollectionDetail() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {user?.role === "teacher" ? (
+                          {isTeacherOrAdmin ? (
                             <>
                               <DropdownMenuItem
                                 onClick={() =>
@@ -573,7 +575,7 @@ export default function TestCollectionDetail() {
                   </CardContent>
                   <CardFooter>
                     <div className="flex gap-2 w-full">
-                      {user?.role === "teacher" ? (
+                      {isTeacherOrAdmin ? (
                         <div className="text-sm text-muted-foreground">
                           برای عملیات بیشتر از منوی سه نقطه استفاده کنید
                         </div>
@@ -667,11 +669,11 @@ export default function TestCollectionDetail() {
                 هیچ آزمونی یافت نشد
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                {user?.role === "teacher"
+                {isTeacherOrAdmin
                   ? "هنوز آزمونی به این مجموعه اضافه نشده است."
                   : "هیچ آزمونی در این مجموعه موجود نیست."}
               </p>
-              {user?.role === "teacher" && (
+              {isTeacherOrAdmin && (
                 <Link to={`/panel/test-collections/${id}/create-test`}>
                   <Button className="mt-4">
                     <Plus className="h-4 w-4 ml-1" />
