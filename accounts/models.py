@@ -201,13 +201,17 @@ class UserAddress(models.Model):
         return f"{self.address_line}, {self.city}, {self.province} - {self.postal_code}"
 
 
+def default_ai_access_duration():
+    return timezone.now() + timedelta(days=365)
+
 class AIAccess(models.Model):
     """مدل دسترسی به هوش مصنوعی برای هر کاربر"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='ai_access', verbose_name='کاربر')
     questions_limit = models.PositiveIntegerField(default=50, verbose_name='محدودیت تعداد سوالات')
-    access_duration = models.DateTimeField(default=timezone.now() + timedelta(days=365), verbose_name='مدت زمان دسترسی')
+    access_duration = models.DateTimeField(default=default_ai_access_duration, verbose_name='مدت زمان دسترسی')
     model = models.CharField(max_length=50, default='gemini', verbose_name='مدل زبانی')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     
     class Meta:
