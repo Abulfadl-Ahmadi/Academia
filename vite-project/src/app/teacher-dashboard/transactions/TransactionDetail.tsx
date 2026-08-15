@@ -70,6 +70,7 @@ export default function TransactionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useUser();
+  const isAdminOrTeacher = currentUser?.role === "admin" || currentUser?.role === "teacher";
   
   const [loading, setLoading] = useState(true);
   const [inquiring, setInquiring] = useState(false);
