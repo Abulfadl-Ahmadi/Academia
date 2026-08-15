@@ -601,10 +601,10 @@ class PurchaseView(APIView):
             from finance.models import UserAccess
             for item_data in order_items:
                 if item_data['product'].is_digital_product:
-                    UserAccess.objects.create(
+                    UserAccess.objects.get_or_create(
                         user=request.user,
                         product=item_data['product'],
-                        order=order
+                        defaults={'order': order}
                     )
             
             # Create transaction record for free purchase
