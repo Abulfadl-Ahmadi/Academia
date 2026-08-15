@@ -17,6 +17,8 @@ const formatPrice = (price: number) => {
   return new Intl.NumberFormat('fa-IR').format(price);
 };
 
+const TAX_RATE = 0.10; // 10%
+
 export default function DashboardCart() {
   const { cart, updateQuantity, removeFromCart, getCartTotal, loading, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -30,7 +32,8 @@ export default function DashboardCart() {
 
   const subtotal = getCartTotal();
   const discountAmount = appliedCoupon ? appliedCoupon.discount_amount : 0;
-  const finalTotal = Math.max(0, subtotal - discountAmount);
+  const tax = Math.max(0, subtotal - discountAmount) * TAX_RATE;
+  const finalTotal = Math.max(0, subtotal - discountAmount) + tax;
 
   const handleApplyCoupon = async () => {
     if (!couponCodeInput.trim()) {
@@ -285,6 +288,11 @@ export default function DashboardCart() {
                 <span>{formatPrice(discountAmount)}- تومان</span>
               </div>
             )}
+
+            <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
+              <span>مالیات ({TAX_RATE * 100}%):</span>
+              <span>{formatPrice(tax)} تومان</span>
+            </div>
 
             <div className="flex items-center justify-between py-2 text-base font-bold">
               <span>مبلغ نهایی:</span>
