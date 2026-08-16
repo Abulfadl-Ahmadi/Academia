@@ -118,3 +118,5 @@ Thumbs.db
 .coverage
 .tox/
 .eggs/
+
+tasks/
