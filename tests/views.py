@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from django.utils import timezone
-from django.db import transaction
+from django.db import transaction, OperationalError
 from django.db.models import Avg, Q
 from django.http import HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 import re
 import json
+import time
 import secrets
 from .models import (
     Test, StudentTestSession, StudentAnswer, PrimaryKey, 
@@ -636,10 +637,31 @@ class EnterTestView(views.APIView):
         }, status=201)
 
 
+def _save_student_answer_with_retry(session, question_number, answer, max_retries=4):
+    """
+    Saves a student answer with retry logic for SQLite database lock errors.
+    Retries up to max_retries times with exponential backoff.
+    Returns True on success, raises OperationalError if all retries fail.
+    """
+    for attempt in range(max_retries):
+        try:
+            StudentAnswer.objects.update_or_create(
+                session=session,
+                question_number=question_number,
+                defaults={"answer": answer}
+            )
+            return True
+        except OperationalError as e:
+            if "database is locked" in str(e) and attempt < max_retries - 1:
+                wait_seconds = 0.2 * (attempt + 1)  # 0.2s, 0.4s, 0.6s
+                time.sleep(wait_seconds)
+                continue
+            raise
+
+
 class SubmitAnswerView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
-    @transaction.atomic
     def post(self, request, *args, **kwargs):
         session_id = request.data.get("session_id")
         answers = request.data.get("answers")  # list of dicts: [{"question_number": 1, "answer": 2}, ...]
@@ -669,11 +691,13 @@ class SubmitAnswerView(generics.CreateAPIView):
             except (ValueError, TypeError):
                 return Response({"error": "question_number and answer must be integers"}, status=status.HTTP_400_BAD_REQUEST)
                 
-            StudentAnswer.objects.update_or_create(
-                session=session,
-                question_number=question_number,
-                defaults={"answer": answer}
-            )
+            try:
+                _save_student_answer_with_retry(session, question_number, answer)
+            except OperationalError:
+                return Response(
+                    {"error": "سرور در حال پردازش درخواست‌های زیادی است. لطفاً چند ثانیه صبر کنید و دوباره تلاش کنید."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE
+                )
             return Response({"message": "Answer submitted."})
 
         # Handle multiple answers format
@@ -704,11 +728,13 @@ class SubmitAnswerView(generics.CreateAPIView):
             except (ValueError, TypeError):
                 return Response({"error": "question_number and answer must be integers"}, status=status.HTTP_400_BAD_REQUEST)
                 
-            StudentAnswer.objects.update_or_create(
-                session=session,
-                question_number=question_number,
-                defaults={"answer": answer}
-            )
+            try:
+                _save_student_answer_with_retry(session, question_number, answer)
+            except OperationalError:
+                return Response(
+                    {"error": "سرور در حال پردازش درخواست‌های زیادی است. لطفاً چند ثانیه صبر کنید و دوباره تلاش کنید."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE
+                )
 
         return Response({"message": "Answers submitted."})
 

@@ -267,17 +267,28 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database configuration with environment variables
+_db_engine = config('DB_ENGINE', default='django.db.backends.sqlite3')
+
+if _db_engine == 'django.db.backends.sqlite3':
+    _db_options = {
+        'timeout': 30,  # Wait up to 30s for lock instead of failing immediately
+    }
+elif _db_engine.startswith('django.db.backends.mysql'):
+    _db_options = {
+        'charset': 'utf8mb4',
+    }
+else:
+    _db_options = {}
+
 DATABASES = {
     'default': {
-        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'ENGINE': _db_engine,
         'NAME': config('DB_NAME', default=str(BASE_DIR / 'db.sqlite3')),
         'USER': config('DB_USER', default=''),
         'PASSWORD': config('DB_PASSWORD', default=''),
         'HOST': config('DB_HOST', default=''),
         'PORT': config('DB_PORT', default=''),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        } if config('DB_ENGINE', default='').startswith('django.db.backends.mysql') else {},
+        'OPTIONS': _db_options,
     }
 }
 
@@ -463,3 +474,20 @@ CHANNEL_LAYERS = {
     },
 }
 
+
+# ---------------------------------------------------------------------------
+# SQLite WAL mode — enable Write-Ahead Logging for every new connection.
+# WAL lets readers and one writer work simultaneously, preventing most
+# "database is locked" errors under concurrent exam traffic.
+# This has no effect when using PostgreSQL/MySQL in production.
+# ---------------------------------------------------------------------------
+if _db_engine == 'django.db.backends.sqlite3':
+    from django.db.backends.signals import connection_created
+
+    def _enable_sqlite_wal(sender, connection, **kwargs):
+        if connection.vendor == 'sqlite':
+            connection.cursor().execute('PRAGMA journal_mode=WAL;')
+            connection.cursor().execute('PRAGMA synchronous=NORMAL;')
+            connection.cursor().execute('PRAGMA cache_size=-8000;')  # 8 MB cache
+
+    connection_created.connect(_enable_sqlite_wal)
