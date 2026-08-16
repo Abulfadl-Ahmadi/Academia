@@ -434,23 +434,23 @@ class TestDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ['teacher']
 
     def get_pdf_file(self, obj):
-        """فقط معلم‌ها می‌توانند ID فایل PDF را ببینند"""
+        """فقط کاربران غیر دانش‌آموز (معلم، ادمین و ...) می‌توانند ID فایل PDF را ببینند"""
         request = self.context.get('request')
-        if request and request.user.role not in ['student', 'admin']:
+        if request and request.user.is_authenticated and request.user.role != 'student':
             return obj.pdf_file.id if obj.pdf_file else None
         return None
 
     def get_answers_file(self, obj):
-        """فقط معلم‌ها می‌توانند ID فایل پاسخنامه را ببینند"""
+        """فقط کاربران غیر دانش‌آموز می‌توانند ID فایل پاسخنامه را ببینند"""
         request = self.context.get('request')
-        if request and request.user.role not in ['student', 'admin']:
+        if request and request.user.is_authenticated and request.user.role != 'student':
             return obj.answers_file.id if obj.answers_file else None
         return None
 
     def get_keys(self, obj):
-        """فقط معلم‌ها می‌توانند پاسخ‌های صحیح را ببینند"""
+        """فقط کاربران غیر دانش‌آموز می‌توانند پاسخ‌های صحیح را ببینند"""
         request = self.context.get('request')
-        if request and request.user.role not in ['student', 'admin']:
+        if request and request.user.is_authenticated and request.user.role != 'student':
             keys_data = []
             for key in obj.primary_keys.all():
                 keys_data.append({
@@ -461,11 +461,11 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return []  # برای دانش‌آموزان آرایه خالی برمی‌گردانیم
 
     def get_pdf_file_url(self, obj):
-        """فقط معلم‌ها یا دانش‌آموزان وارد شده به آزمون می‌توانند فایل PDF را ببینند"""
+        """کاربران غیر دانش‌آموز یا دانش‌آموزان وارد شده به آزمون می‌توانند فایل PDF را ببینند"""
         request = self.context.get('request')
-        if request:
-            # معلم‌ها همیشه می‌توانند فایل را ببینند
-            if request.user.role not in ['student', 'admin']:
+        if request and request.user.is_authenticated:
+            # معلمان و ادمین‌ها همیشه می‌توانند فایل را ببینند
+            if request.user.role != 'student':
                 from django.urls import reverse
                 return request.build_absolute_uri(
                     reverse('secure-test-file', kwargs={'test_id': obj.id, 'file_type': 'pdf'})
@@ -486,9 +486,9 @@ class TestDetailSerializer(serializers.ModelSerializer):
         return None
         
     def get_answers_file_url(self, obj):
-        """فقط معلم‌ها می‌توانند فایل پاسخنامه را ببینند"""
+        """فقط کاربران غیر دانش‌آموز می‌توانند فایل پاسخنامه را ببینند"""
         request = self.context.get('request')
-        if request and request.user.role not in ['student', 'admin'] and obj.answers_file:
+        if request and request.user.is_authenticated and request.user.role != 'student' and obj.answers_file:
             # همیشه URL امن را برمی‌گردانیم، کنترل دسترسی در SecureTestFileView انجام می‌شود
             from django.urls import reverse
             return request.build_absolute_uri(
@@ -549,7 +549,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
             else:
                 # This is a detail view, return full details
                 questions_data = []
-                is_teacher = request and request.user.role not in ['student', 'admin']
+                is_staff_or_teacher = request and request.user.is_authenticated and request.user.role != 'student'
                 
                 questions = sorted(obj.questions.all(), key=lambda q: q.id)
                 for question in questions:
@@ -569,8 +569,8 @@ class TestDetailSerializer(serializers.ModelSerializer):
                         'is_active': question.is_active,
                     }
                     
-                    # فقط برای معلم‌ها اطلاعات حساس را اضافه کن
-                    if is_teacher:
+                    # فقط برای معلمان و ادمین‌ها اطلاعات حساس را اضافه کن
+                    if is_staff_or_teacher:
                         question_data.update({
                             'correct_option': question.correct_option.id if question.correct_option else None,
                             'detailed_solution': question.detailed_solution,

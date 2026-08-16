@@ -1200,8 +1200,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
             serializer = StudentProgressSerializer(progress)
             return Response(serializer.data)
         
-        elif request.user.role not in ['student', 'admin']:
-            # معلم پیشرفت همه دانش‌آموزان را می‌بیند
+        else:
+            # معلم و ادمین پیشرفت همه دانش‌آموزان را می‌بیند
             students = test_collection.get_accessible_students()
             progress_data = []
             
