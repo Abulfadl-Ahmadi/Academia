@@ -32,7 +32,7 @@ class SMSNotificationTestCase(TestCase):
         )
         self.config.admin_users.add(self.owner)
 
-    @patch('finance.services.sms.send_custom_sms', return_value=True)
+    @patch('finance.services.sms.send_custom_sms', return_value=(True, {'status': 1}, ''))
     def test_sends_to_unique_user_and_custom_phones_and_logs(self, send_sms):
         send_sms_notifications_for_order(self.order)
 
@@ -43,7 +43,7 @@ class SMSNotificationTestCase(TestCase):
         )
         self.assertTrue(SMSNotificationLog.objects.filter(status='success').exists())
 
-    @patch('finance.services.sms.send_custom_sms', return_value=False)
+    @patch('finance.services.sms.send_custom_sms', return_value=(False, None, 'API error'))
     def test_provider_failure_is_logged(self, send_sms):
         send_sms_notifications_for_order(self.order)
 
@@ -72,3 +72,21 @@ class SMSNotificationTestCase(TestCase):
         )
         with self.assertRaises(ValidationError):
             config.full_clean()
+
+    @patch('finance.services.sms.send_custom_sms', return_value=(True, {'status': 1}, ''))
+    def test_send_test_sms_notification(self, send_sms):
+        from finance.services.sms import send_test_sms_notification
+
+        res = send_test_sms_notification(
+            config=self.config,
+            phone_numbers='09129999999',
+            test_context={'order_code': 'TEST-123'}
+        )
+        self.assertTrue(res['success'])
+        self.assertEqual(send_sms.call_count, 1)
+        # Check that log was created with order=None and [تست] in message
+        test_log = SMSNotificationLog.objects.filter(phone_number='09129999999').first()
+        self.assertIsNotNone(test_log)
+        self.assertIn('[تست]', test_log.message)
+        self.assertIsNone(test_log.order)
+        self.assertEqual(test_log.status, 'success')

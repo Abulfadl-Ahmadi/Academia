@@ -388,10 +388,14 @@ try:
     GOOGLE_API_KEY = config('GOOGLE_API_KEY')
     LIARA_API_KEY = config('LIARA_API_KEY')
     LLM_API_KEY = config('LLM_API_KEY')
+    LLM_BASE_URL = config('LLM_BASE_URL', default='https://arvancloudai.ir/gateway/models/DeepSeek-V4-Pro/XDSfG8DZnRv7J3fkDqL-w0BgaO__UP8UvQj3lJvG9IZCGm-wENAH5nIRVPrrsk7rnM8ddC7ZIcL_aNxBpRTfRmNy7X3N3CKEiKc4Rzol8liTH7WDcDovs3YQmVqUfWdXWvoWy9yTENirsPA6Wdbk2wq1DsOBFJbfP9yQh9Qfv8xArG7Q3RqqBr3XnhR-8QzWYmBe8dLF4l7spJYnp0s6ES9Y1-qWpB3vTZaTwvcGPEWcrIB6uWDhNXeWXeNcsxJteDJy1A/v1')
+    LLM_MODEL = config('LLM_MODEL', default='DeepSeek-V4-Pro')
 except (ImportError, UndefinedValueError):
     GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='')
     LIARA_API_KEY = config('LIARA_API_KEY', default='')
     LLM_API_KEY = config('LLM_API_KEY', default='')
+    LLM_BASE_URL = config('LLM_BASE_URL', default='https://arvancloudai.ir/gateway/models/DeepSeek-V4-Pro/XDSfG8DZnRv7J3fkDqL-w0BgaO__UP8UvQj3lJvG9IZCGm-wENAH5nIRVPrrsk7rnM8ddC7ZIcL_aNxBpRTfRmNy7X3N3CKEiKc4Rzol8liTH7WDcDovs3YQmVqUfWdXWvoWy9yTENirsPA6Wdbk2wq1DsOBFJbfP9yQh9Qfv8xArG7Q3RqqBr3XnhR-8QzWYmBe8dLF4l7spJYnp0s6ES9Y1-qWpB3vTZaTwvcGPEWcrIB6uWDhNXeWXeNcsxJteDJy1A/v1')
+    LLM_MODEL = config('LLM_MODEL', default='DeepSeek-V4-Pro')
 
 # Logging Configuration
 LOGGING = {

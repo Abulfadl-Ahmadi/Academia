@@ -19,17 +19,25 @@ from django.utils import timezone
 # گرفتن API Keys
 GOOGLE_API_KEY = getattr(settings, 'GOOGLE_API_KEY', os.getenv('GOOGLE_API_KEY', ''))
 LLM_API_KEY = getattr(settings, 'LLM_API_KEY', os.getenv('LLM_API_KEY', ''))
+LLM_BASE_URL = getattr(
+    settings,
+    'LLM_BASE_URL',
+    os.getenv(
+        'LLM_BASE_URL',
+        'https://arvancloudai.ir/gateway/models/DeepSeek-V4-Pro/XDSfG8DZnRv7J3fkDqL-w0BgaO__UP8UvQj3lJvG9IZCGm-wENAH5nIRVPrrsk7rnM8ddC7ZIcL_aNxBpRTfRmNy7X3N3CKEiKc4Rzol8liTH7WDcDovs3YQmVqUfWdXWvoWy9yTENirsPA6Wdbk2wq1DsOBFJbfP9yQh9Qfv8xArG7Q3RqqBr3XnhR-8QzWYmBe8dLF4l7spJYnp0s6ES9Y1-qWpB3vTZaTwvcGPEWcrIB6uWDhNXeWXeNcsxJteDJy1A/v1'
+    )
+)
+LLM_MODEL = getattr(settings, 'LLM_MODEL', os.getenv('LLM_MODEL', 'DeepSeek-V4-Pro'))
 
 # انتخاب مدل و کلاینت بر اساس API Key موجود
 if LLM_API_KEY:
-    MODEL = "google/gemini-2.0-flash-001"
+    MODEL = LLM_MODEL
     client = OpenAI(
-        # base_url="https://ai.liara.ir/api/v1/689c3350a8b1b6944da510b2",
-        base_url="https://arvancloudai.ir/gateway/models/Gemini-2.0-Flash-001/IrqBP9-EdacvJA55cDev8pv7DOrpOxIYmfR_5NZtLOsReNJMHWVPJgdF3vXjIwzytO5HB-j6XIMWN6LEyAd1z0k-7dCyFHZ3nT2L6jjMVniR4lWDfIOMZdYgg8bgSbJutok5rV2R_WHUH73RHUgd0Q2hsyco4JYWHsoRPTICYDeomDIo97qIBSsSDu6e5xgb4hDUxrDEsQBsje46KS9Yqg9mMveCK-LRFiqgIcE5pb4XtbDrqCiszIPPtg__pDkH8J58DUR1QzSmdNMUIIs/v1",
+        base_url=LLM_BASE_URL,
         api_key=LLM_API_KEY,
     )
     USE_LIARA = True
-    print("Using ArvanClould API for LLM")
+    print(f"Using ArvanCloud API for LLM (Model: {MODEL})")
 elif GOOGLE_API_KEY:
     MODEL = "gemini-1.5-flash"
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -148,7 +156,8 @@ Additional Rules:
                 
                 completion = client.chat.completions.create(
                     model=MODEL,
-                    messages=messages
+                    messages=messages,
+                    timeout=30.0
                 )
                 return completion.choices[0].message.content
                 
@@ -250,7 +259,6 @@ class AIConversationViewSet(viewsets.ModelViewSet):
             return AIConversationListSerializer
         return AIConversationSerializer
     
-    @transaction.atomic
     @action(detail=True, methods=['post'])
     def add_message(self, request, pk=None):
         """اضافه کردن پیام جدید به گفتگو"""

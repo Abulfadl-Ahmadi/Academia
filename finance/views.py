@@ -24,7 +24,7 @@ from .serializers import (
 from shop.models import Product
 from accounts.models import UserProfile
 from .notifications import send_purchase_notification_email, send_payment_confirmation_email, send_product_access_granted_email
-from .services.sms import schedule_sms_notifications_for_order
+from .services.sms import schedule_sms_notifications_for_order, send_test_sms_notification
 from spotplayer.services import provision_licenses_for_order
 from accounts.permissions import IsAdmin, IsTeacherOrAdmin, IsAdminOrFinance, IsStaffUser
 from tests.pagination import CustomPageNumberPagination
@@ -279,6 +279,35 @@ class SMSNotificationConfigViewSet(viewsets.ModelViewSet):
             }
             for user in users
         ])
+
+    @action(detail=False, methods=['post'], url_path='test')
+    def test_send(self, request):
+        phone_number = request.data.get('phone_number')
+        config_id = request.data.get('config_id')
+        config = None
+        if config_id:
+            config = SMSNotificationConfig.objects.filter(id=config_id).first()
+
+        result = send_test_sms_notification(
+            config=config,
+            phone_numbers=phone_number if phone_number else (config.get_recipient_phones() if config else None),
+            config_data=request.data,
+            test_context=request.data.get('test_context')
+        )
+        status_code = status.HTTP_200_OK if result['success'] else status.HTTP_400_BAD_REQUEST
+        return Response(result, status=status_code)
+
+    @action(detail=True, methods=['post'], url_path='test')
+    def test_config(self, request, pk=None):
+        config = self.get_object()
+        phone_number = request.data.get('phone_number')
+        result = send_test_sms_notification(
+            config=config,
+            phone_numbers=phone_number if phone_number else config.get_recipient_phones(),
+            test_context=request.data.get('test_context')
+        )
+        status_code = status.HTTP_200_OK if result['success'] else status.HTTP_400_BAD_REQUEST
+        return Response(result, status=status_code)
 
 
 class SMSNotificationLogViewSet(viewsets.ReadOnlyModelViewSet):

@@ -118,3 +118,126 @@ def schedule_sms_notifications_for_order(order):
             order.__class__.objects.get(pk=order_id)
         ), robust=True
     )
+
+
+def send_test_sms_notification(config=None, phone_numbers=None, test_context=None, config_data=None):
+    """
+    Send a test SMS with fake/mock order data using live SMS gateway to verify delivery.
+    """
+    from finance.models import SMSNotificationConfig, SMSNotificationLog
+
+    # Prepare mock/fake context data
+    context = {
+        'order_code': 'TEST-1403',
+        'customer_name': 'کاربر آزمایشی',
+        'customer_phone': '09120000000',
+        'total_amount': '500,000',
+        'product_titles': 'دوره آموزشی تست (محصول تستی)',
+        'product_types': 'دوره آموزشی',
+        'order_date': '۱۴۰۳/۰۵/۲۷ ۱۰:۳۰',
+        'items_count': 1,
+    }
+    if test_context and isinstance(test_context, dict):
+        context.update(test_context)
+
+    # Determine message type and template
+    message_type = 'bulk'
+    template_id = None
+    template_parameters = {}
+    template_text = 'فروش جدید {order_code} | {product_titles} | {total_amount} تومان'
+    config_name = 'گزارش آزمایشی'
+
+    if config:
+        message_type = config.message_type
+        template_id = config.template_id
+        template_parameters = config.template_parameters or {}
+        template_text = config.template_text or template_text
+        config_name = config.name
+    elif config_data:
+        message_type = config_data.get('message_type', message_type)
+        template_id = config_data.get('template_id', template_id)
+        template_parameters = config_data.get('template_parameters', template_parameters) or {}
+        template_text = config_data.get('template_text', template_text) or template_text
+        config_name = config_data.get('name', config_name) or config_name
+
+    # Determine recipient phones
+    if isinstance(phone_numbers, str):
+        phones = [p.strip() for p in phone_numbers.replace(',', '\n').split('\n') if p.strip()]
+    elif isinstance(phone_numbers, (list, tuple)):
+        phones = [str(p).strip() for p in phone_numbers if str(p).strip()]
+    elif config:
+        phones = config.get_recipient_phones()
+    else:
+        phones = []
+
+    # Clean unique phone list
+    phones = list(dict.fromkeys(phones))
+
+    if not phones:
+        return {
+            'success': False,
+            'message': 'هیچ شماره موبایلی برای ارسال پیامک آزمایشی مشخص نشده است.',
+            'results': [],
+        }
+
+    # Render template text
+    try:
+        rendered_text = template_text.format(**context)
+    except Exception:
+        rendered_text = template_text
+
+    results = []
+    overall_success = False
+
+    for phone in phones:
+        success = False
+        result = None
+        error = ''
+        sent_message = rendered_text
+        try:
+            if message_type == 'verify' or (hasattr(SMSNotificationConfig, 'MessageType') and message_type == SMSNotificationConfig.MessageType.VERIFY):
+                if not template_id:
+                    error = 'شناسه الگو برای ارسال پیامک الگویی الزامی است.'
+                else:
+                    parameters = []
+                    for name, value in (template_parameters or {}).items():
+                        try:
+                            val_str = str(value).format(**context)
+                        except Exception:
+                            val_str = str(value)
+                        parameters.append({'name': name, 'value': val_str})
+                    sent_message = f"الگو #{template_id}: " + ", ".join(f"{p['name']}={p['value']}" for p in parameters)
+                    success, result, error = send_pattern_sms(phone, template_id, parameters)
+            else:
+                success, result, error = send_custom_sms(phone, rendered_text)
+        except Exception as exc:
+            error = str(exc)
+            logger.exception("Test SMS error for phone %s", phone)
+
+        if success:
+            overall_success = True
+
+        log = SMSNotificationLog.objects.create(
+            config=config,
+            order=None,
+            phone_number=phone,
+            message=f"[تست] {sent_message}",
+            status=SMSNotificationLog.Status.SUCCESS if success else SMSNotificationLog.Status.FAILED,
+            error_message=error,
+            provider_response=result,
+        )
+
+        results.append({
+            'phone_number': phone,
+            'success': success,
+            'error_message': error,
+            'provider_response': result,
+            'log_id': log.id,
+            'rendered_text': sent_message,
+        })
+
+    return {
+        'success': overall_success,
+        'message': 'پیامک آزمایشی ارسال شد.' if overall_success else (results[0]['error_message'] if results and results[0]['error_message'] else 'ارسال پیامک با خطا مواجه شد.'),
+        'results': results,
+    }

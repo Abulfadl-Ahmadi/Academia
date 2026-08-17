@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Check, Pencil, Plus, Save, Trash2 } from "lucide-react";
+import { Bell, Check, Loader2, Pencil, Plus, RotateCcw, Save, Send, Smartphone, Sparkles, Trash2 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 type Recipient = { id: number; name: string; username: string; phone_number: string };
@@ -42,6 +43,17 @@ const emptyConfig: Omit<Config, "id"> = {
   custom_phone_numbers: [],
 };
 
+const fakeSampleData = {
+  order_code: "ORD-9821",
+  customer_name: "کاربر آزمایشی",
+  customer_phone: "09123456789",
+  total_amount: "550,000",
+  product_titles: "دوره جامع برنامه‌نویسی پایتون",
+  product_types: "دوره آموزشی",
+  order_date: "۱۴۰۳/۰۵/۲۷ ۱۰:۳۰",
+  items_count: "1",
+};
+
 const parsePhones = (value: string) => value.split(/[\n,،]+/).map((item) => item.trim()).filter(Boolean);
 const resultList = <T,>(data: T[] | { results?: T[] }) => Array.isArray(data) ? data : data.results || [];
 
@@ -55,6 +67,11 @@ export default function SmsReportsPage() {
   const [parameterDraft, setParameterDraft] = useState("{}");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Test SMS states
+  const [testModalOpen, setTestModalOpen] = useState(false);
+  const [testPhone, setTestPhone] = useState("");
+  const [testSending, setTestSending] = useState(false);
 
   const selectConfig = (config: Config) => {
     setSelectedId(config.id);
@@ -95,6 +112,88 @@ export default function SmsReportsPage() {
     setForm({ ...emptyConfig });
     setPhoneDraft("");
     setParameterDraft("{}");
+  };
+
+  const openTestModal = () => {
+    const defaultPhones = parsePhones(phoneDraft);
+    if (defaultPhones.length > 0 && !testPhone) {
+      setTestPhone(defaultPhones[0]);
+    } else if (!testPhone && recipients.length > 0) {
+      const found = recipients.find((r) => r.phone_number);
+      if (found) setTestPhone(found.phone_number);
+    }
+    setTestModalOpen(true);
+  };
+
+  const renderedPreview = useMemo(() => {
+    if (form.message_type === "verify") {
+      try {
+        const parsed = JSON.parse(parameterDraft || "{}");
+        const rendered = Object.entries(parsed).map(([key, value]) => {
+          let str = String(value);
+          Object.entries(fakeSampleData).forEach(([k, v]) => {
+            str = str.replaceAll(`{${k}}`, v);
+          });
+          return `${key}: "${str}"`;
+        });
+        return `شناسه الگو: ${form.template_id || "وارد نشده"}\nپارامترها:\n${rendered.join("\n") || "بدون پارامتر"}`;
+      } catch {
+        return "پارامترهای وارد شده JSON معتبر نیستند.";
+      }
+    }
+
+    let text = form.template_text || "";
+    Object.entries(fakeSampleData).forEach(([k, v]) => {
+      text = text.replaceAll(`{${k}}`, v);
+    });
+    return text;
+  }, [form.message_type, form.template_text, form.template_id, parameterDraft]);
+
+  const handleSendTestSms = async () => {
+    if (!testPhone.trim()) {
+      toast.error("لطفاً شماره موبایل را وارد کنید.");
+      return;
+    }
+
+    let templateParameters: Record<string, string> = {};
+    if (form.message_type === "verify") {
+      try {
+        templateParameters = JSON.parse(parameterDraft || "{}");
+      } catch {
+        toast.error("پارامترهای الگو باید JSON معتبر باشد.");
+        return;
+      }
+      if (!form.template_id) {
+        toast.error("شناسه الگو را وارد کنید.");
+        return;
+      }
+    }
+
+    setTestSending(true);
+    try {
+      const payload = {
+        ...form,
+        config_id: selectedId || undefined,
+        template_parameters: templateParameters,
+        phone_number: testPhone.trim(),
+      };
+
+      const response = await axiosInstance.post("/finance/sms-notifications/test/", payload);
+      if (response.data?.success) {
+        toast.success("پیامک تستی واقعی با موفقیت ارسال شد! موبایل خود را بررسی نمایید.");
+        setTestModalOpen(false);
+      } else {
+        toast.error(response.data?.message || "ارسال پیامک با خطا مواجه شد.");
+      }
+
+      // Refresh log table to immediately show the test log
+      const logResponse = await axiosInstance.get("/finance/sms-notification-logs/?page_size=8");
+      setLogs(resultList<Log>(logResponse.data));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.response?.data?.detail || "خطا در برقراری ارتباط با سامانه پیامک.");
+    } finally {
+      setTestSending(false);
+    }
   };
 
   const save = async () => {
@@ -147,7 +246,12 @@ export default function SmsReportsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">گزارش خودکار SMS</h1>
           <p className="mt-1 text-sm text-muted-foreground">تنظیم اطلاع‌رسانی پیامکی پس از فروش موفق محصول</p>
         </div>
-        <Button onClick={createNew}><Plus className="size-4" /> تنظیم جدید</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={openTestModal} className="border-primary/30 text-primary hover:bg-primary/5">
+            <Send className="size-4 ml-1" /> تست ارسال پیامک
+          </Button>
+          <Button onClick={createNew}><Plus className="size-4" /> تنظیم جدید</Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
@@ -184,7 +288,12 @@ export default function SmsReportsPage() {
               <CardTitle className="flex items-center gap-2 text-base"><Bell className="size-4" /> {selectedId ? "ویرایش گزارش" : "ایجاد گزارش جدید"}</CardTitle>
               <CardDescription className="mt-1">پیامک فقط پس از ثبت فروش موفق ارسال می‌شود.</CardDescription>
             </div>
-            {selectedId ? <Button variant="outline" size="sm" onClick={createNew}><Pencil className="size-4" /> جدید</Button> : null}
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" onClick={openTestModal} title="تست ارسال همین پیامک به موبایل">
+                <Send className="size-3.5 ml-1" /> تست پیامک
+              </Button>
+              {selectedId ? <Button variant="outline" size="sm" onClick={createNew}><Pencil className="size-4" /> جدید</Button> : null}
+            </div>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-4 md:grid-cols-2">
@@ -206,17 +315,143 @@ export default function SmsReportsPage() {
               <div className="space-y-2"><Label htmlFor="custom-phones">شماره‌های ثابت</Label><Textarea id="custom-phones" className="min-h-52 font-mono text-left" dir="ltr" placeholder={"0912...\n0919..."} value={phoneDraft} onChange={(event) => setPhoneDraft(event.target.value)} /><p className="text-xs text-muted-foreground">هر شماره را در یک خط یا با کاما وارد کنید.</p></div>
             </div>
 
-            <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between"><Button variant="ghost" className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={!selectedId} onClick={remove}><Trash2 className="size-4" /> حذف تنظیم</Button><Button onClick={save} disabled={saving}>{saving ? "در حال ذخیره..." : <><Save className="size-4" /> ذخیره تغییرات</>}</Button></div>
+            <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <Button variant="ghost" className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={!selectedId} onClick={remove}><Trash2 className="size-4" /> حذف تنظیم</Button>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={openTestModal} type="button">
+                  <Send className="size-4 ml-1" /> تست پیامک واقعی
+                </Button>
+                <Button onClick={save} disabled={saving}>{saving ? "در حال ذخیره..." : <><Save className="size-4" /> ذخیره تغییرات</>}</Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader className="border-b"><CardTitle className="text-base">آخرین ارسال‌ها</CardTitle><CardDescription>نتیجه تلاش‌های اخیر برای ارسال پیامک فروش</CardDescription></CardHeader>
+        <CardHeader className="flex-row items-center justify-between border-b">
+          <div>
+            <CardTitle className="text-base">آخرین ارسال‌ها</CardTitle>
+            <CardDescription>نتیجه تلاش‌های اخیر برای ارسال پیامک فروش و تست‌ها</CardDescription>
+          </div>
+          <Button variant="ghost" size="sm" onClick={load} title="به‌روزرسانی جدول لاگ‌ها">
+            <RotateCcw className="size-4" />
+          </Button>
+        </CardHeader>
         <CardContent className="p-0">
-          {logs.length ? <div className="overflow-x-auto"><table className="w-full min-w-[640px] text-right text-sm"><thead className="bg-muted/50 text-xs text-muted-foreground"><tr><th className="p-4 font-medium">شماره</th><th className="p-4 font-medium">تنظیم</th><th className="p-4 font-medium">سفارش</th><th className="p-4 font-medium">وضعیت</th><th className="p-4 font-medium">زمان</th></tr></thead><tbody>{logs.map((log) => <tr key={log.id} className="border-t"><td className="p-4 font-mono text-left" dir="ltr">{log.phone_number}</td><td className="p-4">{log.config_name || "—"}</td><td className="p-4">{log.order_code || "—"}</td><td className="p-4"><div className="flex flex-col gap-1"><Badge className="w-fit" variant={log.status === "success" ? "default" : "destructive"}>{log.status === "success" ? <><Check className="size-3 ml-1" /> موفق</> : "ناموفق"}</Badge>{log.status !== "success" && log.error_message ? <span className="text-[11px] text-destructive max-w-[200px] truncate" title={log.error_message}>{log.error_message}</span> : null}</div></td><td className="p-4 text-muted-foreground">{new Date(log.created_at).toLocaleString("fa-IR")}</td></tr>)}</tbody></table></div> : <div className="px-6 py-10 text-center text-sm text-muted-foreground">هنوز تلاش ارسالی ثبت نشده است.</div>}
+          {logs.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-right text-sm">
+                <thead className="bg-muted/50 text-xs text-muted-foreground">
+                  <tr>
+                    <th className="p-4 font-medium">شماره</th>
+                    <th className="p-4 font-medium">تنظیم</th>
+                    <th className="p-4 font-medium">سفارش</th>
+                    <th className="p-4 font-medium">وضعیت</th>
+                    <th className="p-4 font-medium">زمان</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.map((log) => (
+                    <tr key={log.id} className="border-t">
+                      <td className="p-4 font-mono text-left" dir="ltr">{log.phone_number}</td>
+                      <td className="p-4">{log.config_name || "—"}</td>
+                      <td className="p-4">
+                        {log.order_code ? (
+                          <span>{log.order_code}</span>
+                        ) : (
+                          <Badge variant="outline" className="text-[11px] font-normal text-muted-foreground">تست دستی</Badge>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex flex-col gap-1">
+                          <Badge className="w-fit" variant={log.status === "success" ? "default" : "destructive"}>
+                            {log.status === "success" ? <><Check className="size-3 ml-1" /> موفق</> : "ناموفق"}
+                          </Badge>
+                          {log.status !== "success" && log.error_message ? (
+                            <span className="text-[11px] text-destructive max-w-[240px] truncate" title={log.error_message}>{log.error_message}</span>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="p-4 text-muted-foreground">{new Date(log.created_at).toLocaleString("fa-IR")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="px-6 py-10 text-center text-sm text-muted-foreground">هنوز تلاش ارسالی ثبت نشده است.</div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Dialog for Live Test SMS */}
+      <Dialog open={testModalOpen} onOpenChange={setTestModalOpen}>
+        <DialogContent className="sm:max-w-lg" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Smartphone className="size-5 text-primary" /> ارسال پیامک تستی به موبایل
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              با استفاده از داده‌های فیکِ پیش‌فرض (کد سفارش، نام دوره، مبلغ و...) یک پیامک واقعی از طریق پنل پیامک به شماره شما ارسال می‌شود.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="test-phone">شماره موبایل دریافت‌کننده پیامک تستی</Label>
+              <Input
+                id="test-phone"
+                dir="ltr"
+                className="font-mono text-left"
+                placeholder="0912xxxxxxx"
+                value={testPhone}
+                onChange={(e) => setTestPhone(e.target.value)}
+              />
+              <p className="text-[11px] text-muted-foreground">شماره موبایل خود را با فرمت 09xxxxxxxxx وارد کنید.</p>
+            </div>
+
+            <div className="rounded-lg border bg-muted/40 p-3 text-xs space-y-2">
+              <div className="flex items-center justify-between font-medium text-foreground pb-1 border-b border-border/50">
+                <span className="flex items-center gap-1.5"><Sparkles className="size-3.5 text-primary" /> داده‌های نمونه برای قالب</span>
+                <Badge variant="secondary" className="text-[10px]">فیک / آزمایشی</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                <div>کد سفارش: <span className="font-mono text-foreground" dir="ltr">{fakeSampleData.order_code}</span></div>
+                <div>مبلغ: <span className="text-foreground">{fakeSampleData.total_amount} تومان</span></div>
+                <div className="col-span-2 truncate">محصول: <span className="text-foreground">{fakeSampleData.product_titles}</span></div>
+                <div>خریدار: <span className="text-foreground">{fakeSampleData.customer_name}</span></div>
+                <div>تاریخ: <span className="text-foreground">{fakeSampleData.order_date}</span></div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs">پیش‌نمایش متن پیامکی که ارسال می‌شود:</Label>
+              <div className="rounded-md border bg-card p-3 text-xs leading-6 text-foreground font-sans whitespace-pre-wrap min-h-16">
+                {renderedPreview}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setTestModalOpen(false)} disabled={testSending}>
+              انصراف
+            </Button>
+            <Button onClick={handleSendTestSms} disabled={testSending} className="gap-1.5">
+              {testSending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> در حال ارسال به درگاه...
+                </>
+              ) : (
+                <>
+                  <Send className="size-4" /> ارسال پیامک واقعی
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
