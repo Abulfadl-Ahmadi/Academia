@@ -129,12 +129,30 @@ class AIMessageSerializer(serializers.ModelSerializer):
 class AIConversationSerializer(serializers.ModelSerializer):
     """سریالایزر گفتگوهای هوش مصنوعی"""
     messages = AIMessageSerializer(many=True, read_only=True)
+    remaining_questions = serializers.SerializerMethodField()
+    total_questions = serializers.SerializerMethodField()
     
     class Meta:
         model = AIConversation
-        fields = ['id', 'title', 'created_at', 'updated_at', 'messages']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'title', 'created_at', 'updated_at', 'messages', 'remaining_questions', 'total_questions']
+        read_only_fields = ['created_at', 'updated_at', 'remaining_questions', 'total_questions']
     
+    def get_remaining_questions(self, obj):
+        try:
+            from accounts.models import AIAccess
+            ai_access, _ = AIAccess.objects.get_or_create(user=obj.user)
+            return ai_access.get_remaining_questions()
+        except Exception:
+            return 50
+
+    def get_total_questions(self, obj):
+        try:
+            from accounts.models import AIAccess
+            ai_access, _ = AIAccess.objects.get_or_create(user=obj.user)
+            return ai_access.questions_limit
+        except Exception:
+            return 50
+
     def create(self, validated_data):
         """ایجاد گفتگوی جدید"""
         validated_data['user'] = self.context['request'].user

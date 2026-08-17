@@ -17,7 +17,14 @@ import {
   Check,
   X,
   Trash2,
+  Sparkles,
 } from 'lucide-react';
+import { CircularProgress } from '@/components/ui/circular-progress';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -315,6 +322,126 @@ export function AIConversationList() {
   );
 }
 
+// ─── AICreditIndicator ────────────────────────────────────────────────────────
+interface AICreditIndicatorProps {
+  remaining: number | null;
+  total: number | null;
+}
+
+function AICreditIndicator({ remaining, total }: AICreditIndicatorProps) {
+  if (remaining === null || total === null) return null;
+
+  const ratio = total > 0 ? remaining / total : 0;
+  const percentage = Math.round(ratio * 100);
+  const used = Math.max(0, total - remaining);
+
+  // Dynamic colors: Green (>50%), Amber (20%-50%), Rose (<20%)
+  let colorClass = "stroke-emerald-500";
+  let bgTrackClass = "stroke-emerald-500/20";
+  let textColorClass = "text-emerald-600 dark:text-emerald-400";
+  let badgeBgClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
+  let statusText = "کافی";
+
+  if (ratio <= 0.2) {
+    colorClass = "stroke-rose-500";
+    bgTrackClass = "stroke-rose-500/20";
+    textColorClass = "text-rose-600 dark:text-rose-400";
+    badgeBgClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
+    statusText = "رو به اتمام";
+  } else if (ratio <= 0.5) {
+    colorClass = "stroke-amber-500";
+    bgTrackClass = "stroke-amber-500/20";
+    textColorClass = "text-amber-600 dark:text-amber-400";
+    badgeBgClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
+    statusText = "متوسط";
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="relative inline-flex items-center justify-center p-1 rounded-xl hover:bg-muted/70 transition-all cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          title="مشاهده جزئیات اعتبار هوش مصنوعی"
+        >
+          <CircularProgress
+            size={36}
+            strokeWidth={3.5}
+            value={percentage}
+            progressClassName={colorClass}
+            progressBgClassName={bgTrackClass}
+            showLabel
+            renderLabel={() => (
+              <span className={`text-[10px] font-bold font-mono ${textColorClass}`}>
+                {remaining}
+              </span>
+            )}
+          />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-80 p-4 rounded-2xl shadow-xl border bg-background">
+        <div className="space-y-3.5">
+          {/* Popover Header */}
+          <div className="flex items-center justify-between gap-2 border-b pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+                <Sparkles size={16} />
+              </div>
+              <span className="text-sm font-bold">اعتبار سوالات هوش مصنوعی</span>
+            </div>
+            <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${badgeBgClass}`}>
+              {statusText}
+            </span>
+          </div>
+
+          {/* Big Progress Display */}
+          <div className="flex items-center gap-4 bg-muted/40 p-3 rounded-xl border border-border/50">
+            <CircularProgress
+              size={52}
+              strokeWidth={5}
+              value={percentage}
+              progressClassName={colorClass}
+              progressBgClassName={bgTrackClass}
+              showLabel
+              renderLabel={() => (
+                <span className={`text-xs font-bold font-mono ${textColorClass}`}>
+                  {percentage}%
+                </span>
+              )}
+            />
+            <div className="space-y-0.5">
+              <div className="text-xs text-muted-foreground">باقی‌مانده برای این دوره:</div>
+              <div className="text-base font-bold font-mono">
+                <span className={textColorClass}>{remaining}</span>
+                <span className="text-xs font-normal text-muted-foreground mr-1">از {total} سوال</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Breakdown Stats */}
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>تعداد سوالات مصرف‌شده:</span>
+              <span className="font-mono font-medium text-foreground">{used} سوال</span>
+            </div>
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>سقف کل سوالات:</span>
+              <span className="font-mono font-medium text-foreground">{total} سوال</span>
+            </div>
+          </div>
+
+          {/* Warning Note if low */}
+          {ratio <= 0.2 && (
+            <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[11px] leading-relaxed">
+              ⚠️ تعداد سوالات شما رو به اتمام است. برای افزایش سقف سوالات می‌توانید با پشتیبانی تماس بگیرید.
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function ScrollToEndOnLoad({ trigger }: { trigger: any }) {
   const { scrollToEnd } = useMessageScroller();
   useEffect(() => {
@@ -356,6 +483,8 @@ export function AIConversationDetail() {
         setRemainingQuestions(res.data.remaining_questions);
         setTotalQuestions(res.data.total_questions);
       }
+      console.log("Remaining questions:", res.data.remaining_questions);
+      console.log("Total questions:", res.data);
     } catch (err: any) {
       console.error("Error loading conversation:", err);
       toast.error('خطا در بارگذاری مکالمه');
@@ -510,11 +639,8 @@ export function AIConversationDetail() {
           )}
 
           <div className="flex items-center gap-2 shrink-0">
-            {remainingQuestions !== null && totalQuestions !== null && (
-              <span className="text-xs text-muted-foreground hidden sm:block">
-                باقی‌مانده: <strong>{remainingQuestions}</strong>/{totalQuestions}
-              </span>
-            )}
+            {/* Circular Credit Progress Indicator with Popover */}
+            <AICreditIndicator remaining={remainingQuestions} total={totalQuestions} />
             <Button
               variant="ghost"
               size="icon"
