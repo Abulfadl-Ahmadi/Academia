@@ -16,6 +16,7 @@ from .models import (
     StudentTestSessionLog, TestCollection, StudentProgress, Question, Option, QuestionImage,
     QuestionCollection, TestContentType, TestType
 )
+from accounts.models import User
 from knowledge.models import Folder
 from .serializers import (
     TestCreateSerializer, TestUpdateSerializer, TestDetailSerializer,
@@ -1071,9 +1072,12 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role == "student":
-            # دانش‌آموز مجموعه‌هایی را می‌بیند که به آن‌ها دسترسی دارد یا عمومی هستند
+            # دانش‌آموز مجموعه‌هایی را می‌بیند که به آن‌ها دسترسی دارد، خریده است، یا عمومی هستند
             return TestCollection.objects.filter(
-                Q(courses__students=user) | Q(is_public=True)
+                Q(courses__students=user) |
+                Q(students=user) |
+                Q(product__useraccess__user=user, product__useraccess__is_active=True) |
+                Q(is_public=True)
             ).distinct()
         elif user.role not in ['student', 'admin']:
             # معلم تمام مجموعه‌های فعال را می‌بیند
@@ -1083,19 +1087,50 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         return TestCollection.objects.all()
     
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        instance = serializer.save(created_by=self.request.user)
+        if 'courses' in serializer.validated_data:
+            instance.courses.set(serializer.validated_data['courses'])
+        if 'students' in serializer.validated_data:
+            instance.students.set(serializer.validated_data['students'])
     
     def perform_update(self, serializer):
-        """به‌روزرسانی مجموعه آزمون با مدیریت مناسب فیلد courses"""
-        instance = serializer.instance
+        """به‌روزرسانی مجموعه آزمون با مدیریت مناسب فیلدهای courses و students"""
+        instance = serializer.save()
         
-        # ذخیره فیلدهای اصلی
-        serializer.save()
-        
-        # مدیریت رابطه many-to-many courses
         if 'courses' in serializer.validated_data:
-            courses_data = serializer.validated_data['courses']
-            instance.courses.set(courses_data)
+            instance.courses.set(serializer.validated_data['courses'])
+        if 'students' in serializer.validated_data:
+            instance.students.set(serializer.validated_data['students'])
+
+    @action(detail=False, methods=['get'])
+    def available_students(self, request):
+        """لیست دانش‌آموزان برای انتخاب در فرم مجموعه آزمون"""
+        user = request.user
+        if user.role not in ['admin', 'teacher'] and not user.is_staff:
+            return Response({'error': 'دسترسی غیرمجاز'}, status=status.HTTP_403_FORBIDDEN)
+
+        students_qs = User.objects.filter(role='student', is_active=True).order_by('first_name', 'last_name', 'username')
+        
+        search = request.query_params.get('search', '').strip()
+        if search:
+            students_qs = students_qs.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(phone__icontains=search)
+            )
+
+        data = [
+            {
+                'id': s.id,
+                'username': s.username,
+                'full_name': s.get_full_name() or s.username,
+                'phone': getattr(s, 'phone', '') or (s.profile.phone_number if hasattr(s, 'profile') else ''),
+            }
+            for s in students_qs[:300]
+        ]
+        return Response(data)
     
     @action(detail=True, methods=['get'])
     def statistics(self, request, pk=None):

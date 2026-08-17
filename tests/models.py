@@ -125,8 +125,15 @@ class TestCollection(models.Model):
             role='student'
         ).distinct().values_list('id', flat=True))
 
+        # Students who purchased products linked to this test collection
+        from finance.models import UserAccess
+        purchased_student_ids = set(UserAccess.objects.filter(
+            product__test=self,
+            is_active=True
+        ).values_list('user_id', flat=True))
+
         # Union IDs and return a single queryset to avoid combining incompatible QuerySets
-        all_ids = list(explicit_ids.union(course_student_ids))
+        all_ids = list(explicit_ids.union(course_student_ids).union(purchased_student_ids))
         if not all_ids:
             return User.objects.none()
         return User.objects.filter(id__in=all_ids)

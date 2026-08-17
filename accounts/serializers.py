@@ -11,10 +11,38 @@ class UserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     password = serializers.CharField(write_only=True, min_length=6, required=False)
     password_confirm = serializers.CharField(write_only=True, min_length=6, required=False)
+    school = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
+    grade = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'password_confirm', 'first_name', 'last_name', 'role']
+        fields = ['id', 'username', 'email', 'password', 'password_confirm', 'first_name', 'last_name', 'role', 'school', 'phone_number', 'grade']
+        read_only_fields = ['id', 'school', 'phone_number', 'grade']
+
+    def get_school(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.school or ''
+        except Exception:
+            pass
+        return ''
+
+    def get_phone_number(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.phone_number or ''
+        except Exception:
+            pass
+        return ''
+
+    def get_grade(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.grade or ''
+        except Exception:
+            pass
+        return ''
 
     def validate(self, data):
         if data.get('password') != data.get('password_confirm'):
@@ -165,7 +193,35 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
+    school = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
+    grade = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role', 'is_active', 'date_joined']
-        read_only_fields = ['id', 'date_joined', 'username']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role', 'is_active', 'date_joined', 'school', 'phone_number', 'grade']
+        read_only_fields = ['id', 'date_joined', 'username', 'school', 'phone_number', 'grade']
+
+    def get_school(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.school or ''
+        except Exception:
+            pass
+        return ''
+
+    def get_phone_number(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.phone_number or ''
+        except Exception:
+            pass
+        return ''
+
+    def get_grade(self, obj):
+        try:
+            if hasattr(obj, 'profile') and obj.profile:
+                return obj.profile.grade or ''
+        except Exception:
+            pass
+        return ''

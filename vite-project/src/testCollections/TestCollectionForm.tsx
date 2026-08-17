@@ -9,13 +9,16 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { 
   BookOpen, 
-  Plus,
-  ArrowRight,
-  Users,
-  Check,
-  X,
-  Edit,
-  Trash2
+  Plus, 
+  ArrowRight, 
+  Users, 
+  UserCheck,
+  Check, 
+  X, 
+  Edit, 
+  Trash2,
+  Search,
+  Globe
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -25,10 +28,18 @@ interface Course {
   title: string;
 }
 
+interface Student {
+  id: number;
+  username: string;
+  full_name: string;
+  phone?: string;
+}
+
 interface FormData {
   name: string;
   description: string;
   courses: number[];
+  students: number[];
   is_public: boolean;
 }
 
@@ -42,57 +53,34 @@ export default function TestCollectionForm() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   
+  const [students, setStudents] = useState<Student[]>([]);
+  const [studentsLoading, setStudentsLoading] = useState(true);
+  const [studentSearch, setStudentSearch] = useState("");
+  
   // Get courseId from URL query parameter
   const queryParams = new URLSearchParams(location.search);
   const courseIdParam = queryParams.get('courseId');
   
-  console.log("URL parameters:", location.search);
-  console.log("Parsed courseIdParam:", courseIdParam);
-  console.log("Edit mode:", isEditMode, "Collection ID:", id);
-  
   const [formData, setFormData] = useState<FormData>(() => {
-    // Initialize with courseId from URL if available
     return {
       name: "",
       description: "",
       courses: courseIdParam ? [parseInt(courseIdParam)] : [],
+      students: [],
       is_public: false
     };
   });
 
-  // Debug function to show alert with current state
-  const debugState = useCallback(() => {
-    console.log("Current form data:", formData);
-    console.log("Available courses:", courses);
-    console.log("CourseIdParam:", courseIdParam);
-    
-    // Check if the courseId is valid
-    if (courseIdParam) {
-      const courseId = parseInt(courseIdParam);
-      console.log("Course ID exists in form data:", formData.courses.includes(courseId));
-      
-      if (courses.length > 0) {
-        const courseExists = courses.some((course: Course) => course.id === courseId);
-        console.log("Course ID exists in available courses:", courseExists);
-      }
-    }
-  }, [formData, courses, courseIdParam]);
-
   // Update formData if courseIdParam changes
   useEffect(() => {
-    console.log("courseIdParam changed:", courseIdParam);
     if (courseIdParam) {
       const courseId = parseInt(courseIdParam);
-      console.log("Setting courseId in formData:", courseId);
       setFormData(prev => ({
         ...prev,
         courses: prev.courses.includes(courseId) ? prev.courses : [...prev.courses, courseId]
       }));
-      
-      // Run debug after state update
-      setTimeout(debugState, 500);
     }
-  }, [courseIdParam, debugState]);
+  }, [courseIdParam]);
 
   // Fetch collection details if in edit mode
   const fetchCollectionDetails = useCallback(async () => {
@@ -101,18 +89,22 @@ export default function TestCollectionForm() {
     try {
       setLoading(true);
       const response = await axiosInstance.get(`/test-collections/${id}/`);
-      console.log("Fetched collection:", response.data);
+      const data = response.data;
       
-      // Extract course IDs from course_details if available
-      const courseIds = response.data.course_details 
-        ? response.data.course_details.map((course: {id: number}) => course.id)
-        : response.data.courses || [];
+      const courseIds = data.course_details 
+        ? data.course_details.map((course: { id: number }) => course.id)
+        : data.courses || [];
       
+      const studentIds = data.student_details
+        ? data.student_details.map((s: { id: number }) => s.id)
+        : data.students || [];
+
       setFormData({
-        name: response.data.name || "",
-        description: response.data.description || "",
+        name: data.name || "",
+        description: data.description || "",
         courses: courseIds,
-        is_public: response.data.is_public || false
+        students: studentIds,
+        is_public: Boolean(data.is_public)
       });
     } catch (error) {
       console.error("Error fetching collection details:", error);
@@ -131,33 +123,13 @@ export default function TestCollectionForm() {
   const fetchCourses = useCallback(async () => {
     try {
       setCoursesLoading(true);
-      console.log("Fetching courses...");
       const response = await axiosInstance.get("/teacher-courses/");
-      console.log("Fetched courses:", response.data);
-      
-      // Check if the response is an array or has a specific structure
       if (Array.isArray(response.data)) {
         setCourses(response.data);
       } else if (response.data.results && Array.isArray(response.data.results)) {
         setCourses(response.data.results);
       } else {
-        console.error("Unexpected response format:", response.data);
-        toast.error("دریافت کلاس‌ها با خطا مواجه شد: قالب پاسخ نامعتبر است");
         setCourses([]);
-      }
-      
-      // If we have a courseId parameter, verify that the course exists in the fetched data
-      if (courseIdParam) {
-        const courseId = parseInt(courseIdParam);
-        const coursesArray = Array.isArray(response.data) ? response.data : 
-                            (response.data.results && Array.isArray(response.data.results)) ? 
-                            response.data.results : [];
-        
-        const courseExists = coursesArray.some((course: Course) => course.id === courseId);
-        console.log(`Course with ID ${courseId} exists in fetched data: ${courseExists}`);
-        if (!courseExists) {
-          console.warn(`Course with ID ${courseId} not found in fetched courses`);
-        }
       }
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -166,11 +138,29 @@ export default function TestCollectionForm() {
     } finally {
       setCoursesLoading(false);
     }
-  }, [courseIdParam]);
+  }, []);
+
+  const fetchStudents = useCallback(async () => {
+    try {
+      setStudentsLoading(true);
+      const response = await axiosInstance.get("/test-collections/available_students/");
+      if (Array.isArray(response.data)) {
+        setStudents(response.data);
+      } else {
+        setStudents([]);
+      }
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      setStudents([]);
+    } finally {
+      setStudentsLoading(false);
+    }
+  }, []);
   
   useEffect(() => {
     fetchCourses();
-  }, [fetchCourses]);
+    fetchStudents();
+  }, [fetchCourses, fetchStudents]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,30 +170,22 @@ export default function TestCollectionForm() {
       return;
     }
     
-    // Log the submission data for debugging
-    console.log("Submitting form data:", formData);
-    
     try {
       setLoading(true);
       
-      // Clone the form data for submission
       const dataToSubmit = {
-        ...formData,
-        // Make sure courses is at least an empty array if undefined
-        courses: formData.courses || []
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        courses: formData.courses || [],
+        students: formData.students || [],
+        is_public: formData.is_public
       };
 
-      let response;
-      
       if (isEditMode) {
-        // Update existing collection
-        response = await axiosInstance.put(`/test-collections/${id}/`, dataToSubmit);
-        console.log("Server response:", response.data);
+        await axiosInstance.put(`/test-collections/${id}/`, dataToSubmit);
         toast.success("مجموعه آزمون با موفقیت بروزرسانی شد");
       } else {
-        // Create new collection
-        response = await axiosInstance.post("/test-collections/", dataToSubmit);
-        console.log("Server response:", response.data);
+        await axiosInstance.post("/test-collections/", dataToSubmit);
         toast.success("مجموعه آزمون با موفقیت ایجاد شد");
       }
       
@@ -243,38 +225,40 @@ export default function TestCollectionForm() {
     }));
   };
 
-  // If there's an error loading the component, provide a fallback UI
-  if (!Array.isArray(courses) && !coursesLoading) {
-    console.error("courses is not an array:", courses);
+  const toggleStudent = (studentId: number) => {
+    setFormData(prev => ({
+      ...prev,
+      students: prev.students.includes(studentId)
+        ? prev.students.filter(id => id !== studentId)
+        : [...prev.students, studentId]
+    }));
+  };
+
+  const selectAllFilteredStudents = () => {
+    const filteredIds = filteredStudents.map(s => s.id);
+    setFormData(prev => ({
+      ...prev,
+      students: Array.from(new Set([...prev.students, ...filteredIds]))
+    }));
+  };
+
+  const deselectAllFilteredStudents = () => {
+    const filteredIds = new Set(filteredStudents.map(s => s.id));
+    setFormData(prev => ({
+      ...prev,
+      students: prev.students.filter(id => !filteredIds.has(id))
+    }));
+  };
+
+  const filteredStudents = students.filter(s => {
+    if (!studentSearch.trim()) return true;
+    const term = studentSearch.toLowerCase();
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate("/panel/test-collections")}
-          >
-            <ArrowRight className="h-4 w-4 ml-1" />
-            بازگشت
-          </Button>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-red-600">خطا در بارگذاری فرم</h1>
-          </div>
-        </div>
-        <Card className="p-6">
-          <div className="flex flex-col gap-4 items-center">
-            <p>مشکلی در بارگذاری فرم رخ داده است. لطفاً صفحه را مجدداً بارگذاری کنید.</p>
-            <div className="flex gap-3">
-              <Button onClick={() => window.location.reload()}>بارگذاری مجدد</Button>
-              <Button variant="outline" onClick={() => navigate("/panel/test-collections")}>
-                بازگشت به صفحه قبل
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
+      s.full_name?.toLowerCase().includes(term) ||
+      s.username?.toLowerCase().includes(term) ||
+      s.phone?.includes(term)
     );
-  }
+  });
 
   return (
     <div className="space-y-6">
@@ -290,45 +274,40 @@ export default function TestCollectionForm() {
         <div className="flex items-center gap-2">
           {isEditMode ? (
             <>
-              <Edit className="h-6 w-6" />
-              <h1 className="text-3xl font-bold">ویرایش مجموعه آزمون</h1>
+              <Edit className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl sm:text-3xl font-bold">ویرایش مجموعه آزمون</h1>
             </>
           ) : (
             <>
-              <BookOpen className="h-6 w-6" />
-              <h1 className="text-3xl font-bold">ایجاد مجموعه آزمون جدید</h1>
+              <BookOpen className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl sm:text-3xl font-bold">ایجاد مجموعه آزمون جدید</h1>
             </>
           )}
         </div>
       </div>
 
-      <div className="max-w-2xl">
-        <Card>
+      <div className="max-w-3xl">
+        <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {isEditMode ? (
-                <Edit className="h-5 w-5" />
-              ) : (
-                <Plus className="h-5 w-5" />
-              )}
+            <CardTitle className="flex items-center gap-2 text-lg font-bold">
+              {isEditMode ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
               اطلاعات مجموعه آزمون
             </CardTitle>
             {courseIdParam && !isEditMode && (
-              <div className="bg-green-500/10 border border-green-500/50 rounded-md p-3 mt-4 text-sm">
-                شما در حال ایجاد مجموعه آزمون برای کلاسی با شناسه {courseIdParam} هستید.
-                این کلاس به صورت خودکار انتخاب شده است.
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 mt-2 text-sm">
+                شما در حال ایجاد مجموعه آزمون برای دوره جاری هستید و این دوره به صورت خودکار انتخاب شده است.
               </div>
             )}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">عنوان مجموعه آزمون *</Label>
+                <Label htmlFor="name">عنوان مجموعه آزمون <span className="text-red-500">*</span></Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="عنوان مجموعه آزمون را وارد کنید"
+                  placeholder="مثال: آزمون‌های جامع جمع‌بندی کنکور"
                   required
                 />
               </div>
@@ -339,16 +318,20 @@ export default function TestCollectionForm() {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="توضیحات مجموعه آزمون را وارد کنید"
+                  placeholder="توضیحات مربوط به این مجموعه آزمون و راهنمایی برای دانش‌آموزان"
                   rows={3}
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 border rounded-lg">
+              {/* Public Access Switch */}
+              <div className="flex items-center justify-between p-4 border rounded-xl bg-card hover:bg-muted/30 transition-colors">
                 <div className="space-y-1">
-                  <Label htmlFor="is_public">دسترسی عمومی</Label>
-                  <p className="text-sm text-muted-foreground">
-                    اگر فعال باشد، همه دانش‌آموزان می‌توانند به این مجموعه آزمون دسترسی داشته باشند
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary" />
+                    <Label htmlFor="is_public" className="font-bold text-base cursor-pointer">دسترسی عمومی (Public)</Label>
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    در صورت فعال بودن، تمام دانش‌آموزان سیستم بدون نیاز به خرید یا عضویت در دوره به این مجموعه آزمون دسترسی خواهند داشت.
                   </p>
                 </div>
                 <Switch
@@ -358,61 +341,178 @@ export default function TestCollectionForm() {
                 />
               </div>
 
-              <div className="space-y-3">
-                <Label>کلاس‌های مرتبط</Label>
+              {/* Specific Students Selection */}
+              <div className="space-y-3 p-4 border rounded-xl bg-card">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="w-4 h-4 text-primary" />
+                    <Label className="font-bold text-base">انتخاب دانش‌آموزان دارای دسترسی اختصاصی</Label>
+                  </div>
+                  <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">
+                    {formData.students.length} دانش‌آموز انتخاب شده
+                  </span>
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  مشابه پنل ادمین، می‌توانید دانش‌آموزان مشخصی را برای دسترسی به این مجموعه آزمون انتخاب کنید.
+                </p>
+
+                {/* Search & Bulk Select Controls */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="جستجو بر اساس نام، نام کاربری یا شماره همراه..."
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      className="pr-9 text-sm"
+                    />
+                  </div>
+                  {filteredStudents.length > 0 && (
+                    <div className="flex gap-1 shrink-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={selectAllFilteredStudents}
+                        className="text-xs"
+                      >
+                        انتخاب همه نتایج
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={deselectAllFilteredStudents}
+                        className="text-xs text-destructive"
+                      >
+                        لغو انتخاب
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Students List Box */}
+                {studentsLoading ? (
+                  <div className="flex items-center justify-center py-6">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                ) : filteredStudents.length > 0 ? (
+                  <div className="space-y-1.5 max-h-56 overflow-y-auto border rounded-lg p-2.5 bg-muted/20">
+                    {filteredStudents.map((student) => {
+                      const isSelected = formData.students.includes(student.id);
+                      return (
+                        <div
+                          key={student.id}
+                          className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all ${
+                            isSelected
+                              ? "bg-primary/15 border border-primary/30 font-medium"
+                              : "hover:bg-muted/70 border border-transparent"
+                          }`}
+                          onClick={() => toggleStudent(student.id)}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                              isSelected ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/40"
+                            }`}>
+                              {isSelected && <Check className="w-3.5 h-3.5" />}
+                            </div>
+                            <span className="text-sm truncate">{student.full_name}</span>
+                            <span className="text-xs text-muted-foreground font-mono">({student.username})</span>
+                          </div>
+                          {student.phone && (
+                            <span className="text-xs text-muted-foreground font-mono hidden sm:inline">{student.phone}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    دانش‌آموزی با این مشخصات یافت نشد.
+                  </p>
+                )}
+
+                {/* Selected Students Badges */}
+                {formData.students.length > 0 && (
+                  <div className="space-y-1.5 pt-2">
+                    <Label className="text-xs text-muted-foreground">دانش‌آموزان انتخاب شده:</Label>
+                    <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 border rounded-lg bg-muted/10">
+                      {formData.students.map((studentId) => {
+                        const student = students.find(s => s.id === studentId);
+                        return (
+                          <Badge 
+                            key={studentId} 
+                            variant="secondary" 
+                            className="flex items-center gap-1 py-1 px-2 text-xs"
+                          >
+                            <span>{student ? student.full_name : `کاربر #${studentId}`}</span>
+                            <X 
+                              className="w-3 h-3 cursor-pointer hover:text-destructive" 
+                              onClick={() => toggleStudent(studentId)} 
+                            />
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Related Courses */}
+              <div className="space-y-3 p-4 border rounded-xl bg-card">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary" />
+                    <Label className="font-bold text-base">دوره‌های مرتبط (اتصال خودکار دانش‌آموزان دوره)</Label>
+                  </div>
+                  <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">
+                    {formData.courses.length} دوره انتخاب شده
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  دانش‌آموزانی که در این دوره‌ها ثبت‌نام کرده‌اند، به صورت خودکار به این مجموعه آزمون دسترسی خواهند داشت.
+                </p>
+
                 {coursesLoading ? (
                   <div className="flex items-center justify-center py-4">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
-                ) : Array.isArray(courses) && courses.length > 0 ? (
-                  <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
-                    {courses.map((course: Course) => (
-                      <div
-                        key={course.id}
-                        className={`flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
-                          formData.courses.includes(course.id)
-                            ? "bg-primary/10 border border-primary/20"
-                            : "hover:bg-muted"
-                        }`}
-                        onClick={() => toggleCourse(course.id)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{course.title}</span>
+                ) : courses.length > 0 ? (
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto border rounded-lg p-2.5 bg-muted/20">
+                    {courses.map((course: Course) => {
+                      const isSelected = formData.courses.includes(course.id);
+                      return (
+                        <div
+                          key={course.id}
+                          className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
+                            isSelected
+                              ? "bg-primary/15 border border-primary/30 font-medium"
+                              : "hover:bg-muted/70 border border-transparent"
+                          }`}
+                          onClick={() => toggleCourse(course.id)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                              isSelected ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/40"
+                            }`}>
+                              {isSelected && <Check className="w-3.5 h-3.5" />}
+                            </div>
+                            <span className="text-sm">{course.title}</span>
+                          </div>
                         </div>
-                        {formData.courses.includes(course.id) ? (
-                          <Check className="h-4 w-4 text-primary" />
-                        ) : (
-                          <X className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground py-4 text-center">
-                    هیچ کلاسی یافت نشد. ابتدا یک کلاس ایجاد کنید.
+                    هیچ دوره‌ای یافت نشد.
                   </p>
                 )}
               </div>
 
-              {formData.courses.length > 0 && (
-                <div className="space-y-2">
-                  <Label>کلاس‌های انتخاب شده:</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.courses.map((courseId) => {
-                      const course = courses.find(c => c.id === courseId);
-                      return course ? (
-                        <Badge key={courseId} variant="secondary">
-                          {course.title}
-                        </Badge>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" disabled={loading}>
+              <div className="flex gap-3 pt-4 flex-wrap">
+                <Button type="submit" disabled={loading} className="min-w-[140px]">
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current ml-2"></div>
@@ -449,17 +549,6 @@ export default function TestCollectionForm() {
                   >
                     <Trash2 className="ml-2 h-4 w-4" />
                     حذف مجموعه آزمون
-                  </Button>
-                )}
-                
-                {/* Hidden debug button that only shows in development */}
-                {import.meta.env.DEV && (
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={debugState}
-                  >
-                    بررسی وضعیت
                   </Button>
                 )}
               </div>

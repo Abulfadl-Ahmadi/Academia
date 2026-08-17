@@ -636,29 +636,60 @@ class QuestionTestListSerializer(serializers.ModelSerializer):
 
 class TestCollectionSerializer(serializers.ModelSerializer):
     """سریالایزر برای مجموعه آزمون"""
-    tests_count = serializers.SerializerMethodField()
-    students_count = serializers.SerializerMethodField()
-    courses_info = CourseNestedSerializer(source='courses', many=True, read_only=True)
     courses = serializers.PrimaryKeyRelatedField(
         many=True, 
         queryset=Course.objects.all(),
         required=False
     )
+    students = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.filter(role='student'),
+        required=False
+    )
+    course_details = serializers.SerializerMethodField(read_only=True)
+    student_details = serializers.SerializerMethodField(read_only=True)
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    total_tests = serializers.SerializerMethodField(read_only=True)
+    tests_count = serializers.SerializerMethodField(read_only=True)
+    student_count = serializers.SerializerMethodField(read_only=True)
+    students_count = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = TestCollection
         fields = [
             'id', 'name', 'description', 'is_active', 'is_public',
-            'tests_count', 'students_count', 'courses', 'courses_info',
+            'courses', 'course_details', 'students', 'student_details',
+            'created_by', 'created_by_name', 'total_tests', 'tests_count',
+            'student_count', 'students_count',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']
 
+    def get_course_details(self, obj):
+        return [{'id': course.id, 'title': course.title} for course in obj.courses.all()]
+
+    def get_student_details(self, obj):
+        return [
+            {
+                'id': student.id,
+                'username': student.username,
+                'full_name': student.get_full_name() or student.username,
+                'phone': getattr(student, 'phone', '') or (student.profile.phone_number if hasattr(student, 'profile') else ''),
+            }
+            for student in obj.students.all()
+        ]
+
+    def get_total_tests(self, obj):
+        return obj.get_total_tests()
+
     def get_tests_count(self, obj):
         return obj.get_total_tests()
 
+    def get_student_count(self, obj):
+        return len(obj.get_accessible_students())
+
     def get_students_count(self, obj):
-        return obj.get_accessible_students().count()
+        return len(obj.get_accessible_students())
 
 
 class TestCollectionDetailSerializer(serializers.ModelSerializer):
@@ -668,7 +699,13 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
         queryset=Course.objects.all(),
         required=False
     )
+    students = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.filter(role='student'),
+        required=False
+    )
     course_details = serializers.SerializerMethodField(read_only=True)
+    student_details = serializers.SerializerMethodField(read_only=True)
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
     total_tests = serializers.SerializerMethodField(read_only=True)
     student_count = serializers.SerializerMethodField(read_only=True)
@@ -678,6 +715,7 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
         model = TestCollection
         fields = [
             'id', 'name', 'description', 'courses', 'course_details',
+            'students', 'student_details',
             'created_by', 'created_by_name', 'total_tests', 'student_count',
             'tests', 'created_at', 'updated_at', 'is_active', 'is_public'
         ]
@@ -686,6 +724,18 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
     def get_course_details(self, obj):
         """جزئیات کلاس‌های مرتبط"""
         return [{'id': course.id, 'title': course.title} for course in obj.courses.all()]
+
+    def get_student_details(self, obj):
+        """جزئیات دانش‌آموزان اختصاص‌یافته"""
+        return [
+            {
+                'id': student.id,
+                'username': student.username,
+                'full_name': student.get_full_name() or student.username,
+                'phone': getattr(student, 'phone', '') or (student.profile.phone_number if hasattr(student, 'profile') else ''),
+            }
+            for student in obj.students.all()
+        ]
 
     def get_total_tests(self, obj):
         """تعداد کل آزمون‌های این مجموعه"""
@@ -703,7 +753,6 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
         
         result = []
         for test in tests:
-            # تعداد سوالات بر اساس نوع آزمون
             if test.content_type == TestContentType.PDF:
                 questions_count = test.primary_keys.count()
             else:
@@ -723,7 +772,6 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
                 'answers_file_url': test.answers_file.file.url if test.answers_file and test.answers_file.file else None,
             }
             
-            # Add test status for the current user
             if user and user.role == 'student':
                 sessions = test.studenttestsession_set.filter(user=user).order_by('-id')
                 if sessions.exists():
@@ -732,40 +780,6 @@ class TestCollectionDetailSerializer(serializers.ModelSerializer):
             result.append(test_data)
             
         return result
-
-
-class TestCollectionSerializer(serializers.ModelSerializer):
-    """سریالایزر برای مجموعه آزمون"""
-    courses = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Course.objects.all(),
-        required=False
-    )
-    course_details = serializers.SerializerMethodField(read_only=True)
-    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
-    total_tests = serializers.SerializerMethodField(read_only=True)
-    student_count = serializers.SerializerMethodField(read_only=True)
-    
-    class Meta:
-        model = TestCollection
-        fields = [
-            'id', 'name', 'description', 'courses', 'course_details',
-            'created_by', 'created_by_name', 'total_tests', 'student_count',
-            'created_at', 'updated_at', 'is_active'
-        ]
-        read_only_fields = ['created_by', 'created_at', 'updated_at']
-    
-    def get_course_details(self, obj):
-        """جزئیات کلاس‌های مرتبط"""
-        return [{'id': course.id, 'title': course.title} for course in obj.courses.all()]
-
-    def get_total_tests(self, obj):
-        """تعداد کل آزمون‌های این مجموعه"""
-        return obj.tests.count()
-
-    def get_student_count(self, obj):
-        """تعداد دانش‌آموزان دارای دسترسی"""
-        return len(obj.get_accessible_students())
 
 
 class StudentProgressSerializer(serializers.ModelSerializer):

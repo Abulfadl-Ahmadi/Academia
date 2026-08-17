@@ -822,15 +822,30 @@ class ChangePasswordView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+import django_filters
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from tests.pagination import CustomPageNumberPagination
+
+class AdminUserFilter(django_filters.FilterSet):
+    grade = django_filters.CharFilter(field_name='profile__grade', lookup_expr='exact')
+    school = django_filters.CharFilter(field_name='profile__school', lookup_expr='icontains')
+    is_active = django_filters.BooleanFilter(field_name='is_active')
+    role = django_filters.CharFilter(field_name='role', lookup_expr='exact')
+
+    class Meta:
+        model = User
+        fields = ['role', 'is_active', 'grade', 'school']
 
 class AdminUserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.select_related('profile').all().order_by('-date_joined')
     serializer_class = AdminUserSerializer
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    search_fields = ['username', 'first_name', 'last_name', 'email']
-    filterset_fields = ['role', 'is_active']
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    filterset_class = AdminUserFilter
+    search_fields = ['username', 'first_name', 'last_name', 'email', 'profile__school', 'profile__phone_number', 'profile__national_id']
+    ordering_fields = ['date_joined', 'first_name', 'last_name', 'username', 'email', 'role', 'is_active', 'profile__grade', 'profile__school']
+    ordering = ['-date_joined']
 
     def get_permissions(self):
         return [permissions.IsAuthenticated()]
