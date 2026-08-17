@@ -17,7 +17,6 @@ import UploadVideo from "@/app/teacher-dashboard/video/UploadVideo1";
 import TicketsList from "@/features/tickets/TicketsList";
 import NewTicket from "@/features/tickets/NewTicket";
 import TicketDetail from "@/features/tickets/TicketDetail";
-import AskAI from "@/features/tickets/AskAI";
 import {
   AIConversationList,
   AIConversationDetail,
@@ -189,7 +188,7 @@ export default function PanelRoute() {
           {/* Support Tickets routes for students */}
           <Route path="/support" element={<TicketsList />} />
           <Route path="/support/new" element={<NewTicket />} />
-          <Route path="/support/ask-ai/new" element={<AskAI />} />
+          {/* <Route path="/support/ask-ai/new" element={<AskAI />} /> */}
           <Route
             path="/support/ask-ai/:id"
             element={<AIConversationDetail />}
@@ -328,7 +327,7 @@ export default function PanelRoute() {
           {/* Support Tickets routes for teachers */}
           <Route path="/support" element={<TicketsList />} />
           <Route path="/support/new" element={<NewTicket />} />
-          <Route path="/support/ask-ai/new" element={<AskAI />} />
+          {/* <Route path="/support/ask-ai/new" element={<AskAI />} /> */}
           <Route
             path="/support/ask-ai/:id"
             element={<AIConversationDetail />}

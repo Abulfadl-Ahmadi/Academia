@@ -83,8 +83,8 @@ function PreApp() {
 function App() {
   const { user } = useUser();
   const location = useLocation();
-
-  const showMobileNav = location.pathname.startsWith("/panel");
+  const isAIChatDetail = location.pathname.startsWith("/panel/support/ask-ai/");
+  const showMobileNav = location.pathname.startsWith("/panel") && !isAIChatDetail;
   if (user) {
     console.log(user);
   }

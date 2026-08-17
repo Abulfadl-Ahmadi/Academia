@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Home, GraduationCap, ClipboardList, Bot, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,12 @@ const navItems = [
 ];
 
 export function MobileBottomNav() {
+  const location = useLocation();
+
+  // عدم نمایش نوبار موبایل در صفحات چت با هوش مصنوعی
+  if (location.pathname.startsWith("/panel/support/ask-ai/")) {
+    return null;
+  }
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 m-5 rounded-full border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
       <div className="mx-auto flex max-w-md justify-between">
