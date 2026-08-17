@@ -55,10 +55,138 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                    کنکوز هدف
+                                    کنکور هدف
                                 </div>
                             </div>
                             <div className="flex gap-1">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="https://c242950.parspack.net/c242950/media/Gaj-logo.png"
+                                    alt="Nvidia Logo"
+                                    // height="20"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    انتشارات بین‌المللی گاج
+                                </div>
+                            </div>
+                            <div className="flex">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="https://c242950.parspack.net/c242950/media/mehromah.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="/logo-salam.webp"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس سلام
+                                </div>
+                            </div>
+                            {/* <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/hadaf-yellow-tr.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    کنکور هدف
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/baharestan.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    دبیرستان بهارستان (کرج)
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/alpha-school.svg"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    آلفا اسکول
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/hanan.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس حنان
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/shafie.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    بنیاد علمی آموزشی شفیعی
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/neshane-rasa.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس نشانه رستا
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/roshangaran.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    دبیرستان روشنگران
+                                </div>
+                            </div> */}
+
+                        </InfiniteSlider>
+
+                        <div className='mt-7'></div>
+
+                        <InfiniteSlider
+                            speedOnHover={20}
+                            speed={40}
+                            gap={100}
+                        >
+                            {/* First set of logos */}
+                            {/* <div className="flex gap-1">
                                 <img
                                     className="mx-auto h-10 "
                                     src="https://c242950.parspack.net/c242950/media/Gaj-logo.png"
@@ -100,7 +228,124 @@ export default function LogoCloud() {
                                     width="auto"
                                 />
                                 <div className='self-center font-bold'>
-                                    کنکوز هدف
+                                    کنکور هدف
+                                </div>
+                            </div>
+                            <div className="flex gap-1">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="https://c242950.parspack.net/c242950/media/Gaj-logo.png"
+                                    alt="Nvidia Logo"
+                                    // height="20"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    انتشارات بین‌المللی گاج
+                                </div>
+                            </div>
+                            <div className="flex">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="https://c242950.parspack.net/c242950/media/mehromah.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-10 "
+                                    src="/logo-salam.webp"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس سلام
+                                </div>
+                            </div> */}
+                            {/* <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/hadaf-yellow-tr.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    کنکور هدف
+                                </div>
+                            </div> */}
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/baharestan.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    دبیرستان بهارستان (کرج)
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/alpha-school.svg"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    آلفا اسکول
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/hanan.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس حنان
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/shafie.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    بنیاد علمی آموزشی شفیعی
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/neshane-rasa.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    مجموعه مدارس نشانه رستا
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <img
+                                    className="mx-auto h-8"
+                                    src="/roshangaran.png"
+                                    alt="Column Logo"
+                                    // height="16"
+                                    width="auto"
+                                />
+                                <div className='self-center font-bold'>
+                                    دبیرستان روشنگران
                                 </div>
                             </div>
 
