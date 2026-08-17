@@ -55,6 +55,7 @@ export default function TransactionsList() {
         const email = (user.email || "").toLowerCase();
         const firstName = (user.first_name || "").toLowerCase();
         const lastName = (user.last_name || "").toLowerCase();
+        const school = (user.school || "").toLowerCase();
         const ref = (transaction.reference_number || "").toLowerCase();
         const orderId = (transaction.order?.id || "").toString();
         const transCode = (transaction.transaction_code || transaction.id || "").toString().toLowerCase();
@@ -64,6 +65,7 @@ export default function TransactionsList() {
           email.includes(q) ||
           firstName.includes(q) ||
           lastName.includes(q) ||
+          school.includes(q) ||
           ref.includes(q) ||
           orderId.includes(q) ||
           transCode.includes(q)
@@ -147,16 +149,18 @@ export default function TransactionsList() {
   };
 
   const buildExportRows = () => {
-    const headers = ["شماره تراکنش", "شماره سفارش", "کاربر", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"];
+    const headers = ["شماره تراکنش", "شماره سفارش", "کاربر", "مرکز آموزشی / مدرسه", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"];
     const rows = filteredTransactions.map(t => {
       const user = t.order?.user || t.created_by || t.user || {};
       const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       const orderId = t.order?.id?.toString() || "-";
       const status = t.order?.status || "";
+      const school = user.school || "-";
       return [
         (t.transaction_code || t.id).toString(),
         orderId,
         fullName || user.username || "-",
+        school,
         (t.amount || 0).toString(),
         getPaymentMethodLabel(t.payment_method),
         getStatusLabel(status),

@@ -26,7 +26,8 @@ import {
   ChevronDown,
   Printer,
   FileText,
-  Hash
+  Hash,
+  School
 } from "lucide-react";
 import { getPaymentMethodLabel, formatPrice } from "./utils";
 // @ts-expect-error: No type definitions for moment-jalaali
@@ -614,12 +615,20 @@ export default function TransactionDetail() {
                         <span className="font-medium">{orderUser.email}</span>
                       </div>
                     )}
-                    {orderUser.phone && (
+                    {(orderUser.phone || orderUser.phone_number) && (
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground flex items-center gap-1.5">
                           <Phone className="w-3.5 h-3.5" /> شماره تماس:
                         </span>
-                        <span className="font-medium dir-ltr">{toPersianDigits(orderUser.phone)}</span>
+                        <span className="font-medium dir-ltr">{toPersianDigits(orderUser.phone || orderUser.phone_number)}</span>
+                      </div>
+                    )}
+                    {orderUser.school && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground flex items-center gap-1.5">
+                          <School className="w-3.5 h-3.5" /> مرکز آموزشی / مدرسه:
+                        </span>
+                        <span className="font-medium">{orderUser.school}</span>
                       </div>
                     )}
                   </div>

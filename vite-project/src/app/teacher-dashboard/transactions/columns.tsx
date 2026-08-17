@@ -2,6 +2,7 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "react-router-dom"
 import { getStatusLabel, getStatusVariant, formatPrice, getPaymentMethodLabel } from "./utils"
+import { School } from "lucide-react"
 // @ts-expect-error: No type definitions for moment-jalaali
 import moment from 'moment-jalaali'
 
@@ -9,33 +10,32 @@ function convertToJalali(isoDate: string): string {
   return moment(isoDate).format('jYYYY/jMM/jDD HH:mm');
 }
 
+export type TransactionUser = {
+  id?: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  school?: string
+  phone_number?: string
+  grade?: string
+}
+
 // Define the Transaction type based on your API response
 export type Transaction = {
   id: string
   transaction_code?: string
-  order: {
-    id: string
+  order?: {
+    id: string | number
     order_code?: string
     status: string
-    user: {
-      username: string
-      email: string
-      first_name: string
-      last_name: string
-    }
+    user?: TransactionUser
   }
-  created_by: {
-    username: string
-  }
+  created_by?: TransactionUser
   payment_method: string
   amount: number
   created_at: string
-  user: {
-    username: string
-    email: string
-    first_name: string
-    last_name: string
-  }
+  user?: TransactionUser
   reference_number: string | null
   transaction_type: "purchase" | "refund"
 }
@@ -68,8 +68,23 @@ export const columns: ColumnDef<Transaction>[] = [
       const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       return (
         <div>
-          <div>{fullName || user.username}</div>
-          <div className="text-sm text-muted-foreground">{user.username}</div>
+          <div className="font-medium">{fullName || user.username}</div>
+          <div className="text-xs text-muted-foreground font-mono" dir="ltr">{user.username}</div>
+        </div>
+      );
+    }
+  },
+  {
+    id: "school",
+    header: "مرکز آموزشی / مدرسه",
+    cell: ({ row }) => {
+      const user = row.original.order?.user || row.original.created_by || row.original.user;
+      const school = user?.school;
+      if (!school) return <span className="text-muted-foreground/40 text-xs">—</span>;
+      return (
+        <div className="flex items-center gap-1.5 text-foreground text-xs font-medium">
+          <School className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <span>{school}</span>
         </div>
       );
     }

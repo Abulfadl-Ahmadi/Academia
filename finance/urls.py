@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     OrderViewSet, TransactionViewSet, UserAccessViewSet,
     AdminDashboardView, ProductAccessCheckView, PaymentInitiateView,
-    PaymentCallbackView, PaymentInquiryView
-    , SMSNotificationConfigViewSet, SMSNotificationLogViewSet
+    PaymentCallbackView, PaymentInquiryView, PaymentInfoView,
+    SMSNotificationConfigViewSet, SMSNotificationLogViewSet
 )
 
 router = DefaultRouter()
@@ -21,5 +21,5 @@ urlpatterns = [
     path('payment/initiate/', PaymentInitiateView.as_view(), name='payment-initiate'),
     path('payment/callback/', PaymentCallbackView.as_view(), name='payment-callback'),
     path('payment/inquiry/', PaymentInquiryView.as_view(), name='payment-inquiry'),
+    path('payment/info/', PaymentInfoView.as_view(), name='payment-info'),
 ]
-

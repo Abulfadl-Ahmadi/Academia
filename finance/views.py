@@ -64,6 +64,12 @@ def grant_product_access(order):
         if course:
             course.students.add(order.user)
             course.save()
+
+        test_collection = getattr(item.product, 'test', None)
+        if test_collection:
+            test_collection.students.add(order.user)
+            test_collection.save()
+
         if not created:
             access.order = order
             access.is_active = True
@@ -192,8 +198,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role in ('admin', 'teacher', 'finance') or user.is_staff or user.is_superuser:
-            return Transaction.objects.all().select_related('order', 'created_by').order_by('-created_at', '-id')
-        return Transaction.objects.filter(order__user=user).select_related('order', 'created_by').order_by('-created_at', '-id')
+            return Transaction.objects.all().select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
+        return Transaction.objects.filter(order__user=user).select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
@@ -505,6 +511,8 @@ class PaymentCallbackView(APIView):
         # Guard against double-processing if already successful
         if payment.status == Payment.PaymentStatus.SUCCESS:
             ref = payment.ref_number or ''
+            if ref == 'None':
+                ref = ''
             return redirect(f"{FRONTEND_URL}/payment/success?refNumber={ref}&trackId={track_id}")
 
         # Up-front failure check
@@ -519,6 +527,8 @@ class PaymentCallbackView(APIView):
 
         if verified:
             ref_number = payment.ref_number or str(verify_data.get('refNumber', ''))
+            if ref_number == 'None':
+                ref_number = ''
 
             if payment.order:
                 with transaction.atomic():
@@ -642,4 +652,184 @@ class PaymentInquiryView(APIView):
             "message": error_msg or "استعلام با موفقیت انجام شد.",
             "payment": PaymentDetailSerializer(payment).data
         })
+
+
+class PaymentInfoView(APIView):
+    """
+    GET /finance/payment/info/?trackId=...&refNumber=...&orderId=...
+    Returns payment status, order items, and dynamic target URLs for post-payment navigation.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        track_id = request.query_params.get('trackId') or request.query_params.get('track_id')
+        ref_number = request.query_params.get('refNumber') or request.query_params.get('ref_number')
+        order_id = request.query_params.get('orderId') or request.query_params.get('order_id')
+
+        payment = None
+        if track_id:
+            try:
+                payment = Payment.objects.filter(track_id=int(track_id)).first()
+            except (ValueError, TypeError):
+                pass
+
+        if not payment and ref_number and ref_number not in ('None', 'null', ''):
+            payment = Payment.objects.filter(ref_number=ref_number).first()
+
+        if not payment and order_id:
+            try:
+                payment = Payment.objects.filter(order_id=int(order_id)).first()
+            except (ValueError, TypeError):
+                pass
+
+        if not payment:
+            # Fallback to latest payment of this user
+            payment = Payment.objects.filter(user=request.user).order_by('-created_at').first()
+
+        order = payment.order if payment else None
+        if not order and order_id:
+            try:
+                order = Order.objects.filter(id=int(order_id), user=request.user).first()
+            except (ValueError, TypeError):
+                pass
+
+        if not order and not payment:
+            # Fallback to latest order of user
+            order = Order.objects.filter(user=request.user).order_by('-created_at').first()
+
+        if not order and not payment:
+            return Response({"error": "اطلاعات پرداخت یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions: owner or staff/admin
+        owner = payment.user if payment else (order.user if order else None)
+        if owner and owner != request.user and request.user.role not in ('admin', 'finance') and not request.user.is_staff:
+            return Response({"error": "دسترسی غیرمجاز."}, status=status.HTTP_403_FORBIDDEN)
+
+        items_data = []
+        test_items = []
+        course_items = []
+        file_items = []
+        book_items = []
+
+        if order:
+            for item in order.items.select_related('product', 'product__course', 'product__test', 'product__file').all():
+                p = item.product
+                p_type = p.product_type
+
+                item_info = {
+                    "id": item.id,
+                    "product_id": p.id,
+                    "title": p.title,
+                    "product_type": p_type,
+                    "price": item.price,
+                    "quantity": item.quantity,
+                    "course_id": p.course_id,
+                    "test_id": p.test_id,
+                    "file_id": p.file_id,
+                }
+                items_data.append(item_info)
+
+                if p.test_id or p_type == Product.ProductType.TEST:
+                    test_items.append(item_info)
+                elif p.course_id or p_type == Product.ProductType.COURSE:
+                    course_items.append(item_info)
+                elif p.file_id or p_type == Product.ProductType.FILE:
+                    file_items.append(item_info)
+                else:
+                    book_items.append(item_info)
+
+        # Determine primary redirect and actions
+        actions = []
+        primary_action = None
+
+        if len(test_items) > 0 and len(course_items) == 0 and len(file_items) == 0 and len(book_items) == 0:
+            # Only tests / test collections
+            if len(test_items) == 1 and test_items[0].get('test_id'):
+                primary_action = {
+                    "label": f"ورود به مجموعه آزمون «{test_items[0]['title']}» 📝",
+                    "url": f"/panel/test-collections/{test_items[0]['test_id']}"
+                }
+            else:
+                primary_action = {
+                    "label": "مشاهده آزمون‌های من 📝",
+                    "url": "/panel/test-collections"
+                }
+            actions.append(primary_action)
+
+        elif len(course_items) > 0 and len(test_items) == 0 and len(file_items) == 0 and len(book_items) == 0:
+            # Only courses
+            if len(course_items) == 1 and course_items[0].get('course_id'):
+                primary_action = {
+                    "label": f"ورود به دوره «{course_items[0]['title']}» 🎯",
+                    "url": f"/panel/courses/{course_items[0]['course_id']}"
+                }
+            else:
+                primary_action = {
+                    "label": "بزن بریم سراغ دوره‌هات 🎯",
+                    "url": "/panel/courses"
+                }
+            actions.append(primary_action)
+
+        elif len(file_items) > 0 and len(test_items) == 0 and len(course_items) == 0 and len(book_items) == 0:
+            # Only files
+            primary_action = {
+                "label": "مشاهده و دانلود فایل‌ها 📥",
+                "url": "/panel/files"
+            }
+            actions.append(primary_action)
+
+        elif len(book_items) > 0 and len(test_items) == 0 and len(course_items) == 0 and len(file_items) == 0:
+            # Only physical / books
+            primary_action = {
+                "label": "مشاهده سفارشات و پیگیری 📦",
+                "url": "/panel/books"
+            }
+            actions.append(primary_action)
+
+        else:
+            # Mixed cart or multiple types
+            if test_items:
+                actions.append({
+                    "label": "مشاهده مجموعه آزمون‌ها 📝",
+                    "url": "/panel/test-collections"
+                })
+            if course_items:
+                actions.append({
+                    "label": "مشاهده دوره‌ها 🎯",
+                    "url": "/panel/courses"
+                })
+            if file_items:
+                actions.append({
+                    "label": "مشاهده فایل‌ها 📥",
+                    "url": "/panel/files"
+                })
+            if book_items:
+                actions.append({
+                    "label": "مشاهده سفارشات 📦",
+                    "url": "/panel/products"
+                })
+
+            primary_action = actions[0] if actions else {
+                "label": "مشاهده محصولات خریداری شده 🛍️",
+                "url": "/panel/products"
+            }
+
+        ref_code = payment.ref_number if (payment and payment.ref_number and payment.ref_number != 'None') else ''
+        if not ref_code and payment and payment.track_id:
+            ref_code = str(payment.track_id)
+        if not ref_code and order:
+            ref_code = order.order_code or str(order.id)
+
+        return Response({
+            "track_id": payment.track_id if payment else None,
+            "ref_number": ref_code,
+            "payment_status": payment.status if payment else (order.status if order else "unknown"),
+            "order_id": order.id if order else None,
+            "order_code": order.order_code if order else None,
+            "total_amount": order.total_amount if order else 0,
+            "items": items_data,
+            "primary_action": primary_action,
+            "actions": actions
+        })
+
 
