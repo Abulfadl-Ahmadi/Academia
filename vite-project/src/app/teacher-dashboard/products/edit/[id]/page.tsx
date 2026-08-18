@@ -77,7 +77,7 @@ export default function EditProductPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [tests, setTests] = useState<TestCollection[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
-  
+
   const [formData, setFormData] = useState<EditProductForm>({
     title: "",
     description: "",
@@ -95,7 +95,7 @@ export default function EditProductPage() {
       setInitialLoading(true);
       const response = await axiosInstance.get(`/shop/products/${id}/`);
       const product = response.data;
-      
+
       setFormData({
         title: product.title || "",
         description: product.description || "",
@@ -175,10 +175,10 @@ export default function EditProductPage() {
       return;
     }
 
-    if (formData.price <= 0) {
-      toast.error("قیمت محصول باید بیشتر از صفر باشد");
-      return;
-    }
+    // if (formData.price <= 0) {
+    //   toast.error("قیمت محصول باید بیشتر از صفر باشد");
+    //   return;
+    // }
 
     // Validate required fields based on product type
     if (formData.product_type === 'course' && !formData.course) {
@@ -222,7 +222,7 @@ export default function EditProductPage() {
       productData.append('price', formData.price.toString());
       productData.append('product_type', formData.product_type);
       productData.append('is_active', formData.is_active.toString());
-      
+
       if (formData.course) {
         productData.append('course', formData.course.toString());
       }
@@ -259,16 +259,16 @@ export default function EditProductPage() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       toast.success("محصول با موفقیت به‌روزرسانی شد");
       navigate("/panel/products");
 
     } catch (error: unknown) {
       console.error("Error updating product:", error);
-      const errorMessage = error instanceof Error && 'response' in error && 
+      const errorMessage = error instanceof Error && 'response' in error &&
         error.response && typeof error.response === 'object' && 'data' in error.response &&
         error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
-        ? String(error.response.data.message) 
+        ? String(error.response.data.message)
         : "خطا در به‌روزرسانی محصول";
       toast.error(errorMessage);
     } finally {
@@ -370,19 +370,19 @@ export default function EditProductPage() {
 
             <div className="space-y-2">
               <Label htmlFor="image">تصویر محصول</Label>
-              
+
               {/* Show existing image if available */}
               {formData.existing_image && !formData.image && (
                 <div className="mb-3">
                   <p className="text-sm text-muted-foreground mb-2">تصویر فعلی:</p>
-                  <img 
-                    src={formData.existing_image} 
-                    alt="تصویر محصول" 
+                  <img
+                    src={formData.existing_image}
+                    alt="تصویر محصول"
                     className="w-24 h-24 object-cover rounded-lg border"
                   />
                 </div>
               )}
-              
+
               <div className="flex items-center gap-3">
                 <Input
                   id="image"
@@ -670,11 +670,10 @@ export default function EditProductPage() {
                         </span>
                       </>
                     )}
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      formData.is_active 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                    <span className={`px-2 py-1 rounded-full text-xs ${formData.is_active
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                    }`}>
+                      }`}>
                       {formData.is_active ? 'فعال' : 'غیرفعال'}
                     </span>
                   </div>
