@@ -13,6 +13,7 @@ interface ProfileData {
   phone_number: string;
   birth_date: string;
   grade: string;
+  school: string;
 }
 
 interface ProfileCompletionFormProps {
@@ -34,6 +35,7 @@ export default function ProfileCompletionForm({
     phone_number: "",
     birth_date: "",
     grade: "",
+    school: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -67,6 +69,7 @@ export default function ProfileCompletionForm({
             phone_number: profileData.phone_number || "",
             birth_date: profileData.birth_date || "",
             grade: profileData.grade || "",
+            school: profileData.school || "",
           });
           
           setIsCompleted(Boolean(profileData.national_id && profileData.phone_number));
@@ -301,6 +304,18 @@ export default function ProfileCompletionForm({
                         <SelectItem value="12">دوازدهم</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="school">مرکز آموزشی / مدرسه</Label>
+                    <Input
+                      id="school"
+                      type="text"
+                      value={formData.school}
+                      onChange={(e) => handleInputChange('school', e.target.value)}
+                      placeholder="نام مرکز آموزشی یا مدرسه خود را وارد کنید"
+                      maxLength={200}
+                    />
                   </div>
 
                   <div className="flex gap-2">
