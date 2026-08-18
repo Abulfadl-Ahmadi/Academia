@@ -42,8 +42,12 @@ export default function AddressPage() {
     try {
       setLoading(true)
       const response = await axiosInstance.get('/accounts/address/')
-      setAddress(response.data)
-      setHasAddress(true)
+      if (response.data && Object.keys(response.data).length > 0) {
+        setAddress(response.data)
+        setHasAddress(true)
+      } else {
+        setHasAddress(false)
+      }
     } catch {
       // Address doesn't exist yet
       setHasAddress(false)

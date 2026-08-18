@@ -18,7 +18,8 @@ from .views import (
     VerifyResetPasswordCodeView,
     ResetPasswordView,
     ChangePasswordView,
-    AdminUserViewSet
+    AdminUserViewSet,
+    ProfileStatusView
 )
 
 router = DefaultRouter()
@@ -42,4 +43,5 @@ urlpatterns += [
     path('verify-reset-password/', VerifyResetPasswordCodeView.as_view()),
     path('reset-password/', ResetPasswordView.as_view()),
     path('change-password/', ChangePasswordView.as_view()),
+    path('profile/complete/', ProfileStatusView.as_view()),
 ]

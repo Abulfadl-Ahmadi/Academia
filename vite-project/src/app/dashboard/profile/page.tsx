@@ -276,9 +276,11 @@ export default function ProfilePage() {
     try {
       setAddressLoading(true);
       const response = await axiosInstance.get('/accounts/address/');
-      if (response.data) {
+      if (response.data && Object.keys(response.data).length > 0) {
         setAddress(response.data);
         setHasAddress(true);
+      } else {
+        setHasAddress(false);
       }
     } catch {
       setHasAddress(false);

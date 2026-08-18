@@ -607,6 +607,36 @@ class UserDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProfileStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        """Get profile completion status"""
+        try:
+            profile = request.user.profile
+            profile_completed = bool(profile.national_id and profile.phone_number)
+            
+            return Response({
+                "profile_completed": profile_completed,
+                "profile": {
+                    "national_id": profile.national_id,
+                    "phone_number": profile.phone_number,
+                    "birth_date": profile.birth_date.strftime("%Y-%m-%d") if profile.birth_date else None,
+                    "grade": profile.grade
+                }
+            })
+        except UserProfile.DoesNotExist:
+            return Response({
+                "profile_completed": False,
+                "profile": {
+                    "national_id": None,
+                    "phone_number": None,
+                    "birth_date": None,
+                    "grade": None
+                }
+            })
+
+
 class UserAddressView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
@@ -618,8 +648,8 @@ class UserAddressView(APIView):
             return Response(serializer.data)
         except UserAddress.DoesNotExist:
             return Response(
-                {"message": "آدرس کاربر یافت نشد"}, 
-                status=status.HTTP_404_NOT_FOUND
+                {}, 
+                status=status.HTTP_200_OK
             )
     
     def post(self, request):
