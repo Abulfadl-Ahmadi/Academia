@@ -81,6 +81,8 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+db.sqlite3-wal
+db.sqlite3-shm
 
 # Coverage reports
 htmlcov/
