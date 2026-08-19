@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { cn } from "@/lib/utils";
 import { validateIranianNationalId, formatNationalId } from "@/lib/nationalIdValidator";
 import axiosInstance from "@/lib/axios";
+import { useUser } from "@/context/UserContext";
 
 interface ProfileData {
   national_id: string;
@@ -30,6 +31,7 @@ export default function ProfileCompletionForm({
   className,
   ...props 
 }: ProfileCompletionFormProps) {
+  const { user } = useUser();
   const [formData, setFormData] = useState<ProfileData>({
     national_id: "",
     phone_number: "",
@@ -45,9 +47,20 @@ export default function ProfileCompletionForm({
     loadCurrentProfile();
   }, []);
 
+  useEffect(() => {
+    if (user?.username && /^09\d{9}$/.test(user.username)) {
+      setFormData(prev => {
+        if (!prev.phone_number) {
+          return { ...prev, phone_number: user.username };
+        }
+        return prev;
+      });
+    }
+  }, [user]);
+
   const loadCurrentProfile = async () => {
     try {
-      let profileData = null;
+      let profileData: any = null;
       try {
         const userResponse = await axiosInstance.get('/profiles/me/');
         profileData = userResponse.data;
@@ -59,16 +72,27 @@ export default function ProfileCompletionForm({
         }
       }
       
+      const usernamePhone = (profileData?.user?.username && /^09\d{9}$/.test(profileData.user.username))
+        ? profileData.user.username
+        : (user?.username && /^09\d{9}$/.test(user.username) ? user.username : "");
+
+      const resolvedPhone = profileData?.phone_number || usernamePhone || "";
+
       if (profileData) {
         setFormData({
           national_id: profileData.national_id || "",
-          phone_number: profileData.phone_number || "",
+          phone_number: resolvedPhone,
           birth_date: profileData.birth_date || "",
           grade: profileData.grade || "",
           school: profileData.school || "",
         });
         
-        setIsCompleted(Boolean(profileData.national_id && profileData.phone_number));
+        setIsCompleted(Boolean(profileData.national_id && resolvedPhone));
+      } else if (resolvedPhone) {
+        setFormData(prev => ({
+          ...prev,
+          phone_number: resolvedPhone,
+        }));
       }
     } catch (error) {
       console.error("Error loading profile:", error);
