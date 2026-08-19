@@ -13,4 +13,9 @@ cp node_modules/@react-pdf-viewer/core/lib/styles/index.css public/css/react-pdf
 cp node_modules/@react-pdf-viewer/page-navigation/lib/styles/index.css public/css/react-pdf-viewer/page-navigation/
 cp node_modules/@react-pdf-viewer/zoom/lib/styles/index.css public/css/react-pdf-viewer/zoom/
 
+# Copy PDF worker file if available
+if [ -f "node_modules/pdfjs-dist/build/pdf.worker.min.js" ]; then
+  cp node_modules/pdfjs-dist/build/pdf.worker.min.js public/pdf.worker.min.js
+fi
+
 echo "PDF viewer CSS files have been copied to public directory."

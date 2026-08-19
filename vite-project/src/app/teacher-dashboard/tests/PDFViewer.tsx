@@ -159,7 +159,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
       </div>
 
       <div className="flex-1 overflow-auto">
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+        <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
           <div className="h-full">
             <Viewer
               fileUrl={fileUrl}

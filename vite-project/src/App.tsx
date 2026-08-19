@@ -69,8 +69,7 @@ function PreApp() {
       <FontProvider>
         <UserProvider>
           <CartProvider>
-            {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
-            <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
+            <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
               <App />
             </Worker>
           </CartProvider>
