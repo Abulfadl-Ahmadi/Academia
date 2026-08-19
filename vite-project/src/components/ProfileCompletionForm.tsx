@@ -6,7 +6,7 @@ import { Card, CardContent } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
 import { validateIranianNationalId, formatNationalId } from "@/lib/nationalIdValidator";
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+import axiosInstance from "@/lib/axios";
 
 interface ProfileData {
   national_id: string;
@@ -47,33 +47,28 @@ export default function ProfileCompletionForm({
 
   const loadCurrentProfile = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) return;
-      
-      // Get user info first to get the profile ID
-      const userResponse = await fetch(baseURL+'/accounts/profiles/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (userResponse.ok) {
-        const profiles = await userResponse.json();
+      let profileData = null;
+      try {
+        const userResponse = await axiosInstance.get('/profiles/me/');
+        profileData = userResponse.data;
+      } catch {
+        const userResponse = await axiosInstance.get('/profiles/');
+        const profiles = userResponse.data?.results || userResponse.data || [];
         if (profiles.length > 0) {
-          const profileData = profiles[0]; // Get the current user's profile
-          
-          setFormData({
-            national_id: profileData.national_id || "",
-            phone_number: profileData.phone_number || "",
-            birth_date: profileData.birth_date || "",
-            grade: profileData.grade || "",
-            school: profileData.school || "",
-          });
-          
-          setIsCompleted(Boolean(profileData.national_id && profileData.phone_number));
+          profileData = profiles[0];
         }
+      }
+      
+      if (profileData) {
+        setFormData({
+          national_id: profileData.national_id || "",
+          phone_number: profileData.phone_number || "",
+          birth_date: profileData.birth_date || "",
+          grade: profileData.grade || "",
+          school: profileData.school || "",
+        });
+        
+        setIsCompleted(Boolean(profileData.national_id && profileData.phone_number));
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -146,54 +141,49 @@ export default function ProfileCompletionForm({
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setError('لطفاً ابتدا وارد شوید');
-        return;
+      let response;
+      try {
+        response = await axiosInstance.patch('/profiles/me/', formData);
+      } catch (patchErr: any) {
+        if (patchErr.response?.status === 404 || patchErr.response?.status === 405) {
+          const profilesResponse = await axiosInstance.get('/profiles/');
+          const profiles = profilesResponse.data?.results || profilesResponse.data || [];
+          if (profiles.length > 0) {
+            const profileId = profiles[0].id;
+            response = await axiosInstance.patch(`/profiles/${profileId}/`, formData);
+          } else {
+            throw patchErr;
+          }
+        } else {
+          throw patchErr;
+        }
       }
 
-      // Get the current user's profile ID first
-      const profilesResponse = await fetch(baseURL+'/accounts/profiles/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!profilesResponse.ok) {
-        setError('خطا در دریافت اطلاعات پروفایل');
-        return;
-      }
-
-      const profiles = await profilesResponse.json();
-      if (profiles.length === 0) {
-        setError('پروفایل پیدا نشد');
-        return;
-      }
-
-      const profileId = profiles[0].id;
-
-      // Update the profile using PATCH
-      const response = await fetch(`${baseURL}/profiles/${profileId}/`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+      if (response && (response.status === 200 || response.status === 201)) {
         setIsCompleted(true);
-        onSuccess?.(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.detail || errorData.message || 'خطایی در تکمیل پروفایل رخ داد');
+        onSuccess?.(response.data);
       }
-    } catch {
-      setError('خطایی در ارتباط با سرور رخ داد');
+    } catch (err: any) {
+      console.error("Error submitting profile:", err);
+      if (err.response?.status === 401) {
+        setError('لطفاً ابتدا وارد شوید');
+      } else {
+        const errorData = err.response?.data;
+        let errorMessage = 'خطایی در تکمیل پروفایل رخ داد';
+        if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (errorData?.detail) {
+          errorMessage = errorData.detail;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        } else if (errorData && typeof errorData === 'object') {
+          const values = Object.values(errorData).flat();
+          if (values.length > 0) {
+            errorMessage = values.join(' - ');
+          }
+        }
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
