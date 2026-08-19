@@ -8,6 +8,10 @@ import { cn } from "@/lib/utils";
 import { validateIranianNationalId, formatNationalId } from "@/lib/nationalIdValidator";
 import axiosInstance from "@/lib/axios";
 import { useUser } from "@/context/UserContext";
+import { DateWheelPicker } from "@/components/ui/date-wheel-picker";
+import { formatDate, fromParts } from "@/lib/persian-date";
+
+const DEFAULT_BIRTH_DATE = fromParts({ year: 1378, month: 4, day: 22 }, "shamsi");
 
 interface ProfileData {
   national_id: string;
@@ -39,6 +43,7 @@ export default function ProfileCompletionForm({
     grade: "",
     school: "",
   });
+  const [birthDateValue, setBirthDateValue] = useState<Date>(DEFAULT_BIRTH_DATE);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
@@ -79,6 +84,13 @@ export default function ProfileCompletionForm({
       const resolvedPhone = profileData?.phone_number || usernamePhone || "";
 
       if (profileData) {
+        if (profileData.birth_date) {
+          const parsed = new Date(profileData.birth_date);
+          if (!isNaN(parsed.getTime())) {
+            setBirthDateValue(parsed);
+          }
+        }
+
         setFormData({
           national_id: profileData.national_id || "",
           phone_number: resolvedPhone,
@@ -118,6 +130,15 @@ export default function ProfileCompletionForm({
     }));
   };
 
+  const handleBirthDateChange = (newDate: Date) => {
+    setBirthDateValue(newDate);
+    const formatted = formatDate(newDate, "yyyy-MM-dd", { calendarType: "miladi", digits: "en" });
+    setFormData(prev => ({
+      ...prev,
+      birth_date: formatted
+    }));
+  };
+
   const validateForm = () => {
     // Validate national ID
     if (!formData.national_id.trim()) {
@@ -142,13 +163,14 @@ export default function ProfileCompletionForm({
     }
 
     // Birth date validation if provided
-    if (formData.birth_date) {
-      const birthDate = new Date(formData.birth_date);
+    const dateToCheck = formData.birth_date || (birthDateValue ? formatDate(birthDateValue, "yyyy-MM-dd", { calendarType: "miladi", digits: "en" }) : "");
+    if (dateToCheck) {
+      const birthDate = new Date(dateToCheck);
       const today = new Date();
       const age = today.getFullYear() - birthDate.getFullYear();
       
-      if (age < 10 || age > 25) {
-        setError("سن باید بین ۱۰ تا ۲۵ سال باشد");
+      if (age < 5 || age > 90) {
+        setError("تاریخ تولد نامعتبر است");
         return false;
       }
     }
@@ -164,17 +186,22 @@ export default function ProfileCompletionForm({
 
     setLoading(true);
 
+    const submitData = {
+      ...formData,
+      birth_date: formData.birth_date || formatDate(birthDateValue, "yyyy-MM-dd", { calendarType: "miladi", digits: "en" }),
+    };
+
     try {
       let response;
       try {
-        response = await axiosInstance.patch('/profiles/me/', formData);
+        response = await axiosInstance.patch('/profiles/me/', submitData);
       } catch (patchErr: any) {
         if (patchErr.response?.status === 404 || patchErr.response?.status === 405) {
           const profilesResponse = await axiosInstance.get('/profiles/');
           const profiles = profilesResponse.data?.results || profilesResponse.data || [];
           if (profiles.length > 0) {
             const profileId = profiles[0].id;
-            response = await axiosInstance.patch(`/profiles/${profileId}/`, formData);
+            response = await axiosInstance.patch(`/profiles/${profileId}/`, submitData);
           } else {
             throw patchErr;
           }
@@ -294,13 +321,16 @@ export default function ProfileCompletionForm({
                   </div>
 
                   <div className="grid gap-3">
-                    <Label htmlFor="birth_date">تاریخ تولد</Label>
-                    <Input
-                      id="birth_date"
-                      type="date"
-                      value={formData.birth_date}
-                      onChange={(e) => handleInputChange('birth_date', e.target.value)}
-                    />
+                    <Label>تاریخ تولد</Label>
+                    <div className="flex flex-col items-center gap-3 p-3 rounded-xl border bg-muted/30">
+                      <DateWheelPicker 
+                        value={birthDateValue} 
+                        onValueChange={handleBirthDateChange} 
+                      />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {formatDate(birthDateValue, "yyyy MMMM d")}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="grid gap-3">

@@ -14,11 +14,16 @@ import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import axiosInstance from "@/lib/axios";
 import { School, User, Mail, Calendar as CalendarIcon, GraduationCap, CreditCard, Save, Edit, ChevronDownIcon, Phone, MapPin } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { validateIranianNationalId } from "@/lib/nationalIdValidator";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ResponsiveDateWheelPicker,
+  ResponsiveDateWheelPickerContent,
+  ResponsiveDateWheelPickerTrigger,
+} from "@/components/ui/date-wheel-picker";
+import { formatDate, fromParts } from "@/lib/persian-date";
 
 interface UserProfile {
   national_id: string;
@@ -120,7 +125,7 @@ export default function ProfilePage() {
       "Ensure this field has at most 30 characters.": "این فیلد حداکثر ۳۰ کاراکتر مجاز است",
       "Ensure this field has at most 200 characters.": "این فیلد حداکثر ۲۰۰ کاراکتر مجاز است",
     };
-    
+
     return errorTranslations[error] || error;
   };
 
@@ -196,7 +201,7 @@ export default function ProfilePage() {
       ...prev,
       [field]: value
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
@@ -211,7 +216,7 @@ export default function ProfilePage() {
       ...prev,
       [field]: value
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
@@ -224,10 +229,10 @@ export default function ProfilePage() {
   const fetchProfile = useCallback(async () => {
     try {
       setProfileLoading(true);
-      
+
       // Fetch profile data
       const response = await axiosInstance.get("/profiles/");
-      
+
       // Handle both array and pagination format
       let profilesData = [];
       if (Array.isArray(response.data)) {
@@ -238,7 +243,7 @@ export default function ProfilePage() {
         console.warn("Profiles data is not an array:", response.data);
         profilesData = [];
       }
-      
+
       if (profilesData.length > 0) {
         const profileData = profilesData[0];
         setProfile({
@@ -248,13 +253,13 @@ export default function ProfilePage() {
           school: profileData.school || "",
           grade: profileData.grade || "",
         });
-        
+
         // Initialize birth date if available
         if (profileData.birth_date) {
           setBirthDate(new Date(profileData.birth_date));
         }
       }
-      
+
       // Fetch user data from user context or API
       if (user) {
         setUserData({
@@ -370,7 +375,7 @@ export default function ProfilePage() {
 
       // Prepare user data for update
       const userUpdateData: Partial<UserData> = {};
-      
+
       if (userData.username.trim()) {
         userUpdateData.username = userData.username.trim();
       }
@@ -386,7 +391,7 @@ export default function ProfilePage() {
 
       // Prepare profile data for update
       const profileData: Partial<UserProfile> = {};
-      
+
       if (profile.national_id.trim()) {
         profileData.national_id = profile.national_id.trim();
       }
@@ -413,39 +418,39 @@ export default function ProfilePage() {
         // Get current profile to find the ID
         const profileResponse = await axiosInstance.get("/profiles/");
         const profiles = profileResponse.data?.results || profileResponse.data || [];
-        
+
         if (profiles.length > 0) {
           const profileId = profiles[0].id;
-          
+
           // Update using PATCH method with profile ID
           await axiosInstance.patch(`/profiles/${profileId}/`, profileData);
         } else {
           throw new Error("پروفایل یافت نشد");
         }
       }
-      
+
       toast.success("پروفایل با موفقیت به‌روزرسانی شد");
-      
+
       setIsEditing(false);
       await fetchProfile(); // Refresh profile data
       await fetchUser(); // Refresh user context
 
     } catch (error: unknown) {
       console.error("Error updating profile:", error);
-      
+
       // Handle validation errors from backend
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: Record<string, string | string[]>, status?: number } };
-        
+
         // If it's a 400 error with field-specific validation errors
         if (axiosError.response?.status === 400 && axiosError.response?.data) {
           const backendErrors: FormErrors = {};
           const errorData = axiosError.response.data;
-          
+
           // Map backend field errors to frontend errors
           if (errorData.username) {
-            const errorMsg = Array.isArray(errorData.username) 
-              ? errorData.username[0] 
+            const errorMsg = Array.isArray(errorData.username)
+              ? errorData.username[0]
               : errorData.username;
             backendErrors.username = translateBackendError(errorMsg);
           }
@@ -468,8 +473,8 @@ export default function ProfilePage() {
             backendErrors.last_name = translateBackendError(errorMsg);
           }
           if (errorData.national_id) {
-            const errorMsg = Array.isArray(errorData.national_id) 
-              ? errorData.national_id[0] 
+            const errorMsg = Array.isArray(errorData.national_id)
+              ? errorData.national_id[0]
               : errorData.national_id;
             backendErrors.national_id = translateBackendError(errorMsg);
           }
@@ -497,20 +502,20 @@ export default function ProfilePage() {
               : errorData.grade;
             backendErrors.grade = translateBackendError(errorMsg);
           }
-          
+
           // Set the errors to display in the form
           setErrors(backendErrors);
           toast.error("لطفاً خطاهای فرم را برطرف کنید");
           return;
         }
       }
-      
+
       let errorMessage = "خطا در به‌روزرسانی پروفایل";
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { message?: string } } };
         errorMessage = axiosError.response?.data?.message || errorMessage;
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -544,7 +549,7 @@ export default function ProfilePage() {
       toast.error("رمز عبور جدید باید حداقل ۶ کاراکتر باشد");
       return;
     }
-    
+
     try {
       setPasswordLoading(true);
       await axiosInstance.post('/accounts/change-password/', {
@@ -596,8 +601,8 @@ export default function ProfilePage() {
                   <Phone className="w-4 h-4" />
                   شماره تلفن
                 </Label>
-                <Input 
-                  value={userData.username} 
+                <Input
+                  value={userData.username}
                   onChange={(e) => handleUserInputChange("username", e.target.value)}
                   disabled={true}
                   className={`${!isEditing ? "bg-gray-50" : ""} ${errors.username ? "border-red-500 focus:border-red-500" : ""}`}
@@ -612,8 +617,8 @@ export default function ProfilePage() {
                   <Mail className="w-4 h-4" />
                   ایمیل
                 </Label>
-                <Input 
-                  value={userData.email} 
+                <Input
+                  value={userData.email}
                   onChange={(e) => handleUserInputChange("email", e.target.value)}
                   disabled={!isEditing}
                   className={`${!isEditing ? "bg-gray-50" : ""} ${errors.email ? "border-red-500 focus:border-red-500" : ""}`}
@@ -628,8 +633,8 @@ export default function ProfilePage() {
                   <User className="w-4 h-4" />
                   نام
                 </Label>
-                <Input 
-                  value={userData.first_name} 
+                <Input
+                  value={userData.first_name}
                   onChange={(e) => handleUserInputChange("first_name", e.target.value)}
                   disabled={!isEditing}
                   className={`${!isEditing ? "bg-gray-50" : ""} ${errors.first_name ? "border-red-500 focus:border-red-500" : ""}`}
@@ -644,8 +649,8 @@ export default function ProfilePage() {
                   <User className="w-4 h-4" />
                   نام‌خانوادگی
                 </Label>
-                <Input 
-                  value={userData.last_name} 
+                <Input
+                  value={userData.last_name}
                   onChange={(e) => handleUserInputChange("last_name", e.target.value)}
                   disabled={!isEditing}
                   className={`${!isEditing ? "bg-gray-50" : ""} ${errors.last_name ? "border-red-500 focus:border-red-500" : ""}`}
@@ -715,111 +720,107 @@ export default function ProfilePage() {
         <CardContent>
           <form id="profile-form" onSubmit={handleSubmit} className="space-y-6">
             {/* {!isEditing && ( */}
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="national_id" className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4" />
-                      کد ملی
-                    </Label>
-                    <Input
-                      id="national_id"
-                      type="text"
-                      value={profile.national_id}
-                      onChange={(e) => handleInputChange("national_id", e.target.value)}
-                      placeholder="کد ملی ۱۰ رقمی"
-                      maxLength={10}
-                      disabled={!isEditing}
-                      className={`${!isEditing ? "bg-gray-50" : ""} ${errors.national_id ? "border-red-500 focus:border-red-500" : ""}`}
-                    />
-                    {errors.national_id && (
-                      <p className="text-sm text-red-500 mt-1">{errors.national_id}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="school" className="flex items-center gap-2">
-                      <School className="w-4 h-4" />
-                      مرکز آموزشی
-                    </Label>
-                    <Input
-                      id="school"
-                      value={profile.school}
-                      onChange={(e) => handleInputChange("school", e.target.value)}
-                      placeholder="نام مدرسه یا مرکز آموزشی"
-                      maxLength={200}
-                      disabled={!isEditing}
-                      className={`${!isEditing ? "bg-gray-50" : ""} ${errors.school ? "border-red-500 focus:border-red-500" : ""}`}
-                    />
-                    {errors.school && (
-                      <p className="text-sm text-red-500 mt-1">{errors.school}</p>
-                    )}
-                  </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="national_id" className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    کد ملی
+                  </Label>
+                  <Input
+                    id="national_id"
+                    type="text"
+                    value={profile.national_id}
+                    onChange={(e) => handleInputChange("national_id", e.target.value)}
+                    placeholder="کد ملی ۱۰ رقمی"
+                    maxLength={10}
+                    disabled={!isEditing}
+                    className={`${!isEditing ? "bg-gray-50" : ""} ${errors.national_id ? "border-red-500 focus:border-red-500" : ""}`}
+                  />
+                  {errors.national_id && (
+                    <p className="text-sm text-red-500 mt-1">{errors.national_id}</p>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="birth_date" className="flex items-center gap-2">
-                      <CalendarIcon className="w-4 h-4" />
-                      تاریخ تولد
-                    </Label>
-                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                      <PopoverTrigger asChild>
+                <div className="space-y-2">
+                  <Label htmlFor="school" className="flex items-center gap-2">
+                    <School className="w-4 h-4" />
+                    مرکز آموزشی
+                  </Label>
+                  <Input
+                    id="school"
+                    value={profile.school}
+                    onChange={(e) => handleInputChange("school", e.target.value)}
+                    placeholder="نام مدرسه یا مرکز آموزشی"
+                    maxLength={200}
+                    disabled={!isEditing}
+                    className={`${!isEditing ? "bg-gray-50" : ""} ${errors.school ? "border-red-500 focus:border-red-500" : ""}`}
+                  />
+                  {errors.school && (
+                    <p className="text-sm text-red-500 mt-1">{errors.school}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="birth_date" className="flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4" />
+                    تاریخ تولد
+                  </Label>
+                  <ResponsiveDateWheelPicker open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <ResponsiveDateWheelPickerTrigger
+                      disabled={!isEditing}
+                      render={
                         <Button
                           variant="outline"
                           id="birth_date"
-                          className={`w-full justify-between font-normal ${!isEditing ? "bg-gray-50" : ""} ${errors.birth_date ? "border-red-500" : ""}`}
-                          disabled={!isEditing}
+                          type="button"
+                          className={`w-full justify-between font-normal ${!isEditing ? "bg-gray-50 dark:bg-muted/50" : ""} ${errors.birth_date ? "border-red-500" : ""}`}
                         >
-                          {birthDate ? birthDate.toLocaleDateString('fa-IR') : "انتخاب تاریخ تولد"}
+                          <span>{birthDate ? formatDate(birthDate, "yyyy/MM/dd") : "انتخاب تاریخ تولد"}</span>
                           <ChevronDownIcon className="h-4 w-4 opacity-50" />
                         </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={birthDate}
-                          captionLayout="dropdown"
-                          onSelect={(date) => {
-                            setBirthDate(date);
-                            if (date) {
-                              handleInputChange("birth_date", date.toISOString().split('T')[0]);
-                            }
-                            setCalendarOpen(false);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    {errors.birth_date && (
-                      <p className="text-sm text-red-500 mt-1">{errors.birth_date}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="grade" className="flex items-center gap-2">
-                      <GraduationCap className="w-4 h-4" />
-                      پایه تحصیلی
-                    </Label>
-                    <Select
-                      value={profile.grade}
-                      onValueChange={(value) => handleInputChange("grade", value)}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger className={`${!isEditing ? "bg-gray-50" : ""} ${errors.grade ? "border-red-500" : ""}`}>
-                        <SelectValue placeholder="پایه را انتخاب کنید" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="10">دهم</SelectItem>
-                        <SelectItem value="11">یازدهم</SelectItem>
-                        <SelectItem value="12">دوازدهم</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.grade && (
-                      <p className="text-sm text-red-500 mt-1">{errors.grade}</p>
-                    )}
-                  </div>
+                      }
+                    />
+                    <ResponsiveDateWheelPickerContent
+                      value={birthDate || fromParts({ year: 1385, month: 1, day: 1 }, "shamsi")}
+                      onValueChange={(date) => {
+                        setBirthDate(date);
+                        handleInputChange("birth_date", formatDate(date, "yyyy-MM-dd", { calendarType: "miladi", digits: "en" }));
+                      }}
+                    />
+                  </ResponsiveDateWheelPicker>
+                  {errors.birth_date && (
+                    <p className="text-sm text-red-500 mt-1">{errors.birth_date}</p>
+                  )}
                 </div>
-              </>
+
+                <div className="space-y-2">
+                  <Label htmlFor="grade" className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4" />
+                    پایه تحصیلی
+                  </Label>
+                  <Select
+                    value={profile.grade}
+                    onValueChange={(value) => handleInputChange("grade", value)}
+                    disabled={!isEditing}
+                  >
+                    <SelectTrigger className={`${!isEditing ? "" : ""} ${errors.grade ? "border-red-500" : ""}`}>
+                      <SelectValue placeholder="پایه را انتخاب کنید" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">دهم</SelectItem>
+                      <SelectItem value="11">یازدهم</SelectItem>
+                      <SelectItem value="12">دوازدهم</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.grade && (
+                    <p className="text-sm text-red-500 mt-1">{errors.grade}</p>
+                  )}
+                </div>
+              </div>
+            </>
             {/* )} */}
           </form>
         </CardContent>
@@ -854,7 +855,7 @@ export default function ProfilePage() {
                     <p className="text-sm text-red-500 mt-1">{addressErrors.full_name}</p>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="addr_phone_number">شماره موبایل گیرنده *</Label>
                   <Input
@@ -885,7 +886,7 @@ export default function ProfilePage() {
                     <p className="text-sm text-red-500 mt-1">{addressErrors.province}</p>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="addr_city">شهر *</Label>
                   <Input
@@ -939,8 +940,8 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={savingAddress}
                 className="w-full"
               >
