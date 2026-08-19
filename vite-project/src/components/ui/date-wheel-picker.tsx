@@ -2,6 +2,7 @@ import * as React from "react"
 
 import {
   Drawer,
+  DrawerContent,
   DrawerPanel,
   DrawerPopup,
   DrawerTrigger,
@@ -290,14 +291,20 @@ function ResponsiveDateWheelPicker({
   )
 }
 
-function ResponsiveDateWheelPickerTrigger(
-  props: React.ComponentProps<typeof PopoverTrigger>
-) {
+function ResponsiveDateWheelPickerTrigger({
+  render,
+  children,
+  ...props
+}: React.ComponentProps<typeof PopoverTrigger> & { render?: React.ReactNode }) {
   const { isDesktop } = useResponsiveDateWheelPickerContext()
   return isDesktop ? (
-    <PopoverTrigger {...props} />
+    <PopoverTrigger render={render as any} {...props}>
+      {children}
+    </PopoverTrigger>
   ) : (
-    <DrawerTrigger {...(props as React.ComponentProps<typeof DrawerTrigger>)} />
+    <DrawerTrigger asChild {...(props as any)}>
+      {render ?? children}
+    </DrawerTrigger>
   )
 }
 
@@ -330,14 +337,11 @@ function ResponsiveDateWheelPickerContent({
   }
 
   return (
-    <DrawerPopup showBar>
-      <DrawerPanel
-        scrollable={false}
-        className={cn("flex items-center justify-center pb-8")}
-      >
-        <DateWheelPicker className={className} {...dateWheelPickerProps} />
-      </DrawerPanel>
-    </DrawerPopup>
+    <DrawerContent className="pb-8">
+      <div className={cn("flex items-center justify-center p-4", className)}>
+        <DateWheelPicker {...dateWheelPickerProps} />
+      </div>
+    </DrawerContent>
   )
 }
 
