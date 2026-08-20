@@ -1,39 +1,40 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Subject, Chapter, Section, Lesson, TopicCategory, Topic, StudentTopicProgress
 
 
-class ChapterInline(admin.TabularInline):
+class ChapterInline(TabularInline):
     model = Chapter
     extra = 1
     fields = ['name', 'order', 'description']
 
 
-class SectionInline(admin.TabularInline):
+class SectionInline(TabularInline):
     model = Section
     extra = 1
     fields = ['name', 'order', 'description']
 
 
-class LessonInline(admin.TabularInline):
+class LessonInline(TabularInline):
     model = Lesson
     extra = 1
     fields = ['name', 'order', 'description']
 
 
-class TopicCategoryInline(admin.TabularInline):
+class TopicCategoryInline(TabularInline):
     model = TopicCategory
     extra = 1
     fields = ['name', 'order', 'description']
 
 
-class TopicInline(admin.TabularInline):
+class TopicInline(TabularInline):
     model = Topic
     extra = 1
     fields = ['name', 'order', 'difficulty', 'estimated_study_time']
 
 
 @admin.register(Subject)
-class SubjectAdmin(admin.ModelAdmin):
+class SubjectAdmin(ModelAdmin):
     list_display = ['name', 'grade', 'is_active', 'get_total_topics', 'created_at']
     list_filter = ['grade', 'is_active', 'created_at']
     search_fields = ['name', 'description']
@@ -45,7 +46,7 @@ class SubjectAdmin(admin.ModelAdmin):
 
 
 @admin.register(Chapter)
-class ChapterAdmin(admin.ModelAdmin):
+class ChapterAdmin(ModelAdmin):
     list_display = ['name', 'subject', 'order', 'get_total_topics']
     list_filter = ['subject', 'created_at']
     search_fields = ['name', 'description', 'subject__name']
@@ -58,7 +59,7 @@ class ChapterAdmin(admin.ModelAdmin):
 
 
 @admin.register(Section)
-class SectionAdmin(admin.ModelAdmin):
+class SectionAdmin(ModelAdmin):
     list_display = ['name', 'chapter', 'order', 'lessons_count']
     list_filter = ['chapter__subject', 'chapter', 'created_at']
     search_fields = ['name', 'description', 'chapter__name']
@@ -71,7 +72,7 @@ class SectionAdmin(admin.ModelAdmin):
 
 
 @admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
+class LessonAdmin(ModelAdmin):
     list_display = ['name', 'section', 'order', 'topic_categories_count']
     list_filter = ['section__chapter__subject', 'section__chapter', 'section', 'created_at']
     search_fields = ['name', 'description', 'section__name']
@@ -84,7 +85,7 @@ class LessonAdmin(admin.ModelAdmin):
 
 
 @admin.register(TopicCategory)
-class TopicCategoryAdmin(admin.ModelAdmin):
+class TopicCategoryAdmin(ModelAdmin):
     list_display = ['name', 'lesson', 'order', 'topics_count']
     list_filter = ['lesson__section__chapter__subject', 'lesson__section__chapter', 'lesson__section', 'lesson', 'created_at']
     search_fields = ['name', 'description', 'lesson__name']
@@ -97,7 +98,7 @@ class TopicCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Topic)
-class TopicAdmin(admin.ModelAdmin):
+class TopicAdmin(ModelAdmin):
     list_display = [
         'name', 'topic_category', 'order', 'difficulty', 
         'estimated_study_time', 'get_available_tests_count'
@@ -129,7 +130,7 @@ class TopicAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentTopicProgress)
-class StudentTopicProgressAdmin(admin.ModelAdmin):
+class StudentTopicProgressAdmin(ModelAdmin):
     list_display = [
         'student', 'topic', 'tests_taken', 'skill_level', 
         'is_mastered', 'last_attempt'

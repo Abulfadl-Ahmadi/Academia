@@ -143,6 +143,10 @@ else:
 
 INSTALLED_APPS = [
     'daphne',
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+    'unfold.contrib.inlines',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -232,27 +236,15 @@ STORAGES = {
         },
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-        "OPTIONS": {
-            "bucket_name": AWS_STORAGE_BUCKET_NAME,
-            "endpoint_url": AWS_S3_ENDPOINT_URL,
-            "access_key": AWS_ACCESS_KEY_ID,
-            "secret_key": AWS_SECRET_ACCESS_KEY,
-            "region_name": AWS_S3_REGION_NAME,
-            "file_overwrite": AWS_S3_FILE_OVERWRITE,
-            "default_acl": AWS_DEFAULT_ACL,
-            "object_parameters": AWS_S3_OBJECT_PARAMETERS,
-            "verify": AWS_S3_VERIFY,
-            "location": "static",
-            "addressing_style": AWS_S3_ADDRESSING_STYLE,
-            "signature_version": AWS_S3_SIGNATURE_VERSION,
-        },
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = '/media/'  # local style URLs for now; can switch back after success
+STATICFILES_DIRS = [BASE_DIR / 'static']
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # File Upload Security
 FILE_UPLOAD_PERMISSIONS = 0o644
@@ -317,17 +309,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -495,3 +482,265 @@ if _db_engine == 'django.db.backends.sqlite3':
             connection.cursor().execute('PRAGMA cache_size=-8000;')  # 8 MB cache
 
     connection_created.connect(_enable_sqlite_wal)
+
+
+# ---------------------------------------------------------------------------
+# Django Unfold (Tailwind CSS Admin) Settings
+# ---------------------------------------------------------------------------
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+
+UNFOLD = {
+    "SITE_TITLE": "Academia Admin",
+    "SITE_HEADER": "Academia Admin",
+    "SITE_SUBHEADER": "Education & Exam Management Platform",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "school",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "STYLES": [
+        lambda request: "https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap",
+        lambda request: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
+        lambda request: static("css/admin_custom.css"),
+    ],
+    "SCRIPTS": [],
+    "COLORS": {
+        # "primary": {
+        #     "50": "245 243 255",
+        #     "100": "237 233 254",
+        #     "200": "221 214 254",
+        #     "300": "196 181 253",
+        #     "400": "167 139 250",
+        #     "500": "139 92 246",
+        #     "600": "124 58 237",
+        #     "700": "109 40 217",
+        #     "800": "91 33 182",
+        #     "900": "76 29 149",
+        #     "950": "46 16 101",
+        # },
+        "primary": {
+            "50": "239 246 255",
+            "100": "219 234 254",
+            "200": "191 219 254",
+            "300": "147 197 253",
+            "400": "96 165 250",
+            "500": "59 130 246",
+            "600": "37 99 235",
+            "700": "29 78 216",
+            "800": "30 64 175",
+            "900": "30 58 138",
+            "950": "23 37 84",
+        },
+        "base": {
+            "50": "250 250 250",
+            "100": "244 244 245",
+            "200": "228 228 231",
+            "300": "212 212 216",
+            "400": "161 161 170",
+            "500": "113 113 122",
+            "600": "82 82 91",
+            "700": "63 63 70",
+            "800": "39 39 42",
+            "900": "24 24 27",
+            "950": "9 9 11",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Users & Access",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Users",
+                        "icon": "group",
+                        "link": reverse_lazy("admin:accounts_user_changelist"),
+                    },
+                    {
+                        "title": "User Profiles",
+                        "icon": "badge",
+                        "link": reverse_lazy("admin:accounts_userprofile_changelist"),
+                    },
+                    {
+                        "title": "Verification Codes",
+                        "icon": "pin",
+                        "link": reverse_lazy("admin:accounts_verificationcode_changelist"),
+                    },
+                    {
+                        "title": "AI Access",
+                        "icon": "psychology",
+                        "link": reverse_lazy("admin:accounts_aiaccess_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Courses & Education",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Courses",
+                        "icon": "school",
+                        "link": reverse_lazy("admin:courses_course_changelist"),
+                    },
+                    {
+                        "title": "Class Categories",
+                        "icon": "category",
+                        "link": reverse_lazy("admin:courses_classcategory_changelist"),
+                    },
+                    {
+                        "title": "Course Sessions",
+                        "icon": "video_library",
+                        "link": reverse_lazy("admin:courses_coursesession_changelist"),
+                    },
+                    {
+                        "title": "Class Schedules",
+                        "icon": "calendar_month",
+                        "link": reverse_lazy("admin:courses_courseschedule_changelist"),
+                    },
+                    {
+                        "title": "SpotPlayer Licenses",
+                        "icon": "key",
+                        "link": reverse_lazy("admin:spotplayer_spotplayerlicense_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Tests & Exams",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Test Collections",
+                        "icon": "folder_special",
+                        "link": reverse_lazy("admin:tests_testcollection_changelist"),
+                    },
+                    {
+                        "title": "Tests",
+                        "icon": "quiz",
+                        "link": reverse_lazy("admin:tests_test_changelist"),
+                    },
+                    {
+                        "title": "Question Bank",
+                        "icon": "help_outline",
+                        "link": reverse_lazy("admin:tests_question_changelist"),
+                    },
+                    {
+                        "title": "Student Test Sessions",
+                        "icon": "assignment_ind",
+                        "link": reverse_lazy("admin:tests_studenttestsession_changelist"),
+                    },
+                    {
+                        "title": "Student Progress",
+                        "icon": "trending_up",
+                        "link": reverse_lazy("admin:tests_studentprogress_changelist"),
+                    },
+                    {
+                        "title": "Custom Tests",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:tests_customtest_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Finance & Shop",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Shop Products",
+                        "icon": "shopping_bag",
+                        "link": reverse_lazy("admin:shop_product_changelist"),
+                    },
+                    {
+                        "title": "Discounts",
+                        "icon": "local_offer",
+                        "link": reverse_lazy("admin:shop_discount_changelist"),
+                    },
+                    {
+                        "title": "Orders",
+                        "icon": "receipt_long",
+                        "link": reverse_lazy("admin:finance_order_changelist"),
+                    },
+                    {
+                        "title": "Transactions",
+                        "icon": "account_balance_wallet",
+                        "link": reverse_lazy("admin:finance_transaction_changelist"),
+                    },
+                    {
+                        "title": "Zibal Payments",
+                        "icon": "payments",
+                        "link": reverse_lazy("admin:finance_payment_changelist"),
+                    },
+                    {
+                        "title": "User Access",
+                        "icon": "lock_open",
+                        "link": reverse_lazy("admin:finance_useraccess_changelist"),
+                    },
+                    {
+                        "title": "SMS Config",
+                        "icon": "sms",
+                        "link": reverse_lazy("admin:finance_smsnotificationconfig_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Content & Blog",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Blog Posts",
+                        "icon": "article",
+                        "link": reverse_lazy("admin:blog_post_changelist"),
+                    },
+                    {
+                        "title": "Blog Categories",
+                        "icon": "folder",
+                        "link": reverse_lazy("admin:blog_category_changelist"),
+                    },
+                    {
+                        "title": "Blog Comments",
+                        "icon": "comment",
+                        "link": reverse_lazy("admin:blog_comment_changelist"),
+                    },
+                    {
+                        "title": "Knowledge Subjects",
+                        "icon": "menu_book",
+                        "link": reverse_lazy("admin:knowledge_subject_changelist"),
+                    },
+                    {
+                        "title": "Knowledge Topics",
+                        "icon": "topic",
+                        "link": reverse_lazy("admin:knowledge_topic_changelist"),
+                    },
+                    {
+                        "title": "Files & Media",
+                        "icon": "attachment",
+                        "link": reverse_lazy("admin:contents_file_changelist"),
+                    },
+                    {
+                        "title": "Gallery Images",
+                        "icon": "photo_library",
+                        "link": reverse_lazy("admin:contents_galleryimage_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Support & Tickets",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Tickets",
+                        "icon": "support_agent",
+                        "link": reverse_lazy("admin:tickets_ticket_changelist"),
+                    },
+                    {
+                        "title": "Ticket Responses",
+                        "icon": "reply",
+                        "link": reverse_lazy("admin:tickets_ticketresponse_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+}
+

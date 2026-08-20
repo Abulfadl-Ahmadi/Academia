@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import Product, Discount
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ModelAdmin):
     list_display = ('title', 'product_type', 'price', 'creator', 'is_active', 'created_at')
     list_filter = ('product_type', 'is_active', 'is_deleted', 'created_at')
     search_fields = ('title', 'description', 'creator__username', 'creator__email')
@@ -28,7 +29,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(Discount)
-class DiscountAdmin(admin.ModelAdmin):
+class DiscountAdmin(ModelAdmin):
     list_display = ('code', 'product', 'percentage', 'is_active', 'is_expired', 'used_count', 'max_uses')
     list_filter = ('is_active', 'created_at', 'expire_at')
     search_fields = ('code', 'product__title')

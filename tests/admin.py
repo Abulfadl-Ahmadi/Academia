@@ -1,4 +1,5 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import (
     TestCollection, Test, PrimaryKey, StudentTestSession, 
     StudentTestSessionLog, StudentAnswer, StudentProgress, Question, Option, QuestionImage,
@@ -6,24 +7,24 @@ from .models import (
 )
 
 
-class PrimaryKeyInline(admin.TabularInline):
+class PrimaryKeyInline(TabularInline):
     model = PrimaryKey
     extra = 0
 
 
-class StudentTestSessionLogInline(admin.TabularInline):
+class StudentTestSessionLogInline(TabularInline):
     model = StudentTestSessionLog
     extra = 0
     readonly_fields = ('timestamp',)
 
 
-class StudentAnswerInline(admin.TabularInline):
+class StudentAnswerInline(TabularInline):
     model = StudentAnswer
     extra = 0
 
 
 @admin.register(Test)
-class TestAdmin(admin.ModelAdmin):
+class TestAdmin(ModelAdmin):
     list_display = ('name', 'get_test_collection_name', 'teacher', 'start_time', 'end_time', 'is_active', 'participants_count')
     list_filter = ('is_active', 'test_collection', 'start_time', 'end_time', 'teacher')
     search_fields = ('name', 'description', 'teacher__username', 'test_collection__name')
@@ -57,7 +58,7 @@ class TestAdmin(admin.ModelAdmin):
 
 
 @admin.register(PrimaryKey)
-class PrimaryKeyAdmin(admin.ModelAdmin):
+class PrimaryKeyAdmin(ModelAdmin):
     list_display = ('test', 'question_number', 'answer')
     list_filter = ('test',)
     search_fields = ('test__name',)
@@ -65,7 +66,7 @@ class PrimaryKeyAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentTestSession)
-class StudentTestSessionAdmin(admin.ModelAdmin):
+class StudentTestSessionAdmin(ModelAdmin):
     list_display = ('user', 'test', 'status', 'entry_time', 'end_time', 'exit_time', 'is_expired_status', 'device_id')
     list_filter = ('status', 'entry_time', 'end_time', 'test')
     search_fields = ('user__username', 'user__email', 'test__name', 'device_id', 'ip_address')
@@ -92,7 +93,7 @@ class StudentTestSessionAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentTestSessionLog)
-class StudentTestSessionLogAdmin(admin.ModelAdmin):
+class StudentTestSessionLogAdmin(ModelAdmin):
     list_display = ('session', 'action', 'timestamp', 'device_id', 'ip_address')
     list_filter = ('action', 'timestamp')
     search_fields = ('session__user__username', 'session__test__name', 'device_id', 'ip_address')
@@ -101,7 +102,7 @@ class StudentTestSessionLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentAnswer)
-class StudentAnswerAdmin(admin.ModelAdmin):
+class StudentAnswerAdmin(ModelAdmin):
     list_display = ('session', 'question_number', 'answer', 'user', 'test')
     list_filter = ('session__test', 'question_number')
     search_fields = ('session__user__username', 'session__test__name')
@@ -117,7 +118,7 @@ class StudentAnswerAdmin(admin.ModelAdmin):
 
 
 @admin.register(TestCollection)
-class TestCollectionAdmin(admin.ModelAdmin):
+class TestCollectionAdmin(ModelAdmin):
     list_display = ('name', 'is_active', 'created_by', 'tests_count', 'students_count', 'created_at', 'is_public')
     list_filter = ('is_active', 'created_by', 'created_at')
     search_fields = ('name', 'description', 'created_by__username')
@@ -150,7 +151,7 @@ class TestCollectionAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentProgress)
-class StudentProgressAdmin(admin.ModelAdmin):
+class StudentProgressAdmin(ModelAdmin):
     list_display = ('student', 'test_collection', 'progress_display', 'average_score', 'last_activity')
     list_filter = ('test_collection', 'is_completed', 'last_activity')
     search_fields = ('student__username', 'test_collection__name')
@@ -170,18 +171,18 @@ class StudentProgressAdmin(admin.ModelAdmin):
     update_all_progress.short_description = "بروزرسانی پیشرفت انتخاب شده‌ها"
 
 
-class OptionInline(admin.TabularInline):
+class OptionInline(TabularInline):
     model = Option
     extra = 0
 
 
-class QuestionImageInline(admin.TabularInline):
+class QuestionImageInline(TabularInline):
     model = QuestionImage
     extra = 0
 
 
 @admin.register(Question)
-class QuestionAdmin(admin.ModelAdmin):
+class QuestionAdmin(ModelAdmin):
     list_display = ('question_text_short', 'created_by', 'difficulty_level', 'is_active', 'created_at')
     list_filter = ('difficulty_level', 'is_active', 'created_at', 'created_by')
     search_fields = ('question_text', 'created_by__username')
@@ -211,7 +212,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 @admin.register(Option)
-class OptionAdmin(admin.ModelAdmin):
+class OptionAdmin(ModelAdmin):
     list_display = ('question', 'option_text_short', 'order')
     list_filter = ('question__difficulty_level',)
     search_fields = ('option_text', 'question__question_text')
@@ -223,7 +224,7 @@ class OptionAdmin(admin.ModelAdmin):
 
 
 @admin.register(QuestionImage)
-class QuestionImageAdmin(admin.ModelAdmin):
+class QuestionImageAdmin(ModelAdmin):
     list_display = ('question', 'alt_text', 'order')
     list_filter = ('question__difficulty_level',)
     search_fields = ('alt_text', 'question__question_text')
@@ -231,7 +232,7 @@ class QuestionImageAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomTest)
-class CustomTestAdmin(admin.ModelAdmin):
+class CustomTestAdmin(ModelAdmin):
     list_display = ('name', 'student', 'status', 'questions_count', 'score', 'created_at')
     list_filter = ('status', 'difficulty_level', 'created_at')
     search_fields = ('name', 'student__username', 'student__first_name', 'student__last_name')
@@ -257,7 +258,7 @@ class CustomTestAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomTestSession)
-class CustomTestSessionAdmin(admin.ModelAdmin):
+class CustomTestSessionAdmin(ModelAdmin):
     list_display = ('custom_test', 'student', 'started_at', 'last_activity')
     list_filter = ('started_at',)
     search_fields = ('custom_test__name', 'student__username')
@@ -270,7 +271,7 @@ class CustomTestSessionAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomTestAnswer)
-class CustomTestAnswerAdmin(admin.ModelAdmin):
+class CustomTestAnswerAdmin(ModelAdmin):
     list_display = ('custom_test', 'student', 'question', 'selected_option', 'is_correct', 'answered_at')
     list_filter = ('answered_at', 'custom_test__status')
     search_fields = ('custom_test__name', 'student__username', 'question__public_id')

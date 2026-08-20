@@ -1,23 +1,28 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from unfold.admin import ModelAdmin
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from .models import User, UserProfile, VerificationCode, AIAccess
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_email_verified', 'is_staff')
     list_filter = ('role', 'is_email_verified', 'is_staff', 'is_superuser')
-    fieldsets = UserAdmin.fieldsets + (
+    fieldsets = BaseUserAdmin.fieldsets + (
         ('Custom Fields', {'fields': ('role', 'is_email_verified')}),
     )
-    add_fieldsets = UserAdmin.add_fieldsets + (
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
         ('Custom Fields', {'fields': ('role', 'is_email_verified')}),
     )
 
-class UserProfileAdmin(admin.ModelAdmin):
+class UserProfileAdmin(ModelAdmin):
     list_display = ('user', 'national_id', 'phone_number', 'grade')
     search_fields = ('user__username', 'user__email', 'national_id', 'phone_number')
     list_filter = ('grade',)
 
-class VerificationCodeAdmin(admin.ModelAdmin):
+class VerificationCodeAdmin(ModelAdmin):
     list_display = ('email', 'code', 'created_at', 'expires_at', 'is_used', 'is_expired')
     list_filter = ('is_used', 'created_at')
     search_fields = ('email', 'code')
@@ -28,7 +33,7 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     is_expired.boolean = True
     is_expired.short_description = 'Expired'
 
-class AIAccessAdmin(admin.ModelAdmin):
+class AIAccessAdmin(ModelAdmin):
     list_display = ('user', 'questions_limit', 'access_duration', 'model', 'is_active', 'get_remaining_questions')
     search_fields = ('user__username', 'user__email')
     list_filter = ('model', 'access_duration')

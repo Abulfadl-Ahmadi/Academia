@@ -1,19 +1,20 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Ticket, TicketResponse, TicketAttachment
 
-class TicketResponseInline(admin.TabularInline):
+class TicketResponseInline(TabularInline):
     model = TicketResponse
     extra = 0
     readonly_fields = ('user', 'created_at')
 
-class TicketAttachmentInline(admin.TabularInline):
+class TicketAttachmentInline(TabularInline):
     model = TicketAttachment
     extra = 0
     fields = ('file', 'uploaded_at')
     readonly_fields = ('uploaded_at',)
 
 @admin.register(Ticket)
-class TicketAdmin(admin.ModelAdmin):
+class TicketAdmin(ModelAdmin):
     list_display = ('id', 'title', 'created_by', 'assigned_to', 'status', 'priority', 'category', 'created_at', 'updated_at')
     list_filter = ('status', 'priority', 'category', 'created_at')
     search_fields = ('title', 'description', 'created_by__username', 'assigned_to__username')
@@ -23,7 +24,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 @admin.register(TicketResponse)
-class TicketResponseAdmin(admin.ModelAdmin):
+class TicketResponseAdmin(ModelAdmin):
     list_display = ('id', 'ticket', 'user', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('content', 'user__username', 'ticket__title')
@@ -32,7 +33,7 @@ class TicketResponseAdmin(admin.ModelAdmin):
     inlines = [TicketAttachmentInline]
 
 @admin.register(TicketAttachment)
-class TicketAttachmentAdmin(admin.ModelAdmin):
+class TicketAttachmentAdmin(ModelAdmin):
     list_display = ('id', 'get_related_item', 'file', 'uploaded_at')
     list_filter = ('uploaded_at',)
     readonly_fields = ('uploaded_at',)

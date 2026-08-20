@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import File, GalleryImage
 
 
 @admin.register(File)
-class FileAdmin(admin.ModelAdmin):
+class FileAdmin(ModelAdmin):
     list_display = ('title', 'file_type', 'content_type', 'course', 'session', 'has_file', 'has_arvan_url', 'students_count', 'created_at')
     list_filter = ('file_type', 'content_type', 'created_at', 'course')
     search_fields = ('title', 'file_id', 'course__title', 'session__title')
@@ -39,7 +40,7 @@ class FileAdmin(admin.ModelAdmin):
 
 
 @admin.register(GalleryImage)
-class GalleryImageAdmin(admin.ModelAdmin):
+class GalleryImageAdmin(ModelAdmin):
     list_display = ('title', 'is_published', 'order', 'has_image', 'created_at')
     list_filter = ('is_published', 'created_at')
     search_fields = ('title', 'description')

@@ -1,13 +1,14 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Course, CourseSession, CourseSchedule, ClassCategory
 
 
-class CourseScheduleInline(admin.TabularInline):
+class CourseScheduleInline(TabularInline):
     model = CourseSchedule
     extra = 0
 
 
-class CourseSessionInline(admin.TabularInline):
+class CourseSessionInline(TabularInline):
     model = CourseSession
     extra = 0
     readonly_fields = ('created_at', 'updated_at')
@@ -15,7 +16,7 @@ class CourseSessionInline(admin.TabularInline):
 
 
 @admin.register(ClassCategory)
-class ClassCategoryAdmin(admin.ModelAdmin):
+class ClassCategoryAdmin(ModelAdmin):
     list_display = ('name', 'description', 'courses_count')
     search_fields = ('name', 'description')
     
@@ -25,7 +26,7 @@ class ClassCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(ModelAdmin):
     list_display = ['title', 'teacher', 'category', 'students_count', 'sessions_count', 'schedules_count', 'has_rtmp', 'is_live', 'is_active', 'created_at']
     list_filter = ['is_active', 'is_live', 'created_at', 'teacher__role', 'category']
     search_fields = ['title', 'description', 'teacher__username', 'vod_channel_id', 'rtmp_url', 'spotplayer_course_id']
@@ -77,7 +78,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 @admin.register(CourseSchedule)
-class CourseScheduleAdmin(admin.ModelAdmin):
+class CourseScheduleAdmin(ModelAdmin):
     list_display = ('course', 'get_day_display', 'time')
     list_filter = ('day', 'course')
     search_fields = ('course__title',)
@@ -85,7 +86,7 @@ class CourseScheduleAdmin(admin.ModelAdmin):
 
 
 @admin.register(CourseSession)
-class CourseSessionAdmin(admin.ModelAdmin):
+class CourseSessionAdmin(ModelAdmin):
     list_display = ['title', 'course', 'session_number', 'is_published', 'has_video', 'has_lecture_notes', 'created_at']
     list_filter = ['is_published', 'created_at', 'course']
     search_fields = ['title', 'description', 'course__title']

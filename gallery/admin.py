@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import GalleryImage
 
 
 @admin.register(GalleryImage)
-class GalleryImageAdmin(admin.ModelAdmin):
+class GalleryImageAdmin(ModelAdmin):
     list_display = ['title', 'is_published', 'order', 'created_at']
     list_filter = ['is_published', 'created_at']
     search_fields = ['title', 'description']

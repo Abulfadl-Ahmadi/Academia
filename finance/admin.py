@@ -1,24 +1,25 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import (
     Order, OrderItem, Transaction, UserAccess, Payment, PaymentLog,
     SMSNotificationConfig, SMSNotificationLog,
 )
 
 
-class OrderItemInline(admin.TabularInline):
+class OrderItemInline(TabularInline):
     model = OrderItem
     extra = 0
     readonly_fields = ('price', 'discount_amount')
 
 
-class TransactionInline(admin.TabularInline):
+class TransactionInline(TabularInline):
     model = Transaction
     extra = 0
     readonly_fields = ('created_at', 'created_by')
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ModelAdmin):
     list_display = ('id', 'user', 'total_amount', 'status', 'created_at', 'items_count')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
@@ -46,7 +47,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
+class OrderItemAdmin(ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'price', 'discount_amount', 'final_amount')
     list_filter = ('order__status', 'product__product_type')
     search_fields = ('order__user__username', 'product__title')
@@ -58,7 +59,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transaction)
-class TransactionAdmin(admin.ModelAdmin):
+class TransactionAdmin(ModelAdmin):
     list_display = ('id', 'order', 'amount', 'transaction_type', 'payment_method', 'created_at', 'created_by')
     list_filter = ('transaction_type', 'payment_method', 'created_at')
     search_fields = ('order__user__username', 'reference_number', 'description')
@@ -83,7 +84,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserAccess)
-class UserAccessAdmin(admin.ModelAdmin):
+class UserAccessAdmin(ModelAdmin):
     list_display = ('user', 'product', 'order', 'is_active', 'is_expired_status', 'granted_at')
     list_filter = ('is_active', 'granted_at', 'product__product_type')
     search_fields = ('user__username', 'product__title', 'order__id')
@@ -109,7 +110,7 @@ class UserAccessAdmin(admin.ModelAdmin):
     is_expired_status.short_description = 'Expired'
 
 
-class PaymentLogInline(admin.TabularInline):
+class PaymentLogInline(TabularInline):
     model = PaymentLog
     extra = 0
     readonly_fields = ('action', 'zibal_status', 'result_code', 'request_data', 'response_data', 'ip_address', 'created_at')
@@ -117,7 +118,7 @@ class PaymentLogInline(admin.TabularInline):
 
 
 @admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
+class PaymentAdmin(ModelAdmin):
     list_display = (
         'id', 'user', 'order_id_str', 'amount', 'track_id', 'ref_number',
         'card_number', 'status', 'zibal_status', 'result_code', 'paid_at', 'created_at'
@@ -176,7 +177,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 @admin.register(PaymentLog)
-class PaymentLogAdmin(admin.ModelAdmin):
+class PaymentLogAdmin(ModelAdmin):
     list_display = ('id', 'payment', 'action', 'zibal_status', 'result_code', 'ip_address', 'created_at')
     list_filter = ('action', 'zibal_status', 'result_code', 'created_at')
     search_fields = ('payment__track_id', 'payment__user__username', 'ip_address')
@@ -185,7 +186,7 @@ class PaymentLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(SMSNotificationConfig)
-class SMSNotificationConfigAdmin(admin.ModelAdmin):
+class SMSNotificationConfigAdmin(ModelAdmin):
     list_display = ('name', 'is_active', 'get_trigger_statuses', 'min_order_amount', 'get_recipient_count', 'created_at')
     list_filter = ('is_active', 'created_at')
     search_fields = ('name', 'template_text')
@@ -229,15 +230,10 @@ class SMSNotificationConfigAdmin(admin.ModelAdmin):
         if not change:  # Creating new object
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
-    
-    class Media:
-        css = {
-            'all': ('admin/css/forms.css',)
-        }
 
 
 @admin.register(SMSNotificationLog)
-class SMSNotificationLogAdmin(admin.ModelAdmin):
+class SMSNotificationLogAdmin(ModelAdmin):
     list_display = ('created_at', 'config', 'order', 'phone_number', 'status')
     list_filter = ('status', 'created_at')
     search_fields = ('phone_number', 'order__order_code', 'config__name', 'error_message')
@@ -246,4 +242,3 @@ class SMSNotificationLogAdmin(admin.ModelAdmin):
         'error_message', 'provider_response', 'created_at',
     )
     date_hierarchy = 'created_at'
-
