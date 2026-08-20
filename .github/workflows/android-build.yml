@@ -7,6 +7,9 @@ on:
       - master
   workflow_dispatch: # Allows triggering the build manually from GitHub UI
 
+permissions:
+  contents: write
+
 jobs:
   build-android:
     name: Build APK
@@ -20,6 +23,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Create .env file
+        working-directory: ./vite-project
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env
+          # اگر متغیرهای دیگه‌ای هم دارید در خطوط بعدی اضافه کنید
 
       - name: Install dependencies and build web
         working-directory: ./vite-project
@@ -50,3 +59,12 @@ jobs:
           name: app-debug.apk
           path: vite-project/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: Build-${{ github.run_number }}
+          name: Android APK Build #${{ github.run_number }}
+          files: vite-project/android/app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
