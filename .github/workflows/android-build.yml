@@ -1,0 +1,52 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch: # Allows triggering the build manually from GitHub UI
+
+jobs:
+  build-android:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and build web
+        working-directory: ./vite-project
+        run: |
+          npm install
+          npm run build
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Sync Capacitor Android project
+        working-directory: ./vite-project
+        run: |
+          npx cap sync android
+
+      - name: Build Android APK
+        working-directory: ./vite-project/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: vite-project/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
