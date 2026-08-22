@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404, redirect
-from django.db import transaction
+from django.db import transaction, models
 from django.utils import timezone
 from django.conf import settings
 import requests
@@ -198,8 +198,51 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role in ('admin', 'teacher', 'finance') or user.is_staff or user.is_superuser:
-            return Transaction.objects.all().select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
-        return Transaction.objects.filter(order__user=user).select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
+            qs = Transaction.objects.all().select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
+        else:
+            qs = Transaction.objects.filter(order__user=user).select_related('order__user__profile', 'order__user', 'order', 'created_by__profile', 'created_by').order_by('-created_at', '-id')
+
+        # Filter query params
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                models.Q(transaction_code__icontains=search) |
+                models.Q(reference_number__icontains=search) |
+                models.Q(order__order_code__icontains=search) |
+                models.Q(order__id__icontains=search) |
+                models.Q(order__user__username__icontains=search) |
+                models.Q(order__user__first_name__icontains=search) |
+                models.Q(order__user__last_name__icontains=search) |
+                models.Q(order__user__email__icontains=search) |
+                models.Q(order__user__profile__school__icontains=search)
+            )
+
+        payment_method = self.request.query_params.get('payment_method')
+        if payment_method and payment_method not in ('-', 'all'):
+            qs = qs.filter(payment_method=payment_method)
+
+        transaction_type = self.request.query_params.get('transaction_type')
+        if transaction_type and transaction_type not in ('-', 'all'):
+            qs = qs.filter(transaction_type=transaction_type)
+
+        status = self.request.query_params.get('status')
+        if status and status not in ('-', 'all'):
+            qs = qs.filter(order__status=status)
+
+        return qs
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get summary stats for transactions matching current filters."""
+        qs = self.filter_queryset(self.get_queryset())
+        total_count = qs.count()
+        total_purchases = qs.filter(transaction_type=Transaction.TransactionType.PURCHASE).aggregate(models.Sum('amount'))['amount__sum'] or 0
+        total_refunds = qs.filter(transaction_type=Transaction.TransactionType.REFUND).aggregate(models.Sum('amount'))['amount__sum'] or 0
+        return Response({
+            'total_count': total_count,
+            'total_purchases': total_purchases,
+            'total_refunds': total_refunds,
+        })
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
