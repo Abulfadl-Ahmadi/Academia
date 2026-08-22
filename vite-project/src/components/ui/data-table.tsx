@@ -44,12 +44,12 @@ export function DataTable<TData, TValue>({
           onScroll={onScroll}
         >
           <Table containerClassName="overflow-visible w-full" className="border-separate border-spacing-0">
-            <TableHeader className="sticky top-0 z-30 bg-card">
+            <TableHeader className="sticky top-0 z-30 bg-muted/90 backdrop-blur-sm">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="border-0 hover:bg-transparent">
                   {headerGroup.headers.map((header) => (
                     <TableHead
-                      className="text-right bg-card sticky top-0 z-30 font-bold py-3 px-3 border-b-2 border-red-500 shadow-[inset_0_-2px_0_0_#ef4444]"
+                      className="text-right bg-muted/90 sticky top-0 z-30 font-semibold text-foreground/80 py-3 px-3 border-b border-border shadow-[inset_0_-1px_0_0_hsl(var(--border))]"
                       key={header.id}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
