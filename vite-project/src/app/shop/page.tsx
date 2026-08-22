@@ -29,6 +29,7 @@ interface Product {
   has_active_discount: boolean
   is_physical_product: boolean
   is_digital_product: boolean
+  has_access?: boolean
   weight?: number
   dimensions?: string
   stock_quantity?: number
@@ -185,6 +186,10 @@ export default function ShopPage() {
   }
 
   const handleAddToCart = async (product: Product) => {
+    if (product.has_access) {
+      toast.info("شما قبلاً به این محصول دسترسی دارید و نیازی به خرید مجدد نیست.")
+      return
+    }
     try {
       await addToCart(product)
       toast.success(`${product.title} به سبد خرید اضافه شد`)
@@ -481,21 +486,34 @@ export default function ShopPage() {
                           <p className="text-sm text-muted-foreground">{formatPrice(item.product.current_price)} تومان</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
-                          >
-                            -
-                          </Button>
-                          <span className="w-8 text-center text-sm">{item.quantity}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
-                          >
-                            +
-                          </Button>
+                          {(!['course', 'test', 'file'].includes(item.product.product_type) && !item.product.is_digital_product) ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                              >
+                                -
+                              </Button>
+                              <span className="w-8 text-center text-sm">{item.quantity}</span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                              >
+                                +
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2"
+                              onClick={() => handleRemoveFromCart(item.product.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -649,6 +667,11 @@ export default function ShopPage() {
                       {getProductIcon(product.product_type)}
                       {getProductTypeLabel(product.product_type)}
                     </Badge>
+                    {product.has_access && (
+                      <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                        خریداری شده
+                      </Badge>
+                    )}
                   </div>
                   <CardTitle className="text-lg line-clamp-2">{product.title}</CardTitle>
                   <CardDescription className="line-clamp-3">
@@ -674,23 +697,38 @@ export default function ShopPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                      }}
-                      className="flex-1"
-                      size="sm"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      افزودن به سبد خرید
-                    </Button>
+                    {product.has_access ? (
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (product.course) navigate(`/panel/courses/${product.course}`);
+                          else if (product.test) navigate(`/panel/tests/`);
+                          else navigate(`/shop/${product.id}`);
+                        }}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                        size="sm"
+                      >
+                        مشاهده محتوا
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
+                        className="flex-1"
+                        size="sm"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        افزودن به سبد خرید
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.location.href = `/shop/${product.id}`;
+                        navigate(`/shop/${product.id}`);
                       }}
                     >
                       جزئیات

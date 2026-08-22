@@ -18,6 +18,9 @@ from accounts.utils import send_verification_email
 from django.conf import settings
 
 
+from .utils import user_has_product_access
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.filter(is_active=True, is_deleted=False)
     serializer_class = ProductSerializer
@@ -49,6 +52,20 @@ class ProductViewSet(viewsets.ModelViewSet):
                 {"error": "Quantity must be at least 1"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Check if user already owns this digital product
+        if user_has_product_access(request.user, product):
+            return Response(
+                {
+                    "error": f"شما قبلاً به محصول «{product.title}» دسترسی دارید و نیازی به خرید مجدد آن نیست.",
+                    "already_purchased": True,
+                    "product_id": product.id,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if product.is_digital_product:
+            quantity = 1
         
         # Get or initialize cart from session
         if 'cart' not in request.session:
@@ -59,7 +76,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         # Add or update quantity in cart
         if product_id in cart:
-            cart[product_id]['quantity'] += quantity
+            if product.is_digital_product:
+                cart[product_id]['quantity'] = 1
+            else:
+                cart[product_id]['quantity'] += quantity
         else:
             cart[product_id] = {
                 'quantity': quantity,
@@ -398,6 +418,20 @@ class CartManagementView(APIView):
                 {"error": "Product not found"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+        # Check if user already owns this digital product
+        if user_has_product_access(request.user, product):
+            return Response(
+                {
+                    "error": f"شما قبلاً به محصول «{product.title}» دسترسی دارید.",
+                    "already_purchased": True,
+                    "product_id": product.id,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if product.is_digital_product:
+            quantity = 1
         
         # Get or initialize cart from session
         if 'cart' not in request.session:
@@ -408,7 +442,10 @@ class CartManagementView(APIView):
         
         # Add or update quantity in cart
         if product_id in cart:
-            cart[product_id]['quantity'] += quantity
+            if product.is_digital_product:
+                cart[product_id]['quantity'] = 1
+            else:
+                cart[product_id]['quantity'] += quantity
         else:
             cart[product_id] = {
                 'quantity': quantity,
@@ -450,6 +487,16 @@ class CartManagementView(APIView):
             del cart[product_id]
             message = "Item removed from cart"
         else:
+            try:
+                prod = Product.objects.get(id=product_id, is_active=True, is_deleted=False)
+                if prod.is_digital_product and quantity > 1:
+                    return Response(
+                        {"error": f"محصول دیجیتال «{prod.title}» فقط به تعداد ۱ عدد قابل انتخاب است."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except Product.DoesNotExist:
+                pass
+
             # Update quantity
             cart[product_id]['quantity'] = quantity
             message = f"Updated quantity to {quantity}"
@@ -505,6 +552,7 @@ class PurchaseView(APIView):
         # Calculate total and validate products
         total_amount = 0
         order_items = []
+        seen_digital_product_ids = set()
         
         for item_data in items:
             try:
@@ -515,6 +563,29 @@ class PurchaseView(APIView):
                 )
                 
                 quantity = item_data['quantity']
+                
+                # Check digital product duplicate & quantity limits
+                if product.is_digital_product:
+                    if product.id in seen_digital_product_ids:
+                        continue  # deduplicate within same request
+                    seen_digital_product_ids.add(product.id)
+
+                    if quantity > 1:
+                        return Response(
+                            {"error": f"محصول دیجیتال «{product.title}» فقط به تعداد ۱ عدد قابل خرید است."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                    if user_has_product_access(request.user, product):
+                        return Response(
+                            {
+                                "error": f"شما قبلاً به محصول «{product.title}» دسترسی دارید و امکان خرید مجدد وجود ندارد.",
+                                "already_purchased": True,
+                                "product_id": product.id
+                            },
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
                 price = product.current_price
                 discount_amount = 0
                 
@@ -597,15 +668,9 @@ class PurchaseView(APIView):
                     discount_amount=item_data['discount_amount']
                 )
             
-            # Grant access to digital products immediately
-            from finance.models import UserAccess
-            for item_data in order_items:
-                if item_data['product'].is_digital_product:
-                    UserAccess.objects.get_or_create(
-                        user=request.user,
-                        product=item_data['product'],
-                        defaults={'order': order}
-                    )
+            # Grant access to digital products and enroll student
+            from finance.views import grant_product_access
+            grant_product_access(order)
             
             # Create transaction record for free purchase
             from finance.models import Transaction

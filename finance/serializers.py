@@ -72,12 +72,14 @@ class OrderCreateSerializer(serializers.Serializer):
     )
     
     def create(self, validated_data):
+        from shop.utils import user_has_product_access
         user = self.context['request'].user
         items_data = validated_data['items']
         
         # Calculate total amount and create order items
         total_amount = 0
         order_items = []
+        seen_digital_ids = set()
         
         for item_data in items_data:
             product_id = item_data.get('product_id')
@@ -89,6 +91,17 @@ class OrderCreateSerializer(serializers.Serializer):
             except Product.DoesNotExist:
                 raise serializers.ValidationError(f"Product with id {product_id} not found")
             
+            if product.is_digital_product:
+                if product.id in seen_digital_ids:
+                    continue
+                seen_digital_ids.add(product.id)
+
+                if quantity > 1:
+                    raise serializers.ValidationError(f"محصول «{product.title}» دیجیتال است و فقط به تعداد ۱ عدد قابل سفارش است.")
+
+                if user_has_product_access(user, product):
+                    raise serializers.ValidationError(f"شما قبلاً به محصول «{product.title}» دسترسی دارید و نیازی به خرید مجدد آن نیست.")
+
             price = product.current_price
             discount_amount = 0
             
@@ -150,25 +163,16 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = [
-            'id', 'transaction_code', 'order', 'amount', 'transaction_type', 'payment_method',
-            'reference_number', 'description', 'admin_notes', 'created_at',
-            'created_by', 'payments'
+            'id', 'transaction_code', 'order', 'amount', 'transaction_type',
+            'payment_method', 'reference_number', 'description', 'admin_notes',
+            'created_at', 'created_by', 'payments'
         ]
-        read_only_fields = ['created_at', 'created_by']
+        read_only_fields = ['transaction_code', 'created_at', 'created_by']
 
     def get_payments(self, obj):
-        try:
-            PaymentSerializer = globals().get('PaymentSerializer')
-            if PaymentSerializer is None:
-                class _PaymentSerializer(serializers.ModelSerializer):
-                    class Meta:
-                        model = Payment
-                        fields = ['id', 'track_id', 'ref_number', 'card_number', 'amount', 'status', 'description', 'created_at', 'updated_at']
-                PaymentSerializer = _PaymentSerializer
-            payments_qs = obj.order.payments.all() if getattr(obj, 'order', None) else []
-            return PaymentSerializer(payments_qs, many=True).data
-        except Exception:
-            return []
+        if obj.order:
+            return PaymentSerializer(obj.order.payments.all(), many=True).data
+        return []
 
 
 class TransactionCreateSerializer(serializers.ModelSerializer):
@@ -178,6 +182,14 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
             'order', 'amount', 'transaction_type', 'payment_method',
             'reference_number', 'description', 'admin_notes'
         ]
+        read_only_fields = ['transaction_code']
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        return Transaction.objects.create(
+            created_by=user,
+            **validated_data
+        )
 
 
 class UserAccessSerializer(serializers.ModelSerializer):
@@ -202,6 +214,7 @@ class PurchaseRequestSerializer(serializers.Serializer):
     )
     
     def validate_items(self, value):
+        seen_digital = set()
         for item in value:
             if 'product_id' not in item:
                 raise serializers.ValidationError("Each item must have a product_id")
@@ -209,6 +222,16 @@ class PurchaseRequestSerializer(serializers.Serializer):
                 item['quantity'] = 1
             if item['quantity'] < 1:
                 raise serializers.ValidationError("Quantity must be at least 1")
+            try:
+                prod = Product.objects.get(id=item['product_id'], is_active=True, is_deleted=False)
+                if prod.is_digital_product:
+                    if prod.id in seen_digital:
+                        raise serializers.ValidationError(f"محصول «{prod.title}» بیش از یک بار در لیست خرید قرار دارد.")
+                    seen_digital.add(prod.id)
+                    if item['quantity'] > 1:
+                        raise serializers.ValidationError(f"محصول دیجیتال «{prod.title}» فقط به تعداد ۱ عدد قابل خرید است.")
+            except Product.DoesNotExist:
+                pass
         return value
 
 
@@ -278,4 +301,3 @@ class PaymentInquiryRequestSerializer(serializers.Serializer):
         if not attrs.get('track_id') and not attrs.get('order_id'):
             raise serializers.ValidationError("باید حداقل یکی از فیلدهای track_id یا order_id ارسال شود.")
         return attrs
-

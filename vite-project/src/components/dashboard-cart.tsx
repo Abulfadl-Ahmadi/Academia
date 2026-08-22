@@ -198,22 +198,28 @@ export default function DashboardCart() {
               </div>
               
               <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  disabled={item.quantity <= 1}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                <span className="w-8 text-center">{item.quantity}</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+                {(!['course', 'test', 'file'].includes(item.product.product_type) && !item.product.is_digital_product) ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="w-8 text-center">{item.quantity}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <Badge variant="outline" className="text-xs text-muted-foreground">۱ عدد (دیجیتال)</Badge>
+                )}
               </div>
               
               <Button

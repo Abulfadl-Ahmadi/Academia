@@ -4,12 +4,16 @@ from accounts.serializers import UserSerializer
 from courses.serializers import CourseSerializer
 
 
+from .utils import user_has_product_access
+
+
 class ProductSerializer(serializers.ModelSerializer):
     creator = UserSerializer(read_only=True, required=False)
     current_price = serializers.ReadOnlyField()
     has_active_discount = serializers.ReadOnlyField()
     is_physical_product = serializers.ReadOnlyField()
     is_digital_product = serializers.ReadOnlyField()
+    has_access = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -17,10 +21,16 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'price', 'current_price',
             'product_type', 'created_at', 'updated_at', 'creator',
             'is_active', 'image', 'file', 'course', 'test',
-            'has_active_discount', 'is_physical_product', 'is_digital_product',
+            'has_active_discount', 'is_physical_product', 'is_digital_product', 'has_access',
             'weight', 'dimensions', 'stock_quantity', 'requires_shipping', 'shipping_cost'
         ]
         read_only_fields = ['creator', 'created_at', 'updated_at']
+
+    def get_has_access(self, obj):
+        request = self.context.get('request')
+        if not request:
+            return False
+        return user_has_product_access(request.user, obj)
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):

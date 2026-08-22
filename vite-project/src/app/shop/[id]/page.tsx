@@ -17,12 +17,15 @@ interface Product {
   description: string
   price: number
   current_price: number
-  product_type: 'course' | 'file' | 'test'
+  product_type: 'course' | 'file' | 'test' | 'book' | 'notebook' | 'pamphlet' | 'stationery'
   image?: string
   file?: number
   course?: number
   test?: number
   has_active_discount: boolean
+  is_physical_product?: boolean
+  is_digital_product?: boolean
+  has_access?: boolean
   created_at: string
   creator?: {
     username: string
@@ -51,7 +54,7 @@ export default function ProductDetailPage() {
     try {
       const response = await axiosInstance.get(`/shop/products/${id}/`)
       setProduct(response.data)
-    } catch (error) {
+    } catch {
       toast.error("خطا در بارگذاری محصول")
       navigate('/shop')
     } finally {
@@ -59,12 +62,35 @@ export default function ProductDetailPage() {
     }
   }
 
+  const isDigital = product 
+    ? (product.is_digital_product !== undefined 
+        ? product.is_digital_product 
+        : (product.is_physical_product !== undefined 
+            ? !product.is_physical_product 
+            : ['course', 'test', 'file'].includes(product.product_type)))
+    : false
+
   const handleAddToCart = () => {
     if (!product) return
 
-    addToCart(product, quantity)
-    
+    if (product.has_access) {
+      toast.info("شما قبلاً به این محصول دسترسی دارید و نیازی به خرید مجدد نیست.")
+      return
+    }
+
+    addToCart(product, isDigital ? 1 : quantity)
     toast.success(`${product.title} به سبد خرید اضافه شد`)
+  }
+
+  const handleAccessProduct = () => {
+    if (!product) return
+    if (product.course) {
+      navigate(`/panel/courses/${product.course}`)
+    } else if (product.test) {
+      navigate(`/panel/tests/`)
+    } else {
+      navigate('/panel')
+    }
   }
 
   const getProductIcon = (type: string) => {
@@ -270,69 +296,98 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              <Separator />
-
-              {/* Quantity */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">تعداد:</label>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              {product.has_access ? (
+                <div className="space-y-4">
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-center">
+                    <p className="text-emerald-700 dark:text-emerald-400 font-medium">
+                      ✓ شما قبلاً این محصول را تهیه کرده‌اید و دسترسی شما فعال است.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={handleAccessProduct}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                    size="lg"
                   >
-                    -
+                    مشاهده و ورود به محصول
                   </Button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <Button
-                    size="sm"
+                  <Button 
                     variant="outline"
-                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-full"
+                    onClick={() => navigate('/shop')}
                   >
-                    +
+                    بازگشت به فروشگاه
                   </Button>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Quantity - Only for physical products */}
+                  {!isDigital ? (
+                    <>
+                      <Separator />
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">تعداد:</label>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          >
+                            -
+                          </Button>
+                          <span className="w-12 text-center font-medium">{quantity}</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setQuantity(quantity + 1)}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
 
-              <Separator />
+                  <Separator />
 
-              {/* Total */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-lg">
-                  <span>مجموع:</span>
-                  <span className="font-bold">{formatPrice(product.current_price * quantity)} تومان</span>
-                </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>مالیات ({TAX_RATE * 100}%):</span>
-                  <span>{formatPrice(Math.round(product.current_price * quantity * TAX_RATE))} تومان</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-xl font-bold">
-                  <span>مبلغ نهایی:</span>
-                  <span className="text-blue-600">
-                    {formatPrice(Math.round(product.current_price * quantity * (1 + TAX_RATE)))} تومان
-                  </span>
-                </div>
-              </div>
+                  {/* Total */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-lg">
+                      <span>مجموع:</span>
+                      <span className="font-bold">{formatPrice(product.current_price * (isDigital ? 1 : quantity))} تومان</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>مالیات ({TAX_RATE * 100}%):</span>
+                      <span>{formatPrice(Math.round(product.current_price * (isDigital ? 1 : quantity) * TAX_RATE))} تومان</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between text-xl font-bold">
+                      <span>مبلغ نهایی:</span>
+                      <span className="text-blue-600">
+                        {formatPrice(Math.round(product.current_price * (isDigital ? 1 : quantity) * (1 + TAX_RATE)))} تومان
+                      </span>
+                    </div>
+                  </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Button 
-                  onClick={handleAddToCart}
-                  className="w-full"
-                  size="lg"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  افزودن به سبد خرید
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => navigate('/shop')}
-                >
-                  ادامه خرید
-                </Button>
-              </div>
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={handleAddToCart}
+                      className="w-full"
+                      size="lg"
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      افزودن به سبد خرید
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => navigate('/shop')}
+                    >
+                      ادامه خرید
+                    </Button>
+                  </div>
+                </>
+              )}
 
               {/* Guarantee */}
               <div className="text-center text-sm text-muted-foreground bg-green-500/7 p-3 rounded-lg">
