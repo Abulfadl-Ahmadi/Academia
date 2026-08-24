@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AxiosError } from "axios";
-import { 
-  FileText, 
-  Clock, 
+import {
+  FileText,
+  Clock,
   Calendar,
   AlertTriangle,
   PlayCircle,
@@ -21,6 +21,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 import {
   Dialog,
   DialogContent,
@@ -31,9 +32,9 @@ import {
 } from "@/components/ui/dialog";
 
 async function getDeviceId() {
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    return result.visitorId;
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+  return result.visitorId;
 }
 
 interface Test {
@@ -64,6 +65,7 @@ interface Test {
 export default function TestDetailPage() {
   const { testId } = useParams();
   const navigate = useNavigate();
+  const { user } = useUser();
   const [test, setTest] = useState<Test | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
@@ -78,17 +80,18 @@ export default function TestDetailPage() {
     } catch (err) {
       console.error("Error fetching test:", err);
       const error = err as AxiosError;
-      
+
       // Handle 401 Unauthorized specifically
       if (error.response?.status === 401) {
-        toast.error("🔐 احراز هویت شما منقضی شده است. لطفاً دوباره وارد حساب کاربری خود شوید تا بتوانید به آزمون دسترسی داشته باشید.", {
-          duration: 6000
+        toast.error("🔐 شما وارد حساب کاربری خود نشده‌اید. در حال انتقال به صفحه ورود...", {
+          duration: 3000
         });
-        // Optionally redirect to login page
-        // navigate('/login');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
         return;
       }
-      
+
       // Handle 403 Forbidden
       if (error.response?.status === 403) {
         toast.error("⏰ هنوز آزمون شروع نشده است! لطفاً تا زمان شروع آزمون صبر کنید.", {
@@ -97,7 +100,7 @@ export default function TestDetailPage() {
         navigate(-1);
         return;
       }
-      
+
       // Handle 404 Not Found
       if (error.response?.status === 404) {
         toast.error("🔍 آزمون مورد نظر یافت نشد. ممکن است حذف شده یا لینک اشتباه باشد. لطفاً لینک را بررسی کنید.", {
@@ -106,7 +109,7 @@ export default function TestDetailPage() {
         navigate(-1);
         return;
       }
-      
+
       // Handle network/connection errors
       if (!error.response) {
         toast.error("🌐 مشکلی در اتصال به سرور وجود دارد. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.", {
@@ -114,7 +117,7 @@ export default function TestDetailPage() {
         });
         return;
       }
-      
+
       // Generic error fallback
       toast.error("😔 متأسفیم! نتوانستیم اطلاعات آزمون را دریافت کنیم. لطفاً اتصال اینترنت خود را بررسی کرده و صفحه را تازه‌سازی کنید.", {
         duration: 5000
@@ -133,7 +136,18 @@ export default function TestDetailPage() {
 
   const handleStartTest = async () => {
     if (!test) return;
-    
+
+    if (!user) {
+      setConfirmDialogOpen(false);
+      toast.error("🔐 شما وارد حساب کاربری خود نشده‌اید. در حال انتقال به صفحه ورود...", {
+        duration: 3000,
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+      return;
+    }
+
     try {
       setStarting(true);
       const res = await axiosInstance.post(`/enter-test/`, {
@@ -151,18 +165,16 @@ export default function TestDetailPage() {
       navigate(`/tests/${test.id}/detail`, { state: { session: res.data } });
     } catch (err) {
       console.error("Error starting session:", err);
-      const error = err as AxiosError<{error?: string, detail?: string, message?: string, redirect_to?: string}>;
-      
+      const error = err as AxiosError<{ error?: string, detail?: string, message?: string, redirect_to?: string }>;
+
       // Handle 401 Unauthorized
       if (error.response?.status === 401) {
         toast.error("🔐 جلسه شما منقضی شده است. لطفاً دوباره وارد سیستم شوید تا بتوانید آزمون را شروع کنید.", {
           duration: 6000
         });
-        // Optionally redirect to login
-        // navigate('/login');
         return;
       }
-      
+
       // Handle 403 Forbidden
       if (error.response?.status === 403) {
         toast.error("🚫 متأسفانه شما مجوز شرکت در این آزمون را ندارید. لطفاً با مدرس خود تماس بگیرید.", {
@@ -170,7 +182,7 @@ export default function TestDetailPage() {
         });
         return;
       }
-      
+
       // Handle completed test case specifically
       if (error.response?.data?.error === "completed" && error.response?.data?.redirect_to) {
         toast.success("🎉 عالی! شما این آزمون را قبلاً با موفقیت تکمیل کرده‌اید. اکنون شما را به صفحه نتایج هدایت می‌کنیم تا بتوانید نمره و جزئیات عملکردتان را مشاهده کنید.", {
@@ -179,10 +191,10 @@ export default function TestDetailPage() {
         navigate(error.response.data.redirect_to);
         return;
       }
-      
+
       // Handle specific error cases with user-friendly messages
       const errorData = error.response?.data;
-      
+
       if (errorData?.error === "test_not_started") {
         toast.error("⏰ آزمون هنوز شروع نشده است! لطفاً تا زمان شروع آزمون صبر کنید.", {
           duration: 4000
@@ -265,8 +277,8 @@ export default function TestDetailPage() {
     <div className="max-w-4xl mx-auto space-y-6 p-6 mt-20">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
         >
@@ -299,9 +311,9 @@ export default function TestDetailPage() {
                   <p className="mt-1 text-sm">{test.description}</p>
                 </div>
               )}
-              
+
               <Separator />
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-blue-500" />
@@ -325,7 +337,7 @@ export default function TestDetailPage() {
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">مجموعه آزمون</h3>
                 <div className="flex items-center gap-2 mb-2">
                   <BookOpen className="h-4 w-4 text-green-500" />
-                  <Link 
+                  <Link
                     to={`/test-collections/${test.collection.id}`}
                     className="text-sm font-medium hover:underline"
                   >
@@ -363,14 +375,14 @@ export default function TestDetailPage() {
                     تاریخ ایجاد: {new Date(test.created_at).toLocaleDateString('fa-IR')}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-sm text-green-700">
                   <PlayCircle className="h-4 w-4" />
                   <span>
                     زمان شروع: {new Date(test.start_time).toLocaleDateString('fa-IR')} - {new Date(test.start_time).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-sm text-red-700">
                   <CheckCircle className="h-4 w-4" />
                   <span>
@@ -399,7 +411,7 @@ export default function TestDetailPage() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-row items-start gap-3">
                 <AlertTriangle className="flex-none h-5 w-5 text-red-500 mt-0.5" />
                 <div className="grow ">
@@ -409,7 +421,7 @@ export default function TestDetailPage() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-row items-start gap-3">
                 <Shield className="flex-none h-5 w-5 text-red-500 mt-0.5" />
                 <div className="grow">
@@ -419,7 +431,7 @@ export default function TestDetailPage() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-row items-start gap-3">
                 <FileText className="flex-none h-5 w-5 text-blue-500 mt-0.5" />
                 <div className="grow">
@@ -429,7 +441,7 @@ export default function TestDetailPage() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-row items-start gap-3">
                 <CheckCircle className="flex-none h-5 w-5 text-green-500 mt-0.5" />
                 <div className="grow">
@@ -484,12 +496,21 @@ export default function TestDetailPage() {
                       با کلیک روی دکمه زیر، زمان آزمون شروع خواهد شد
                     </p>
                   </div>
-                  
-                  <Button 
-                    className="w-full" 
-                    size="lg" 
+
+                  <Button
+                    className="w-full"
+                    size="lg"
                     disabled={starting}
                     onClick={() => {
+                      if (!user) {
+                        toast.error("🔐 شما وارد حساب کاربری خود نشده‌اید. در حال انتقال به صفحه ورود...", {
+                          duration: 3000,
+                        });
+                        setTimeout(() => {
+                          navigate("/login");
+                        }, 2000);
+                        return;
+                      }
                       setConfirmDialogOpen(true);
                       toast.info("💡 لطفاً قبل از شروع آزمون، قوانین و دستورالعمل‌ها را با دقت مطالعه کنید و مطمئن شوید که شرایط مناسبی برای آزمون دارید.", {
                         duration: 4000
@@ -508,7 +529,7 @@ export default function TestDetailPage() {
                       </>
                     )}
                   </Button>
-                  
+
                   {/* Confirmation Dialog */}
                   <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
                     <DialogContent>
