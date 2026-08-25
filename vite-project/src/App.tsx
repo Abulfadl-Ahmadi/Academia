@@ -89,7 +89,6 @@ function App() {
   }
   return (
     <div className={showMobileNav ? "pb-20 md:pb-0" : ""}>
-          <UserProvider>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -238,7 +237,6 @@ function App() {
       </Suspense>
       <Toaster />
       {showMobileNav ? <MobileBottomNav /> : null}
-              </UserProvider>
     </div>
   );
 }

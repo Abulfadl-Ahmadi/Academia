@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { Loader2 } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 interface ProfileGuardProps {
   children: React.ReactNode;
@@ -22,12 +23,29 @@ export default function ProfileGuard({
   children, 
   requireProfile = false 
 }: ProfileGuardProps) {
+  const { user, loading: userLoading } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [profileStatus, setProfileStatus] = useState<ProfileStatus | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkProfileStatus = async () => {
+      // Don't do anything while user context is loading
+      if (userLoading) return;
+
+      // If user is not authenticated, don't query /accounts/profile/complete/
+      if (!user) {
+        setIsLoading(false);
+        if (requireProfile) {
+          navigate("/login", { 
+            state: { 
+              returnUrl: window.location.pathname 
+            } 
+          });
+        }
+        return;
+      }
+
       try {
         const response = await axiosInstance.get("/accounts/profile/complete/");
         const status = response.data;
@@ -63,7 +81,7 @@ export default function ProfileGuard({
     };
 
     checkProfileStatus();
-  }, [navigate, requireProfile]);
+  }, [navigate, requireProfile, user, userLoading]);
 
   if (isLoading) {
     return (
