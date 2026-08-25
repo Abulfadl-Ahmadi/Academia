@@ -1,18 +1,24 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, GraduationCap, ClipboardList, Bot, User } from "lucide-react";
+import { Home, GraduationCap, ClipboardList, Bot, User, CreditCard } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { label: "خانه", path: "/panel", icon: Home, exact: true },
-  { label: "کلاس‌ها", path: "/panel/courses", icon: GraduationCap },
-  { label: "آزمون‌ها", path: "/panel/test-collections", icon: ClipboardList },
-  { label: "AI", path: "/panel/support/ask-ai", icon: Bot },
-  { label: "پروفایل", path: "/panel/profile", icon: User },
-];
+import { useUser } from "@/context/UserContext";
 
 export function MobileBottomNav() {
   const location = useLocation();
+  const { user } = useUser();
+
+  const isFinancialUser = user?.role === "admin" || user?.role === "finance";
+
+  const navItems = [
+    { label: "خانه", path: "/panel", icon: Home, exact: true },
+    { label: "کلاس‌ها", path: "/panel/courses", icon: GraduationCap },
+    { label: "آزمون‌ها", path: "/panel/test-collections", icon: ClipboardList },
+    isFinancialUser
+      ? { label: "مالی", path: "/panel/transactions", icon: CreditCard }
+      : { label: "AI", path: "/panel/support/ask-ai", icon: Bot },
+    { label: "پروفایل", path: "/panel/profile", icon: User },
+  ];
 
   // عدم نمایش نوبار موبایل در صفحات چت با هوش مصنوعی
   if (location.pathname.startsWith("/panel/support/ask-ai/")) {
