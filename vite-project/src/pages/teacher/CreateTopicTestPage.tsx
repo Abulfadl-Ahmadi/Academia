@@ -444,9 +444,23 @@ export default function CreateTopicTestPage() {
                   max="100"
                   value={questionCount}
                   onChange={(e) => {
-                    const count = parseInt(e.target.value) || 60;
-                    setQuestionCount(count);
-                    setAnswerKeys(Array(count).fill(''));
+                    const val = e.target.value;
+                    if (val === '') {
+                      setQuestionCount('' as any);
+                      setAnswerKeys([]);
+                      return;
+                    }
+                    const count = parseInt(val, 10);
+                    if (Number.isNaN(count)) return;
+                    const safeCount = Math.min(Math.max(count, 1), 200);
+                    setQuestionCount(safeCount);
+                    setAnswerKeys(Array(safeCount).fill(''));
+                  }}
+                  onBlur={() => {
+                    if (!questionCount || Number(questionCount) < 1) {
+                      setQuestionCount(60);
+                      setAnswerKeys(Array(60).fill(''));
+                    }
                   }}
                   placeholder="60"
                 />

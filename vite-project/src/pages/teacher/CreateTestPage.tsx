@@ -134,7 +134,7 @@ const AnswerKeyGrid = ({
 }: {
   answers: string[];
   onAnswerChange: (index: number, value: string) => void;
-  questionCount: number;
+  questionCount: number | "";
 }) => {
   const { state } = useSidebar();
 
@@ -144,7 +144,7 @@ const AnswerKeyGrid = ({
         const questionIndex = startIndex + i;
         const questionNumber = questionIndex + 1;
 
-        if (questionNumber > questionCount) return null;
+        if (questionNumber > (Number(questionCount) || 0)) return null;
 
         return (
           <div key={questionIndex} className="flex items-center gap-2">
@@ -181,7 +181,7 @@ const AnswerKeyGrid = ({
     ? "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7"
     : "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
 
-  const columnsNeeded = Math.ceil(questionCount / 10);
+  const columnsNeeded = Math.ceil((Number(questionCount) || 0) / 10);
 
   return (
     <div className={`${gridClasses} gap-3 p-3 sm:p-4 lg:gap-5 xl:gap-6 2xl:gap-7 bg-muted/30 rounded-lg`}>
@@ -254,7 +254,7 @@ export default function CreateTestPage({ mode = "create", collectionId }: Create
   const [uploadingPdfFile, setUploadingPdfFile] = useState(false);
   const [uploadingAnswersFile, setUploadingAnswersFile] = useState(false);
 
-  const [questionCount, setQuestionCount] = useState(60);
+  const [questionCount, setQuestionCount] = useState<number | "">(60);
   const [answerKeys, setAnswerKeys] = useState<string[]>(() => Array(60).fill(""));
 
   const [availableQuestions, setAvailableQuestions] = useState<Question[]>([]);
@@ -560,8 +560,16 @@ export default function CreateTestPage({ mode = "create", collectionId }: Create
   };
 
   const handleQuestionCountChange = (value: string) => {
+    if (value === "") {
+      setQuestionCount("");
+      return;
+    }
     const parsed = parseInt(value, 10);
-    const safeValue = Number.isNaN(parsed) ? 1 : Math.min(Math.max(parsed, 1), 200);
+    if (Number.isNaN(parsed)) {
+      setQuestionCount("");
+      return;
+    }
+    const safeValue = Math.min(Math.max(parsed, 1), 200);
     setQuestionCount(safeValue);
     setAnswerKeys((prev) => {
       const next = Array(safeValue).fill("");
@@ -676,7 +684,7 @@ export default function CreateTestPage({ mode = "create", collectionId }: Create
       return;
     }
 
-    if (contentType === "pdf" && questionCount <= 0) {
+    if (contentType === "pdf" && (!questionCount || Number(questionCount) <= 0)) {
       toast.error("تعداد سوالات باید حداقل 1 باشد");
       return;
     }
@@ -1154,12 +1162,17 @@ export default function CreateTestPage({ mode = "create", collectionId }: Create
                       max={200}
                       value={questionCount}
                       onChange={(event) => handleQuestionCountChange(event.target.value)}
+                      onBlur={() => {
+                        if (questionCount === "" || Number(questionCount) < 1) {
+                          handleQuestionCountChange("1");
+                        }
+                      }}
                     />
                   </div>
                 </div>
                 <Accordion type="single" collapsible>
                   <AccordionItem value="keys">
-                    <AccordionTrigger>تنظیم پاسخ‌ها ({questionCount} سوال)</AccordionTrigger>
+                    <AccordionTrigger>تنظیم پاسخ‌ها ({questionCount || 0} سوال)</AccordionTrigger>
                     <AccordionContent>
                       <AnswerKeyGrid
                         answers={answerKeys}
