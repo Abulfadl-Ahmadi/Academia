@@ -1106,7 +1106,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
     def available_students(self, request):
         """لیست دانش‌آموزان برای انتخاب در فرم مجموعه آزمون"""
         user = request.user
-        if user.role not in ['admin', 'teacher'] and not user.is_staff:
+        if user.role not in ['admin', 'teacher', 'content_creator'] and not user.is_staff:
             return Response({'error': 'دسترسی غیرمجاز'}, status=status.HTTP_403_FORBIDDEN)
 
         students_qs = User.objects.filter(role='student', is_active=True).order_by('first_name', 'last_name', 'username')
@@ -1138,8 +1138,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         user = request.user
         test_collection = self.get_object()
         
-        # Check permission - only teachers who created it or admins
-        if (user.role not in ['student', 'admin'] and 
+        # Check permission - teachers who created it, content creators, or admins/staff
+        if (user.role not in ['student', 'admin', 'content_creator'] and 
             test_collection.created_by != user and 
             not user.is_staff):
             return Response(
@@ -1955,15 +1955,15 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         serializer.save()
     
     def perform_update(self, serializer):
-        # Ensure only the creator or admin can update
-        if (self.request.user.role != 'admin' and 
+        # Ensure creator, content_creator, or admin can update
+        if (self.request.user.role not in ['admin', 'content_creator'] and 
             serializer.instance.created_by != self.request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را ویرایش کند")
         serializer.save()
     
     def perform_destroy(self, instance):
-        # Ensure only the creator or admin can delete
-        if (self.request.user.role != 'admin' and 
+        # Ensure creator, content_creator, or admin can delete
+        if (self.request.user.role not in ['admin', 'content_creator'] and 
             instance.created_by != self.request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را حذف کند")
         instance.delete()
@@ -1974,7 +1974,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         collection = self.get_object()
         
         # Check permissions
-        if (request.user.role != 'admin' and 
+        if (request.user.role not in ['admin', 'content_creator'] and 
             collection.created_by != request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال اضافه کند")
         
@@ -2007,7 +2007,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         collection = self.get_object()
         
         # Check permissions
-        if (request.user.role != 'admin' and 
+        if (request.user.role not in ['admin', 'content_creator'] and 
             collection.created_by != request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال حذف کند")
         

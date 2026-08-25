@@ -34,7 +34,7 @@ export default function TestCollectionList() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useUser();
 
-  const isTeacherOrAdmin = user?.role === "teacher" || user?.role === "admin";
+  const isTeacherOrAdmin = ["teacher", "admin", "content_creator"].includes(user?.role || "");
 
   useEffect(() => {
     fetchCollections();

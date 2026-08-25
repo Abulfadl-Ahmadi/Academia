@@ -302,10 +302,12 @@ class CompleteRegistrationView(APIView):
                 "redirect_to_panel": True
             }, status=status.HTTP_201_CREATED)
             
+            SEVEN_DAYS = 7 * 24 * 60 * 60
             # Set tokens in HttpOnly cookies
             response.set_cookie(
                 key="access",
                 value=str(refresh.access_token),
+                max_age=SEVEN_DAYS,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -314,6 +316,7 @@ class CompleteRegistrationView(APIView):
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
+                max_age=SEVEN_DAYS,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -367,6 +370,7 @@ class RegisterView(APIView):
             response.set_cookie(
                 key="access",
                 value=str(refresh.access_token),
+                max_age=SEVEN_DAYS,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -375,6 +379,7 @@ class RegisterView(APIView):
             response.set_cookie(
                 key="refresh",
                 value=str(refresh),
+                max_age=SEVEN_DAYS,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -490,12 +495,15 @@ class LoginView(APIView):
             from django.conf import settings
             is_production = not settings.DEBUG
             
+            SEVEN_DAYS = 7 * 24 * 60 * 60  # 7 days in seconds
+
             # Set tokens in HttpOnly cookies
             if is_production:
                 # Production settings
                 response.set_cookie(
                     key="access",
                     value=str(refresh.access_token),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=True,
                     samesite="None",
@@ -504,6 +512,7 @@ class LoginView(APIView):
                 response.set_cookie(
                     key="refresh",
                     value=str(refresh),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=True,
                     samesite="None",
@@ -514,6 +523,7 @@ class LoginView(APIView):
                 response.set_cookie(
                     key="access",
                     value=str(refresh.access_token),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=False,
                     samesite="Lax"
@@ -521,6 +531,7 @@ class LoginView(APIView):
                 response.set_cookie(
                     key="refresh",
                     value=str(refresh),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=False,
                     samesite="Lax"
@@ -546,12 +557,14 @@ class RefreshTokenView(APIView):
             # Set cookie parameters based on environment
             from django.conf import settings
             is_production = not settings.DEBUG
+            SEVEN_DAYS = 7 * 24 * 60 * 60
             
             if is_production:
                 # Production settings
                 response.set_cookie(
                     key="access",
                     value=str(access),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=True,
                     samesite="None",
@@ -562,6 +575,7 @@ class RefreshTokenView(APIView):
                 response.set_cookie(
                     key="access",
                     value=str(access),
+                    max_age=SEVEN_DAYS,
                     httponly=True,
                     secure=False,
                     samesite="Lax"

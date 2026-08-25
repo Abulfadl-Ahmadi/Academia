@@ -85,7 +85,7 @@ export default function TestCollectionDetail() {
   const [collection, setCollection] = useState<TestCollection | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isTeacherOrAdmin = user?.role === "teacher" || user?.role === "admin";
+  const isTeacherOrAdmin = ["teacher", "admin", "content_creator"].includes(user?.role || "");
 
   const handleViewResult = (testId: number) => {
     navigate(`/panel/tests/result/${testId}`);
