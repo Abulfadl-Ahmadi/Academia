@@ -24,6 +24,8 @@ interface Answer {
 
 interface Score {
   correct: number;
+  wrong?: number;
+  unanswered?: number;
   total: number;
   percentage: number;
 }
@@ -186,14 +188,20 @@ const TestResult = () => {
               <p className="text-center font-bold text-xl mb-3">
                 {session.score.percentage.toFixed(2)}%
               </p>
-              <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+              <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
                 <div className="p-2 bg-green-500/10 rounded text-center">
                   <p className="text-green-600 font-bold">{session.score.correct}</p>
                   <p className="text-xs">پاسخ صحیح</p>
                 </div>
                 <div className="p-2 bg-red-500/10 rounded text-center">
-                  <p className="text-red-600 font-bold">{session.score.total - session.score.correct}</p>
+                  <p className="text-red-600 font-bold">{session.score.wrong ?? 0}</p>
                   <p className="text-xs">پاسخ غلط</p>
+                </div>
+                <div className="p-2 bg-slate-500/10 rounded text-center">
+                  <p className="text-slate-600 font-bold">
+                    {session.score.unanswered ?? (session.score.total - (session.score.correct + (session.score.wrong ?? 0)))}
+                  </p>
+                  <p className="text-xs">بدون پاسخ</p>
                 </div>
               </div>
               {/* <p className="text-center">

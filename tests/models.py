@@ -410,26 +410,48 @@ class Test(models.Model):
         # پیش‌فرض: 60 سوال
         return 60
 
+    def calculate_session_score(self, session):
+        """محاسبه درصد کنکوری یک جلسه آزمون"""
+        answers = session.answers.all()
+        answer_map = {a.question_number: a for a in answers}
+        correct_answers = 0
+        wrong_answers = 0
+
+        if self.content_type == TestContentType.TYPED_QUESTION:
+            questions = sorted(self.questions.all(), key=lambda q: q.id)
+            total_questions = len(questions)
+            for idx, question in enumerate(questions, 1):
+                answer = answer_map.get(idx)
+                if answer and answer.answer is not None:
+                    is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
+                    if is_correct:
+                        correct_answers += 1
+                    else:
+                        wrong_answers += 1
+        else:
+            total_questions = self.primary_keys.count()
+            for q_num in range(1, total_questions + 1):
+                answer = answer_map.get(q_num)
+                try:
+                    correct_key = self.primary_keys.get(question_number=q_num)
+                    if answer and answer.answer is not None:
+                        if answer.answer == correct_key.answer:
+                            correct_answers += 1
+                        else:
+                            wrong_answers += 1
+                except:
+                    pass
+
+        if total_questions > 0:
+            return ((3 * correct_answers - wrong_answers) / (3 * total_questions)) * 100
+        return 0
+
     def get_average_score(self):
         """میانگین نمرات آزمون"""
-        from django.db.models import Avg
         sessions = self.studenttestsession_set.filter(status='completed')
         if sessions.exists():
-            # محاسبه نمره بر اساس تعداد پاسخ‌های صحیح
-            total_score = 0
-            count = 0
-            for session in sessions:
-                correct_answers = 0
-                total_questions = self.primary_keys.count()
-                for answer in session.answers.all():
-                    primary_key = self.primary_keys.filter(question_number=answer.question_number).first()
-                    if primary_key and primary_key.answer == answer.answer:
-                        correct_answers += 1
-                if total_questions > 0:
-                    score = (correct_answers / total_questions) * 100
-                    total_score += score
-                    count += 1
-            return total_score / count if count > 0 else 0
+            total_score = sum(self.calculate_session_score(session) for session in sessions)
+            return total_score / sessions.count()
         return 0
 
     def get_top_students(self, limit=10):
@@ -438,22 +460,13 @@ class Test(models.Model):
         student_scores = []
         
         for session in sessions:
-            correct_answers = 0
-            total_questions = self.primary_keys.count()
-            for answer in session.answers.all():
-                primary_key = self.primary_keys.filter(question_number=answer.question_number).first()
-                if primary_key and primary_key.answer == answer.answer:
-                    correct_answers += 1
-            
-            if total_questions > 0:
-                score = (correct_answers / total_questions) * 100
-                student_scores.append({
-                    'student': session.user,
-                    'score': score,
-                    'session': session
-                })
+            score = self.calculate_session_score(session)
+            student_scores.append({
+                'student': session.user,
+                'score': score,
+                'session': session
+            })
         
-        # مرتب‌سازی بر اساس نمره
         student_scores.sort(key=lambda x: x['score'], reverse=True)
         return student_scores[:limit]
 

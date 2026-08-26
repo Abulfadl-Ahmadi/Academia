@@ -58,38 +58,49 @@ class TestStatisticsAPIView(APIView):
                 questions = test.questions.all()
                 total_questions = questions.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                     answer = answer_map.get(idx)
-                    if answer and answer.answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
+                        else:
+                            wrong_answers += 1
             else:
                 # For PDF tests
                 total_questions = test.primary_keys.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for q_num in range(1, total_questions + 1):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer and answer.answer == correct_key.answer:
-                            correct_answers += 1
+                        if answer and answer.answer is not None:
+                            if answer.answer == correct_key.answer:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
                     except:
                         pass
             
             # محاسبه درصد
-            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
-            percent = max(0, percent/3)  # حداقل صفر
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            percent = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             total_percent += percent
             
             students.append({
                 "id": s.user.id,
                 "name": s.user.get_full_name() or s.user.username,
                 "percent": round(percent, 2),
+                "correct": correct_answers,
+                "wrong": wrong_answers,
+                "unanswered": unanswered_questions,
+                "total": total_questions,
                 "join_time": s.entry_time,
             })
 
@@ -128,37 +139,45 @@ class TestStatisticsExcelAPIView(APIView):
                 questions = test.questions.all()
                 total_questions = questions.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                     answer = answer_map.get(idx)
-                    if answer and answer.answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
+                        else:
+                            wrong_answers += 1
             else:
                 total_questions = test.primary_keys.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for q_num in range(1, total_questions + 1):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer and answer.answer == correct_key.answer:
-                            correct_answers += 1
+                        if answer and answer.answer is not None:
+                            if answer.answer == correct_key.answer:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
                     except:
                         pass
             
-            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
-            percent = max(0, percent/3)
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            percent = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             
             students_data.append({
                 "name": s.user.get_full_name() or s.user.username,
                 "username": s.user.username,
                 "email": s.user.email,
                 "correct": correct_answers,
-                "wrong": answers.count() - correct_answers,
+                "wrong": wrong_answers,
+                "unanswered": unanswered_questions,
                 "total": total_questions,
                 "percent": round(percent, 2),
                 "join_time": s.entry_time.strftime('%Y-%m-%d %H:%M'),
@@ -264,7 +283,7 @@ class StudentTestResultAPIView(APIView):
                     except Option.DoesNotExist:
                         student_answer_order = None
                 
-                if answer:
+                if answer and answer.answer is not None:
                     is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                     if is_correct:
                         correct_answers += 1
@@ -295,7 +314,7 @@ class StudentTestResultAPIView(APIView):
                 answer = answer_map.get(q_num)
                 try:
                     correct_key = test.primary_keys.get(question_number=q_num)
-                    if answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == correct_key.answer
                         if is_correct:
                             correct_answers += 1
@@ -322,17 +341,18 @@ class StudentTestResultAPIView(APIView):
                     })
 
         # Calculate score percentage
-        score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-        score_percentage = score_percentage/3
+        unanswered_questions = total_questions - (correct_answers + wrong_answers)
+        score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
         
         data = {
             "id": session.id,
             "student_name": session.user.get_full_name() or session.user.username,
             "test_name": test.name,
             "total_questions": total_questions,
-            "answered_questions": answers.exclude(answer__isnull=True).count(),
+            "answered_questions": correct_answers + wrong_answers,
             "correct_answers": correct_answers,
             "wrong_answers": wrong_answers,
+            "unanswered_questions": unanswered_questions,
             "percent": round(score_percentage, 2),
             "entry_time": session.entry_time,
             "exit_time": session.exit_time,
@@ -924,7 +944,7 @@ class CreateReport(views.APIView):
                         except Option.DoesNotExist:
                             student_answer_order = None
                     
-                    if answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
@@ -980,7 +1000,7 @@ class CreateReport(views.APIView):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer:
+                        if answer and answer.answer is not None:
                             is_correct = answer.answer == correct_key.answer
                             if is_correct:
                                 correct_answers += 1
@@ -1007,8 +1027,8 @@ class CreateReport(views.APIView):
                         })
 
             # Calculate score percentage
-            score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-            score_percentage = score_percentage/3
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             session_data = {
                 "user": {
                     "id": session.user.id,
@@ -1024,6 +1044,7 @@ class CreateReport(views.APIView):
                 "score": {
                     "correct": correct_answers,
                     "wrong": wrong_answers,
+                    "unanswered": unanswered_questions,
                     "total": total_questions,
                     "percentage": score_percentage
                 },
@@ -1300,7 +1321,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                     answer_map = {a.question_number: a for a in answers}
                     for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                         answer = answer_map.get(idx)
-                        if answer and answer.answer:
+                        if answer and answer.answer is not None:
                             is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                             if is_correct:
                                 correct_answers += 1
@@ -1314,7 +1335,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                         answer = answer_map.get(q_num)
                         try:
                             correct_key = test.primary_keys.get(question_number=q_num)
-                            if answer:
+                            if answer and answer.answer is not None:
                                 is_correct = answer.answer == correct_key.answer
                                 if is_correct:
                                     correct_answers += 1
@@ -1324,8 +1345,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                             continue
                 
                 # محاسبه درصد نمره
-                score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-                score_percentage = max(0, score_percentage/3)  # حداقل صفر
+                unanswered_questions = total_questions - (correct_answers + wrong_answers)
+                score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
                 
                 results.append({
                     'test_name': test.name,
@@ -1335,7 +1356,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                     'date': session.exit_time.strftime('%Y-%m-%d') if session.exit_time else session.entry_time.strftime('%Y-%m-%d'),
                     'total_questions': total_questions,
                     'correct_answers': correct_answers,
-                    'wrong_answers': wrong_answers
+                    'wrong_answers': wrong_answers,
+                    'unanswered_questions': unanswered_questions
                 })
             else:
                 # اگر آزمون داده نشده، نمره صفر

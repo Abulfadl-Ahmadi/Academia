@@ -335,32 +335,37 @@ const TestReport = () => {
                           </DialogHeader>
                           <div className="space-y-4">
                             {selectedSession?.answers && selectedSession.answers.length > 0 ? (
-                              selectedSession.answers.map((answer) => (
-                                <Card key={answer.question_number} className={answer.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-lg flex items-center justify-between">
-                                      <span>سوال {answer.question_number}</span>
-                                      <Badge variant={answer.is_correct ? 'default' : 'destructive'}>
-                                        {answer.is_correct ? 'صحیح' : 'غلط'}
-                                      </Badge>
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="space-y-2">
-                                      <div>
-                                        <span className="font-medium">پاسخ دانش‌آموز: </span>
-                                        <span className={answer.is_correct ? 'text-green-700' : 'text-red-700'}>
-                                          {answer.student_answer ? `گزینه ${answer.student_answer}` : 'بدون پاسخ'}
-                                        </span>
+                              selectedSession.answers.map((answer) => {
+                                const studentAns = answer.student_answer ?? answer.answer;
+                                const isUnanswered = studentAns === null || studentAns === undefined;
+                                
+                                return (
+                                  <Card key={answer.question_number} className={answer.is_correct ? 'border-green-200 bg-green-50' : isUnanswered ? 'border-slate-200 bg-slate-50' : 'border-red-200 bg-red-50'}>
+                                    <CardHeader className="pb-3">
+                                      <CardTitle className="text-lg flex items-center justify-between">
+                                        <span>سوال {answer.question_number}</span>
+                                        <Badge variant={answer.is_correct ? 'default' : isUnanswered ? 'outline' : 'destructive'}>
+                                          {answer.is_correct ? 'صحیح' : isUnanswered ? 'بدون پاسخ' : 'غلط'}
+                                        </Badge>
+                                      </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                      <div className="space-y-2">
+                                        <div>
+                                          <span className="font-medium">پاسخ دانش‌آموز: </span>
+                                          <span className={answer.is_correct ? 'text-green-700' : isUnanswered ? 'text-slate-600' : 'text-red-700'}>
+                                            {studentAns ? `گزینه ${studentAns}` : 'بدون پاسخ'}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">پاسخ صحیح: </span>
+                                          <span className="text-blue-700">گزینه {answer.correct_answer}</span>
+                                        </div>
                                       </div>
-                                      <div>
-                                        <span className="font-medium">پاسخ صحیح: </span>
-                                        <span className="text-blue-700">گزینه {answer.correct_answer}</span>
-                                      </div>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              ))
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })
                             ) : (
                               <p className="text-center text-muted-foreground">هیچ پاسخی ثبت نشده است.</p>
                             )}
