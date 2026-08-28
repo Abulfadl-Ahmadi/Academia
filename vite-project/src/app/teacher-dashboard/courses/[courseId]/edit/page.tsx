@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { BookOpen, Plus, X, Save, ArrowRight, Trash2 } from "lucide-react";
+import CourseStudentSelector from "@/components/courses/CourseStudentSelector";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ interface CourseData {
   is_active: boolean;
   spotplayer_course_id: string;
   schedules: CourseSchedule[];
+  students: number[];
 }
 
 const DAYS = [
@@ -62,6 +64,7 @@ export default function EditCoursePage() {
     is_active: true,
     spotplayer_course_id: "",
     schedules: [],
+    students: [],
   });
 
   useEffect(() => {
@@ -77,6 +80,12 @@ export default function EditCoursePage() {
         );
         const schedules = schedulesResponse.data;
 
+        const studentIds = Array.isArray(course.student_ids)
+          ? course.student_ids
+          : Array.isArray(course.students)
+            ? course.students.map((s: { id: number } | number) => typeof s === "object" ? s.id : s)
+            : [];
+
         setCourseData({
           title: course.title,
           description: course.description || "",
@@ -87,6 +96,7 @@ export default function EditCoursePage() {
             day: schedule.day,
             time: schedule.time,
           })),
+          students: studentIds,
         });
       } catch (error) {
         console.error("Error fetching course data:", error);
@@ -169,6 +179,7 @@ export default function EditCoursePage() {
         description: courseData.description.trim(),
         is_active: courseData.is_active,
         spotplayer_course_id: courseData.spotplayer_course_id.trim() || null,
+        students: courseData.students,
       });
 
       // Update schedules
@@ -355,8 +366,18 @@ export default function EditCoursePage() {
               </table>
             </div>
 
+            {/* Specific Students Selection */}
+            <div className="pt-2">
+              <CourseStudentSelector
+                selectedStudentIds={courseData.students}
+                onChange={(ids) => handleInputChange("students", ids)}
+                title="انتخاب دانش‌آموزان دارای دسترسی اختصاصی"
+                description="مشابه پنل ادمین، می‌توانید دانش‌آموزان مشخصی را برای دسترسی دستی به این دوره انتخاب کنید."
+              />
+            </div>
+
             {/* Submit Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-4">
               <Button type="submit" disabled={loading}>
                 <Save className="ml-2 h-4 w-4" />
                 ذخیره تغییرات
