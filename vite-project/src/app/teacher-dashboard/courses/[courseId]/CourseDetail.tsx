@@ -35,11 +35,17 @@ import {
   CheckCircle,
   MessageCircle,
   RefreshCw,
-  KeyRound
+  KeyRound,
+  Search,
+  Phone,
+  Mail,
+  UserCheck,
+  GraduationCap
 } from "lucide-react";
 import AddSessionModal from "./AddSessionModal";
 import EditSessionModal from "./EditSessionModal";
 import TeacherLiveChat from "./TeacherLiveChat";
+import CourseStudentSelector from "@/components/courses/CourseStudentSelector";
 
 interface Course {
   id: number;
@@ -84,6 +90,12 @@ interface TestCollection {
 interface Student {
   id: number;
   username: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone_number?: string;
+  school?: string;
+  grade?: string;
 }
 
 interface CourseDetailProps {
@@ -96,14 +108,38 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [testCollections, setTestCollections] = useState<TestCollection[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+  const [studentSearch, setStudentSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showAddSession, setShowAddSession] = useState(false);
   const [editSessionId, setEditSessionId] = useState<number | null>(null);
   const [showLiveDialog, setShowLiveDialog] = useState(false);
   const [isStartingLive, setIsStartingLive] = useState(false);
   const [licenses, setLicenses] = useState<SpotPlayerLicenseAdmin[]>([]);
-  const [licensesLoading, setLicensesLoading] = useState(false);
-  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
+  const [showManageStudentsModal, setShowManageStudentsModal] = useState(false);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
+  const [savingStudents, setSavingStudents] = useState(false);
+
+  const handleOpenManageStudents = () => {
+    setSelectedStudentIds(students.map((s) => s.id));
+    setShowManageStudentsModal(true);
+  };
+
+  const handleSaveStudents = async () => {
+    try {
+      setSavingStudents(true);
+      await axiosInstance.patch(`/courses/${courseId}/`, {
+        students: selectedStudentIds,
+      });
+      toast.success("دسترسی دانش‌آموزان با موفقیت بروزرسانی شد");
+      setShowManageStudentsModal(false);
+      fetchCourseData();
+    } catch (error) {
+      console.error("Error saving students:", error);
+      toast.error("خطا در ذخیره دسترسی دانش‌آموزان");
+    } finally {
+      setSavingStudents(false);
+    }
+  };
 
   const fetchCourseData = useCallback(async () => {
     try {
@@ -140,7 +176,23 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       
       setSessions(sessionsData);
       setTestCollections(collectionsData);
-      setStudents(courseResponse.data.students);
+      
+      let studentsList: Student[] = [];
+      if (Array.isArray(courseResponse.data?.students)) {
+        studentsList = courseResponse.data.students;
+      }
+      // Fallback: If courseResponse.data.students is empty but students_count > 0, fetch from students endpoint
+      if (studentsList.length === 0 && (courseResponse.data?.students_count || 0) > 0) {
+        try {
+          const studentsRes = await axiosInstance.get(`/courses/${courseId}/students/`);
+          if (Array.isArray(studentsRes.data)) {
+            studentsList = studentsRes.data;
+          }
+        } catch {
+          // ignore fallback error
+        }
+      }
+      setStudents(studentsList);
     } catch (error) {
       console.error("Error fetching course data:", error);
       toast.error("خطا در دریافت اطلاعات دوره");
@@ -360,15 +412,29 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
       {/* Course Header */}
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <CardTitle className="text-2xl">{course.title}</CardTitle>
-              <p className="text-muted-foreground mt-2">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-2xl break-words">{course.title}</CardTitle>
+              <p className="text-muted-foreground mt-2 break-words">{course.description || "توضیحی برای این دوره ثبت نشده است"}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={course.is_active ? "default" : "secondary"}>
-                {course.is_active ? "فعال" : "غیرفعال"}
-              </Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              {course.is_active ? (
+                <Badge 
+                  variant="outline" 
+                  className="gap-1.5 px-2.5 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  فعال
+                </Badge>
+              ) : (
+                <Badge 
+                  variant="outline" 
+                  className="gap-1.5 px-2.5 py-0.5 text-xs font-medium bg-muted/60 text-muted-foreground border-border"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 shrink-0" />
+                  غیرفعال
+                </Badge>
+              )}
               {course.is_live && (
                 <Badge variant="destructive" className="animate-pulse">
                   <Radio className="w-3 h-3 ml-1" />
@@ -377,13 +443,13 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               )}
               
               {course.rtmp_url && course.rtmp_key && course.live_iframe && (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {!course.is_live ? (
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setShowLiveDialog(true)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0"
                     >
                       <Radio className="w-4 h-4 ml-2" />
                       شروع کلاس آنلاین
@@ -394,6 +460,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
                       size="sm"
                       onClick={handleStopLive}
                       disabled={isStartingLive}
+                      className="shrink-0"
                     >
                       {isStartingLive ? "در حال متوقف کردن..." : "متوقف کردن کلاس"}
                     </Button>
@@ -402,15 +469,17 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
               )}
               
               {course.spotplayer_course_id && (
-                <Badge variant="outline" className="text-xs gap-1" title="شناسه دوره اسپات‌پلیر">
-                  <KeyRound className="w-3 h-3" />
-                  اسپات‌پلیر: <span dir="ltr" className="font-mono">{course.spotplayer_course_id}</span>
+                <Badge variant="outline" className="text-xs gap-1 max-w-full" title="شناسه دوره اسپات‌پلیر">
+                  <KeyRound className="w-3 h-3 shrink-0" />
+                  <span>اسپات‌پلیر:</span>
+                  <span dir="ltr" className="font-mono truncate">{course.spotplayer_course_id}</span>
                 </Badge>
               )}
 
               <Button 
                 variant="outline" 
                 size="sm"
+                className="shrink-0"
                 onClick={() => navigate(`/panel/courses/${courseId}/edit`)}
               >
                 <Edit className="w-4 h-4 ml-2" />
@@ -420,30 +489,30 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           </div>
           
           {/* Course Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-6">
             <div className="flex items-center gap-3 p-3 bg-blue-500/10 rounded-lg">
-              <Play className="w-6 h-6 text-blue-600" />
+              <Play className="w-6 h-6 text-blue-600 shrink-0" />
               <div>
                 <div className="text-lg font-bold text-blue-600">{sessions.length}</div>
                 <div className="text-sm text-blue-600">جلسه</div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
-              <FileText className="w-6 h-6 text-green-600" />
+              <FileText className="w-6 h-6 text-green-600 shrink-0" />
               <div>
                 <div className="text-lg font-bold text-green-600">{testCollections.length}</div>
                 <div className="text-sm text-green-600">مجموعه آزمون</div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-lg">
-              <Users className="w-6 h-6 text-purple-600" />
+              <Users className="w-6 h-6 text-purple-600 shrink-0" />
               <div>
                 <div className="text-lg font-bold text-purple-600">{course.students_count}</div>
                 <div className="text-sm text-purple-600">دانش‌آموز</div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-orange-500/10 rounded-lg">
-              <Calendar className="w-6 h-6 text-orange-600" />
+              <Calendar className="w-6 h-6 text-orange-600 shrink-0" />
               <div>
                 <div className="text-sm text-orange-600">ایجاد شده در</div>
                 <div className="text-sm font-medium text-orange-600">{formatDate(course.created_at)}</div>
@@ -455,19 +524,27 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="sessions" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="sessions">جلسات ({sessions.length})</TabsTrigger>
-          <TabsTrigger value="tests">مجموعه آزمون‌ها ({testCollections.length})</TabsTrigger>
-          <TabsTrigger value="students">دانش‌آموزان ({course.students_count})</TabsTrigger>
-          <TabsTrigger value="licenses" className="flex items-center justify-center gap-2">
-            <KeyRound className="w-3 h-3" />
-            لایسنس‌ها
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="flex items-center gap-2">
-            <MessageCircle className="w-4 h-4" />
-            چت زنده
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-1 -mb-1">
+          <TabsList className="flex w-max min-w-full md:grid md:grid-cols-5 h-auto p-1 bg-muted/80 rounded-lg gap-1">
+            <TabsTrigger value="sessions" className="whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm font-medium">
+              جلسات ({sessions.length})
+            </TabsTrigger>
+            <TabsTrigger value="tests" className="whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm font-medium">
+              مجموعه آزمون‌ها ({testCollections.length})
+            </TabsTrigger>
+            <TabsTrigger value="students" className="whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm font-medium">
+              دانش‌آموزان ({course.students_count})
+            </TabsTrigger>
+            <TabsTrigger value="licenses" className="whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5" />
+              لایسنس‌ها
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5">
+              <MessageCircle className="w-3.5 h-3.5" />
+              چت زنده
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Sessions Tab */}
         <TabsContent value="sessions" className="mt-6">
@@ -553,26 +630,77 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
         {/* Students Tab */}
         <TabsContent value="students" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>دانش‌آموزان ثبت‌نام شده</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                لیست دانش‌آموزانی که در این دوره ثبت‌نام کرده‌اند
-              </p>
+            <CardHeader className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <CardTitle>دانش‌آموزان ثبت‌نام شده</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    لیست دانش‌آموزانی که در این دوره ثبت‌نام کرده‌اند ({students?.length || 0} نفر)
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  {students && students.length > 3 && (
+                    <div className="relative w-full sm:w-60">
+                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="جستجوی دانش‌آموز..."
+                        value={studentSearch}
+                        onChange={(e) => setStudentSearch(e.target.value)}
+                        className="pr-9 h-9 text-sm"
+                      />
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleOpenManageStudents}
+                    size="sm"
+                    className="flex items-center gap-1.5 shrink-0"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    مدیریت دسترسی دانش‌آموزان
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              {students && students.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
-                  <p className="text-muted-foreground">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {students && students.map((student) => (
-                    <StudentCard key={student.id} student={student} />
-                  ))}
-                </div>
-              )}
+              {(() => {
+                const filteredStudents = (students || []).filter((student) => {
+                  if (!studentSearch.trim()) return true;
+                  const query = studentSearch.toLowerCase();
+                  const fullName = `${student.first_name || ""} ${student.last_name || ""}`.toLowerCase();
+                  const username = (student.username || "").toLowerCase();
+                  const phone = (student.phone_number || "").toLowerCase();
+                  const email = (student.email || "").toLowerCase();
+                  const school = (student.school || "").toLowerCase();
+                  return fullName.includes(query) || username.includes(query) || phone.includes(query) || email.includes(query) || school.includes(query);
+                });
+
+                if (!students || students.length === 0) {
+                  return (
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-muted-foreground mb-2">هنوز دانش‌آموزی ثبت‌نام نشده است</h3>
+                      <p className="text-muted-foreground text-sm">دانش‌آموزان از طریق فروشگاه می‌توانند در این دوره ثبت‌نام کنند</p>
+                    </div>
+                  );
+                }
+
+                if (filteredStudents.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <Search className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground text-sm">دانش‌آموزی با این مشخصات یافت نشد</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredStudents.map((student) => (
+                      <StudentCard key={student.id} student={student} />
+                    ))}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
@@ -818,6 +946,47 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Manage Students Modal */}
+      <Dialog open={showManageStudentsModal} onOpenChange={setShowManageStudentsModal}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <UserCheck className="w-5 h-5 text-primary" />
+              مدیریت دسترسی اختصاصی دانش‌آموزان
+            </DialogTitle>
+            <DialogDescription>
+              دانش‌آموزانی که انتخاب شوند به محتوای این دوره دسترسی مستقیم خواهند داشت.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-2">
+            <CourseStudentSelector
+              selectedStudentIds={selectedStudentIds}
+              onChange={setSelectedStudentIds}
+              title="انتخاب دانش‌آموزان دوره"
+              description="از لیست زیر دانش‌آموزانی که می‌خواهید به این دوره دسترسی داشته باشند را تیک بزنید."
+            />
+          </div>
+
+          <DialogFooter className="flex gap-2 sm:justify-start">
+            <Button
+              onClick={handleSaveStudents}
+              disabled={savingStudents}
+              className="flex items-center gap-2"
+            >
+              {savingStudents ? "در حال ذخیره..." : "ذخیره دسترسی‌ها"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowManageStudentsModal(false)}
+              disabled={savingStudents}
+            >
+              انصراف
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -942,9 +1111,23 @@ function CollectionCard({ collection }: CollectionCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <Badge variant={collection.is_active ? "default" : "secondary"}>
-                {collection.is_active ? "فعال" : "غیرفعال"}
-              </Badge>
+              {collection.is_active ? (
+                <Badge 
+                  variant="outline" 
+                  className="gap-1.5 px-2 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
+                  فعال
+                </Badge>
+              ) : (
+                <Badge 
+                  variant="outline" 
+                  className="gap-1.5 px-2 py-0.5 text-xs font-medium bg-muted/60 text-muted-foreground border-border"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 inline-block shrink-0" />
+                  غیرفعال
+                </Badge>
+              )}
             </div>
             <h3 className="text-lg font-medium mb-2">{collection.name}</h3>
             <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -999,36 +1182,81 @@ function StudentCard({ student }: StudentCardProps) {
   // Generate avatar color based on student ID
   const getAvatarColor = (id: number) => {
     const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500',
-      'bg-indigo-500', 'bg-red-500', 'bg-yellow-500', 'bg-teal-500'
+      'bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-pink-600',
+      'bg-indigo-600', 'bg-rose-600', 'bg-amber-600', 'bg-teal-600'
     ];
     return colors[id % colors.length];
   };
 
-  // Get initials from username
-  const getInitials = (username: string) => {
-    return username.charAt(0).toUpperCase();
+  const fullName = [student.first_name, student.last_name].filter(Boolean).join(" ");
+  const displayName = fullName || student.username;
+
+  // Get initials from display name or username
+  const getInitials = () => {
+    if (student.first_name) {
+      return student.first_name.charAt(0);
+    }
+    return (student.username || "U").charAt(0).toUpperCase();
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="pt-4">
-        <div className="flex items-center gap-3">
+    <Card className="hover:shadow-md transition-shadow border-border/80">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
           {/* Avatar */}
-          <div className={`w-10 h-10 rounded-full ${getAvatarColor(student.id)} flex items-center justify-center text-white font-medium text-sm`}>
-            {getInitials(student.username)}
+          <div className={`w-10 h-10 rounded-full ${getAvatarColor(student.id)} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+            {getInitials()}
           </div>
 
           {/* Student Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-sm truncate">{student.username}</h3>
-            <p className="text-xs text-muted-foreground">دانش‌آموز</p>
-          </div>
+            <div className="flex items-center justify-between gap-1">
+              <h3 className="font-semibold text-sm truncate" title={displayName}>
+                {displayName}
+              </h3>
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 shrink-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25">
+                فعال
+              </Badge>
+            </div>
+            
+            {fullName ? (
+              <p className="text-xs text-muted-foreground truncate mt-0.5" dir="ltr" style={{ textAlign: 'right' }}>
+                @{student.username}
+              </p>
+            ) : null}
 
-          {/* Status Badge */}
-          <Badge variant="outline" className="text-xs">
-            فعال
-          </Badge>
+            {student.school ? (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 dark:bg-muted/30 px-2 py-1 rounded-md mt-1.5 w-fit max-w-full" dir="rtl">
+                <GraduationCap className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="truncate font-medium text-foreground/85" title={student.school}>
+                  {student.school}
+                </span>
+                {student.grade ? (
+                  <span className="text-[11px] text-muted-foreground shrink-0">({student.grade}ام)</span>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className="mt-2.5 pt-2 border-t border-border/60 flex flex-col gap-1 text-xs text-muted-foreground">
+              {student.phone_number ? (
+                <div className="flex items-center gap-1.5" dir="ltr" style={{ justifyContent: 'flex-end' }}>
+                  <span className="font-mono">{student.phone_number}</span>
+                  <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
+                </div>
+              ) : null}
+
+              {student.email ? (
+                <div className="flex items-center gap-1.5" dir="ltr" style={{ justifyContent: 'flex-end' }}>
+                  <span className="truncate font-mono">{student.email}</span>
+                  <Mail className="w-3 h-3 text-muted-foreground shrink-0" />
+                </div>
+              ) : null}
+
+              {!student.phone_number && !student.email && (
+                <span className="text-[11px] text-muted-foreground/70">اطلاعات تماس ثبت نشده</span>
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

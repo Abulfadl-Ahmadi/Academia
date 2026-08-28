@@ -210,9 +210,23 @@ function CourseCard({ course, onView, onEdit }: CourseCardProps) {
               {course.description || "توضیحی برای این دوره ثبت نشده است"}
             </p>
           </div>
-          <Badge variant={course.is_active ? "default" : "secondary"}>
-            {course.is_active ? "فعال" : "غیرفعال"}
-          </Badge>
+          {course.is_active ? (
+            <Badge 
+              variant="outline" 
+              className="gap-1.5 px-2.5 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              فعال
+            </Badge>
+          ) : (
+            <Badge 
+              variant="outline" 
+              className="gap-1.5 px-2.5 py-0.5 text-xs font-medium bg-muted/60 text-muted-foreground border-border"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 shrink-0" />
+              غیرفعال
+            </Badge>
+          )}
         </div>
       </CardHeader>
       
