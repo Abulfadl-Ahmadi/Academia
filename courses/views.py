@@ -87,22 +87,22 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role != 'student' and user.role != 'teacher':
-            return Course.objects.all().annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+            return Course.objects.all().prefetch_related('students', 'students__profile').annotate(
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
         elif user.role == 'teacher':
-            return Course.objects.filter(teacher=user).annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+            return Course.objects.filter(teacher=user).prefetch_related('students', 'students__profile').annotate(
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
         else:  # student
             return Course.objects.filter(students=user).annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
 
     def get_serializer_class(self):
@@ -241,6 +241,56 @@ class CourseViewSet(viewsets.ModelViewSet):
         
         collections = TestCollection.objects.filter(courses=course)
         serializer = TestCollectionSerializer(collections, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def available_students(self, request):
+        """لیست تمام دانش‌آموزان برای انتخاب در فرم دوره"""
+        user = request.user
+        if user.role not in ['admin', 'teacher', 'content_creator', 'support'] and not user.is_staff:
+            return Response({'error': 'دسترسی غیرمجاز'}, status=status.HTTP_403_FORBIDDEN)
+
+        students_qs = User.objects.filter(role='student', is_active=True).select_related('profile').order_by('first_name', 'last_name', 'username')
+        
+        search = request.query_params.get('search', '').strip()
+        if search:
+            students_qs = students_qs.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(profile__phone_number__icontains=search) |
+                Q(profile__school__icontains=search)
+            )
+
+        data = [
+            {
+                'id': s.id,
+                'username': s.username,
+                'full_name': s.get_full_name() or s.username,
+                'first_name': s.first_name,
+                'last_name': s.last_name,
+                'phone': getattr(s, 'phone', '') or (s.profile.phone_number if hasattr(s, 'profile') and s.profile else ''),
+                'email': s.email or '',
+                'school': s.profile.school if hasattr(s, 'profile') and s.profile else '',
+                'grade': s.profile.grade if hasattr(s, 'profile') and s.profile else '',
+            }
+            for s in students_qs
+        ]
+        return Response(data)
+
+    @action(detail=True, methods=['get'])
+    def students(self, request, pk=None):
+        """Get enrolled students for a specific course"""
+        course = self.get_object()
+        user = request.user
+        if user.role == 'student':
+            return Response(
+                {"error": "Only staff/teachers can access enrolled students list"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        students = course.students.select_related('profile').all()
+        serializer = UserSerializer(students, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get', 'post'])
