@@ -24,6 +24,7 @@ import {
   BookOpen,
   Loader2,
   Calendar,
+  Clock,
   ArrowRight,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
