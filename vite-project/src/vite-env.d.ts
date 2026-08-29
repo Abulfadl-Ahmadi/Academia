@@ -12,3 +12,8 @@ declare module 'virtual:pwa-register' {
 
   export function registerSW(options?: RegisterSWOptions): (reloadPage?: boolean) => Promise<void>
 }
+
+declare const __APP_VERSION__: string;
+declare const __GIT_COMMIT__: string;
+declare const __GIT_TAG__: string;
+declare const __BUILD_DATE__: string;

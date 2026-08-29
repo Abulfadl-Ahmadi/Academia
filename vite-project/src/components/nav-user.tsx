@@ -1,5 +1,6 @@
 // "use client"
 import { useLogout } from "@/hooks/use-logout"
+import { getDisplayVersion } from "@/config/version"
 
 import {
   BadgeCheck,
@@ -102,6 +103,10 @@ const logout = useLogout()
               <LogOut className="ml-2 h-4 w-4" color="#cc0000"/>
               خروج
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <div className="px-2 py-1 text-[11px] text-muted-foreground/80 text-center font-mono select-none">
+              {getDisplayVersion()}
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

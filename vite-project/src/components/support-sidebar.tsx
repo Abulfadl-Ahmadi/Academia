@@ -18,6 +18,7 @@ import {
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
+import { SidebarVersion } from "@/components/SidebarVersion";
 import {
   Sidebar,
   SidebarContent, 
@@ -373,6 +374,7 @@ export function SupportSidebar({
             }}
           />
         )}
+        <SidebarVersion />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

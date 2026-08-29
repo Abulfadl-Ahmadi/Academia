@@ -3,9 +3,34 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { VitePWA } from 'vite-plugin-pwa'
+import { execSync } from "child_process"
+import packageJson from "./package.json"
+
+let gitCommit = ""
+let gitTag = ""
+try {
+  gitCommit = execSync("git rev-parse --short HEAD").toString().trim()
+} catch {
+  gitCommit = "dev"
+}
+
+try {
+  gitTag = execSync("git describe --tags --always").toString().trim()
+} catch {
+  gitTag = "Build-11"
+}
+
+const buildDate = new Date().toISOString().split("T")[0]
+const appVersion = process.env.VITE_APP_VERSION || packageJson.version || "1.2.0"
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+    __GIT_COMMIT__: JSON.stringify(gitCommit),
+    __GIT_TAG__: JSON.stringify(gitTag),
+    __BUILD_DATE__: JSON.stringify(buildDate),
+  },
   server: {
     // host: "172.25.82.128",
     port: 5173,
