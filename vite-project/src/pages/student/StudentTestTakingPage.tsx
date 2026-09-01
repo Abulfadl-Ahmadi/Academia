@@ -77,7 +77,7 @@ export default function StudentTestTakingPage() {
     } catch (error) {
       console.error('Error loading test:', error);
       toast.error('خطا در بارگذاری آزمون');
-      navigate('/tests');
+      navigate('/panel/tests/active');
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function StudentTestTakingPage() {
         answers: answers
       });
       toast.success('آزمون با موفقیت ارسال شد');
-      navigate(`/tests/result/${testId}`);
+      navigate(`/panel/tests/result/${testId}`);
     } catch (error) {
       console.error('Error submitting test:', error);
       toast.error('خطا در ارسال آزمون');
@@ -144,7 +144,7 @@ export default function StudentTestTakingPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">آزمون یافت نشد</h2>
-          <Button onClick={() => navigate('/tests')}>
+          <Button onClick={() => navigate('/panel/tests/active')}>
             بازگشت به لیست آزمون‌ها
           </Button>
         </div>
@@ -164,7 +164,7 @@ export default function StudentTestTakingPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/tests')}
+                  onClick={() => navigate('/panel/tests/active')}
                   className="flex items-center gap-2"
                 >
                   <ArrowRight className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function StudentTestTakingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/tests')}
+                onClick={() => navigate('/panel/tests/active')}
                 className="flex items-center gap-2"
               >
                 <ArrowRight className="w-4 h-4" />

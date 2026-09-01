@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
     if (product.course) {
       navigate(`/panel/courses/${product.course}`)
     } else if (product.test) {
-      navigate(`/panel/tests/`)
+      navigate(`/panel/tests/active`)
     } else {
       navigate('/panel')
     }

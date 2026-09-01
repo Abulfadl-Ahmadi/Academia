@@ -702,7 +702,7 @@ export default function ShopPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (product.course) navigate(`/panel/courses/${product.course}`);
-                          else if (product.test) navigate(`/panel/tests/`);
+                          else if (product.test) navigate(`/panel/tests/active`);
                           else navigate(`/shop/${product.id}`);
                         }}
                         className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
