@@ -62,10 +62,17 @@ export default function MyProducts() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/finance/user-access/");
-      setProductAccess(response.data);
+      const rawData = response.data;
+      const accessList = Array.isArray(rawData)
+        ? rawData
+        : Array.isArray(rawData?.results)
+        ? rawData.results
+        : [];
+      setProductAccess(accessList);
     } catch (error) {
       console.error("Error fetching product access:", error);
       toast.error("خطا در دریافت محصولات قابل دسترس");
+      setProductAccess([]);
     } finally {
       setLoading(false);
     }
@@ -73,7 +80,8 @@ export default function MyProducts() {
 
 
   const filterByType = (type: string) => {
-    return productAccess.filter(access => access.product.product_type === type);
+    if (!Array.isArray(productAccess)) return [];
+    return productAccess.filter(access => access?.product?.product_type === type);
   };
 
   const getActiveTab = () => {

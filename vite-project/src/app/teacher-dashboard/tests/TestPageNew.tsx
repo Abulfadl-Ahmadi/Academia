@@ -134,6 +134,19 @@ const TestPageRedesigned: React.FC = () => {
     { value: "4", label: "۴" },
   ];
 
+  // Helper function برای بازیابی پاسخ‌ها از ساختار داده سرور
+  const restoreAnswers = useCallback((answersData: Record<string | number, any>) => {
+    if (!answersData || typeof answersData !== "object") return;
+    const parsedAnswers: Record<number, string> = {};
+    Object.entries(answersData).forEach(([qNum, ans]) => {
+      if (ans !== null && ans !== undefined && ans !== "") {
+        parsedAnswers[Number(qNum)] = String(ans);
+      }
+    });
+    console.log("Restored answers count:", Object.keys(parsedAnswers).length);
+    setAnswers(parsedAnswers);
+  }, []);
+
   // Session management functions
   const checkExistingSession = async () => {
     try {
@@ -145,6 +158,11 @@ const TestPageRedesigned: React.FC = () => {
       if (response.data.session) {
         setSessionId(response.data.session.id);
         
+        // بازیابی پاسخ‌های ثبت‌شده قبلی
+        if (response.data.answers) {
+          restoreAnswers(response.data.answers);
+        }
+
         // Extract file access token from existing session
         if (response.data.session.file_access_token) {
           setFileAccessToken(response.data.session.file_access_token);
@@ -184,8 +202,14 @@ const TestPageRedesigned: React.FC = () => {
       });
       
       console.log("Session response:", response.data);
-      setSessionId(response.data.session_id);
+      const activeSessionId = response.data.session_id || response.data.id;
+      setSessionId(activeSessionId);
       
+      // بازیابی پاسخ‌های قبلی در صورت وجود در پاسخ سرور
+      if (response.data.answers) {
+        restoreAnswers(response.data.answers);
+      }
+
       // Capture the file access token
       if (response.data.file_access_token) {
         setFileAccessToken(response.data.file_access_token);
@@ -262,19 +286,40 @@ const TestPageRedesigned: React.FC = () => {
     const initialize = async () => {
       console.log("Initializing test page with session:", session);
       
-      // چک کردن session موجود در location.state
-      if (session?.id) {
-        console.log("Using session from location.state:", session.id);
-        setSessionId(session.id);
-        setTimeLeft(session.remainingTime || 3600);
+      // همیشه اول چک می‌کنیم آیا سشن معتبر همراه با پاسخ‌های قبلی از سرور دریافت می‌شود یا خیر
+      const existingSession = await checkExistingSession();
+      if (existingSession) {
         await loadTestData();
         setIsLoading(false);
         return;
       }
-      
-      // اگر session وجود نداشت، check کن آیا session قبلی موجود است
-      const existingSession = await checkExistingSession();
-      if (existingSession) {
+
+      // چک کردن session موجود در location.state
+      const passedSessionId = session?.id || (session as any)?.session_id;
+      if (passedSessionId) {
+        console.log("Using session from location.state:", passedSessionId);
+        setSessionId(passedSessionId);
+        
+        if (session.file_access_token) {
+          setFileAccessToken(session.file_access_token);
+        }
+
+        if ((session as any)?.answers) {
+          restoreAnswers((session as any).answers);
+        } else {
+          try {
+            const ansRes = await axiosInstance.get("/get-answer/", {
+              params: { session_id: passedSessionId }
+            });
+            if (ansRes.data.answers) {
+              restoreAnswers(ansRes.data.answers);
+            }
+          } catch (e) {
+            console.warn("Could not fetch answers for state session:", e);
+          }
+        }
+
+        setTimeLeft(session.remainingTime || 3600);
         await loadTestData();
         setIsLoading(false);
         return;
@@ -357,6 +402,24 @@ const TestPageRedesigned: React.FC = () => {
       setIsSubmitting(false);
     }
   }, [sessionId, navigateToTestSource]);
+
+  const handleTemporaryExit = useCallback(async () => {
+    try {
+      const activeSessionId = sessionId || session?.id || (session as any)?.session_id;
+      if (activeSessionId) {
+        await axiosInstance.post("/exit-test/", {
+          session_id: activeSessionId,
+          test_id: parseInt(id!),
+          device_id: `device_${Date.now()}`
+        });
+      }
+    } catch (err) {
+      console.error("Error logging temporary exit:", err);
+    } finally {
+      setConfirmExit(false);
+      navigateToTestSource();
+    }
+  }, [sessionId, session, id, navigateToTestSource]);
 
   const handleAnswer = useCallback(
     async (questionNumber: number, value: string) => {
@@ -700,8 +763,8 @@ const TestPageRedesigned: React.FC = () => {
               <Button variant="outline" onClick={() => setConfirmExit(false)}>
                 ماندن در آزمون
               </Button>
-              <Button variant="destructive" onClick={() => navigate('/panel/tests')}>
-                خروج
+              <Button variant="destructive" onClick={handleTemporaryExit}>
+                خروج موقت
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -797,10 +860,7 @@ const TestPageRedesigned: React.FC = () => {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => {
-                setConfirmExit(false);
-                navigateToTestSource();
-              }}
+              onClick={handleTemporaryExit}
             >
               <LogOut className="mr-2 h-4 w-4" />
               خروج موقت

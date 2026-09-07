@@ -647,14 +647,20 @@ class EnterTestView(views.APIView):
         )
         pdf_url = test.pdf_file.file.url if test.pdf_file and test.pdf_file.file else None
 
+        # دریافت پاسخ‌های ثبت‌شده قبلی در این سشن (برای ورود مجدد پس از خروج موقت)
+        answers = StudentAnswer.objects.filter(session=session)
+        answers_data = {answer.question_number: answer.answer for answer in answers}
+
         return Response({
             "session_id": session.id,
+            "id": session.id,
             "test_id": test.id,
             "pdf_file_url": request.build_absolute_uri(pdf_url) if pdf_url else None,
             "file_access_token": session.file_access_token,
             "duration_minutes": int(test.duration.total_seconds() / 60),
             "entry_time": session.entry_time.isoformat(),
-            "end_time": session.end_time.isoformat()
+            "end_time": session.end_time.isoformat(),
+            "answers": answers_data
         }, status=201)
 
 
@@ -762,6 +768,10 @@ class SubmitAnswerView(generics.CreateAPIView):
 class GetAnswersView(views.APIView):
     permission_classes = [IsAuthenticated]
 
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
     def get(self, request):
         session_id = request.query_params.get("session_id")
         test_id = request.query_params.get("test_id")
@@ -773,16 +783,19 @@ class GetAnswersView(views.APIView):
                 session = StudentTestSession.objects.get(id=session_id, user=user)
             except StudentTestSession.DoesNotExist:
                 return Response({"error": "Session not found"}, status=404)
-        # اگر test_id داده شده، session فعال را پیدا کن
+        # اگر test_id داده شده، session فعال یا غیرفعال موقت را پیدا کن
         elif test_id:
             try:
                 test = Test.objects.get(id=test_id)
-                session = StudentTestSession.objects.get(
-                    user=user, 
-                    test=test, 
-                    status__in=['active', 'inactive']
-                )
-            except (Test.DoesNotExist, StudentTestSession.DoesNotExist):
+            except Test.DoesNotExist:
+                return Response({"error": "Test not found"}, status=404)
+
+            session = StudentTestSession.objects.filter(
+                user=user, 
+                test=test, 
+                status__in=['active', 'inactive']
+            ).order_by('-entry_time').first()
+            if not session:
                 return Response({"error": "No active session found for this test"}, status=404)
         else:
             return Response({"error": "session_id or test_id is required"}, status=400)
@@ -792,6 +805,17 @@ class GetAnswersView(views.APIView):
             session.status = 'expired'
             session.save()
             return Response({"error": "Session has expired"}, status=403)
+
+        # اگر سشن inactive بود و کاربر برای ادامه آزمون برگشته، وضعیت را دوباره active کن
+        if session.status == 'inactive':
+            session.status = 'active'
+            session.save()
+            StudentTestSessionLog.objects.create(
+                session=session,
+                action='login',
+                ip_address=self.get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
 
         answers = StudentAnswer.objects.filter(session=session)
         data = {answer.question_number: answer.answer for answer in answers}
@@ -819,24 +843,26 @@ class FinishTestView(views.APIView):
         
         if session_id:
             try:
-                session = StudentTestSession.objects.get(id=session_id, user=request.user)
+                session = StudentTestSession.objects.get(id=session_id)
             except StudentTestSession.DoesNotExist:
                 raise ValidationError("Session not found.")
         elif test_id:
             try:
-                session = StudentTestSession.objects.get(test_id=test_id, user=request.user, status='active')
+                session = StudentTestSession.objects.filter(test_id=test_id, user=request.user, status="active").first()
+                if not session:
+                    raise ValidationError("Active session not found for this test.")
             except StudentTestSession.DoesNotExist:
-                raise ValidationError("Active session not found for this test.")
+                raise ValidationError("Session not found.")
         else:
-            raise ValidationError("Either session_id or test_id must be provided.")
+            raise ValidationError("Either session_id or test_id is required.")
 
-        # Store answers if provided
+        # Save answers if provided
         if answers:
             if isinstance(answers, str):
                 try:
                     answers = json.loads(answers)
                 except json.JSONDecodeError:
-                    return Response({"error": "Invalid JSON in answers"}, status=status.HTTP_400_BAD_REQUEST)
+                    pass
 
             for answer_data in answers:
                 question_number = answer_data.get('question_number')
@@ -858,13 +884,20 @@ class ExitTestView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        # session_id = request.data.get("session_id")
+        session_id = request.data.get("session_id")
+        test_id = request.data.get("test_id")
         device_id = request.data.get("device_id")
         user = request.user
 
-        try:
-            session = StudentTestSession.objects.get(user=user, status='active')
-        except StudentTestSession.DoesNotExist:
+        session = None
+        if session_id:
+            session = StudentTestSession.objects.filter(id=session_id, user=user).first()
+        elif test_id:
+            session = StudentTestSession.objects.filter(test_id=test_id, user=user, status='active').first()
+        else:
+            session = StudentTestSession.objects.filter(user=user, status='active').first()
+
+        if not session:
             return Response({"error": "Session not found or inactive."}, status=status.HTTP_404_NOT_FOUND)
 
         # ثبت لاگ خروج موقت

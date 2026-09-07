@@ -48,7 +48,15 @@ function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
   )
 }
 
-function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
+interface TooltipTriggerProps extends TooltipPrimitive.Trigger.Props {
+  asChild?: boolean
+}
+
+function TooltipTrigger({
+  asChild,
+  children,
+  ...props
+}: TooltipTriggerProps) {
   const ref = React.useRef<HTMLButtonElement>(null)
   const { setDir } = React.useContext(TooltipDirContext)
 
@@ -74,6 +82,7 @@ function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
     <TooltipPrimitive.Trigger
       ref={ref}
       data-slot="tooltip-trigger"
+      {...(asChild && React.isValidElement(children) ? { render: children } : { children })}
       {...props}
     />
   )

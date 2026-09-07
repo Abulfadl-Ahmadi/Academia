@@ -103,18 +103,17 @@ export function SidebarVersion() {
       <div className="hidden group-data-[collapsible=icon]:flex items-center justify-center">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={handleCopy}
-                type="button"
-                className="p-1.5 text-muted-foreground/70 hover:text-foreground hover:bg-sidebar-accent rounded-md transition-colors"
-              >
-                {copied ? (
-                  <Check className="size-3.5 text-emerald-500" />
-                ) : (
-                  <Info className="size-3.5" />
-                )}
-              </button>
+            <TooltipTrigger
+              onClick={handleCopy}
+              type="button"
+              className="p-1.5 text-muted-foreground/70 hover:text-foreground hover:bg-sidebar-accent rounded-md transition-colors cursor-pointer inline-flex items-center justify-center"
+              title="مشخصات نسخه"
+            >
+              {copied ? (
+                <Check className="size-3.5 text-emerald-500" />
+              ) : (
+                <Info className="size-3.5" />
+              )}
             </TooltipTrigger>
             <TooltipContent side="right" className="text-xs font-mono">
               <p className="font-sans font-medium mb-0.5">نسخه سامانه</p>

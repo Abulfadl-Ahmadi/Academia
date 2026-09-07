@@ -535,21 +535,23 @@ export default function TestDetailPage() {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>تأیید شروع آزمون</DialogTitle>
-                        <DialogDescription className="space-y-2">
-                          <p>
-                            آیا مطمئن هستید که می‌خواهید آزمون "<strong>{test.name}</strong>" را شروع کنید؟
-                          </p>
-                          <div className="bg-yellow-50 dark:bg-yellow-950/20 p-3 rounded-lg">
-                            <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
-                              <AlertTriangle className="h-4 w-4" />
-                              <span className="font-medium">توجه:</span>
+                        <DialogDescription asChild>
+                          <div className="space-y-2 text-sm text-muted-foreground">
+                            <div>
+                              آیا مطمئن هستید که می‌خواهید آزمون "<strong>{test.name}</strong>" را شروع کنید؟
                             </div>
-                            <ul className="text-sm text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
-                              <li>• زمان آزمون از همین الان شروع می‌شود</li>
-                              <li>• امکان بازگشت وجود ندارد</li>
-                              <li>• مدت زمان: {test.time_limit} دقیقه</li>
-                              <li>• تعداد سوالات: {test.questions_count} سوال</li>
-                            </ul>
+                            <div className="bg-yellow-50 dark:bg-yellow-950/20 p-3 rounded-lg">
+                              <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                                <AlertTriangle className="h-4 w-4" />
+                                <span className="font-medium">توجه:</span>
+                              </div>
+                              <ul className="text-sm text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
+                                <li>• زمان آزمون از همین الان شروع می‌شود</li>
+                                <li>• امکان بازگشت وجود ندارد</li>
+                                <li>• مدت زمان: {test.time_limit} دقیقه</li>
+                                <li>• تعداد سوالات: {test.questions_count} سوال</li>
+                              </ul>
+                            </div>
                           </div>
                         </DialogDescription>
                       </DialogHeader>

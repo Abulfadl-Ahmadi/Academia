@@ -367,6 +367,7 @@ class SMSNotificationLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserAccessViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserAccessSerializer
+    pagination_class = None
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
