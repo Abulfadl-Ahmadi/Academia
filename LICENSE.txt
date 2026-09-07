@@ -1,24 +1,54 @@
-BSD 2-Clause License
+PROPRIETARY AND CONFIDENTIAL SOFTWARE LICENSE
+ALL RIGHTS STRICTLY RESERVED
 
-Copyright (c) 2025, Abulfadl Ahmadi
+Copyright (c) 2025-2026 Abulfadl Ahmadi. All Rights Reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+================================================================================
+IMPORTANT NOTICE - STRICT RESTRICTIONS ON USE
+================================================================================
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+This software and associated documentation files (the "Software"), including all
+source code, binaries, media, designs, algorithms, architectures, and database
+schemas, are the exclusive private property of Abulfadl Ahmadi (the "Owner").
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+1. NO PERMISSION GRANTED
+No individual, organization, corporate entity, or automated system is granted
+any license, right, title, or interest in or to this Software without prior
+express, written, and signed authorization from the Owner.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+2. STRICT PROHIBITIONS
+Without prior express written consent from the Owner, you may NOT:
+- Copy, clone, reproduce, replicate, or duplicate any part of the Software.
+- Modify, adapt, translate, alter, patch, or create derivative works of the Software.
+- Distribute, publish, publicly display, transmit, broadcast, or sub-license the Software.
+- Deploy, host, run, execute, or operate the Software in any development, staging,
+  testing, or production environment, whether for commercial or non-commercial purposes.
+- Sell, rent, lease, loan, monetize, assign, or transfer the Software or any portion thereof.
+- Reverse engineer, decompile, decrypt, disassemble, or attempt to derive the source code,
+  underlying ideas, or algorithms of the Software.
+- Ingest, parse, scrape, train on, or process the code using artificial intelligence,
+  machine learning models, or data mining systems without explicit written consent.
+
+3. ACCESS AND REPOSITORY STATUS
+Access to, receipt of, or possession of this repository or any associated files, whether
+obtained intentionally, accidentally, via public repository visibility, leak, fork, mirror,
+or direct transfer, does NOT constitute a license, grant, permission, or authorization to
+use, inspect, run, or share this Software.
+
+4. INTELLECTUAL PROPERTY & LEGAL ACTION
+This Software contains proprietary and confidential information and trade secrets of
+the Owner, protected under applicable domestic and international copyright treaties,
+intellectual property laws, and the Berne Convention. Any unauthorized use, reproduction,
+distribution, or exploitation constitutes willful copyright infringement and will be
+subject to immediate legal action, injunctions, and claims for full statutory and actual
+damages to the maximum extent permitted by law.
+
+5. DISCLAIMER OF WARRANTY
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOSS OF USE, DATA, OR PROFITS;
+OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT ARISING IN ANY WAY OUT OF OR IN CONNECTION WITH
+THE USE OR INABILITY TO USE THIS SOFTWARE.
