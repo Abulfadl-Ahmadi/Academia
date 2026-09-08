@@ -1,35 +1,11 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from     setIsSubmitting(true);
-    try {
-      // Filter out empty options and add order, clean up empty fields
-      const filteredOptions = nonEmptyOptions.map((option, index) => {
-        const cleanOption: any = {
-          option_text: option.option_text,
-          order: index + 1
-        };
-        
-        // Only include option_image if it's not empty
-        if (option.option_image && option.option_image.trim()) {
-          cleanOption.option_image = option.option_image;
-        }
-        
-        return cleanOption;
-      });
-      
-      console.log('Filtered options with order:', filteredOptions);m/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axiosInstance from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MathPreview } from '@/components/MathPreview';
-import { Plus, Minus, Eye, Upload } from 'lucide-react';
-import { FolderSelector } from '@/components/FolderSelector';
-import { toast } from 'sonner';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
