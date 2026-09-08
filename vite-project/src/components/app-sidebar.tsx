@@ -245,8 +245,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
          first_name: user.first_name,
          last_name: user.last_name,
          email: user.email,
-         // avatar: user.avatar || "/avatars/default.jpg",
-         avatar: "/avatars/default.jpg",
+         avatar: "",
        }}
      />
    )}
