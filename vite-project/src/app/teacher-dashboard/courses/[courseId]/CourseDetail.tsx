@@ -116,6 +116,7 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [isStartingLive, setIsStartingLive] = useState(false);
   const [licenses, setLicenses] = useState<SpotPlayerLicenseAdmin[]>([]);
   const [licensesLoading, setLicensesLoading] = useState(false);
+  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
   const [showManageStudentsModal, setShowManageStudentsModal] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
   const [savingStudents, setSavingStudents] = useState(false);
