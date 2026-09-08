@@ -1,6 +1,12 @@
 import { StrictMode, useEffect } from 'react'
-import { BrowserRouter } from "react-router-dom"
+import { BrowserRouter, HashRouter } from "react-router-dom"
 import App from './App'
+import { DemoBadge } from './demo/DemoBadge'
+
+const isDemo = import.meta.env.VITE_DEMO_MODE === 'true'
+// A single-file demo is opened straight from disk, where there is no server to
+// resolve /panel — so those builds route in the hash instead.
+const Router = isDemo ? HashRouter : BrowserRouter
 
 export const AppWrapper = () => {
   useEffect(() => {
@@ -31,9 +37,10 @@ export const AppWrapper = () => {
   
   return (
     <StrictMode>
-      <BrowserRouter>
+      <Router>
         <App />
-      </BrowserRouter>
+        {isDemo ? <DemoBadge /> : null}
+      </Router>
     </StrictMode>
   );
 }

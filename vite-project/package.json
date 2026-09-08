@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "linux-build": "chmod +x prepare-build.sh && ./prepare-build.sh && tsc -p tsconfig.build.json && vite build",
-    "windows-build": "powershell -ExecutionPolicy Bypass -File prepare-build.ps1 && tsc -p tsconfig.build.json && vite build"
+    "windows-build": "powershell -ExecutionPolicy Bypass -File prepare-build.ps1 && tsc -p tsconfig.build.json && vite build",
+    "build:demo": "vite build --config vite.config.demo.ts && node scripts/inline-public-assets.mjs"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.69",
@@ -131,6 +132,7 @@
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
     "vite-plugin-pwa": "^1.0.3",
+    "vite-plugin-singlefile": "^2.3.3",
     "workbox-window": "^7.3.0"
   }
 }
