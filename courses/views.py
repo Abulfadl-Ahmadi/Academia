@@ -364,7 +364,7 @@ class StudentCourseViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.role != 'student':
             return Course.objects.none()
         
-        return Course.objects.filter(students=self.request.user).annotate(
+        return Course.objects.filter(students=self.request.user).select_related('teacher').annotate(
             students_count=Count('students'),
             sessions_count=Count('sessions'),
             tests_count=Count('test_collections__tests')

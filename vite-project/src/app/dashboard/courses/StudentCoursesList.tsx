@@ -24,11 +24,11 @@ interface StudentCourse {
   tests_count: number;
   last_accessed: string | null;
   progress_percentage: number;
-  teacher: {
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
+  teacher?: {
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+  } | null;
 }
 
 export default function StudentCoursesList() {
@@ -65,11 +65,22 @@ export default function StudentCoursesList() {
     }
   };
 
-  const filteredCourses = Array.isArray(courses) ? courses.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.teacher.username.toLowerCase().includes(searchTerm.toLowerCase())
-  ) : [];
+  const filteredCourses = Array.isArray(courses) ? courses.filter(course => {
+    const term = (searchTerm || "").toLowerCase();
+    const title = (course.title || "").toLowerCase();
+    const description = (course.description || "").toLowerCase();
+    const username = (course.teacher?.username || "").toLowerCase();
+    const firstName = (course.teacher?.first_name || "").toLowerCase();
+    const lastName = (course.teacher?.last_name || "").toLowerCase();
+
+    return (
+      title.includes(term) ||
+      description.includes(term) ||
+      username.includes(term) ||
+      firstName.includes(term) ||
+      lastName.includes(term)
+    );
+  }) : [];
 
   const handleViewCourse = (courseId: number) => {
     window.location.href = `/panel/courses/${courseId}`;
@@ -154,19 +165,21 @@ export default function StudentCoursesList() {
             </div>
             <div>
               <div className="text-2xl font-bold">
-                {courses.reduce((sum, course) => sum + course.sessions_count, 0)}
+                {courses.reduce((sum, course) => sum + (course.sessions_count || 0), 0)}
               </div>
               <div className="text-sm text-muted-foreground">کل جلسات</div>
             </div>
             <div>
               <div className="text-2xl font-bold ">
-                {courses.reduce((sum, course) => sum + course.tests_count, 0)}
+                {courses.reduce((sum, course) => sum + (course.tests_count || 0), 0)}
               </div>
               <div className="text-sm text-muted-foreground">کل آزمون‌ها</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">
-                {Math.round(courses.reduce((sum, course) => sum + course.progress_percentage, 0) / courses.length)}%
+                {courses.length > 0 
+                  ? Math.round(courses.reduce((sum, course) => sum + (course.progress_percentage || 0), 0) / courses.length)
+                  : 0}%
               </div>
               <div className="text-sm text-muted-foreground">میانگین پیشرفت</div>
             </div>
@@ -188,6 +201,12 @@ function StudentCourseCard({ course, onView }: StudentCourseCardProps) {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
 
+  const teacherDisplayName = course.teacher
+    ? `${course.teacher.first_name || ""} ${course.teacher.last_name || ""}`.trim() ||
+      course.teacher.username ||
+      "تعیین نشده"
+    : "تعیین نشده";
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onView(course.id)}>
       <CardHeader className="pb-3">
@@ -205,7 +224,7 @@ function StudentCourseCard({ course, onView }: StudentCourseCardProps) {
         {/* Teacher */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
           <Users className="w-4 h-4" />
-          <span>مدرس: {course.teacher.first_name} {course.teacher.last_name}</span>
+          <span>مدرس: {teacherDisplayName}</span>
         </div>
 
         {/* Stats */}
