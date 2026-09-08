@@ -122,6 +122,42 @@ export default function StudentTestTakingPage() {
     return () => clearInterval(timer);
   }, [testStarted, timeRemaining, handleSubmitTest]);
 
+  // Format remaining time as HH:MM:SS or MM:SS
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Select an answer for a question (stores the option order)
+  const handleAnswerSelect = (questionIndex: number, optionOrder: number) => {
+    setAnswers(prev => {
+      const questionNumber = questionIndex + 1;
+      const existing = prev.find(a => a.question_number === questionNumber);
+      if (existing) {
+        return prev.map(a =>
+          a.question_number === questionNumber ? { ...a, answer: optionOrder } : a
+        );
+      }
+      return [...prev, { question_number: questionNumber, answer: optionOrder }];
+    });
+  };
+
+  const goToPreviousQuestion = () => {
+    setCurrentQuestionIndex(prev => Math.max(0, prev - 1));
+  };
+
+  const goToNextQuestion = () => {
+    setCurrentQuestionIndex(prev => {
+      const maxIndex = (test?.questions?.length ?? 1) - 1;
+      return Math.min(maxIndex, prev + 1);
+    });
+  };
+
   // Get current question
   const currentQuestion = test?.questions?.[currentQuestionIndex];
   const currentAnswer = answers.find(a => a.question_number === currentQuestionIndex + 1);
