@@ -150,7 +150,7 @@ export default function CreateTopicTestPage() {
   // Load subjects and files
   const loadInitialData = useCallback(async () => {
     try {
-      setFolderLoading(true);
+      setLoading(true);
       const filesResponse = await axiosInstance.get('/files/?content_type=test');
       // Handle both array and pagination format for files
       let filesData = [];
