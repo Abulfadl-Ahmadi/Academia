@@ -21,6 +21,34 @@ interface LiveChatProps {
   courseId: string;
 }
 
+function getWebSocketUrl(courseId: string): string {
+  const envWsUrl = import.meta.env.VITE_WS_URL;
+  if (envWsUrl && typeof envWsUrl === "string") {
+    const cleanBase = envWsUrl.replace(/\/+$/, "");
+    if (cleanBase.endsWith("/ws")) {
+      return `${cleanBase}/chat/${courseId}/`;
+    }
+    return `${cleanBase}/ws/chat/${courseId}/`;
+  }
+
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
+  if (apiBase && (apiBase.startsWith("http://") || apiBase.startsWith("https://"))) {
+    try {
+      const parsed = new URL(apiBase);
+      const wsProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+      const port = parsed.port ? `:${parsed.port}` : "";
+      return `${wsProtocol}//${parsed.hostname}${port}/ws/chat/${courseId}/`;
+    } catch {
+      // fallback
+    }
+  }
+
+  const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsHost = window.location.hostname;
+  const wsPort = window.location.protocol === "https:" ? "" : ":8000";
+  return `${wsProtocol}//${wsHost}${wsPort}/ws/chat/${courseId}/`;
+}
+
 export default function LiveChat({ courseId }: LiveChatProps) {
   const { user: currentUser } = useUser();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -45,13 +73,8 @@ export default function LiveChat({ courseId }: LiveChatProps) {
   }, [messages, scrollToBottom]);
 
   useEffect(() => {
-    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    // Dynamic WebSocket URL based on current host
-    const wsHost = window.location.hostname;
-    const wsPort = window.location.protocol === "https:" ? "" : ":8000";
-    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/ws/chat/${courseId}/`;
-    
-    console.log("Connecting to WebSocket:", wsUrl); // برای debug
+    const wsUrl = getWebSocketUrl(courseId);
+    console.log("Connecting to WebSocket:", wsUrl);
 
     const newSocket = new WebSocket(wsUrl);
 

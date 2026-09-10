@@ -58,38 +58,49 @@ class TestStatisticsAPIView(APIView):
                 questions = test.questions.all()
                 total_questions = questions.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                     answer = answer_map.get(idx)
-                    if answer and answer.answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
+                        else:
+                            wrong_answers += 1
             else:
                 # For PDF tests
                 total_questions = test.primary_keys.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for q_num in range(1, total_questions + 1):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer and answer.answer == correct_key.answer:
-                            correct_answers += 1
+                        if answer and answer.answer is not None:
+                            if answer.answer == correct_key.answer:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
                     except:
                         pass
             
             # محاسبه درصد
-            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
-            percent = max(0, percent/3)  # حداقل صفر
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            percent = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             total_percent += percent
             
             students.append({
                 "id": s.user.id,
                 "name": s.user.get_full_name() or s.user.username,
                 "percent": round(percent, 2),
+                "correct": correct_answers,
+                "wrong": wrong_answers,
+                "unanswered": unanswered_questions,
+                "total": total_questions,
                 "join_time": s.entry_time,
             })
 
@@ -128,37 +139,45 @@ class TestStatisticsExcelAPIView(APIView):
                 questions = test.questions.all()
                 total_questions = questions.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                     answer = answer_map.get(idx)
-                    if answer and answer.answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
+                        else:
+                            wrong_answers += 1
             else:
                 total_questions = test.primary_keys.count()
                 correct_answers = 0
+                wrong_answers = 0
                 
                 answer_map = {a.question_number: a for a in answers}
                 for q_num in range(1, total_questions + 1):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer and answer.answer == correct_key.answer:
-                            correct_answers += 1
+                        if answer and answer.answer is not None:
+                            if answer.answer == correct_key.answer:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
                     except:
                         pass
             
-            percent = ((3*correct_answers - (answers.count() - correct_answers)) / total_questions * 100) if total_questions > 0 else 0
-            percent = max(0, percent/3)
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            percent = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             
             students_data.append({
                 "name": s.user.get_full_name() or s.user.username,
                 "username": s.user.username,
                 "email": s.user.email,
                 "correct": correct_answers,
-                "wrong": answers.count() - correct_answers,
+                "wrong": wrong_answers,
+                "unanswered": unanswered_questions,
                 "total": total_questions,
                 "percent": round(percent, 2),
                 "join_time": s.entry_time.strftime('%Y-%m-%d %H:%M'),
@@ -264,7 +283,7 @@ class StudentTestResultAPIView(APIView):
                     except Option.DoesNotExist:
                         student_answer_order = None
                 
-                if answer:
+                if answer and answer.answer is not None:
                     is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                     if is_correct:
                         correct_answers += 1
@@ -295,7 +314,7 @@ class StudentTestResultAPIView(APIView):
                 answer = answer_map.get(q_num)
                 try:
                     correct_key = test.primary_keys.get(question_number=q_num)
-                    if answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == correct_key.answer
                         if is_correct:
                             correct_answers += 1
@@ -322,17 +341,18 @@ class StudentTestResultAPIView(APIView):
                     })
 
         # Calculate score percentage
-        score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-        score_percentage = score_percentage/3
+        unanswered_questions = total_questions - (correct_answers + wrong_answers)
+        score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
         
         data = {
             "id": session.id,
             "student_name": session.user.get_full_name() or session.user.username,
             "test_name": test.name,
             "total_questions": total_questions,
-            "answered_questions": answers.exclude(answer__isnull=True).count(),
+            "answered_questions": correct_answers + wrong_answers,
             "correct_answers": correct_answers,
             "wrong_answers": wrong_answers,
+            "unanswered_questions": unanswered_questions,
             "percent": round(score_percentage, 2),
             "entry_time": session.entry_time,
             "exit_time": session.exit_time,
@@ -627,14 +647,20 @@ class EnterTestView(views.APIView):
         )
         pdf_url = test.pdf_file.file.url if test.pdf_file and test.pdf_file.file else None
 
+        # دریافت پاسخ‌های ثبت‌شده قبلی در این سشن (برای ورود مجدد پس از خروج موقت)
+        answers = StudentAnswer.objects.filter(session=session)
+        answers_data = {answer.question_number: answer.answer for answer in answers}
+
         return Response({
             "session_id": session.id,
+            "id": session.id,
             "test_id": test.id,
             "pdf_file_url": request.build_absolute_uri(pdf_url) if pdf_url else None,
             "file_access_token": session.file_access_token,
             "duration_minutes": int(test.duration.total_seconds() / 60),
             "entry_time": session.entry_time.isoformat(),
-            "end_time": session.end_time.isoformat()
+            "end_time": session.end_time.isoformat(),
+            "answers": answers_data
         }, status=201)
 
 
@@ -742,6 +768,10 @@ class SubmitAnswerView(generics.CreateAPIView):
 class GetAnswersView(views.APIView):
     permission_classes = [IsAuthenticated]
 
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
     def get(self, request):
         session_id = request.query_params.get("session_id")
         test_id = request.query_params.get("test_id")
@@ -753,16 +783,19 @@ class GetAnswersView(views.APIView):
                 session = StudentTestSession.objects.get(id=session_id, user=user)
             except StudentTestSession.DoesNotExist:
                 return Response({"error": "Session not found"}, status=404)
-        # اگر test_id داده شده، session فعال را پیدا کن
+        # اگر test_id داده شده، session فعال یا غیرفعال موقت را پیدا کن
         elif test_id:
             try:
                 test = Test.objects.get(id=test_id)
-                session = StudentTestSession.objects.get(
-                    user=user, 
-                    test=test, 
-                    status__in=['active', 'inactive']
-                )
-            except (Test.DoesNotExist, StudentTestSession.DoesNotExist):
+            except Test.DoesNotExist:
+                return Response({"error": "Test not found"}, status=404)
+
+            session = StudentTestSession.objects.filter(
+                user=user, 
+                test=test, 
+                status__in=['active', 'inactive']
+            ).order_by('-entry_time').first()
+            if not session:
                 return Response({"error": "No active session found for this test"}, status=404)
         else:
             return Response({"error": "session_id or test_id is required"}, status=400)
@@ -772,6 +805,17 @@ class GetAnswersView(views.APIView):
             session.status = 'expired'
             session.save()
             return Response({"error": "Session has expired"}, status=403)
+
+        # اگر سشن inactive بود و کاربر برای ادامه آزمون برگشته، وضعیت را دوباره active کن
+        if session.status == 'inactive':
+            session.status = 'active'
+            session.save()
+            StudentTestSessionLog.objects.create(
+                session=session,
+                action='login',
+                ip_address=self.get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
 
         answers = StudentAnswer.objects.filter(session=session)
         data = {answer.question_number: answer.answer for answer in answers}
@@ -799,24 +843,26 @@ class FinishTestView(views.APIView):
         
         if session_id:
             try:
-                session = StudentTestSession.objects.get(id=session_id, user=request.user)
+                session = StudentTestSession.objects.get(id=session_id)
             except StudentTestSession.DoesNotExist:
                 raise ValidationError("Session not found.")
         elif test_id:
             try:
-                session = StudentTestSession.objects.get(test_id=test_id, user=request.user, status='active')
+                session = StudentTestSession.objects.filter(test_id=test_id, user=request.user, status="active").first()
+                if not session:
+                    raise ValidationError("Active session not found for this test.")
             except StudentTestSession.DoesNotExist:
-                raise ValidationError("Active session not found for this test.")
+                raise ValidationError("Session not found.")
         else:
-            raise ValidationError("Either session_id or test_id must be provided.")
+            raise ValidationError("Either session_id or test_id is required.")
 
-        # Store answers if provided
+        # Save answers if provided
         if answers:
             if isinstance(answers, str):
                 try:
                     answers = json.loads(answers)
                 except json.JSONDecodeError:
-                    return Response({"error": "Invalid JSON in answers"}, status=status.HTTP_400_BAD_REQUEST)
+                    pass
 
             for answer_data in answers:
                 question_number = answer_data.get('question_number')
@@ -838,13 +884,20 @@ class ExitTestView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        # session_id = request.data.get("session_id")
+        session_id = request.data.get("session_id")
+        test_id = request.data.get("test_id")
         device_id = request.data.get("device_id")
         user = request.user
 
-        try:
-            session = StudentTestSession.objects.get(user=user, status='active')
-        except StudentTestSession.DoesNotExist:
+        session = None
+        if session_id:
+            session = StudentTestSession.objects.filter(id=session_id, user=user).first()
+        elif test_id:
+            session = StudentTestSession.objects.filter(test_id=test_id, user=user, status='active').first()
+        else:
+            session = StudentTestSession.objects.filter(user=user, status='active').first()
+
+        if not session:
             return Response({"error": "Session not found or inactive."}, status=status.HTTP_404_NOT_FOUND)
 
         # ثبت لاگ خروج موقت
@@ -924,7 +977,7 @@ class CreateReport(views.APIView):
                         except Option.DoesNotExist:
                             student_answer_order = None
                     
-                    if answer:
+                    if answer and answer.answer is not None:
                         is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                         if is_correct:
                             correct_answers += 1
@@ -980,7 +1033,7 @@ class CreateReport(views.APIView):
                     answer = answer_map.get(q_num)
                     try:
                         correct_key = test.primary_keys.get(question_number=q_num)
-                        if answer:
+                        if answer and answer.answer is not None:
                             is_correct = answer.answer == correct_key.answer
                             if is_correct:
                                 correct_answers += 1
@@ -1007,8 +1060,8 @@ class CreateReport(views.APIView):
                         })
 
             # Calculate score percentage
-            score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-            score_percentage = score_percentage/3
+            unanswered_questions = total_questions - (correct_answers + wrong_answers)
+            score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
             session_data = {
                 "user": {
                     "id": session.user.id,
@@ -1024,6 +1077,7 @@ class CreateReport(views.APIView):
                 "score": {
                     "correct": correct_answers,
                     "wrong": wrong_answers,
+                    "unanswered": unanswered_questions,
                     "total": total_questions,
                     "percentage": score_percentage
                 },
@@ -1106,7 +1160,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
     def available_students(self, request):
         """لیست دانش‌آموزان برای انتخاب در فرم مجموعه آزمون"""
         user = request.user
-        if user.role not in ['admin', 'teacher'] and not user.is_staff:
+        if user.role not in ['admin', 'teacher', 'content_creator'] and not user.is_staff:
             return Response({'error': 'دسترسی غیرمجاز'}, status=status.HTTP_403_FORBIDDEN)
 
         students_qs = User.objects.filter(role='student', is_active=True).order_by('first_name', 'last_name', 'username')
@@ -1138,8 +1192,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
         user = request.user
         test_collection = self.get_object()
         
-        # Check permission - only teachers who created it or admins
-        if (user.role not in ['student', 'admin'] and 
+        # Check permission - teachers who created it, content creators, or admins/staff
+        if (user.role not in ['student', 'admin', 'content_creator'] and 
             test_collection.created_by != user and 
             not user.is_staff):
             return Response(
@@ -1300,7 +1354,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                     answer_map = {a.question_number: a for a in answers}
                     for idx, question in enumerate(sorted(questions, key=lambda q: q.id), 1):
                         answer = answer_map.get(idx)
-                        if answer and answer.answer:
+                        if answer and answer.answer is not None:
                             is_correct = answer.answer == (question.correct_option.id if question.correct_option else None)
                             if is_correct:
                                 correct_answers += 1
@@ -1314,7 +1368,7 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                         answer = answer_map.get(q_num)
                         try:
                             correct_key = test.primary_keys.get(question_number=q_num)
-                            if answer:
+                            if answer and answer.answer is not None:
                                 is_correct = answer.answer == correct_key.answer
                                 if is_correct:
                                     correct_answers += 1
@@ -1324,8 +1378,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                             continue
                 
                 # محاسبه درصد نمره
-                score_percentage = ((3*correct_answers - wrong_answers) / total_questions * 100) if total_questions > 0 else 0
-                score_percentage = max(0, score_percentage/3)  # حداقل صفر
+                unanswered_questions = total_questions - (correct_answers + wrong_answers)
+                score_percentage = ((3 * correct_answers - wrong_answers) / (3 * total_questions) * 100) if total_questions > 0 else 0
                 
                 results.append({
                     'test_name': test.name,
@@ -1335,7 +1389,8 @@ class TestCollectionViewSet(viewsets.ModelViewSet):
                     'date': session.exit_time.strftime('%Y-%m-%d') if session.exit_time else session.entry_time.strftime('%Y-%m-%d'),
                     'total_questions': total_questions,
                     'correct_answers': correct_answers,
-                    'wrong_answers': wrong_answers
+                    'wrong_answers': wrong_answers,
+                    'unanswered_questions': unanswered_questions
                 })
             else:
                 # اگر آزمون داده نشده، نمره صفر
@@ -1955,15 +2010,15 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         serializer.save()
     
     def perform_update(self, serializer):
-        # Ensure only the creator or admin can update
-        if (self.request.user.role != 'admin' and 
+        # Ensure creator, content_creator, or admin can update
+        if (self.request.user.role not in ['admin', 'content_creator'] and 
             serializer.instance.created_by != self.request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را ویرایش کند")
         serializer.save()
     
     def perform_destroy(self, instance):
-        # Ensure only the creator or admin can delete
-        if (self.request.user.role != 'admin' and 
+        # Ensure creator, content_creator, or admin can delete
+        if (self.request.user.role not in ['admin', 'content_creator'] and 
             instance.created_by != self.request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند این مجموعه سوال را حذف کند")
         instance.delete()
@@ -1974,7 +2029,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         collection = self.get_object()
         
         # Check permissions
-        if (request.user.role != 'admin' and 
+        if (request.user.role not in ['admin', 'content_creator'] and 
             collection.created_by != request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال اضافه کند")
         
@@ -2007,7 +2062,7 @@ class QuestionCollectionViewSet(viewsets.ModelViewSet):
         collection = self.get_object()
         
         # Check permissions
-        if (request.user.role != 'admin' and 
+        if (request.user.role not in ['admin', 'content_creator'] and 
             collection.created_by != request.user):
             raise PermissionDenied("فقط سازنده یا مدیر می‌تواند سوال حذف کند")
         

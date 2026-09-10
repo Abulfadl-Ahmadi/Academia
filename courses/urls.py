@@ -23,5 +23,5 @@ urlpatterns = [
     path('courses/teacher/due-activities/', views.TeacherDueActivitiesView.as_view(), name='teacher-due-activities'),
     path('courses/teacher/schedule/', views.TeacherScheduleView.as_view(), name='teacher-schedule'),
     path('courses/teacher/quick-stats/', views.TeacherQuickStatsView.as_view(), name='teacher-quick-stats'),
-    # path('courses/<int:course_id>/tests/', views.CourseTestViewSet.as_view(), name='course-tests'),
+    path('dashboard/analytics/', views.DashboardAnalyticsView.as_view(), name='dashboard-analytics'),
 ]

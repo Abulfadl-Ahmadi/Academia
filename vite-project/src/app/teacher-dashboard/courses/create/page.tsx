@@ -26,6 +26,7 @@ import {
   DollarSign,
   Image as ImageIcon
 } from "lucide-react";
+import CourseStudentSelector from "@/components/courses/CourseStudentSelector";
 
 interface CourseSchedule {
   day: number;
@@ -38,6 +39,7 @@ interface CreateCourseForm {
   is_active: boolean;
   spotplayer_course_id: string;
   schedules: CourseSchedule[];
+  students: number[];
 }
 
 interface CreateProductForm {
@@ -73,6 +75,7 @@ export default function CreateCoursePage() {
     is_active: true,
     spotplayer_course_id: "",
     schedules: [],
+    students: [],
   });
 
   const [productForm, setProductForm] = useState<CreateProductForm>({
@@ -193,6 +196,7 @@ export default function CreateCoursePage() {
         description: courseForm.description.trim(),
         is_active: courseForm.is_active,
         spotplayer_course_id: courseForm.spotplayer_course_id.trim() || null,
+        students: courseForm.students,
       });
 
       const courseId = courseResponse.data.id;
@@ -427,6 +431,14 @@ export default function CreateCoursePage() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Specific Students Selection */}
+        <CourseStudentSelector
+          selectedStudentIds={courseForm.students}
+          onChange={(ids) => handleCourseInputChange("students", ids)}
+          title="انتخاب دانش‌آموزان دارای دسترسی اختصاصی"
+          description="مشابه پنل ادمین، می‌توانید دانش‌آموزان مشخصی را برای دسترسی دستی به این دوره انتخاب کنید."
+        />
 
         {/* Product Creation Section */}
         <Card>

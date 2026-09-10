@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q, Prefetch, Avg
 from django.utils import timezone
+from datetime import timedelta
 import logging
 import logging
 import threading
@@ -86,22 +87,22 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role != 'student' and user.role != 'teacher':
-            return Course.objects.all().annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+            return Course.objects.all().prefetch_related('students', 'students__profile').annotate(
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
         elif user.role == 'teacher':
-            return Course.objects.filter(teacher=user).annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+            return Course.objects.filter(teacher=user).prefetch_related('students', 'students__profile').annotate(
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
         else:  # student
             return Course.objects.filter(students=user).annotate(
-                students_count=Count('students'),
-                sessions_count=Count('sessions'),
-                tests_count=Count('test_collections__tests')
+                students_count=Count('students', distinct=True),
+                sessions_count=Count('sessions', distinct=True),
+                tests_count=Count('test_collections__tests', distinct=True)
             )
 
     def get_serializer_class(self):
@@ -242,6 +243,56 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = TestCollectionSerializer(collections, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def available_students(self, request):
+        """لیست تمام دانش‌آموزان برای انتخاب در فرم دوره"""
+        user = request.user
+        if user.role not in ['admin', 'teacher', 'content_creator', 'support'] and not user.is_staff:
+            return Response({'error': 'دسترسی غیرمجاز'}, status=status.HTTP_403_FORBIDDEN)
+
+        students_qs = User.objects.filter(role='student', is_active=True).select_related('profile').order_by('first_name', 'last_name', 'username')
+        
+        search = request.query_params.get('search', '').strip()
+        if search:
+            students_qs = students_qs.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(profile__phone_number__icontains=search) |
+                Q(profile__school__icontains=search)
+            )
+
+        data = [
+            {
+                'id': s.id,
+                'username': s.username,
+                'full_name': s.get_full_name() or s.username,
+                'first_name': s.first_name,
+                'last_name': s.last_name,
+                'phone': getattr(s, 'phone', '') or (s.profile.phone_number if hasattr(s, 'profile') and s.profile else ''),
+                'email': s.email or '',
+                'school': s.profile.school if hasattr(s, 'profile') and s.profile else '',
+                'grade': s.profile.grade if hasattr(s, 'profile') and s.profile else '',
+            }
+            for s in students_qs
+        ]
+        return Response(data)
+
+    @action(detail=True, methods=['get'])
+    def students(self, request, pk=None):
+        """Get enrolled students for a specific course"""
+        course = self.get_object()
+        user = request.user
+        if user.role == 'student':
+            return Response(
+                {"error": "Only staff/teachers can access enrolled students list"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        students = course.students.select_related('profile').all()
+        serializer = UserSerializer(students, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['get', 'post'])
     def schedules(self, request, pk=None):
         """Get or create schedules for a specific course"""
@@ -313,7 +364,7 @@ class StudentCourseViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.role != 'student':
             return Course.objects.none()
         
-        return Course.objects.filter(students=self.request.user).annotate(
+        return Course.objects.filter(students=self.request.user).select_related('teacher').annotate(
             students_count=Count('students'),
             sessions_count=Count('sessions'),
             tests_count=Count('test_collections__tests')
@@ -855,3 +906,143 @@ class TeacherQuickStatsView(APIView):
         }
         
         return Response(stats)
+
+
+class DashboardAnalyticsView(APIView):
+    """
+    Dashboard analytics endpoint providing aggregated metrics and chart data
+    for staff roles (admin, content_creator, finance, support).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role == 'student':
+            return Response(
+                {"error": "فقط کادر مدیریتی به این بخش دسترسی دارند"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        now = timezone.now()
+
+        from accounts.models import User
+        from tests.models import TestCollection, Test, Question
+        from django.db.models import Sum
+
+        courses_qs = Course.objects.all()
+        courses_count = courses_qs.count()
+        collections_count = TestCollection.objects.count()
+        questions_count = Question.objects.count()
+        users_count = User.objects.filter(role='student').count()
+
+        # Month mapping helper for Gregorian to Jalali
+        g_to_j = {1: 10, 2: 11, 3: 0, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 10: 7, 11: 8, 12: 9}
+        j_months = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+
+        # 2. Admin Growth Data (Users & Courses over 6 Months)
+        months_data = []
+        for i in range(5, -1, -1):
+            start_date = now - timedelta(days=(i + 1) * 30)
+            end_date = now - timedelta(days=i * 30)
+            
+            u_count = User.objects.filter(date_joined__gte=start_date, date_joined__lt=end_date).count()
+            c_count = Course.objects.filter(created_at__gte=start_date, created_at__lt=end_date).count()
+            
+            target_date = now - timedelta(days=i * 30)
+            j_idx = g_to_j.get(target_date.month, 0)
+            month_label = j_months[j_idx]
+
+            months_data.append({
+                "month": month_label,
+                "users": u_count,
+                "courses": c_count
+            })
+
+        # 3. Monthly Sales Data (from Transaction model)
+        sales_data = []
+        try:
+            from finance.models import Transaction
+            for i in range(5, -1, -1):
+                start_date = now - timedelta(days=(i + 1) * 30)
+                end_date = now - timedelta(days=i * 30)
+                
+                amount_sum = Transaction.objects.filter(
+                    created_at__gte=start_date,
+                    created_at__lt=end_date,
+                    transaction_type='purchase'
+                ).aggregate(total=Sum('amount'))['total'] or 0
+                
+                target_date = now - timedelta(days=i * 30)
+                j_idx = g_to_j.get(target_date.month, 0)
+                month_label = j_months[j_idx]
+
+                amount_in_millions = round(float(amount_sum) / 1_000_000, 1)
+
+                sales_data.append({
+                    "month": month_label,
+                    "sales": amount_in_millions,
+                    "raw_amount": amount_sum
+                })
+        except Exception as e:
+            logger.error(f"Error fetching sales analytics: {e}")
+            sales_data = [
+                {"month": m["month"], "sales": 0, "raw_amount": 0} for m in months_data
+            ]
+
+        # 4. Content Creator Breakdown
+        try:
+            from blog.models import BlogPost
+            blog_count = BlogPost.objects.count()
+        except Exception:
+            blog_count = 0
+
+        try:
+            from gallery.models import GalleryImage
+            gallery_count = GalleryImage.objects.count()
+        except Exception:
+            gallery_count = 0
+
+        content_breakdown = [
+            {"category": "سوالات", "count": questions_count},
+            {"category": "آزمون‌ها", "count": Test.objects.count()},
+            {"category": "مجموعه‌ها", "count": collections_count},
+            {"category": "وبلاگ", "count": blog_count},
+            {"category": "گالری", "count": gallery_count},
+        ]
+
+        # 5. Support Weekly Tickets Breakdown
+        weekly_tickets = []
+        day_names_fa = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"]
+        try:
+            from tickets.models import Ticket
+            for i in range(6, -1, -1):
+                day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0)
+                day_end = day_start + timedelta(days=1)
+                
+                t_count = Ticket.objects.filter(created_at__gte=day_start, created_at__lt=day_end).count()
+                res_count = Ticket.objects.filter(status='closed', updated_at__gte=day_start, updated_at__lt=day_end).count()
+                
+                day_idx = (day_start.weekday() + 2) % 7
+                weekly_tickets.append({
+                    "day": day_names_fa[day_idx],
+                    "tickets": t_count,
+                    "resolved": res_count
+                })
+        except Exception:
+            weekly_tickets = [
+                {"day": day_names_fa[i], "tickets": 0, "resolved": 0} for i in range(7)
+            ]
+
+        return Response({
+            "summary": {
+                "courses_count": courses_count,
+                "collections_count": collections_count,
+                "questions_count": questions_count,
+                "users_count": users_count,
+            },
+            "admin_growth": months_data,
+            "admin_sales": sales_data,
+            "content_breakdown": content_breakdown,
+            "weekly_tickets": weekly_tickets
+        })
+
+

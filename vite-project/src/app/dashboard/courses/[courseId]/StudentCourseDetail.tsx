@@ -23,9 +23,11 @@ interface Course {
   id: number;
   title: string;
   description: string;
-  teacher: {
-    username: string;
-  };
+  teacher?: {
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+  } | null;
   created_at: string;
   is_live?: boolean;
   live_iframe?: string;
@@ -248,7 +250,13 @@ export default function StudentCourseDetail({ courseId }: StudentCourseDetailPro
               <Users className="w-6 h-6 text-purple-600" />
               <div>
                 <div className="text-sm text-purple-600">مدرس</div>
-                <div className="text-sm font-medium text-purple-600">{course.teacher.username}</div>
+                <div className="text-sm font-medium text-purple-600">
+                  {course.teacher
+                    ? `${course.teacher.first_name || ""} ${course.teacher.last_name || ""}`.trim() ||
+                      course.teacher.username ||
+                      "تعیین نشده"
+                    : "تعیین نشده"}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-orange-500/5 rounded-lg">

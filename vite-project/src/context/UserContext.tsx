@@ -17,7 +17,7 @@ type User = {
   first_name: string;
   last_name: string;
   email: string;
-  role: "student" | "teacher";
+  role: "student" | "teacher" | "admin" | "support" | "content_creator" | "finance" | string;
   id: number;
 };
 
@@ -108,25 +108,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      let res;
-      try {
-        res = await axiosInstance.get("/profiles/me/", {
-          withCredentials: true,
-        });
-      } catch {
-        res = await axiosInstance.get("/profiles/", {
-          withCredentials: true,
-        });
-      }
-      
-      console.log("API Response:", res.data); // Debug log
+      const res = await axiosInstance.get("/profiles/me/", {
+        withCredentials: true,
+      });
       
       let userData;
       if (res.data && res.data.user) {
         // Direct profile object from /profiles/me/
         userData = res.data;
       } else if (res.data.results && Array.isArray(res.data.results)) {
-        // Fallback for paginated list (should not happen with /profiles/me/)
         userData = res.data.results[0];
       } else if (Array.isArray(res.data)) {
         userData = res.data[0];
@@ -159,13 +149,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
         role,
         id: userId,
       });
-      console.log("User set successfully:", { username, first_name, last_name, email, role, id: userId });
       markLoggedIn();
       
       // Store last fetch timestamp to prevent excessive calls
       localStorage.setItem('last_user_fetch', Date.now().toString());
     } catch (err) {
-      console.error("Failed to fetch user:", err);
+      // Unauthenticated or session expired: clear user state without making extra API requests
       setUser(null);
       markLoggedOut();
     } finally {

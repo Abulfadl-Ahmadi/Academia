@@ -173,6 +173,7 @@ export default function PanelRoute() {
             path="/tests/:testId/answer-sheet"
             element={<TestAnswerSheetPage />}
           />
+          <Route path="/tests" element={<Navigate to="/panel/tests/active" replace />} />
           <Route path="/tests/active" element={<ActiveTestsPage />} />
           <Route path="/tests/history" element={<TestHistoryPage />} />
           <Route path="/tests/result/:id" element={<TestResult />} />

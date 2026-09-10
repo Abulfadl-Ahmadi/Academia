@@ -27,10 +27,16 @@ function Popover({ ...props }: PopoverPrimitive.Root.Props) {
   )
 }
 
+interface PopoverTriggerProps extends PopoverPrimitive.Trigger.Props {
+  asChild?: boolean
+}
+
 function PopoverTrigger({
+  asChild,
+  children,
   className,
   ...props
-}: PopoverPrimitive.Trigger.Props) {
+}: PopoverTriggerProps) {
   const ref = React.useRef<HTMLButtonElement>(null)
   const { setDir } = React.useContext(PopoverDirContext)
 
@@ -57,6 +63,7 @@ function PopoverTrigger({
       ref={ref}
       data-slot="popover-trigger"
       className={className}
+      {...(asChild && React.isValidElement(children) ? { render: children } : { children })}
       {...props}
     />
   )

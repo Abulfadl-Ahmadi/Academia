@@ -77,7 +77,7 @@ export default function StudentTestTakingPage() {
     } catch (error) {
       console.error('Error loading test:', error);
       toast.error('خطا در بارگذاری آزمون');
-      navigate('/tests');
+      navigate('/panel/tests/active');
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function StudentTestTakingPage() {
         answers: answers
       });
       toast.success('آزمون با موفقیت ارسال شد');
-      navigate(`/tests/result/${testId}`);
+      navigate(`/panel/tests/result/${testId}`);
     } catch (error) {
       console.error('Error submitting test:', error);
       toast.error('خطا در ارسال آزمون');
@@ -122,6 +122,42 @@ export default function StudentTestTakingPage() {
     return () => clearInterval(timer);
   }, [testStarted, timeRemaining, handleSubmitTest]);
 
+  // Format remaining time as HH:MM:SS or MM:SS
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Select an answer for a question (stores the option order)
+  const handleAnswerSelect = (questionIndex: number, optionOrder: number) => {
+    setAnswers(prev => {
+      const questionNumber = questionIndex + 1;
+      const existing = prev.find(a => a.question_number === questionNumber);
+      if (existing) {
+        return prev.map(a =>
+          a.question_number === questionNumber ? { ...a, answer: optionOrder } : a
+        );
+      }
+      return [...prev, { question_number: questionNumber, answer: optionOrder }];
+    });
+  };
+
+  const goToPreviousQuestion = () => {
+    setCurrentQuestionIndex(prev => Math.max(0, prev - 1));
+  };
+
+  const goToNextQuestion = () => {
+    setCurrentQuestionIndex(prev => {
+      const maxIndex = (test?.questions?.length ?? 1) - 1;
+      return Math.min(maxIndex, prev + 1);
+    });
+  };
+
   // Get current question
   const currentQuestion = test?.questions?.[currentQuestionIndex];
   const currentAnswer = answers.find(a => a.question_number === currentQuestionIndex + 1);
@@ -144,7 +180,7 @@ export default function StudentTestTakingPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">آزمون یافت نشد</h2>
-          <Button onClick={() => navigate('/tests')}>
+          <Button onClick={() => navigate('/panel/tests/active')}>
             بازگشت به لیست آزمون‌ها
           </Button>
         </div>
@@ -164,7 +200,7 @@ export default function StudentTestTakingPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/tests')}
+                  onClick={() => navigate('/panel/tests/active')}
                   className="flex items-center gap-2"
                 >
                   <ArrowRight className="w-4 h-4" />
@@ -230,7 +266,7 @@ export default function StudentTestTakingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/tests')}
+                onClick={() => navigate('/panel/tests/active')}
                 className="flex items-center gap-2"
               >
                 <ArrowRight className="w-4 h-4" />

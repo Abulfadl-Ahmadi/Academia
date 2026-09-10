@@ -38,7 +38,7 @@ export default function TestCollectionList() {
   // Teacher-only management screens stay in the panel, which is their only home.
   const base = usePanelBase();
 
-  const isTeacherOrAdmin = user?.role === "teacher" || user?.role === "admin";
+  const isTeacherOrAdmin = ["teacher", "admin", "content_creator"].includes(user?.role || "");
 
   useEffect(() => {
     fetchCollections();

@@ -6,9 +6,28 @@ from tests.models import Test
 
 
 class UserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField(read_only=True)
+    school = serializers.SerializerMethodField(read_only=True)
+    grade = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'school', 'grade']
+
+    def get_phone_number(self, obj):
+        if hasattr(obj, 'profile') and obj.profile:
+            return obj.profile.phone_number
+        return None
+
+    def get_school(self, obj):
+        if hasattr(obj, 'profile') and obj.profile:
+            return obj.profile.school
+        return None
+
+    def get_grade(self, obj):
+        if hasattr(obj, 'profile') and obj.profile:
+            return obj.profile.grade
+        return None
 
 
 """We reuse the FileSerializer from contents app to ensure a single source of truth."""
@@ -24,25 +43,51 @@ class CourseScheduleSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     teacher = UserSerializer(read_only=True)
+    students = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.filter(role='student'),
+        required=False
+    )
+    student_details = serializers.SerializerMethodField(read_only=True)
     students_count = serializers.IntegerField(read_only=True)
     sessions_count = serializers.IntegerField(read_only=True)
     tests_count = serializers.IntegerField(read_only=True)
-    students = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'description', 'teacher', 'students',
+            'id', 'title', 'description', 'teacher', 'students', 'student_details',
             'vod_channel_id', 'stream_id', 'spotplayer_course_id',
             'created_at', 'updated_at', 'is_active',
             'students_count', 'sessions_count', 'tests_count'
         ]
         read_only_fields = ['created_at', 'updated_at']
 
+    def get_student_details(self, obj):
+        return [
+            {
+                'id': student.id,
+                'username': student.username,
+                'full_name': student.get_full_name() or student.username,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'phone_number': getattr(student, 'phone', '') or (student.profile.phone_number if hasattr(student, 'profile') and student.profile else ''),
+                'email': student.email or '',
+                'school': student.profile.school if hasattr(student, 'profile') and student.profile else '',
+                'grade': student.profile.grade if hasattr(student, 'profile') and student.profile else '',
+            }
+            for student in obj.students.all()
+        ]
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
         
+        # خروجی غنی برای لیست دانش‌آموزان
+        student_details = self.get_student_details(instance)
+        representation['students'] = student_details
+        representation['student_ids'] = [s.id for s in instance.students.all()]
+
         # اگر کاربر لاگین هست و غیر از دانش‌آموز است، فیلدهای RTMP و live status را اضافه کن
         if request and request.user.is_authenticated and request.user.role != 'student':
             representation['rtmp_url'] = instance.rtmp_url
@@ -60,6 +105,12 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class TeacherCourseSerializer(serializers.ModelSerializer):
     teacher = UserSerializer(read_only=True)
+    students = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.filter(role='student'),
+        required=False
+    )
+    student_details = serializers.SerializerMethodField(read_only=True)
     students_count = serializers.IntegerField(read_only=True)
     sessions_count = serializers.IntegerField(read_only=True)
     tests_count = serializers.IntegerField(read_only=True)
@@ -67,12 +118,35 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'description', 'teacher', 'students_count', 'vod_channel_id',
+            'id', 'title', 'description', 'teacher', 'students', 'student_details', 'students_count', 'vod_channel_id',
             'stream_id', 'spotplayer_course_id',
             'sessions_count', 'tests_count', 'created_at', 'updated_at', 'is_active',
             'rtmp_url', 'rtmp_key', 'live_iframe', 'is_live', 'chat_mode'
         ]
         read_only_fields = ['created_at', 'updated_at']
+
+    def get_student_details(self, obj):
+        return [
+            {
+                'id': student.id,
+                'username': student.username,
+                'full_name': student.get_full_name() or student.username,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'phone_number': getattr(student, 'phone', '') or (student.profile.phone_number if hasattr(student, 'profile') and student.profile else ''),
+                'email': student.email or '',
+                'school': student.profile.school if hasattr(student, 'profile') and student.profile else '',
+                'grade': student.profile.grade if hasattr(student, 'profile') and student.profile else '',
+            }
+            for student in obj.students.all()
+        ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        student_details = self.get_student_details(instance)
+        representation['students'] = student_details
+        representation['student_ids'] = [s.id for s in instance.students.all()]
+        return representation
 
 
 class ClassCategorySerializer(serializers.ModelSerializer):

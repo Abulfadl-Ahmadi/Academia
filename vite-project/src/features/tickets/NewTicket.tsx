@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2, ArrowRight, Upload } from 'lucide-react';
+import { getDisplayVersion } from '@/config/version';
 
 interface TicketFormData {
   title: string;
@@ -77,7 +78,12 @@ export default function NewTicket() {
       // Create FormData to handle file uploads
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
+
+      // Append client version metadata for support diagnosis
+      const browserInfo = typeof navigator !== 'undefined' ? `${navigator.userAgent.slice(0, 100)}` : '';
+      const versionMetadata = `\n\n[نسخه کلاینت: ${getDisplayVersion()}${browserInfo ? ` | ${browserInfo}` : ''}]`;
+      formDataToSend.append('description', (formData.description || '').trim() + versionMetadata);
+
       formDataToSend.append('category', formData.category);
       formDataToSend.append('priority', formData.priority);
       
@@ -106,14 +112,19 @@ export default function NewTicket() {
     <div className="container mx-auto p-4">
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/panel/support')}>
-              <ArrowRight size={16} />
-            </Button>
-            <div>
-              <CardTitle className="text-xl">ثبت تیکت جدید</CardTitle>
-              <CardDescription>مشکل یا سؤال خود را مطرح کنید</CardDescription>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/panel/support')}>
+                <ArrowRight size={16} />
+              </Button>
+              <div>
+                <CardTitle className="text-xl">ثبت تیکت جدید</CardTitle>
+                <CardDescription>مشکل یا سؤال خود را مطرح کنید</CardDescription>
+              </div>
             </div>
+            <span className="text-xs text-muted-foreground/80 bg-muted/60 px-2.5 py-1 rounded-md border font-mono">
+              نسخه شما: {getDisplayVersion()}
+            </span>
           </div>
         </CardHeader>
         <CardContent>

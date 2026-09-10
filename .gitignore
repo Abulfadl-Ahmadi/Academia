@@ -123,3 +123,14 @@ Thumbs.db
 .eggs/
 
 tasks/
+data/
+trash/
+scratch/
+.agents/
+fixes_*.json
+fixes_batch_*.json
+scripts/clean_latex_dataset.py
+scripts/fix_latex_llm.py
+scripts/merge_extracted.py
+scripts/reimport_all_questions.py
+scripts/pdf_to_png.py

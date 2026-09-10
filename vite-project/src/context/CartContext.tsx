@@ -15,7 +15,16 @@ interface Product {
   course?: number
   test?: number
   has_active_discount: boolean
+  is_physical_product?: boolean
+  is_digital_product?: boolean
+  has_access?: boolean
   created_at: string
+}
+
+const isDigitalProduct = (product: Product): boolean => {
+  if (product.is_digital_product !== undefined) return product.is_digital_product
+  if (product.is_physical_product !== undefined) return !product.is_physical_product
+  return ['course', 'test', 'file'].includes(product.product_type)
 }
 
 interface CartItem {
@@ -100,6 +109,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const addToCart = async (product: Product, quantity: number = 1) => {
+    if (product.has_access) {
+      const { toast } = await import("sonner")
+      toast.info(`شما قبلاً به محصول «${product.title}» دسترسی دارید.`)
+      return
+    }
+
+    const isDigital = isDigitalProduct(product)
+    const effectiveQty = isDigital ? 1 : quantity
+
     try {
       setLoading(true)
       
@@ -107,7 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const response = await axiosInstance.post('/shop/cart/manage/', {
           product_id: product.id,
-          quantity: quantity
+          quantity: effectiveQty
         })
         
         if (response.data) {
@@ -116,9 +134,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return
         }
       } catch (error) {
-        const errorResponse = error as { response?: { status?: number } }
+        const errorResponse = error as { response?: { status?: number; data?: { error?: string; already_purchased?: boolean } } }
+        if (errorResponse.response?.data?.already_purchased) {
+          const { toast } = await import("sonner")
+          toast.info(errorResponse.response.data.error || "شما قبلاً این محصول را تهیه کرده‌اید.")
+          return
+        }
         if (errorResponse.response?.status !== 404) {
-          throw error
+          const { toast } = await import("sonner")
+          toast.error(errorResponse.response?.data?.error || "خطا در افزودن به سبد خرید")
+          return
         }
         // If 404, fall through to localStorage behavior
       }
@@ -128,12 +153,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const existingItem = prevCart.find(item => item.product.id === product.id)
         
         if (existingItem) {
+          if (isDigital) {
+            return prevCart
+          }
           const updatedCart = prevCart.map(item =>
             item.product.id === product.id
               ? { 
                   ...item, 
-                  quantity: item.quantity + quantity,
-                  total: (item.quantity + quantity) * item.price
+                  quantity: item.quantity + effectiveQty,
+                  total: (item.quantity + effectiveQty) * item.price
                 }
               : item
           )
@@ -147,9 +175,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         
         const newCart = [...prevCart, { 
           product, 
-          quantity, 
+          quantity: effectiveQty, 
           price: product.current_price,
-          total: product.current_price * quantity
+          total: product.current_price * effectiveQty
         }]
         
         // Update localStorage
@@ -162,7 +190,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       })
     } catch (error) {
       console.error('Error adding to cart:', error)
-      // Already handled fallback above
     } finally {
       setLoading(false)
     }
@@ -187,6 +214,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const updateQuantity = async (productId: number, quantity: number) => {
     if (quantity <= 0) {
       await removeFromCart(productId)
+      return
+    }
+
+    const cartItem = cart.find(item => item.product.id === productId)
+    if (cartItem && isDigitalProduct(cartItem.product) && quantity > 1) {
+      const { toast } = await import("sonner")
+      toast.info("محصولات دیجیتال فقط به تعداد ۱ عدد قابل سفارش هستند.")
       return
     }
     

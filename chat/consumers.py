@@ -114,6 +114,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def is_user_in_course(self):
+        # Staff/superusers can join any course chat
+        if getattr(self.user, 'is_superuser', False) or getattr(self.user, 'is_staff', False):
+            return True
         try:
             course = Course.objects.get(id=self.course_id)
             if self.user == course.teacher or self.user in course.students.all():

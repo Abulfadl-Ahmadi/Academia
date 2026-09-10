@@ -144,17 +144,18 @@ export function Footer() {
                 ))}
             <div>
             <a
-              referrerpolicy="origin"
+              referrerPolicy="origin"
               target="_blank"
+              rel="noopener noreferrer"
               href="https://trustseal.enamad.ir/?id=648110&Code=WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
             >
               <img
-                referrerpolicy="origin"
+                referrerPolicy="origin"
                 // src="https://trustseal.enamad.ir/logo.aspx?id=648110&Code=WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
                 src="https://woocommerce.ir/wp-content/uploads/enamad.png"
-                alt="بب"
+                alt="نماد اعتماد الکترونیکی"
                 style={{ cursor: "pointer" }}
-                code="WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
+                data-code="WMejzam7hhjex9r1LW87qRiXd5OhQ99i"
               />
             </a>
             </div>

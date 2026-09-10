@@ -19,6 +19,7 @@ import {
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
+import { SidebarVersion } from "@/components/SidebarVersion";
 import {
   Sidebar,
   SidebarContent,
@@ -387,10 +388,11 @@ export function AdminSidebar({
               first_name: user.first_name,
               last_name: user.last_name,
               email: user.email,
-              avatar: "/avatars/default.jpg",
+              avatar: "",
             }}
           />
         )}
+        <SidebarVersion />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -136,7 +136,6 @@ function App() {
   }
   return (
     <div className={showMobileNav ? "pb-20 md:pb-0" : ""}>
-          <UserProvider>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -379,7 +378,6 @@ function App() {
       <Toaster />
       {showMobileNav ? <MobileBottomNav /> : null}
       {showFloatingCalculator ? <FloatingGradeCalculator /> : null}
-              </UserProvider>
     </div>
   );
 }

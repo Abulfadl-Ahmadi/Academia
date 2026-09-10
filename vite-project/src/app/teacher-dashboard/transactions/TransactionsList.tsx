@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +12,28 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import { Search, Filter, Download, FileSpreadsheet } from "lucide-react";
+import { Search, Filter, Download, FileSpreadsheet, Loader2 } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { columns, type Transaction } from "./columns";
 import { getStatusLabel, getPaymentMethodLabel, formatDate, formatPrice } from "./utils";
 import * as XLSX from "xlsx";
 
-// Transaction interface moved to columns.tsx
+const PAGE_SIZE = 30;
 
 export default function TransactionsList() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [exporting, setExporting] = useState(false);
+
+  // Global stats for current filter
+  const [stats, setStats] = useState({
+    total_count: 0,
+    total_purchases: 0,
+    total_refunds: 0,
+  });
 
   // Filters
   const [filters, setFilters] = useState({
@@ -33,110 +43,145 @@ export default function TransactionsList() {
     status: "",
   });
 
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  // Debounce search input
   useEffect(() => {
-    fetchTransactions();
-  }, []);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(filters.search.trim());
+    }, 350);
+    return () => clearTimeout(handler);
+  }, [filters.search]);
 
-
-  const applyFilters = useCallback(() => {
-    // Ensure transactions is an array before applying filters
-    if (!Array.isArray(transactions)) {
-      setFilteredTransactions([]);
-      return;
-    }
-    
-    let filtered = [...transactions];
-
-    // Search filter
-    if (filters.search) {
-      filtered = filtered.filter(transaction => {
-        const user = transaction.order?.user || transaction.created_by || transaction.user || {};
-        const username = (user.username || "").toLowerCase();
-        const email = (user.email || "").toLowerCase();
-        const firstName = (user.first_name || "").toLowerCase();
-        const lastName = (user.last_name || "").toLowerCase();
-        const school = (user.school || "").toLowerCase();
-        const ref = (transaction.reference_number || "").toLowerCase();
-        const orderId = (transaction.order?.id || "").toString();
-        const transCode = (transaction.transaction_code || transaction.id || "").toString().toLowerCase();
-        const q = filters.search.toLowerCase();
-        return (
-          username.includes(q) ||
-          email.includes(q) ||
-          firstName.includes(q) ||
-          lastName.includes(q) ||
-          school.includes(q) ||
-          ref.includes(q) ||
-          orderId.includes(q) ||
-          transCode.includes(q)
-        );
-      });
-    }
-
-    // Payment method filter
-    if (filters.payment_method) {
-      filtered = filtered.filter(transaction =>
-        transaction.payment_method === filters.payment_method
-      );
-    }
-
-    // Transaction type filter
-    if (filters.transaction_type) {
-      filtered = filtered.filter(transaction =>
-        transaction.transaction_type === filters.transaction_type
-      );
-    }
-
-    // Status filter
-    if (filters.status) {
-      filtered = filtered.filter(transaction =>
-        transaction.order?.status === filters.status
-      );
-    }
-
-    setFilteredTransactions(filtered);
-  }, [transactions, filters]);
-
-
-  useEffect(() => {
-    applyFilters();
-  }, [transactions, filters, applyFilters]);
-
-  const fetchTransactions = async () => {
+  // Fetch stats based on current filters
+  const fetchStats = useCallback(async () => {
     try {
-      setLoading(true);
-      const response = await axiosInstance.get("/finance/transactions/?page_size=100");
-      
-      // Handle different response formats
-      let transactionsData: Transaction[] = [];
-      if (Array.isArray(response.data)) {
-        transactionsData = response.data;
-      } else if (response.data && Array.isArray(response.data.results)) {
-        transactionsData = response.data.results;
-      } else if (response.data && Array.isArray(response.data.data)) {
-        transactionsData = response.data.data;
-      } else {
-        console.warn("Unexpected API response format:", response.data);
-        transactionsData = [];
+      const params: Record<string, string> = {};
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (filters.payment_method && filters.payment_method !== "-") params.payment_method = filters.payment_method;
+      if (filters.transaction_type && filters.transaction_type !== "-") params.transaction_type = filters.transaction_type;
+      if (filters.status && filters.status !== "-") params.status = filters.status;
+
+      const res = await axiosInstance.get("/finance/transactions/stats/", { params });
+      if (res.data) {
+        setStats({
+          total_count: res.data.total_count || 0,
+          total_purchases: res.data.total_purchases || 0,
+          total_refunds: res.data.total_refunds || 0,
+        });
       }
-      
-      setTransactions(transactionsData);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-      toast.error("خطا در دریافت تراکنش‌ها");
-      setTransactions([]); // Ensure transactions is always an array
-    } finally {
-      setLoading(false);
+    } catch {
+      // Best-effort stats
+    }
+  }, [debouncedSearch, filters.payment_method, filters.transaction_type, filters.status]);
+
+  // Fetch transactions (page-based)
+  const fetchPage = useCallback(
+    async (pageToFetch: number, isReset = false) => {
+      if (isReset) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      try {
+        const params: Record<string, string | number> = {
+          page: pageToFetch,
+          page_size: PAGE_SIZE,
+        };
+        if (debouncedSearch) params.search = debouncedSearch;
+        if (filters.payment_method && filters.payment_method !== "-") params.payment_method = filters.payment_method;
+        if (filters.transaction_type && filters.transaction_type !== "-") params.transaction_type = filters.transaction_type;
+        if (filters.status && filters.status !== "-") params.status = filters.status;
+
+        const response = await axiosInstance.get("/finance/transactions/", { params });
+
+        let results: Transaction[] = [];
+        let nextUrl: string | null = null;
+
+        if (Array.isArray(response.data)) {
+          results = response.data;
+        } else if (response.data && Array.isArray(response.data.results)) {
+          results = response.data.results;
+          nextUrl = response.data.next;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          results = response.data.data;
+        }
+
+        setTransactions((prev) => {
+          if (isReset) {
+            return results;
+          }
+          const existingIds = new Set(prev.map((t) => t.id));
+          const uniqueNew = results.filter((t) => !existingIds.has(t.id));
+          return [...prev, ...uniqueNew];
+        });
+
+        setPage(pageToFetch);
+        setHasMore(Boolean(nextUrl) && results.length > 0);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        toast.error("خطا در دریافت تراکنش‌ها");
+        if (isReset) {
+          setTransactions([]);
+        }
+      } finally {
+        if (isReset) {
+          setLoading(false);
+        } else {
+          setLoadingMore(false);
+        }
+      }
+    },
+    [debouncedSearch, filters.payment_method, filters.transaction_type, filters.status]
+  );
+
+  // Trigger reset on filter or search change
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchPage(1, true);
+    fetchStats();
+  }, [debouncedSearch, filters.payment_method, filters.transaction_type, filters.status, fetchPage, fetchStats]);
+
+  // Infinite scroll intersection observer attached to table container
+  useEffect(() => {
+    const rootElem = tableContainerRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+          fetchPage(page + 1, false);
+        }
+      },
+      { root: rootElem, threshold: 0.1, rootMargin: "150px" }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loading, loadingMore, page, fetchPage]);
+
+  // Handle scroll inside fixed table container
+  const handleTableScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight < 150) {
+      if (hasMore && !loading && !loadingMore) {
+        fetchPage(page + 1, false);
+      }
     }
   };
 
-
   const handleFilterChange = (key: string, value: string) => {
-    if (value === "-") {
-      setFilters(prev => ({ ...prev, [key]: "" }));
-      return;
-    }
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value === "-" ? "" : value }));
   };
 
   const clearFilters = () => {
@@ -148,12 +193,22 @@ export default function TransactionsList() {
     });
   };
 
-  const buildExportRows = () => {
-    const headers = ["شماره تراکنش", "شماره سفارش", "کاربر", "مرکز آموزشی / مدرسه", "مبلغ", "روش پرداخت", "وضعیت", "تاریخ"];
-    const rows = filteredTransactions.map(t => {
+  // Build export rows
+  const buildExportRows = (dataset: Transaction[]) => {
+    const headers = [
+      "شماره تراکنش",
+      "شماره سفارش",
+      "کاربر",
+      "مرکز آموزشی / مدرسه",
+      "مبلغ",
+      "روش پرداخت",
+      "وضعیت",
+      "تاریخ",
+    ];
+    const rows = dataset.map((t) => {
       const user = t.order?.user || t.created_by || t.user || {};
-      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-      const orderId = t.order?.id?.toString() || "-";
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+      const orderId = t.order?.order_code || (t.order?.id ? `#${t.order.id}` : "-");
       const status = t.order?.status || "";
       const school = user.school || "-";
       return [
@@ -164,54 +219,88 @@ export default function TransactionsList() {
         (t.amount || 0).toString(),
         getPaymentMethodLabel(t.payment_method),
         getStatusLabel(status),
-        formatDate(t.created_at)
+        formatDate(t.created_at),
       ];
     });
     return [headers, ...rows];
   };
 
-  const exportTransactions = () => {
-    const csvContent = buildExportRows()
-      .map(row => row.join(","))
+  // Fetch all filtered records for export if needed
+  const getAllFilteredTransactions = async (): Promise<Transaction[]> => {
+    if (transactions.length >= stats.total_count && stats.total_count > 0) {
+      return transactions;
+    }
+    try {
+      setExporting(true);
+      toast.info("در حال آماده‌سازی فایل خروجی کامل...");
+      const params: Record<string, string | number> = {
+        page_size: 5000,
+      };
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (filters.payment_method && filters.payment_method !== "-") params.payment_method = filters.payment_method;
+      if (filters.transaction_type && filters.transaction_type !== "-") params.transaction_type = filters.transaction_type;
+      if (filters.status && filters.status !== "-") params.status = filters.status;
+
+      const res = await axiosInstance.get("/finance/transactions/", { params });
+      return res.data?.results || res.data || transactions;
+    } catch {
+      return transactions;
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportTransactions = async () => {
+    const dataToExport = await getAllFilteredTransactions();
+    const csvContent = buildExportRows(dataToExport)
+      .map((row) => row.join(","))
       .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `transactions_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
   };
 
-  const exportTransactionsExcel = () => {
-    const data = buildExportRows();
+  const exportTransactionsExcel = async () => {
+    const dataToExport = await getAllFilteredTransactions();
+    const data = buildExportRows(dataToExport);
     const worksheet = XLSX.utils.aoa_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "تراکنش‌ها");
-    XLSX.writeFile(workbook, `transactions_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(workbook, `transactions_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
-
-  // Formatting functions moved to columns.tsx
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">در حال بارگذاری...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>لیست تراکنش‌ها</span>
+            <div className="flex items-center gap-2">
+              <span>لیست تراکنش‌ها</span>
+              {stats.total_count > 0 && (
+                <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                  ({transactions.length} از {stats.total_count})
+                </span>
+              )}
+            </div>
             <div className="flex gap-2">
-              <Button onClick={exportTransactions} variant="outline" size="sm">
+              <Button
+                onClick={exportTransactions}
+                variant="outline"
+                size="sm"
+                disabled={exporting || loading}
+              >
                 <Download className="w-4 h-4 ml-2" />
                 خروجی CSV
               </Button>
-              <Button onClick={exportTransactionsExcel} variant="outline" size="sm">
+              <Button
+                onClick={exportTransactionsExcel}
+                variant="outline"
+                size="sm"
+                disabled={exporting || loading}
+              >
                 <FileSpreadsheet className="w-4 h-4 ml-2" />
                 خروجی اکسل
               </Button>
@@ -224,10 +313,10 @@ export default function TransactionsList() {
             <div className="space-y-2">
               <Label htmlFor="search">جستجو</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground  w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   id="search"
-                  placeholder="جستجو در کاربر، ایمیل، شماره مرجع..."
+                  placeholder="جستجو در نام، شماره مرجع، کد..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange("search", e.target.value)}
                   className="pl-10"
@@ -238,7 +327,7 @@ export default function TransactionsList() {
             <div className="space-y-2">
               <Label htmlFor="payment_method">روش پرداخت</Label>
               <Select
-                value={filters.payment_method}
+                value={filters.payment_method || "-"}
                 onValueChange={(value) => handleFilterChange("payment_method", value)}
               >
                 <SelectTrigger>
@@ -257,7 +346,7 @@ export default function TransactionsList() {
             <div className="space-y-2">
               <Label htmlFor="transaction_type">نوع تراکنش</Label>
               <Select
-                value={filters.transaction_type}
+                value={filters.transaction_type || "-"}
                 onValueChange={(value) => handleFilterChange("transaction_type", value)}
               >
                 <SelectTrigger>
@@ -276,7 +365,7 @@ export default function TransactionsList() {
             <div className="space-y-2">
               <Label htmlFor="status">وضعیت سفارش</Label>
               <Select
-                value={filters.status}
+                value={filters.status || "-"}
                 onValueChange={(value) => handleFilterChange("status", value)}
               >
                 <SelectTrigger>
@@ -302,24 +391,60 @@ export default function TransactionsList() {
             </div>
           </div>
 
-          {/* Transactions Table */}
-          <DataTable columns={columns} data={filteredTransactions} />
+          {/* Initial Loading */}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-2">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <div className="text-sm text-muted-foreground">در حال بارگذاری تراکنش‌ها...</div>
+            </div>
+          ) : (
+            <>
+              {/* Transactions Table with fixed height and internal infinite scroll */}
+              <DataTable
+                columns={columns}
+                data={transactions}
+                showPagination={false}
+                maxHeight="560px"
+                containerRef={tableContainerRef}
+                onScroll={handleTableScroll}
+                footerContent={
+                  <div
+                    ref={observerTarget}
+                    className="w-full py-4 flex items-center justify-center border-t bg-muted/10"
+                  >
+                    {loadingMore && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        <span>در حال بارگذاری تراکنش‌های بیشتر...</span>
+                      </div>
+                    )}
+                    {!hasMore && transactions.length > 0 && (
+                      <div className="text-xs text-muted-foreground py-1">
+                        همه تراکنش‌ها بارگذاری شدند (مجموع: {stats.total_count || transactions.length} تراکنش)
+                      </div>
+                    )}
+                  </div>
+                }
+              />
+            </>
+          )}
 
-          {/* Summary */}
-          <div className="mt-6 p-4 rounded-lg">
+          {/* Financial Summary */}
+          <div className="mt-6 p-4 rounded-lg bg-muted/40 border">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {filteredTransactions.length}
+                  {stats.total_count ? stats.total_count.toLocaleString("fa-IR") : transactions.length.toLocaleString("fa-IR")}
                 </div>
                 <div className="text-sm text-muted-foreground">کل تراکنش‌ها</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">
                   {formatPrice(
-                    filteredTransactions
-                      .filter(t => t.transaction_type === "purchase")
-                      .reduce((sum, t) => sum + t.amount, 0)
+                    stats.total_purchases ||
+                    transactions
+                      .filter((t) => t.transaction_type === "purchase")
+                      .reduce((sum, t) => sum + (t.amount || 0), 0)
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">مجموع خریدها</div>
@@ -327,9 +452,10 @@ export default function TransactionsList() {
               <div>
                 <div className="text-2xl font-bold text-orange-600">
                   {formatPrice(
-                    filteredTransactions
-                      .filter(t => t.transaction_type === "refund")
-                      .reduce((sum, t) => sum + t.amount, 0)
+                    stats.total_refunds ||
+                    transactions
+                      .filter((t) => t.transaction_type === "refund")
+                      .reduce((sum, t) => sum + (t.amount || 0), 0)
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">مجموع بازپرداخت‌ها</div>

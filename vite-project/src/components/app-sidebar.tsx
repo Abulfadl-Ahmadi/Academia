@@ -18,6 +18,7 @@ import {
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
+import { SidebarVersion } from "@/components/SidebarVersion"
 import {
   Sidebar,
   SidebarContent,
@@ -223,22 +224,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
 
- {loading ? (
-    <div className="px-4 py-2 text-muted-foreground text-sm">در حال بارگذاری...</div>
-  ) : !user ? (
-    <div className="px-4 py-2 text-muted-foreground text-sm">وارد نشده‌اید</div>
-  ) : (
-    <NavUser
-      user={{
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        // avatar: user.avatar || "/avatars/default.jpg",
-        avatar: "/avatars/default.jpg",
-      }}
-    />
-  )}
+  {loading ? (
+     <div className="px-4 py-2 text-muted-foreground text-sm">در حال بارگذاری...</div>
+   ) : !user ? (
+     <div className="px-4 py-2 text-muted-foreground text-sm">وارد نشده‌اید</div>
+   ) : (
+     <NavUser
+       user={{
+         username: user.username,
+         first_name: user.first_name,
+         last_name: user.last_name,
+         email: user.email,
+         avatar: "",
+       }}
+     />
+   )}
+        <SidebarVersion />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

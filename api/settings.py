@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config, UndefinedValueError
+import logging
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -384,10 +385,25 @@ except (ImportError, UndefinedValueError):
     LLM_BASE_URL = config('LLM_BASE_URL', default='https://arvancloudai.ir/gateway/models/DeepSeek-V4-Pro/XDSfG8DZnRv7J3fkDqL-w0BgaO__UP8UvQj3lJvG9IZCGm-wENAH5nIRVPrrsk7rnM8ddC7ZIcL_aNxBpRTfRmNy7X3N3CKEiKc4Rzol8liTH7WDcDovs3YQmVqUfWdXWvoWy9yTENirsPA6Wdbk2wq1DsOBFJbfP9yQh9Qfv8xArG7Q3RqqBr3XnhR-8QzWYmBe8dLF4l7spJYnp0s6ES9Y1-qWpB3vTZaTwvcGPEWcrIB6uWDhNXeWXeNcsxJteDJy1A/v1')
     LLM_MODEL = config('LLM_MODEL', default='DeepSeek-V4-Pro')
 
+# Custom logging filter to suppress 401 Unauthorized warning logs caused by guest users
+class Suppress401Filter(logging.Filter):
+    def filter(self, record):
+        if getattr(record, 'status_code', None) == 401:
+            return False
+        msg = record.getMessage()
+        if 'Unauthorized:' in msg:
+            return False
+        return True
+
 # Logging Configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'suppress_401': {
+            '()': Suppress401Filter,
+        },
+    },
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
@@ -413,12 +429,14 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
+            'filters': ['suppress_401'],
         },
         'request_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs' / 'requests.log',
             'formatter': 'request',
+            'filters': ['suppress_401'],
         },
     },
     'root': {
