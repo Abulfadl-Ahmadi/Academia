@@ -58,16 +58,6 @@ const data = {
       title: "هوش مصنوعی",
       url: "/panel/support/ask-ai",
       icon: Bot,
-      items: [
-        {
-          title: "گفتگوهای من",
-          url: "/panel/support/ask-ai",
-        },
-        {
-          title: "گفتگوی جدید",
-          url: "/panel/support/ask-ai/new",
-        },
-      ],
     },
     {
       title: "کلاس‌های من",

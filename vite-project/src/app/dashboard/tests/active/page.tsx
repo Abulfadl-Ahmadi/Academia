@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePanelBase } from "@/hooks/usePanelBase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,8 @@ export default function ActiveTestsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  // Stay inside the public "/exams" section when rendered there.
+  const base = usePanelBase();
 
   useEffect(() => {
     const fetchActiveTests = async () => {
@@ -183,7 +186,7 @@ export default function ActiveTestsPage() {
             <p className="text-muted-foreground mb-4">
               در حال حاضر هیچ آزمون فعالی برای شما تعریف نشده است.
             </p>
-            <Button variant="outline" onClick={() => navigate("/panel")}>
+            <Button variant="outline" onClick={() => navigate(base)}>
               بازگشت به داشبورد
             </Button>
           </CardContent>

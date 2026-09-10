@@ -48,7 +48,7 @@ export function Footer() {
               {[
                 { label: "صفحه اصلی", href: "/" },
                 { label: "دوره‌ها", href: "/shop" },
-                { label: "درباره ما", href: "/" },
+                { label: "درباره ما", href: "/about" },
                 { label: "تماس با ما", href: "/" },
                 { label: "بلاگ", href: "/blog" },
                 { label: "سوالات متداول", href: "/" },

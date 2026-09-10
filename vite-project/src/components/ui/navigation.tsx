@@ -52,23 +52,23 @@ export default function Navigation({
     //   content: "default",
     // },
     {
+      title: "آزمون‌ها",
+      href: "/exams",
+      isLink: true,
+    },
+    {
+      title: "کلاس‌ها",
+      href: "/classes",
+      isLink: true,
+    },
+    {
       title: "فروشگاه",
       href: "/shop",
       isLink: true,
     },
     {
-      title: "وبلاگ",
-      href: "/blog",
-      isLink: true,
-    },
-    {
-      title: "محاسبه‌گر درصد",
-      href: "/grade-calculator",
-      isLink: true,
-    },
-    {
-      title: "درباره ما",
-      href: "/about",
+      title: "هوش مصنوعی",
+      href: "/ai",
       isLink: true,
     },
   ],

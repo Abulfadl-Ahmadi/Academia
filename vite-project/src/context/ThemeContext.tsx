@@ -6,6 +6,7 @@ type AccentColor = 'blue' | 'green' | 'purple' | 'red' | 'orange' | 'teal' | 'pi
 
 interface ThemeContextType {
   theme: Theme;
+  effectiveTheme: 'light' | 'dark';
   accentColor: AccentColor;
   toggleTheme: (theme: Theme) => void;
   setAccentColor: (color: AccentColor) => void;
@@ -73,21 +74,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'purple';
   });
 
+  const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>(() => getEffectiveTheme(theme));
+
   useEffect(() => {
     const root = document.documentElement;
     
     // Get the effective theme (actual light/dark value)
-    const effectiveTheme = getEffectiveTheme(theme);
-    
+    const currentEffectiveTheme = getEffectiveTheme(theme);
+
     // Apply theme
     root.classList.remove('light', 'dark');
-    root.classList.add(effectiveTheme);
-    
+    root.classList.add(currentEffectiveTheme);
+    setEffectiveTheme(currentEffectiveTheme);
+
     // Apply only primary accent color, let shadcn handle the rest
     const colors = ACCENT_COLORS[accentColor];
     root.style.setProperty('--primary', colors.primary);
     root.style.setProperty('--primary-foreground', colors.primaryForeground);
-    
+
     // Save to localStorage
     localStorage.setItem('theme', theme);
     localStorage.setItem('accentColor', accentColor);
@@ -98,8 +102,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const handleChange = (e: MediaQueryListEvent) => {
         root.classList.remove('light', 'dark');
         root.classList.add(e.matches ? 'dark' : 'light');
+        setEffectiveTheme(e.matches ? 'dark' : 'light');
       };
-      
+
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
@@ -116,6 +121,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeContext.Provider value={{
       theme,
+      effectiveTheme,
       accentColor,
       toggleTheme,
       setAccentColor: handleAccentColorChange,
