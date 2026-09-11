@@ -91,7 +91,7 @@ export function HeroGeometric({
           baseWidth={5.5}
           animationType="3drotate"
           glow={1}
-          noise={0.2}
+          noise={0.05}
           transparent
           scale={1.9}
           // At scale 1.9 the pyramid's apex maps to almost exactly the top edge of
@@ -115,7 +115,15 @@ export function HeroGeometric({
       {/* Headline takes the space above the deck and centres in whatever is
           left, so it stays put as the viewport height changes. */}
       <div className="relative z-10 flex flex-1 items-center justify-center px-4 pt-24">
-        <div className="max-w-3xl text-center">
+        {/* The prism animates arbitrary colour under the headline, so the copy
+            cannot rely on it for contrast. This scrim keeps text legible over
+            whatever frame is beneath it, in either theme, and is strongest on
+            small screens where the brightest band sits right behind the text. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-[22rem] -translate-y-1/2 bg-background/45 blur-3xl sm:bg-background/30"
+        />
+        <div className="relative max-w-3xl text-center">
           <h1 className="mb-5 text-[2rem] font-bold leading-[1.15] tracking-tight sm:text-[2.625rem] md:mb-7 md:text-[4.2rem]">
             <span className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-transparent">
               {title1}
@@ -134,7 +142,7 @@ export function HeroGeometric({
             </span>
           </h1>
 
-          <p className="mx-auto max-w-xl text-[0.85rem] font-light leading-relaxed tracking-wide text-muted-foreground sm:text-[0.79rem] md:text-[0.875rem]">
+          <p className="mx-auto max-w-xl text-[0.95rem] font-normal leading-relaxed tracking-wide text-foreground/85 sm:text-[0.9rem] md:text-[0.95rem]">
             {description}
           </p>
         </div>

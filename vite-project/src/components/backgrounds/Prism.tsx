@@ -431,6 +431,11 @@ const Prism: React.FC<PrismProps> = ({
         delete (container as PrismContainer).__prismIO;
       }
       if (gl.canvas.parentElement === container) container.removeChild(gl.canvas);
+      // Browsers cap concurrent WebGL contexts and drop the oldest once past
+      // it. Detaching the canvas only makes this one collectable eventually,
+      // so release it now — otherwise repeated visits to the page that mounts
+      // this can outrun GC and leave a later canvas blank.
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [
     height,

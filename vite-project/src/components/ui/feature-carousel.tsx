@@ -80,9 +80,19 @@ export function FeatureCarousel({
     step(dx < 0 ? 1 : -1);
   };
 
+  // pointerup fires *before* click, so clearing the ref here outright would
+  // leave the click guards below reading undefined and a swipe would also
+  // count as a tap. Clear it one task later, once click has had its turn —
+  // and not sooner, or a keyboard Enter on the CTA would read a stale drag.
   const endDrag = () => {
-    dragRef.current = null;
+    const drag = dragRef.current;
+    if (!drag) return;
+    setTimeout(() => {
+      if (dragRef.current === drag) dragRef.current = null;
+    }, 0);
   };
+
+  const consumedDrag = () => dragRef.current?.moved === true;
 
   return (
     <div
@@ -145,9 +155,9 @@ export function FeatureCarousel({
               <button
                 type="button"
                 className="fc-hit"
-                tabIndex={isCenter ? -1 : 0}
+                tabIndex={isCenter || depth > 2 ? -1 : 0}
                 aria-label={`نمایش ${item.title}`}
-                onClick={() => !dragRef.current?.moved && setActive(index)}
+                onClick={() => !consumedDrag() && setActive(index)}
                 hidden={isCenter}
               />
 
@@ -171,7 +181,7 @@ export function FeatureCarousel({
                   className="fc-cta"
                   tabIndex={isCenter ? 0 : -1}
                   onClick={(e) => {
-                    if (dragRef.current?.moved) e.preventDefault();
+                    if (consumedDrag()) e.preventDefault();
                   }}
                 >
                   مشاهده
