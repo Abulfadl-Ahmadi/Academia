@@ -1,4 +1,4 @@
-import { MathRenderer } from '@/components/ui/math-renderer-optimized';
+import { MathRenderer } from '@/components/ui/math-renderer';
 import 'katex/dist/katex.min.css';
 
 interface MathPreviewProps {

@@ -514,7 +514,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen w-full my-10">
+    <div className="min-h-screen w-full mb-10">
       <ImagePreloader />
       {/* Countdown Section */}
       {/* <div className="flex flex-col items-center justify-center gap-6 mb-16 py-12 px-6 max-w-3xl mx-auto relative overflow-hidden"> */}
@@ -590,43 +590,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <div className="relative">
-        {/* Background Glass Shapes for Hero */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <img
-            src="/Glass_shapes_optimized/5.webp"
-            alt=""
-            className="absolute top-1/4 left-10 w-16 h-16 sm:w-24 sm:h-24 opacity-20"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="/Glass_shapes_optimized/14.webp"
-            alt=""
-            className="absolute top-1/3 right-16 w-12 h-12 sm:w-20 sm:h-20 opacity-25"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="/Glass_shapes_optimized/36.webp"
-            alt=""
-            className="absolute bottom-1/4 left-1/4 w-10 h-10 sm:w-16 sm:h-16 opacity-20"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="/Glass_shapes_optimized/39.webp"
-            alt=""
-            className="absolute bottom-1/3 right-1/3 w-12 h-12 sm:w-18 sm:h-18 opacity-25"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-
-        <HeroGeometric
-          title1="به آکادمی "
-          title2="آرین تفضلی‌زاده خوش آمدید"
-          description="آموزش حرفه‌ای ریاضیات برای رشته‌های ریاضی و تجربی."
-        />
+        <HeroGeometric />
       </div>
 
       <section className="2xl:px-[10%] overflow-hidden relative">
@@ -745,7 +709,6 @@ export default function HomePage() {
 
       {/* Featured Products Section */}
       <section className="2xl:px-[10%] py-20 relative overflow-hidden">
-        {/* Background Glass Shapes for Products Section */}
         <div className="absolute inset-0 pointer-events-none">
           <img
             src="/Glass_shapes_optimized/7.webp"
@@ -1180,7 +1143,6 @@ export default function HomePage() {
 
       {/* About Me Section */}
       <section className="2xl:px-[10%] py-20 relative overflow-hidden">
-        {/* Background Glass Shapes for About Section */}
         <div className="absolute inset-0 pointer-events-none">
           <img
             src="/Glass_shapes_optimized/6.webp"

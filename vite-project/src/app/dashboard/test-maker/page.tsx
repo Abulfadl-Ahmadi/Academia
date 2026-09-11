@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePanelBase } from "@/hooks/usePanelBase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,8 @@ interface Stats {
 
 export default function TestMakerDashboard() {
   const navigate = useNavigate();
+  // Stay inside the public "/exams" section when rendered there.
+  const base = usePanelBase();
   const [tests, setTests] = useState<CustomTest[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,11 +104,11 @@ export default function TestMakerDashboard() {
   };
 
   const handleStartTest = (testId: number) => {
-    navigate(`/panel/test-maker/test/${testId}`);
+    navigate(`${base}/test-maker/test/${testId}`);
   };
 
   const handleViewResults = (testId: number) => {
-    navigate(`/panel/test-maker/results/${testId}`);
+    navigate(`${base}/test-maker/results/${testId}`);
   };
 
   const handleDeleteTest = async (testId: number) => {
@@ -152,7 +155,7 @@ export default function TestMakerDashboard() {
             </p>
           </div>
         </div>
-        <Button onClick={() => navigate("/panel/test-maker/create")}>
+        <Button onClick={() => navigate(`${base}/test-maker/create`)}>
           <Plus className="h-4 w-4 ml-1" />
           آزمون جدید
         </Button>
@@ -232,7 +235,7 @@ export default function TestMakerDashboard() {
                   <p className="mt-2 text-sm text-muted-foreground">
                     برای شروع، یک آزمون جدید ایجاد کنید
                   </p>
-                  <Button onClick={() => navigate("/panel/test-maker/create")} className="mt-4">
+                  <Button onClick={() => navigate(`${base}/test-maker/create`)} className="mt-4">
                     <Plus className="h-4 w-4 ml-1" />
                     ایجاد آزمون
                   </Button>

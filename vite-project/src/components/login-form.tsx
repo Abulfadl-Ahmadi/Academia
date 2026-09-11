@@ -11,7 +11,6 @@ import { markLoggedIn } from "@/lib/axios";
 import { LogoSvg } from "../components/LogoSvg";
 import { Eye, EyeOff } from "lucide-react";
 
-
 // Floating Shapes Component
 const FloatingShapes = () => {
   const [floatingShapes, setFloatingShapes] = useState<Array<{

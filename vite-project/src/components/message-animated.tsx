@@ -1,5 +1,5 @@
 import { Bot, UserRound } from "lucide-react";
-import MathRenderer from "@/components/ui/math-renderer-optimized";
+import MathRenderer from "@/components/ui/math-renderer";
 import { MessageScrollerItem } from "@/components/ui/message-scroller";
 
 interface MessageAnimatedProps {

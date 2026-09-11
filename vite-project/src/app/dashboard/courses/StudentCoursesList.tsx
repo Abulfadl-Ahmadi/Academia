@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
+import { usePanelBase } from "@/hooks/usePanelBase";
 import { 
   BookOpen, 
   Users, 
@@ -35,6 +36,8 @@ export default function StudentCoursesList() {
   const [courses, setCourses] = useState<StudentCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  // Stay inside the current section (panel or a mirrored public section).
+  const base = usePanelBase();
 
   useEffect(() => {
     fetchCourses();
@@ -83,7 +86,7 @@ export default function StudentCoursesList() {
   }) : [];
 
   const handleViewCourse = (courseId: number) => {
-    window.location.href = `/panel/courses/${courseId}`;
+    window.location.href = `${base}/courses/${courseId}`;
   };
 
   // const formatDate = (dateString: string | null) => {

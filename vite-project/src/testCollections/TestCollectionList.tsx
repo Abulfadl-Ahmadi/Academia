@@ -16,6 +16,7 @@ import {
   ShoppingBag
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePanelBase } from "@/hooks/usePanelBase";
 
 interface TestCollection {
   id: number;
@@ -33,6 +34,9 @@ export default function TestCollectionList() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useUser();
+  // Keeps links inside the public "/exams" section when rendered there.
+  // Teacher-only management screens stay in the panel, which is their only home.
+  const base = usePanelBase();
 
   const isTeacherOrAdmin = ["teacher", "admin", "content_creator"].includes(user?.role || "");
 
@@ -139,7 +143,7 @@ export default function TestCollectionList() {
                 </span>
                 
                 <div className="flex gap-2">
-                  <Link to={`/panel/test-collections/${collection.id}`}>
+                  <Link to={`${base}/test-collections/${collection.id}`}>
                     <Button variant="outline" size="sm">
                       <Eye className="h-4 w-4 ml-1" />
                       جزئیات

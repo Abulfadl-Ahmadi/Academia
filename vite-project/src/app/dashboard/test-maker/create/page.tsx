@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePanelBase } from "@/hooks/usePanelBase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,8 @@ interface CreateTestData {
 
 export default function TestMakerCreate() {
   const navigate = useNavigate();
+  // Stay inside the public "/exams" section when rendered there.
+  const base = usePanelBase();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateTestData>({
     name: "",
@@ -105,7 +108,7 @@ export default function TestMakerCreate() {
 
       const response = await axiosInstance.post("/custom-tests/", payload);
       toast.success("آزمون با موفقیت ایجاد شد");
-      navigate(`/panel/test-maker/test/${response.data.id}`);
+      navigate(`${base}/test-maker/test/${response.data.id}`);
     } catch (error) {
       console.error("Error creating test:", error);
       const err = error as { response?: { data?: { questions_count?: string[]; detail?: string } } };
@@ -124,7 +127,7 @@ export default function TestMakerCreate() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/panel/test-maker")}
+          onClick={() => navigate(`${base}/test-maker`)}
         >
           <ArrowRight className="h-4 w-4 ml-1" />
           بازگشت
@@ -251,7 +254,7 @@ export default function TestMakerCreate() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/panel/test-maker")}
+                onClick={() => navigate(`${base}/test-maker`)}
                 disabled={loading}
               >
                 انصراف

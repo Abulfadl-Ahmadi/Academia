@@ -14,6 +14,7 @@ import Navigation from "@/components/ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@/context/UserContext";
 import { NavbarUser } from "@/components/navbar-user";
+import { ThemeSwitch } from "@/components/theme-switch";
 // import { ThemeToggle } from "@/components/theme-toggle";
 // import { FontToggle } from "@/components/font-toggle";
 import { Logo } from "@/components/logo";
@@ -49,11 +50,10 @@ export default function Navbar({
   name = "آرین تفضلی‌زاده",
   homeUrl = "/",
   mobileLinks = [
+    { text: "آزمون‌ها", href: "/exams" },
+    { text: "کلاس‌ها", href: "/classes" },
     { text: "فروشگاه", href: "/shop" },
-    { text: "وبلاگ", href: "/blog" },
-    { text: "کلاس‌ها", href: "#" },
-    { text: "آزمون‌‌ها", href: "#" },
-    { text: "محاسبه‌گر درصد", href: "/grade-calculator" },
+    { text: "هوش مصنوعی", href: "/ai" },
     { text: "تماس با ما", href: "#" },
   ],
   actions = [
@@ -93,10 +93,7 @@ export default function Navbar({
                 {user ? (
                   // Show user profile when logged in
                   <>
-                    {/* <div className="flex items-center gap-2">
-                      <ThemeToggle />
-                      <FontToggle />
-                    </div> */}
+                    <ThemeSwitch />
                     <NavbarUser
                       user={{
                         username: user.username,
@@ -110,7 +107,7 @@ export default function Navbar({
                 ) : (
                   // Show login/signup buttons when not logged in
                   <>
-                    {/* <ThemeToggle /> */}
+                    <ThemeSwitch />
                     {actions.map((action, index) =>
                       action.isButton ? (
                         <Button

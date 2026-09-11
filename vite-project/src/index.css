@@ -153,8 +153,8 @@
 }
 
 .fade-bottom {
-  -webkit-mask-image: linear-gradient(#000 40%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, #0000);
-  mask-image: linear-gradient(#000 40%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, #0000);
+  -webkit-mask-image: linear-gradient(#000, #0000);
+  mask-image: linear-gradient(#000, #0000);
 }
 
 body {
@@ -821,5 +821,332 @@ body.ai-conversation-active {
 
   th {
     background-color: #f1f5f9 !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Feature carousel (components/ui/feature-carousel.tsx)
+
+   A 3D coverflow deck. Every card derives its palette from a single --fc-h
+   hue so the deck reads as one prism dispersion, and its position from
+   --fc-offset, the wrapped signed distance from the active card — which is
+   what makes the loop endless with no visible seam.
+--------------------------------------------------------------------------- */
+.fc-stage {
+  /* Deck geometry, as one set of knobs the breakpoints re-tune rather than
+     each re-declaring the whole transform below. */
+  --fc-shift: 46%;
+  --fc-z: 150px;
+  --fc-rot: 26deg;
+  --fc-scale-step: 0.04;
+  --fc-fade: 0.3;
+
+  position: relative;
+  height: clamp(10.5rem, 27vh, 12.5rem);
+  perspective: 1600px;
+  perspective-origin: 50% 45%;
+  outline: none;
+  touch-action: pan-y;
+  /* Dragging the deck must not sweep a text selection across the cards. */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fc-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: clamp(17rem, 86vw, 23rem);
+  height: 100%;
+  margin-left: calc(clamp(17rem, 86vw, 23rem) / -2);
+  border-radius: 16px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+
+  transform:
+    translateX(calc(var(--fc-offset) * var(--fc-shift)))
+    translateZ(calc(var(--fc-depth) * -1 * var(--fc-z)))
+    rotateY(calc(var(--fc-offset) * -1 * var(--fc-rot)))
+    scale(calc(1 - var(--fc-depth) * var(--fc-scale-step)));
+
+  opacity: calc(1 - var(--fc-depth) * var(--fc-fade));
+
+  background:
+    linear-gradient(
+      168deg,
+      oklch(0.64 0.21 var(--fc-h)) 0%,
+      oklch(0.45 0.2 calc(var(--fc-h) + 14)) 46%,
+      oklch(0.24 0.11 calc(var(--fc-h) - 10)) 100%
+    );
+
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.28),
+    inset 0 0 0 1px oklch(1 0 0 / 0.1),
+    0 20px 40px -24px oklch(0.15 0.06 var(--fc-h) / 0.8);
+
+  transition:
+    transform 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 780ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The one card that carries the deck. */
+.fc-card[data-center] {
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.34),
+    inset 0 0 0 1px oklch(1 0 0 / 0.14),
+    0 4px 14px -6px oklch(0.15 0.06 var(--fc-h) / 0.7),
+    0 42px 90px -34px oklch(0.55 0.26 var(--fc-h) / 0.85);
+}
+
+/* Click target for the off-centre cards; the centre card is a normal region. */
+.fc-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+/* Fixed diagonal glaze — a material highlight, not a moving effect. */
+.fc-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      142deg,
+      oklch(1 0 0 / 0.2) 0%,
+      oklch(1 0 0 / 0.05) 26%,
+      transparent 52%
+    ),
+    radial-gradient(
+      100% 62% at 82% 6%,
+      oklch(0.92 0.13 calc(var(--fc-h) + 44) / 0.4) 0%,
+      transparent 70%
+    );
+}
+
+.fc-watermark {
+  position: absolute;
+  top: -1.25rem;
+  inset-inline-end: -1.5rem;
+  width: 8.5rem;
+  height: 8.5rem;
+  color: oklch(1 0 0);
+  opacity: 0.11;
+  pointer-events: none;
+}
+
+.fc-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.25rem 1.4rem;
+}
+
+/* Icon and title share a line, so the icon heads the card instead of floating
+   alongside the description. */
+.fc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.fc-chip {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 11px;
+  color: oklch(1 0 0);
+  background: oklch(1 0 0 / 0.14);
+  box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.22);
+  backdrop-filter: blur(6px);
+}
+
+.fc-chip > svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.fc-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: oklch(1 0 0);
+  text-wrap: balance;
+}
+
+.fc-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.7;
+  /* Tinted from the card's own hue rather than grey, so it stays part of the
+     material while clearing contrast. */
+  color: oklch(0.93 0.03 var(--fc-h) / 0.85);
+}
+
+.fc-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding: 0.36rem 0.85rem 0.36rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: oklch(0.2 0.07 var(--fc-h));
+  background: oklch(0.99 0.01 var(--fc-h));
+  box-shadow: 0 6px 18px -8px oklch(0.15 0.06 var(--fc-h) / 0.9);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fc-cta > svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.fc-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* Off-centre cards recede: their copy would only be noise at that scale. */
+.fc-card:not([data-center]) .fc-desc,
+.fc-card:not([data-center]) .fc-cta {
+  opacity: 0;
+  transition: opacity 340ms ease;
+}
+
+.fc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.fc-nav {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--foreground);
+  background: oklch(from var(--foreground) l c h / 0.06);
+  box-shadow: inset 0 0 0 1px oklch(from var(--foreground) l c h / 0.16);
+  backdrop-filter: blur(8px);
+  transition:
+    background 220ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fc-nav:hover {
+  background: oklch(from var(--foreground) l c h / 0.13);
+  transform: scale(1.06);
+}
+
+.fc-nav > svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.fc-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fc-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: oklch(from var(--foreground) l c h / 0.25);
+  transition:
+    width 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 420ms ease;
+}
+
+.fc-dot[data-on] {
+  width: 1.6rem;
+  background: var(--foreground);
+}
+
+/* The centre card dominated small screens at 86vw; pull it in and flatten the
+   band so the deck stays a footer to the headline rather than the whole view.
+   The neighbours also recede much harder here: at this width the desktop's
+   subtle 4%-per-step scale left three near-equal slabs competing for a frame
+   that only has room for one, so they drop back in size and opacity until the
+   centre card clearly reads as the subject. */
+@media (max-width: 640px) {
+  .fc-stage {
+    --fc-shift: 42%;
+    --fc-z: 190px;
+    --fc-rot: 30deg;
+    --fc-scale-step: 0.13;
+    --fc-fade: 0.45;
+
+    height: clamp(9.25rem, 22vh, 10.25rem);
+
+    /* The neighbours run past a phone's edges; fade them out there so the deck
+       ends in air instead of a hard vertical cut. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    );
+  }
+
+  .fc-card {
+    width: 67vw;
+    margin-left: -33.5vw;
+  }
+
+  .fc-body {
+    padding: 1rem 1.1rem;
+  }
+
+  .fc-title {
+    font-size: 1.05rem;
+  }
+
+  .fc-watermark {
+    width: 7rem;
+    height: 7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-card {
+    transition: opacity 200ms ease;
+  }
+
+  .fc-cta:hover,
+  .fc-nav:hover {
+    transform: none;
   }
 }

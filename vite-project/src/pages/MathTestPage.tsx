@@ -1,4 +1,4 @@
-import { MathRenderer } from '@/components/ui/math-renderer-optimized';
+import { MathRenderer } from '@/components/ui/math-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function MathTestPage() {

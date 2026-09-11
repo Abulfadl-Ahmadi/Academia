@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '@/lib/axios';
+import { useAiChatBase } from '@/hooks/useAiChatBase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,6 +87,8 @@ export function AIConversationList() {
   const [editTitle, setEditTitle] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
   const navigate = useNavigate();
+  // Keeps links inside the public "/ai" section when rendered there.
+  const base = useAiChatBase();
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -111,7 +114,7 @@ export function AIConversationList() {
       const res = await axiosInstance.post('/api/support/ai/conversations/', {
         title: 'گفتگوی جدید'
       });
-      navigate(`/panel/support/ask-ai/${res.data.id}`);
+      navigate(`${base}/${res.data.id}`);
     } catch (err: any) {
       console.error('Error creating conversation:', err);
       toast.error(err?.response?.data?.error || 'خطا در ایجاد گفتگوی جدید');
@@ -234,7 +237,7 @@ export function AIConversationList() {
             {conversations.map((conv) => (
               <div
                 key={conv.id}
-                onClick={() => navigate(`/panel/support/ask-ai/${conv.id}`)}
+                onClick={() => navigate(`${base}/${conv.id}`)}
                 className="py-4 px-3 sm:px-4 rounded-xl hover:bg-muted/40 transition-colors cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group"
               >
                 <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -460,6 +463,7 @@ function ScrollToEndOnLoad({ trigger }: { trigger: any }) {
 export function AIConversationDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const base = useAiChatBase();
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [conversation, setConversation] = useState<AIConversation | null>(null);
   const [messageInput, setMessageInput] = useState('');
@@ -654,7 +658,7 @@ export function AIConversationDetail() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate('/panel/support/ask-ai')}
+              onClick={() => navigate(base)}
             >
               <Archive size={14} className="ml-1" />
               <span className="hidden sm:inline">همه گفتگوها</span>
@@ -828,6 +832,68 @@ export function AIConversationDetail() {
         </div>
       </div>
     </MessageScrollerProvider>
+  );
+}
+
+/**
+ * "گفتگوی جدید" menu entry: opens a fresh conversation and hands the user
+ * straight to its chat screen, so the sub-page has a real route of its own.
+ */
+export function AIConversationNew() {
+  const navigate = useNavigate();
+  const base = useAiChatBase();
+  const [failed, setFailed] = useState(false);
+  // Strict mode mounts effects twice in dev; without this the user gets two
+  // empty conversations for one visit.
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    (async () => {
+      try {
+        const res = await axiosInstance.post('/api/support/ai/conversations/', {
+          title: 'گفتگوی جدید',
+        });
+        navigate(`${base}/${res.data.id}`, { replace: true });
+      } catch (err: any) {
+        console.error('Error creating conversation:', err);
+        toast.error(err?.response?.data?.error || 'خطا در ایجاد گفتگوی جدید');
+        setFailed(true);
+      }
+    })();
+  }, [base, navigate]);
+
+  if (failed) {
+    return (
+      <div className="bg-background border rounded-2xl p-8 flex flex-col items-center justify-center gap-4 text-center min-h-[350px]">
+        <div className="h-14 w-14 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+          <Bot size={28} />
+        </div>
+        <div>
+          <h3 className="text-base font-semibold">گفتگوی جدید ساخته نشد</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            برای شروع گفتگو با هوش مصنوعی باید وارد حساب کاربری خود شوید یا دوباره تلاش کنید.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" className="rounded-xl" onClick={() => navigate(base)}>
+            گفتگوهای من
+          </Button>
+          <Button className="rounded-xl" onClick={() => window.location.reload()}>
+            تلاش دوباره
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-24">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <span className="text-xs text-muted-foreground">در حال آماده‌سازی گفتگوی جدید...</span>
+    </div>
   );
 }
 

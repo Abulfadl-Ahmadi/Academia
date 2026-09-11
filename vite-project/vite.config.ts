@@ -42,6 +42,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      // Uploaded images are served by Django from MEDIA_ROOT in development.
+      '/media': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   plugins: [
