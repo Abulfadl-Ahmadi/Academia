@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '@/lib/axios';
 import { useAiChatBase } from '@/hooks/useAiChatBase';
 import { toast } from 'sonner';
@@ -842,28 +842,34 @@ export function AIConversationDetail() {
 export function AIConversationNew() {
   const navigate = useNavigate();
   const base = useAiChatBase();
+  const location = useLocation();
   const [failed, setFailed] = useState(false);
-  // Strict mode mounts effects twice in dev; without this the user gets two
-  // empty conversations for one visit.
-  const startedRef = useRef(false);
+  // Which navigation already started a conversation, so one visit never makes
+  // two. Keyed on the location rather than a plain flag: picking "گفتگوی جدید"
+  // again lands on this same route, which re-renders instead of remounting, so
+  // a flag would latch and leave that menu entry dead after a failure.
+  const startedRef = useRef<string | null>(null);
+
+  const createConversation = useCallback(async () => {
+    setFailed(false);
+    try {
+      const res = await axiosInstance.post('/api/support/ai/conversations/', {
+        title: 'گفتگوی جدید',
+      });
+      navigate(`${base}/${res.data.id}`, { replace: true });
+    } catch (err: any) {
+      console.error('Error creating conversation:', err);
+      toast.error(err?.response?.data?.error || 'خطا در ایجاد گفتگوی جدید');
+      setFailed(true);
+    }
+  }, [base, navigate]);
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-
-    (async () => {
-      try {
-        const res = await axiosInstance.post('/api/support/ai/conversations/', {
-          title: 'گفتگوی جدید',
-        });
-        navigate(`${base}/${res.data.id}`, { replace: true });
-      } catch (err: any) {
-        console.error('Error creating conversation:', err);
-        toast.error(err?.response?.data?.error || 'خطا در ایجاد گفتگوی جدید');
-        setFailed(true);
-      }
-    })();
-  }, [base, navigate]);
+    // Also what keeps strict mode's double-mount to a single conversation.
+    if (startedRef.current === location.key) return;
+    startedRef.current = location.key;
+    void createConversation();
+  }, [location.key, createConversation]);
 
   if (failed) {
     return (
@@ -881,7 +887,7 @@ export function AIConversationNew() {
           <Button variant="outline" className="rounded-xl" onClick={() => navigate(base)}>
             گفتگوهای من
           </Button>
-          <Button className="rounded-xl" onClick={() => window.location.reload()}>
+          <Button className="rounded-xl" onClick={() => void createConversation()}>
             تلاش دوباره
           </Button>
         </div>
