@@ -101,6 +101,12 @@ const AIConversationNew = lazy(() =>
   }))
 );
 
+/**
+ * Routes that render the application rather than the marketing site: the
+ * student panel, and the public sections that mirror its screens one-for-one.
+ */
+const APP_SECTION_PREFIXES = ["/panel", "/exams", "/classes", "/ai"] as const;
+
 // Loading component
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -129,8 +135,15 @@ function App() {
   const location = useLocation();
   const isAIChatDetail = location.pathname.startsWith("/panel/support/ask-ai/");
   const showMobileNav = location.pathname.startsWith("/panel") && !isAIChatDetail;
+  // The calculator shortcut belongs to the marketing site. Hide it wherever the
+  // app proper is showing — the panel and the public sections that mirror it —
+  // so the same screen doesn't gain a floating button just because it was
+  // reached through /exams instead of /panel.
+  const inAppSection = APP_SECTION_PREFIXES.some(
+    (prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`)
+  );
   const showFloatingCalculator =
-    location.pathname !== "/grade-calculator" && !location.pathname.startsWith("/panel");
+    location.pathname !== "/grade-calculator" && !inAppSection;
   if (user) {
     console.log(user);
   }
